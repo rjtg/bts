@@ -13,8 +13,9 @@ It may later be extracted into a separate project.
 | Crate | Owns |
 | --- | --- |
 | bts-fuzzy | Generic membership curves, expressions, rules, inference, validation, traces, authoring macro |
-| Future simulation crate | World entities, TV-specific rules, input mapping, time, state updates, player observations |
-| Future front ends | Interaction, presentation, experiment orchestration |
+| bts-sim | Typed entities, TV-specific rules, explicit time, deterministic state transitions, developer evidence |
+| bts-cli | Fixed experiment orchestration, readable developer summaries and JSON export |
+| Future player front ends | Restricted observations, interaction and presentation |
 
 Dependency direction is from the simulation to bts-fuzzy. The fuzzy crate
 must never import the simulation. Its outputs describe values or pressures;
@@ -51,6 +52,19 @@ a source/documentation review, not a compiled benchmark or numerical audit.
 
 ### Current state
 
-The standalone library, temperature/ventilation example, tests, and CI checks
-are implemented. Simulation crates and front ends are not implemented. This
+The standalone library and the first bounded broadcasting experiment are
+implemented. `bts-sim` depends on `bts-fuzzy`; `bts-cli` depends on `bts-sim`.
+The fuzzy crate and its self-contained manifest are unchanged by game code.
+
+Simulation state is private and not serializable. Slot transitions emit owned
+causal evidence; the separate `developer` module borrows that evidence to build
+serializable reports. Serde supports experiment configuration/report data;
+serde_json is confined to CLI export. No report is a player observation or save
+format. A future player evidence layer must deliberately restrict information;
+public beliefs are not implemented. Simulation never renders, reads files,
+uses wall time, or invokes randomness.
+
+The [experiment specification](headless-experiment.md) documents provisional
+allocation, return and hype equations. Production, contracts, season play,
+interactive scheduling and player front ends remain unimplemented. This
 document does not select a UI framework or save format.

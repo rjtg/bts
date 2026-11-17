@@ -1,4 +1,4 @@
-name: Fuzzy library
+name: Workspace checks
 on:
   push:
   pull_request:
@@ -20,6 +20,8 @@ jobs:
         env:
           RUSTDOCFLAGS: -D warnings
       - run: cargo run -p bts-fuzzy --example ventilation
+      - run: cargo run -p bts-sim --example sugeno_semantics
+      - run: cargo run -p bts-cli -- demo --json "$RUNNER_TEMP/bts-demo-results.json"
       - name: Verify extraction outside workspace
         shell: bash
         run: |

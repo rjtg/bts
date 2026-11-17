@@ -12,8 +12,8 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
 | Format depth | Scripted series plus basic interviews | Verify both fit shared audience and scheduling systems |
 | Advertising payment | Target-audience delivery contracts; hype affects demand and renewals | Compare clarity, incentives, and exploit risks with hype-based fees |
 | Hype versus awareness | Separate fast hype and slower awareness if justified | Test whether one variable makes established brands implausibly vanish |
-| Audience choice | Probabilistic allocation with a not-watching option | Check accounting, smoothness, and diversity of outcomes |
-| Fuzzy semantics | Independent crate boundary accepted; zero-order Sugeno and a declarative macro proposed | Specify operators, fallback, validation, and traces; test small models |
+| Audience choice | Deterministic expected-share allocation with not-watching implemented as a provisional headless experiment; later stochastic choice remains open | Check accounting, smoothness, and diversity of outcomes; see [experiment](headless-experiment.md) |
+| Fuzzy semantics | Zero-order Sugeno, min/max/complement, explicit fallback, validation, traces and macros implemented | TV rule calibration remains experimental; see [experiment](headless-experiment.md) |
 | UI framework | Unselected; minimal TUI preferred initially | Choose after headless loop; assess tables, navigation, and portability |
 | Rust architecture | Cargo workspace; independent `bts-fuzzy` crate; simulation independent of interface | See [architecture](architecture.md); select remaining crates and persistence when needed |
 

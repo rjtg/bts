@@ -1,0 +1,10 @@
+[package]
+name = "bts-sim"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Bounded deterministic broadcasting experiments"
+
+[dependencies]
+bts-fuzzy = { path = "../bts-fuzzy" }
+serde = { version = "1", features = ["derive"] }

@@ -37,6 +37,12 @@ Proposal: begin with daily planning and slot-based resolution. A headless versio
 
 Implement audience choice and satisfaction, basic programme attributes, brand targeting, hype decay, and developer reports. Compare schedules and campaigns using identical starting states and seeds.
 
+Current implementation: the [bounded broadcasting experiment](headless-experiment.md)
+provides three audience groups, two stations, four programmes, two brands,
+fixed schedules, deterministic expected shares, return willingness, and hype
+traces. It supplies initial evidence for this stage, not a completed game or
+balance validation. Randomness and schedule optimisation are not implemented.
+
 Exit evidence: different audiences produce different outcomes; relevant reach affects hype; attraction differs from enjoyment; results are reproducible and explained.
 
 ### 2. Complete season loop

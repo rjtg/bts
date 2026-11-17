@@ -2,6 +2,13 @@
 
 Status: causal direction is agreed; algorithms, parameter values, update ordering, and several mechanisms below are proposals to validate. This document is not a final mathematical specification.
 
+The [headless experiment](headless-experiment.md) now implements a bounded
+subset: deterministic expected viewing shares, separate attraction and
+satisfaction, series willingness, and exposure-driven hype with decay.
+Its precise equations are provisional experiments; the broader mechanisms
+below remain proposals. Developer reports expose actual state and are not
+player evidence.
+
 ## Purpose
 
 Create a world that is changing, partially observable, and learnable. Observation and adaptation should help the player outperform blind repetition without guaranteeing success.

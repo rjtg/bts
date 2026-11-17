@@ -1,0 +1,10 @@
+[package]
+name = "bts-cli"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Headless broadcasting experiment runner"
+
+[dependencies]
+bts-sim = { path = "../bts-sim" }
+serde_json = "1"

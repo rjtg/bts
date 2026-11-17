@@ -23,8 +23,23 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [First playable](docs/first-playable.md): a bounded proposal and acceptance criteria.
 - [Open questions](docs/open-questions.md): unresolved decisions and experiments.
 - [Architecture decisions](docs/architecture.md): crate boundaries and extraction plan.
+- [Headless experiment](docs/headless-experiment.md): implemented provisional equations, demo commands, and evidence.
 - [Contributor guidance](AGENTS.md): implementation principles for people and coding agents.
 
 ## Status
 
-Design baseline and initial Cargo workspace, November 2026. The independent [`bts-fuzzy`](crates/bts-fuzzy/README.md) crate implements zero-order Sugeno inference, validated membership curves, nested conditions, traces, and an authoring macro. No game implementation exists yet. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. No engine, UI framework, or AI model has been selected.
+Design baseline and initial Cargo workspace, November 2026. The independent [`bts-fuzzy`](crates/bts-fuzzy/README.md) crate implements zero-order Sugeno inference, validated membership curves, nested conditions, traces, and an authoring macro. The first bounded headless broadcasting experiment is implemented in `bts-sim`, with a `bts-cli` comparison runner and developer JSON reports. The season loop and player interface are not implemented. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. No engine, UI framework, or AI model has been selected.
+
+## Run the broadcasting experiment
+
+```sh
+cargo run -p bts-cli -- demo --json /tmp/bts-demo-results.json
+cargo run -p bts-cli -- demo --case targeted --trace
+cargo run -p bts-sim --example sugeno_semantics
+```
+
+The three fixed schedules start from identical state: broad popular programming,
+a smaller specialist audience, and a promoted but disappointing series. Reports
+are developer-only and include actual hidden inputs. Counts are expected
+viewer-slot impressions, not cumulative unique reach. Coefficients are
+provisional; hype does not represent sales or revenue.
