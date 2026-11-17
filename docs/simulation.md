@@ -82,6 +82,12 @@ Spending has diminishing returns. Not every low-budget show is weak: demands mat
 
 Actual abilities, hiring assessments, and public fame remain distinct. Production time creates market risk because tastes and competition can change before release.
 
+News and topical entertainment use this same production system. Their format
+and editorial profile determine how current events become editions; no separate
+newsroom or routine manual bulletin assembly is required. See [design](design.md)
+and [screens](screens.md). Editorial profile covers topic priorities, leaning,
+presentation and depth; it can change interest and trust over repeated editions.
+
 Evidence: estimates, staff reports, milestones, pilots, and later audience response.
 
 ## Cultural change and relationships
@@ -121,6 +127,17 @@ Purchasing power is one targeting dimension. Affordable mass products and niche 
 
 Implemented provisional contract experiment: a fixed maximum payment for weighted relevant target delivery in a booked station/hour, with an inclusive deadline and proportional underdelivery refund. Money is integer credits; offers reserve finite budget in escrow. Per-audience hype deficits value each audience's forecast delivery; brand-wide pressure is diagnostic. Accepted prices are not retrospectively changed by hype. Unfunded programmes go off air independently before allocation, and missed delivery refunds at the deadline. See [economy equations](advertising-economy.md). More detailed contracts, bonuses, renewal negotiations and campaign studies remain open; this experiment is not a permanent commercial design.
 
+Agreed information boundary: hype responds to internally simulated exposure;
+audience measurement produces an observed estimate, potentially noisy, biased
+or delayed. The intended commercial direction is settlement against an agreed
+measurement method, not omniscient truth. Forecast, internal delivery, reported
+delivery and contract-credited delivery must stay distinguishable.
+
+Current contracts still settle against internal expected relevant delivery,
+and browser reports explicitly expose provisional exact expected counts.
+Measurement and measurement-based settlement are not implemented. Do not claim
+otherwise or add arbitrary noise without specifying its sampling and timing.
+
 The station observes estimated outcomes. Attribution is uncertain when campaigns, competitors, news, and social transmission overlap. Brand health should use a coarse commercial model rather than equating hype directly with revenue.
 
 ## Events, publicity, and politics
@@ -135,21 +152,79 @@ World events affect groups differently. International tensions may increase news
 
 Later elections: calculate eligible population, turnout, and divided support within each group. Support depends on issue priorities, identification, perceived competence, candidate appeal, performance, and social/media experience. Apply electoral rules after votes are resolved. Media exposure is not an automatic positive vote modifier.
 
-## Time and population
+## Time, update frequency and delays
 
-Proposed scales:
+Agreed direction: one tick is 15 simulated minutes, four ticks per hour and
+96 per day. No continuously running wall clock is required. Advancing a day
+processes all intervening ticks and scheduled activity rather than resolving
+only its destination. Current experiments/browser still use explicit
+whole-hour broadcast snapshots; the tick design is not implemented yet.
 
-| Scale | Typical updates |
+A programme occupies its duration across ticks. Tick resolution is not a
+requirement to run every rule on every tick:
+
+| Trigger | Relevant updates |
 | --- | --- |
-| Slot | Viewing, satisfaction, ad exposure |
-| Day | Production, research delivery, discussion |
-| Week | Reputation, fatigue, commissioning, cultural diffusion |
-| Month / season | Career change, sustained trends, group migration |
-| Year | Ageing, demographic and economic changes |
+| Programme start / competing schedule change | Audience choice and expectations |
+| Watched interval / ad block | Exposure and appropriate viewing/advertising response |
+| Programme completion | Accumulated reception, familiarity and series consequences |
+| Daily boundary | Selected gradual cultural processes and summaries |
+| Due tick | Research/report delivery, completion or settlement |
 
-The precise calendar and player controls remain open. Long scenarios must allow cohort evolution to become visible without excessive routine scheduling.
+These triggers are proposed processing semantics to validate. In particular,
+splitting a work into four ticks must not charge four full broadcast costs,
+treat it as four fresh episodes, or multiply full-viewing satisfaction updates.
+Define duration-normalised exposure, accumulated viewing and completion effects
+before migration. Account for interval viewers separately from unique reach.
 
-Group splits conserve population and inherit relevant memories, preferences, and relationships. Merges need explicit aggregation rules. New cohorts and population exits are demographic processes; new cultural identities often emerge from existing people.
+Use consistent pre-update snapshots for interacting changes and deterministic
+ordering for scheduled actions. Exact phase ordering remains open. Quantities
+with elapsed-time rates must retain their meaning when frequency changes.
+
+Delays can be simple due-tick records: information may arrive later than the
+event it describes; gradual effects can update selected remembered values.
+Fuzzy rules may calculate a target or rate; persistent state supplies memory.
+Do not build a general effects-entity framework or detailed social propagation
+without a concrete gameplay need.
+
+Internal schedule, publication and promotion are distinct. Awareness of a work,
+anticipation for a particular airing and recurring-slot habit have distinct
+meanings. Early publication creates an opportunity to be discovered, not
+automatic unlimited hype. Promotion may build anticipation with diminishing
+returns; moving/cancelling announced work can lose viewers or trust.
+Precise buildup, decay, cancellation and habit equations remain open.
+
+## Ad blocks and advertising load
+
+Agreed direction: advertisements run as blocks, with campaigns assigned shares
+of a block rather than individual spot simulation.
+
+The station chooses commercial load: total duration, interruption pattern and
+placement. These consume airtime and can affect viewer annoyance, departures
+and longer-term station expectations, with different audience tolerances.
+
+A tick can contain both programme and advertising minutes. A three-minute
+block might allocate 50%, 30% and 20% to three campaigns. Shares cannot exceed
+100%; unused capacity is explicit. Whether unused time becomes promotion,
+content or another filler is a scheduling choice to specify.
+
+Block audience and campaign exposure dose are different measures. A campaign's
+share weights advertising time/dose; it does not imply that only that fraction
+of present viewers saw the brand. Audience fit, creative quality and repetition
+then affect hype. Do not multiply down reach and dose twice. Units and contract
+semantics for shares must be specified before implementation.
+
+Viewer departure at blocks needs only a coarse group-share model; no individual
+spot order or second-by-second simulation is required. The exact departure and
+reallocation rules, share commitments and payment units remain open.
+
+## Audience evolution
+
+Long scenarios should make cohort evolution visible without excessive routine
+scheduling. Ageing, careers and demographics can update monthly/yearly rather
+than every tick. Group splits conserve population and inherit relevant memories,
+preferences and relationships. New cohorts and exits are demographic processes;
+new cultural identities often emerge from existing people.
 
 ## Research and learning
 

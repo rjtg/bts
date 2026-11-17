@@ -66,20 +66,63 @@ Separate craft skill, task specialisation, genre experience, creative style, wor
 
 Skills usually change slowly; public attention can change quickly. Shared work develops familiarity and relationships. New entrants, role changes, discovery, rising fees, breaks, and retirement support a changing talent market.
 
-## Programme formats
+## Programme formats and subject matter
+
+Agreed direction: programmes combine format, subject matter, tone, editorial
+profile and production choices. These are not exclusive genre buckets: a
+programme can cover news through comedy, interviews or theatrical debate.
 
 | Format | Distinctive production choices |
 | --- | --- |
 | Scripted series / film | Concept, writing, casting, direction, production |
 | Game show | Rules, host, contestants, prizes |
-| Interview / talk | Guests, subjects, preparation, host, editorial approach |
-| News / current affairs | Stories, sources, journalists, coverage, credibility |
+| Interview / discussion | Guests, topics, host/moderator, preparation, approach |
+| Presented reports / magazine | Journalists, host, editorial profile, coverage resources |
+| Monologue / topical comedy | Host, writers, subjects, guests, satirical style |
 | Music / variety | Performers, host, running order, presentation |
 | Live coverage | Event access or rights, commentary, production capability |
 
-All share scheduling, promotion, audience choice, satisfaction, reputation, and advertising. Each uses an appropriate production recipe rather than being treated as a reskinned scripted series.
+All share production resources, scheduling, promotion, audience response,
+reputation and advertising, with role/format-specific recipes. Production
+projects consume time and resources; outputs may be aired, repeated, licensed
+or continued. Not every format requires scripts, pilots or the same stages.
 
-A production project consumes time and resources. Its result can be broadcast, repeated, licensed, or continued. Development, pilots, revision, renewal, and cancellation offer staged commitments; not every format needs every stage.
+### News and topical entertainment
+
+Produce a news format like any other show: choose host/team, budget, duration,
+frequency and editorial settings. A few factors set topic mix, political/issue
+leaning, restrained versus sensational presentation, and depth. Editions draw
+on current events automatically; story-by-story assembly is not the intended
+routine. An optional spotlight on a particular event remains a proposal.
+
+Dry current-affairs magazines, serious panels, showbiz-like political discussion
+and satirical late-night programmes can all treat news subjects. Talent fit
+depends on how material is presented. Repeated choices affect who watches,
+station trust/reputation and audience attention or beliefs.
+
+## Screens and scheduling direction
+
+See [screens and interaction design](screens.md) for the proposed navigation.
+There is no separate Newsroom screen: editorial controls belong to programme
+details inside the shared production workflow. The world/industry feed is
+shared information, distinct from the programmes made from it.
+
+Agreed direction: a 15-minute simulation tick, four updates per hour, rather
+than the current isolated broadcast snapshots. Full schedules occupy real
+airtime and advance through intervening ticks. Specific processing rules are
+still to design; this is not implemented by the browser harness.
+
+Internal plans, published listings and promotion are distinct. Publishing in
+advance and promotion can build awareness/anticipation for an airing; regular
+slots can build habit. Schedule changes can lose anticipation or trust.
+These systems are agreed direction with uncalibrated mechanics, not implemented
+features. Do not force all long-term processes to update every tick.
+
+Advertising load is a station choice. Blocks occupy airtime; campaigns hold
+shares of each block. Total duration/interruptions affect annoyance; shares
+allocate exposure dose. A half-share is half the ad time/dose, not necessarily
+half the people reached. See [simulation](simulation.md) for measurement and
+timing boundaries.
 
 ## Relationships and news
 
@@ -103,7 +146,7 @@ Brands have product categories, positioning, target audiences, desired hype, cur
 
 Hype deficits create demand for advertising; budgets and expected effectiveness constrain willingness to pay. Brands can launch, grow, decline, be acquired, or disappear. Hype alone does not determine survival.
 
-Awareness as a slower-moving state alongside hype is a proposal. Contract structure and performance attribution remain open; see [simulation](simulation.md).
+Awareness as a slower-moving state alongside hype is a proposal. Audience-specific commitments are implemented experimentally, but campaign shares, variable ad blocks and measured-delivery settlement remain future work. Contract design and performance attribution are not final; see [simulation](simulation.md).
 
 ## Public world
 

@@ -19,6 +19,7 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 ## Design documents
 
 - [Game design](docs/design.md): scope, entities, relationships, formats, and scenarios.
+- [Screens and interaction design](docs/screens.md): proposed workspaces, shared production and mockup brief.
 - [Simulation](docs/simulation.md): causal mechanisms, hidden information, and verification principles.
 - [First playable](docs/first-playable.md): a bounded proposal and acceptance criteria.
 - [Open questions](docs/open-questions.md): unresolved decisions and experiments.

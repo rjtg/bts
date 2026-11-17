@@ -7,15 +7,27 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
 | Question | Proposed starting point | How to decide |
 | --- | --- | --- |
 | Player control | Combined broadcaster and commissioning studio, with selected creative decisions | Test whether production and scheduling form one manageable loop |
-| Time and pacing | Daily planning, broadcasts by slot | Compare workload and production lead times in a short season |
+| Tick processing | 15-minute tick agreed; current code still resolves isolated broadcasts | Specify duration, exposure units, completion effects, costs and deterministic phase ordering before migration |
 | World setting | Fictional world with an 80s identity | Choose before writing substantial political or historical content |
-| Format depth | Scripted series plus basic interviews | Verify both fit shared audience and scheduling systems |
+| Format depth | Shared production; news is subject matter across formats, with editorial-profile controls | Choose the first producible formats; avoid separate newsroom mechanics |
 | Advertising payment | Provisional delivery contracts implemented with deadline, escrow, capped offers and proportional underdelivery refunds; hype affects demand | Compare clarity, incentives, costs and exploit risks; see [economy experiment](advertising-economy.md). Permanent contract design remains open |
 | Hype versus awareness | Separate fast hype and slower awareness if justified | Test whether one variable makes established brands implausibly vanish |
 | Audience choice | Deterministic expected-share allocation with not-watching implemented as a provisional headless experiment; later stochastic choice remains open | Check accounting, smoothness, and diversity of outcomes; see [experiment](headless-experiment.md) |
 | Fuzzy semantics | Zero-order Sugeno, min/max/complement, explicit fallback, validation, traces and macros implemented | TV rule calibration remains experimental; see [experiment](headless-experiment.md) |
 | Browser UI development | Browser primary; Rust/Wasm adapter and plain TypeScript/HTML/CSS harness implemented | Validate schedule/contract/report usability before selecting a larger UI framework or polished retro presentation; see [browser foundation](browser-foundation.md) |
 | Rust architecture | Cargo workspace; independent `bts-fuzzy` crate; simulation independent of interface | See [architecture](architecture.md); select remaining crates and persistence when needed |
+
+## Newly agreed directions needing detailed mechanics
+
+- [Screen organisation](screens.md): eight proposed workspaces and contextual
+  details; compare mockups before building the full UI.
+- Advance publication, airing-specific anticipation and recurring-slot habits:
+  choose buildup, delays, rescheduling consequences and readable evidence.
+- Ad blocks: define minutes, shares, annoyance, departures and exposure units.
+- Measurement: specify sampling, bias, delay, forecasts and the measurement
+  basis for contractual credit; current settlement still uses internal truth.
+- Keep timing simple: due ticks plus selected state updates; no general effects
+  framework is required.
 
 ## Later design questions
 
@@ -45,7 +57,7 @@ Experiment: run repeated campaigns and look for perpetual demand, runaway spendi
 
 ### News and public perception
 
-Which stories become public, through which sources, and with what reliability? How much agency does the station have in interviews, framing, and publicity? What distinguishes recognition from approval?
+Which stories become public, through which sources, and with what reliability? News formats use the shared production system and automatic event selection from a few editorial settings. How should optional event spotlighting work? What distinguishes recognition from approval?
 
 Experiment: trace a private event through publication, audience beliefs, programme interest, and advertiser response.
 
