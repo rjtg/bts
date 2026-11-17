@@ -241,9 +241,13 @@ Financial strings and contractual integer units compare exactly; floating
 expectations compare within 10^-8. Some Rust LSP feedback was stale and the
 TypeScript server unavailable; Cargo and `tsc` provided semantic verification.
 CI uses current stable Rust (1.100 at this milestone), newer than local 1.98.1.
-Its deprecation of the original atomic session-ID helper was addressed with
+The complete native tests/doctests, Clippy, docs, standalone extraction and
+browser checks were also rerun with 1.100. Its deprecation of the original atomic
+session-ID helper was addressed with
 a checked compare-and-exchange loop, preserving namespace isolation and overflow
-handling without depending on the renamed API.
+handling without depending on the renamed API. The fixture availability update
+uses iteration to satisfy current Clippy, and wasm-bindgen is a Wasm-only
+dependency so native builds do not report an unused dependency.
 
 ## Limits and next milestone
 

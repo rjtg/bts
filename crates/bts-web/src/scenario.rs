@@ -37,8 +37,8 @@ pub fn world() -> World {
     for audience in &mut world.audiences {
         let early = audience.availability[18];
         let late = audience.availability[21];
-        for hour in 16..24 {
-            audience.availability[hour] = match hour {
+        for (hour, availability) in audience.availability.iter_mut().enumerate().skip(16) {
+            *availability = match hour {
                 16 => early * 0.35,
                 17 => early * 0.65,
                 18 => early,
