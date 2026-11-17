@@ -240,6 +240,10 @@ reset/session isolation/stale commands and native/Wasm player-protocol parity.
 Financial strings and contractual integer units compare exactly; floating
 expectations compare within 10^-8. Some Rust LSP feedback was stale and the
 TypeScript server unavailable; Cargo and `tsc` provided semantic verification.
+CI uses current stable Rust (1.100 at this milestone), newer than local 1.98.1.
+Its deprecation of the original atomic session-ID helper was addressed with
+a checked compare-and-exchange loop, preserving namespace isolation and overflow
+handling without depending on the renamed API.
 
 ## Limits and next milestone
 

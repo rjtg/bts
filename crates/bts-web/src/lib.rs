@@ -27,11 +27,22 @@ pub struct Session {
 }
 impl Session {
     pub fn new() -> Result<Self, PlayerError> {
-        let namespace = NEXT_SESSION
-            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |v| v.checked_add(1))
-            .map_err(|_| {
+        // Checked allocation without the fetch_update API deprecated by newer Rust.
+        let mut namespace = NEXT_SESSION.load(Ordering::Relaxed);
+        loop {
+            let next = namespace.checked_add(1).ok_or_else(|| {
                 PlayerError::new("session_limit", "Session identifier capacity exhausted.")
             })?;
+            match NEXT_SESSION.compare_exchange_weak(
+                namespace,
+                next,
+                Ordering::Relaxed,
+                Ordering::Relaxed,
+            ) {
+                Ok(_) => break,
+                Err(observed) => namespace = observed,
+            }
+        }
         Ok(Self {
             planner: scenario::planner().map_err(player_error)?,
             namespace,
