@@ -1,0 +1,9 @@
+[package]
+name = "bts-fuzzy"
+version = "0.1.0"
+edition = "2021"
+description = "Small, inspectable fuzzy inference building blocks"
+readme = "README.md"
+publish = false
+
+[dependencies]

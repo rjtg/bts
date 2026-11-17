@@ -22,8 +22,9 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Simulation](docs/simulation.md): causal mechanisms, hidden information, and verification principles.
 - [First playable](docs/first-playable.md): a bounded proposal and acceptance criteria.
 - [Open questions](docs/open-questions.md): unresolved decisions and experiments.
+- [Architecture decisions](docs/architecture.md): crate boundaries and extraction plan.
 - [Contributor guidance](AGENTS.md): implementation principles for people and coding agents.
 
 ## Status
 
-Design baseline, November 2026. No game implementation yet. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. No engine, UI framework, or AI model has been selected.
+Design baseline and initial Cargo workspace, November 2026. The independent `bts-fuzzy` crate is scaffolded; no fuzzy evaluator or game implementation exists yet. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. No engine, UI framework, or AI model has been selected.

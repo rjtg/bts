@@ -13,6 +13,7 @@ Read [README.md](README.md), [design](docs/design.md), and the relevant simulati
 
 ## Implementation principles
 
+- Keep `bts-fuzzy` independent of game types and sibling crates. Its manifest must remain self-contained so the crate can be extracted. Keep TV rules in the consuming simulation. See [architecture](docs/architecture.md).
 - Keep the simulation independent of rendering, terminal input, and wall-clock time.
 - Support reproducible runs from an initial state, seed, and ordered player actions. Store the state needed to continue a save consistently.
 - Separate actual world state, public beliefs, and player-visible observations. UI code must not accidentally expose hidden values.

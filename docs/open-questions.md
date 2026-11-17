@@ -13,9 +13,9 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
 | Advertising payment | Target-audience delivery contracts; hype affects demand and renewals | Compare clarity, incentives, and exploit risks with hype-based fees |
 | Hype versus awareness | Separate fast hype and slower awareness if justified | Test whether one variable makes established brands implausibly vanish |
 | Audience choice | Probabilistic allocation with a not-watching option | Check accounting, smoothness, and diversity of outcomes |
-| Rule system | Small continuous model with selected fuzzy interactions | Inspect whether rules remain understandable and tunable |
+| Fuzzy semantics | Independent crate boundary accepted; zero-order Sugeno and a declarative macro proposed | Specify operators, fallback, validation, and traces; test small models |
 | UI framework | Unselected; minimal TUI preferred initially | Choose after headless loop; assess tables, navigation, and portability |
-| Rust architecture | Simulation independent of interface | Select concrete crates and persistence format when implementing |
+| Rust architecture | Cargo workspace; independent `bts-fuzzy` crate; simulation independent of interface | See [architecture](architecture.md); select remaining crates and persistence when needed |
 
 ## Later design questions
 

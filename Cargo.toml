@@ -1,0 +1,3 @@
+[workspace]
+members = ["crates/bts-fuzzy"]
+resolver = "2"
