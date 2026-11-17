@@ -3,7 +3,9 @@
 Status: implemented, bounded and provisional. This replaces the browser's
 fourteen fixed slots with a seven-day schedule. The primary reference is
 [screens](screens.md) and the [planning mockup](mockups/programme-planning.png).
-It adds a playable planning workflow, not production or a complete season game.
+This planning milestone added a playable scheduling workflow. The subsequent
+[original-production milestone](original-production.md) adds one studio format;
+a complete season game remains deferred.
 
 ## Workspace and actions
 
@@ -152,21 +154,21 @@ or an unfunded airing refunds the unpaid allocation under the existing exact
 integer rule. Settlement happens once. A later hype change cannot reprice the
 contract. One selected prospective advertiser airs no ad until accepted.
 
-Any successful schedule edit, acceptance, advance or reset invalidates a pending
+Any successful schedule edit, production command, acceptance, advance or reset invalidates a pending
 offer; a new quote replaces it. Rejected commands preserve a still-valid offer.
 Player airing IDs are not reused after removal or reset; the fixed competitor
 schedule is recreated on reset. Opaque offer tokens also retain
 session namespaces/counters across reset, preventing accidental stale reuse.
 
-## Browser protocol v2 and observation boundary
+## Browser protocol and observation boundary
 
-This deliberately incompatible revision replaces slot indices with airing IDs
-and explicit tick boundaries. Old protocol-v1 commands are rejected. Authoritative
+The planning revision replaced slot indices with airing IDs and explicit tick
+boundaries. Current protocol **v3** adds production commands; old versions are rejected. Authoritative
 Rust DTOs live in [`protocol.rs`](../crates/bts-web/src/protocol.rs); TypeScript
 mirrors only that player contract. There is no developer-export or save schema reuse.
 
 ```json
-{"api_version":2,"command":{"type":"place","programme":1,"start_tick":72,"advertiser":null}}
+{"api_version":3,"command":{"type":"place","programme":1,"start_tick":72,"advertiser":null}}
 ```
 
 | Command | Fields | Target |
@@ -258,12 +260,11 @@ reception sample. Shorter works permit more implicit ad opportunities per hour;
 this is not a balanced commercial-load model. Repetition-blind advertiser pricing,
 ordered payment-rounding bias and fixed fixture parameters remain provisional.
 
-Publication/listings promises, promotion, campaign shares/ad breaks, production,
+Publication/listings promises, promotion, campaign shares/ad breaks,
 research, broader society, save/load and continuous running time are deferred.
 There is a day view with seven-day navigation, not a separate weekly overview or
 a general schedule framework. History is in memory; advancement copies bounded
 state for atomicity. Chromium desktop/narrow-screen smoke tests are not full
 cross-browser, mobile-device or assistive-technology validation. No deployment
 is performed. Next UI work should use human planning sessions to improve the
-day/catalogue/details/results flow and clarify information sources before adding
-another workspace or more simulation systems.
+day/catalogue/details/results flow and clarify information sources alongside the bounded production workflow.

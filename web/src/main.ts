@@ -1,5 +1,6 @@
 import init, { WebSession, api_version } from '../pkg/bts_web.js';
 import type { Airing, Booking, BroadcastResult, Command, Programme, Report, Response } from './protocol';
+import { initialiseProduction } from './production';
 import './style.css';
 
 function element<T extends HTMLElement = HTMLElement>(id: string): T {
@@ -13,6 +14,7 @@ const status = element('status');
 const error = element('error');
 let session: WebSession;
 let report: Report;
+let productionUi: ReturnType<typeof initialiseProduction> | undefined;
 let selected: number | null = null;
 let libraryProgramme = 1;
 let viewedDay = 0;
@@ -57,7 +59,7 @@ function renderCatalogue(): void {
     const card = node('button', '', `catalogue-card${libraryProgramme === p.id ? ' chosen' : ''}`);
     card.dataset.programme = String(p.id); card.setAttribute('aria-pressed', String(libraryProgramme === p.id));
     const badge = node('span', p.genre.slice(0, 2).toUpperCase(), `genre-badge ${p.genre.toLowerCase()}`); badge.setAttribute('aria-hidden', 'true');
-    const title = node('span'); title.append(node('strong', p.name), node('small', `${p.genre} · ${p.kind}${p.episode ? ` ${p.episode}` : ''}`));
+    const title = node('span'); title.append(node('strong', p.name), node('small', p.production_id === null ? `${p.genre} · ${p.kind}${p.episode ? ` ${p.episode}` : ''}` : `Your original · discussion · #${p.production_id}`));
     const runtime = node('span', `${p.duration_minutes} min`, 'runtime'); runtime.append(node('small', `${money(p.broadcast_cost)} cr`));
     card.append(badge, title, runtime); card.addEventListener('click', () => { libraryProgramme = p.id; renderCatalogue(); }); list.append(card);
   }
@@ -134,7 +136,8 @@ function renderDetails(): void {
   element('selected-id').textContent = `AIRING #${a.airing_id} · ${own ? 'YOUR CHANNEL' : 'COMPETITOR'}`;
   element('selected-name').textContent = p.name; element('selected-window').textContent = `${windowText(a)} · ${p.duration_minutes} min`;
   element('selected-status').textContent = `${a.status.replace('_', ' ').toUpperCase()}${a.booked ? ' · BOOKED' : own && a.editable ? ' · INTERNAL DRAFT' : ''}`;
-  element('known-details').textContent = `${p.genre} · ${p.kind}${p.episode ? ` ${p.episode}` : ''} · tone ${p.tone} · awareness ${p.awareness} · cast appeal ${p.cast_appeal}. Cost per airing: ${money(p.broadcast_cost)} credits. Execution is unknown.`;
+  element('known-details').textContent = `${p.genre} · ${p.kind}${p.episode ? ` ${p.episode}` : ''} · tone ${p.tone.toFixed(2)} · awareness ${p.awareness.toFixed(2)} · cast appeal ${p.cast_appeal.toFixed(2)}. Cost per airing: ${money(p.broadcast_cost)} credits. Execution is unknown.`;
+  if (p.production_id !== null) element('known-details').append(document.createTextNode(` Your original interview/discussion, production #${p.production_id}.`));
   element<HTMLFieldSetElement>('edit-controls').disabled = !a.editable;
   select('move-day').value = String(Math.floor(a.start_tick / 96)); select('move-time').value = String(a.start_tick % 96);
   element('lock-note').textContent = !own ? 'The competitor schedule is read-only.' : a.booked ? 'Booking protected: programme, start, duration and advertiser are locked.' : !a.editable ? 'This airing has already started. Past and on-air broadcasts cannot be edited.' : 'Moving keeps this airing ID. Removal leaves an explicit off-air gap.';
@@ -171,9 +174,15 @@ function renderReports(): void {
     return [airingLink(r.airing_id, `#${r.airing_id} · ${programmeFor(a.programme).name}`), windowText(a), r.off_air ? 'Off air' : 'Completed', money(r.broadcast_cost), money(r.cash_after)];
   })));
   const summary = element('finance-summary'); summary.replaceChildren();
-  for (const [label, value] of [['Opening cash', report.finances.opening_cash], ['Broadcast costs', report.finances.costs_paid], ['Ad receipts', report.finances.revenue], ['Current cash', report.cash]]) { const stat = node('div', '', 'finance-stat'); stat.append(node('span', label), node('strong', money(value))); summary.append(stat); }
+  for (const [label, value] of [['Opening cash', report.finances.opening_cash], ['Broadcast costs', report.finances.costs_paid], ['Production committed', report.finances.production_committed], ['Ad receipts', report.finances.revenue], ['Current cash', report.cash]]) { const stat = node('div', '', 'finance-stat'); stat.append(node('span', label), node('strong', money(value))); summary.append(stat); }
+  summary.append(node('p', `Production budget remaining in escrow: ${money(report.finances.production_in_escrow)} · spent on recording: ${money(report.finances.production_spent)}. Reservation reduces cash once; spending transfers those reserved funds.`, 'production-reserve-note'));
   const ledger = element('ledger'); ledger.replaceChildren();
-  if (report.finances.ledger.length) ledger.append(table('Station ledger · exact integer credits', ['Time', 'Airing', 'Transaction', 'Credits'], report.finances.ledger.map(l => [stamp(l.tick), l.airing_id === null ? '—' : airingLink(l.airing_id, `#${l.airing_id}`), l.kind === 'broadcast_cost' ? 'Broadcast cost' : 'Advertising payment', money(l.amount)])));
+  if (report.finances.ledger.length) ledger.append(table('Station ledger · exact integer credits', ['Time', 'Airing / production', 'Transaction', 'Credits'], report.finances.ledger.map(l => {
+    const kinds: Record<string, string> = { broadcast_cost: 'Broadcast cost', advertising_payment: 'Advertising receipt', production_reserve: 'Production budget reserved (cash)', production_spend: 'Recording expense (from escrow)' };
+    let link: string | HTMLButtonElement = l.airing_id === null ? '—' : airingLink(l.airing_id, `Airing #${l.airing_id}`);
+    if (l.production_id !== null) { const id = l.production_id; link = node('button', `Production #${id}`, 'row-link'); link.addEventListener('click', () => productionUi?.showProject(id)); }
+    return [stamp(l.tick), link, kinds[l.kind] ?? l.kind, money(l.amount)];
+  })));
   else ledger.append(node('p', 'No station transactions yet. Advertiser escrow is separate from your station cash.', 'muted'));
 }
 function render(next: Report): void {
@@ -189,14 +198,14 @@ function render(next: Report): void {
   for (const id of ['advance-tick', 'advance-day', 'place']) button(id).disabled = report.now_tick >= report.end_tick;
   button('previous-day').disabled = viewedDay === 0; button('next-day').disabled = viewedDay === 6;
   element('reporting').textContent = report.reporting;
-  renderTimeline(); renderCatalogue(); renderDetails(); renderReports();
+  renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report);
 }
 function send(command: Command): void {
   try {
     const previousIds = report?.schedule.map(a => a.airing_id) ?? [];
-    const response: Response = JSON.parse(session.dispatch(JSON.stringify({ api_version: 2, command })));
+    const response: Response = JSON.parse(session.dispatch(JSON.stringify({ api_version: 3, command })));
     if (response.status === 'error') { error.textContent = `${response.error.code}: ${response.error.message}`; error.hidden = false; return; }
-    error.hidden = true;
+    error.hidden = true; productionUi?.commandSucceeded(command);
     if (command.type === 'place') {
       const created = response.report.schedule.find(a => !previousIds.includes(a.airing_id));
       if (created) { selected = created.airing_id; viewedDay = Math.floor(created.start_tick / 96); select('day').value = String(viewedDay); select('place-day').value = String(Math.min(6, Math.floor(created.end_tick / 96))); select('place-time').value = String(created.end_tick % 96); }
@@ -213,10 +222,17 @@ function jump(tickInDay: number): void {
 function dayChanged(): void { viewedDay = Number(select('day').value); button('previous-day').disabled = viewedDay === 0; button('next-day').disabled = viewedDay === 6; renderTimeline(); }
 async function start(): Promise<void> {
   try {
-    await init(); if (api_version() !== 2) throw new Error('Unsupported player protocol version');
+    await init(); if (api_version() !== 3) throw new Error('Unsupported player protocol version');
     for (const id of ['day', 'place-day', 'move-day']) select(id).replaceChildren(...Array.from({ length: 7 }, (_, i) => option(i, `Day ${i + 1}`)));
     for (const id of ['place-time', 'move-time']) select(id).replaceChildren(...Array.from({ length: 96 }, (_, i) => option(i, time(i))));
     select('place-time').value = '72';
+    productionUi = initialiseProduction({ report: () => report, send, stamp, money, showProgramme: id => {
+      libraryProgramme = id; select('genre-filter').value = 'all';
+      const planned = Number(select('place-day').value) * 96 + Number(select('place-time').value);
+      if (planned < report.now_tick) { select('place-day').value = String(Math.min(6, Math.floor(report.now_tick / 96))); select('place-time').value = String(report.now_tick % 96); }
+      renderCatalogue(); element('library-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.querySelector<HTMLElement>(`[data-programme="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } });
     session = new WebSession(); send({ type: 'inspect' });
     element('place-form').addEventListener('submit', event => { event.preventDefault(); send({ type: 'place', programme: libraryProgramme, start_tick: Number(select('place-day').value) * 96 + Number(select('place-time').value), advertiser: null }); });
     element('move').addEventListener('click', () => selectedCommand(a => ({ type: 'move', airing_id: a.airing_id, start_tick: Number(select('move-day').value) * 96 + Number(select('move-time').value) })));
@@ -234,7 +250,8 @@ async function start(): Promise<void> {
     element('next-day').addEventListener('click', () => { select('day').value = String(viewedDay + 1); dayChanged(); });
     element('jump-evening').addEventListener('click', () => jump(64)); element('jump-midnight').addEventListener('click', () => jump(0));
     element('jump-now').addEventListener('click', () => { select('day').value = String(Math.min(6, Math.floor(report.now_tick / 96))); dayChanged(); jump(Math.max(0, report.now_tick % 96 - 4)); });
-    element('controls').hidden = false; document.body.classList.add('ready'); status.textContent = 'RUST / WASM READY · PLAYER PROTOCOL 2 · ALL PLANS REMAIN INTERNAL DRAFTS';
+    document.querySelectorAll<HTMLAnchorElement>('.rail a').forEach(link => link.addEventListener('click', () => { document.querySelectorAll('.rail a').forEach(item => item.classList.toggle('active', item === link)); }));
+    element('controls').hidden = false; document.body.classList.add('ready'); status.textContent = 'RUST / WASM READY · PLAYER PROTOCOL 3 · ALL PLANS REMAIN INTERNAL DRAFTS';
     requestAnimationFrame(() => jump(64));
   } catch (failure) { status.textContent = 'WebAssembly initialization failed.'; error.textContent = `${String(failure)}. Reload to retry using the documented HTTP development server.`; error.hidden = false; }
 }

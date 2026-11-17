@@ -12,6 +12,7 @@
 //!                  ContractStatus::Settled(_)));
 //! # Ok::<(), bts_sim::Error>(())
 //! ```
+use crate::planning::production::ProductionId;
 use crate::*;
 
 /// Nonnegative integer credits. Configuration amounts are capped at 10^12.
@@ -199,6 +200,8 @@ pub enum Account {
     Escrow(ContractId),
     Station(StationId),
     BroadcastCosts,
+    ProductionEscrow(ProductionId),
+    ProductionCosts,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 pub enum LedgerReason {
@@ -206,6 +209,8 @@ pub enum LedgerReason {
     DeliveryPayment,
     UnderdeliveryRefund,
     BroadcastCost,
+    ProductionReserve,
+    ProductionSpend,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct LedgerEntry<T: Clock = SimHour> {
@@ -236,6 +241,8 @@ pub struct EconomyState<T: Clock = SimHour> {
     budgets: BTreeMap<BrandId, Money>,
     cash: BTreeMap<StationId, Money>,
     cost_sink: Money,
+    production_escrows: BTreeMap<ProductionId, Money>,
+    production_costs: Money,
     contracts: BTreeMap<ContractId, Contract<T>>,
     sold: BTreeMap<(T, StationId), ContractId>,
     ledger: Vec<LedgerEntry<T>>,
@@ -256,6 +263,8 @@ impl<T: Clock> EconomyState<T> {
                 .map(|s| (s.id, s.initial_cash))
                 .collect(),
             cost_sink: Money(0),
+            production_escrows: BTreeMap::new(),
+            production_costs: Money(0),
             contracts: BTreeMap::new(),
             sold: BTreeMap::new(),
             ledger: vec![],
@@ -271,6 +280,15 @@ impl<T: Clock> EconomyState<T> {
     }
     pub fn cost_sink(&self) -> Money {
         self.cost_sink
+    }
+    pub fn production_escrow(&self) -> u128 {
+        self.production_escrows
+            .values()
+            .map(|m| u128::from(m.0))
+            .sum()
+    }
+    pub fn production_costs(&self) -> Money {
+        self.production_costs
     }
     pub fn ledger(&self) -> &[LedgerEntry<T>] {
         &self.ledger
@@ -288,7 +306,7 @@ impl<T: Clock> EconomyState<T> {
             .map(|c| u128::from(c.offer.payment.0))
             .sum()
     }
-    /// Available budgets + station cash + escrow + broadcast-cost sink.
+    /// Available budgets + station cash + ad/production escrow + broadcast/production sinks.
     pub fn total_money(&self) -> u128 {
         self.budgets
             .values()
@@ -297,6 +315,63 @@ impl<T: Clock> EconomyState<T> {
             .sum::<u128>()
             + self.escrow()
             + u128::from(self.cost_sink.0)
+            + self.production_escrow()
+            + u128::from(self.production_costs.0)
+    }
+    pub(crate) fn reserve_production(
+        &mut self,
+        at: T,
+        station: StationId,
+        id: ProductionId,
+        amount: Money,
+    ) -> Result<(), Error> {
+        amount.validate()?;
+        if amount.0 == 0 || self.production_escrows.contains_key(&id) {
+            return Err(Error::Invalid(
+                "invalid or duplicate production reserve".into(),
+            ));
+        }
+        let cash = self
+            .cash
+            .get(&station)
+            .copied()
+            .ok_or_else(|| Error::Invalid("unknown production station".into()))?;
+        let mut next = self.clone();
+        next.cash.insert(station, cash.subtract(amount)?);
+        next.production_escrows.insert(id, amount);
+        next.transfer(
+            at,
+            Account::Station(station),
+            Account::ProductionEscrow(id),
+            amount,
+            LedgerReason::ProductionReserve,
+        );
+        next.advance_revision()?;
+        *self = next;
+        Ok(())
+    }
+    pub(crate) fn spend_production(&mut self, at: T, id: ProductionId) -> Result<(), Error> {
+        let amount = self
+            .production_escrows
+            .get(&id)
+            .copied()
+            .ok_or_else(|| Error::Invalid("unknown production escrow".into()))?;
+        if amount.0 == 0 {
+            return Err(Error::Invalid("production budget already spent".into()));
+        }
+        let mut next = self.clone();
+        next.production_escrows.insert(id, Money(0));
+        next.production_costs = next.production_costs.add(amount)?;
+        next.transfer(
+            at,
+            Account::ProductionEscrow(id),
+            Account::ProductionCosts,
+            amount,
+            LedgerReason::ProductionSpend,
+        );
+        next.advance_revision()?;
+        *self = next;
+        Ok(())
     }
     pub(crate) fn advance_revision(&mut self) -> Result<(), Error> {
         self.revision = self

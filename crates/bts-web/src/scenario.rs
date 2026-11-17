@@ -75,11 +75,14 @@ pub fn planner() -> Result<Planner, PlanError> {
             tick += duration;
         }
     }
-    Planner::new(
+    let mut planner = Planner::new(
         world,
         Parameters::default(),
         PLAYER,
         SimTick(END_TICK),
         &competitors,
-    )
+    )?;
+    let (roster, request) = bts_sim::planning::production::demo_roster();
+    planner.configure_production(roster, Some(request))?;
+    Ok(planner)
 }

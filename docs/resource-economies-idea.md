@@ -51,3 +51,8 @@ Open: how credibility is generated and spent, who recognises it, how corrections
 An anchor's requested tone change could earn sway while changing credibility or partisan backing. A director could request an expensive passion project that later competes for an award. The systems meet through production decisions while retaining distinct sources and timing.
 
 Next design step: work through one favour chain, one award cycle and one editorial tradeoff before choosing formulas, caps or UI counters. Do not implement all resources as interchangeable currencies by default.
+
+Implementation note: the [original-production experiment](original-production.md)
+records one named guest’s co-guest promise and one later personal favour call.
+It has no pooled Sway, fee discount or quality bonus and does not settle the broader
+resource design proposed here.

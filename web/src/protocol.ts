@@ -1,6 +1,10 @@
-// Player protocol v2. Rust DTOs are authoritative; no developer-export types are imported.
+// Player protocol v3. Rust DTOs are authoritative; no developer-export types are imported.
 export type Command =
   | { type: 'inspect' | 'reset' }
+  | { type: 'create_production'; concept: ProductionConcept }
+  | { type: 'revise_production'; production_id: number; concept: ProductionConcept }
+  | { type: 'discard_production'; production_id: number }
+  | { type: 'book_production'; production_id: number; promise_request: number | null; call_favour: number | null }
   | { type: 'place'; start_tick: number; programme: number; advertiser: number | null }
   | { type: 'move'; airing_id: number; start_tick: number }
   | { type: 'remove'; airing_id: number }
@@ -9,7 +13,7 @@ export type Command =
   | { type: 'accept_offer'; airing_id: number; offer_id: string }
   | { type: 'advance'; to_tick: number };
 export interface Programme {
-  id: number; name: string; genre: string; kind: string; series_name: string | null;
+  id: number; production_id: number | null; name: string; genre: string; kind: string; series_name: string | null;
   episode: number | null; tone: number; awareness: number; cast_appeal: number;
   broadcast_cost: string; duration_minutes: number;
 }
@@ -34,12 +38,31 @@ export interface BroadcastResult {
   audiences: { audience: string; population: number; player_viewers: number; rival_viewers: number; not_watching: number }[];
 }
 export interface Report {
+  production: ProductionView;
   reporting: string; now_tick: number; end_tick: number; tick_minutes: number; next_airing: number | null; active_airing: number | null; cash: string;
   stations: { id: number; name: string; is_player: boolean }[];
   gaps: { start_tick: number; end_tick: number }[];
-  finances: { opening_cash: string; costs_paid: string; revenue: string; ledger: { tick: number; airing_id: number | null; kind: string; amount: string }[] };
+  finances: { opening_cash: string; costs_paid: string; revenue: string; production_committed: string; production_in_escrow: string; production_spent: string; ledger: { production_id: number | null; tick: number; airing_id: number | null; kind: string; amount: string }[] };
   catalogue: Programme[]; advertisers: { id: number; name: string }[]; schedule: Airing[];
   offer: { offer_id: string; airing_id: number; start_tick: number; end_tick: number; advertiser: number; deadline_tick: number; maximum_payment: string; targets: Commitment[] } | null;
   contracts: Booking[]; results: BroadcastResult[];
 }
-export type Response = { status: 'ok'; api_version: 2; report: Report } | { status: 'error'; api_version: 2; error: { code: string; message: string } };
+export type Response = { status: 'ok'; api_version: 3; report: Report } | { status: 'error'; api_version: 3; error: { code: string; message: string } };
+
+export type Subject = 'science' | 'everyday_life' | 'entertainment';
+export type ProductionTone = 'calm' | 'conversational' | 'lively';
+export interface ProductionConcept {
+  title: string; host: number; guests: [number, number]; subject: Subject; tone: ProductionTone; budget: string; record_at: number;
+}
+export interface ProductionInfo extends ProductionConcept {
+  id: number; fees: string; recording_end: number; ready_at: number;
+  phase: 'draft' | 'booked' | 'recording' | 'post_production' | 'completed';
+  programme: number | null; booked_at: number | null; promised_request: number | null; called_favour: number | null;
+}
+export interface ProductionView {
+  format: string; duration_minutes: number; recording_ticks: number; post_ticks: number;
+  people: { id: number; name: string; role: 'host' | 'guest'; fee: string; description: string; normal_until_tick: number; favour_from_tick: number | null }[];
+  projects: ProductionInfo[];
+  request: { id: number; person: number; co_guest: number; statement: string; promise: { production_id: number; promised_at: number; fulfilled_at: number | null; earned_favour: number | null } | null } | null;
+  favours: { id: number; owed_by: number; earned_from: number; earned_at: number; called_for: number | null; called_at: number | null }[];
+}

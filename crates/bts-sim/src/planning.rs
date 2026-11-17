@@ -1,5 +1,7 @@
 //! Bounded duration-aware planning. See docs/programme-planning.md for provisional cadence.
 //! No presentation, player observations, filesystem or wall clock.
+pub mod production;
+
 use crate::economy::{ContractId, Offer};
 use crate::*;
 
@@ -77,6 +79,7 @@ pub struct Planner {
     airings: BTreeMap<AiringId, Airing>,
     next_id: u32,
     revision: u64,
+    production: production::ProductionState,
 }
 impl Planner {
     pub fn new(
@@ -102,6 +105,7 @@ impl Planner {
             airings: BTreeMap::new(),
             next_id: 1,
             revision: 0,
+            production: production::ProductionState::default(),
         };
         for c in competitors {
             if c.station == player
@@ -150,6 +154,7 @@ impl Planner {
     /// Reset uses this to avoid reusing removed player-airing identities.
     pub fn retain_id_floor(&mut self, other: &Self) {
         self.next_id = self.next_id.max(other.next_id);
+        self.production.retain_ids(&other.production);
     }
     fn bump(&mut self) -> Result<(), PlanError> {
         self.revision = self
@@ -165,6 +170,9 @@ impl Planner {
         start: SimTick,
         except: Option<AiringId>,
     ) -> Result<SimTick, PlanError> {
+        if self.production.unfinished_programme(programme) {
+            return Err(error("production_not_ready", "This original programme is not complete. Advance through post-production before scheduling it."));
+        }
         let programme = self
             .engine
             .world
@@ -402,6 +410,7 @@ impl Planner {
     }
     fn tick(&mut self) -> Result<SlotEvent<SimTick>, PlanError> {
         let start = self.now();
+        self.start_recordings(start)?;
         let (action, starts) = self.interval_action(start, None);
         let (mut next, mut event) = self
             .engine
@@ -497,6 +506,7 @@ impl Planner {
             self.airings.get_mut(&airing.id).unwrap().result = result;
         }
         self.engine.state = completed_state;
+        self.finish_productions(action.at)?;
         Ok(event)
     }
 }

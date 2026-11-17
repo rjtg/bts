@@ -8,7 +8,7 @@ Publication is disabled and licensing is unchanged.
 
 - Native: `Session::new()`, `execute(Command)`, `dispatch_json(&str)`, `report()`.
 - Wasm: `new WebSession()`, `session.dispatch(json)`, `session.free()`, `api_version()`.
-- Protocol v2: strict typed commands, structured errors, whitelisted reports.
+- Protocol v3: strict typed commands, structured errors, whitelisted reports.
 - Monetary values, contract IDs and integer delivery units are decimal strings.
 - Rejected commands are atomic; accepted bookings lock the airing, and all commands identify it explicitly.
 
@@ -20,8 +20,12 @@ See [`protocol.rs`](src/protocol.rs) for the authoritative DTOs.
 cargo test -p bts-web
 cargo run -p bts-web --example protocol_fixture
 cargo run -p bts-web --example planning_evening
+cargo run -p bts-web --example production_experiment
 ```
 
 The examples provide native parity and evening-workflow evidence, not a save or
 simulation developer-export protocol. No developer inspector is exposed to JS.
 Client-side observation filtering is not a security guarantee.
+
+[Original production](../../docs/original-production.md) documents the studio commands,
+budget escrow, talent commitments, hidden qualities and one personal favour.

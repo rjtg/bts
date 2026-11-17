@@ -1,7 +1,8 @@
-//! Player protocol v2. These whitelisted DTOs deliberately do not serialize engine evidence.
+//! Player protocol v3. These whitelisted DTOs deliberately do not serialize engine evidence.
+use bts_sim::planning::production::{Subject, Tone};
 use serde::{Deserialize, Serialize};
 
-pub const API_VERSION: u32 = 2;
+pub const API_VERSION: u32 = 3;
 pub const REPORTING: &str = "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. One ad exposure opportunity per airing; delivery units are millionths of a relevant impression.";
 
 #[derive(Clone, Debug, Deserialize)]
@@ -15,6 +16,21 @@ pub struct Request {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Command {
     Inspect {},
+    CreateProduction {
+        concept: ProductionConceptInput,
+    },
+    ReviseProduction {
+        production_id: u32,
+        concept: ProductionConceptInput,
+    },
+    DiscardProduction {
+        production_id: u32,
+    },
+    BookProduction {
+        production_id: u32,
+        promise_request: Option<u16>,
+        call_favour: Option<u32>,
+    },
     Place {
         start_tick: u32,
         programme: u16,
@@ -82,6 +98,7 @@ pub struct PlayerReport {
     pub gaps: Vec<Gap>,
     pub finances: Finances,
     pub cash: String,
+    pub production: ProductionView,
     pub catalogue: Vec<CatalogueEntry>,
     pub advertisers: Vec<Advertiser>,
     pub schedule: Vec<ScheduleEntry>,
@@ -91,6 +108,7 @@ pub struct PlayerReport {
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct CatalogueEntry {
+    pub production_id: Option<u32>,
     pub id: u16,
     pub name: String,
     pub genre: String,
@@ -136,10 +154,14 @@ pub struct Finances {
     pub opening_cash: String,
     pub costs_paid: String,
     pub revenue: String,
+    pub production_committed: String,
+    pub production_in_escrow: String,
+    pub production_spent: String,
     pub ledger: Vec<FinancialLine>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct FinancialLine {
+    pub production_id: Option<u32>,
     pub tick: u32,
     pub airing_id: Option<u32>,
     pub kind: &'static str,
@@ -208,4 +230,80 @@ pub struct AudienceReport {
     pub player_viewers: f64,
     pub rival_viewers: f64,
     pub not_watching: f64,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProductionConceptInput {
+    pub title: String,
+    pub host: u16,
+    pub guests: [u16; 2],
+    pub subject: Subject,
+    pub tone: Tone,
+    pub budget: String,
+    pub record_at: u32,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct ProductionView {
+    pub format: &'static str,
+    pub duration_minutes: u16,
+    pub recording_ticks: u32,
+    pub post_ticks: u32,
+    pub people: Vec<PersonInfo>,
+    pub projects: Vec<ProductionInfo>,
+    pub request: Option<RequestInfo>,
+    pub favours: Vec<FavourInfo>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct PersonInfo {
+    pub id: u16,
+    pub name: String,
+    pub role: &'static str,
+    pub fee: String,
+    pub description: String,
+    pub normal_until_tick: u32,
+    pub favour_from_tick: Option<u32>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct ProductionInfo {
+    pub id: u32,
+    pub title: String,
+    pub host: u16,
+    pub guests: [u16; 2],
+    pub subject: Subject,
+    pub tone: Tone,
+    pub budget: String,
+    pub fees: String,
+    pub record_at: u32,
+    pub recording_end: u32,
+    pub ready_at: u32,
+    pub phase: &'static str,
+    pub programme: Option<u16>,
+    pub booked_at: Option<u32>,
+    pub promised_request: Option<u16>,
+    pub called_favour: Option<u32>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct RequestInfo {
+    pub id: u16,
+    pub person: u16,
+    pub co_guest: u16,
+    pub statement: String,
+    pub promise: Option<PromiseInfo>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct PromiseInfo {
+    pub production_id: u32,
+    pub promised_at: u32,
+    pub fulfilled_at: Option<u32>,
+    pub earned_favour: Option<u32>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct FavourInfo {
+    pub id: u32,
+    pub owed_by: u16,
+    pub earned_from: u32,
+    pub earned_at: u32,
+    pub called_for: Option<u32>,
+    pub called_at: Option<u32>,
 }

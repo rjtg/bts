@@ -4,6 +4,7 @@ pub mod protocol;
 pub mod scenario;
 
 use bts_sim::economy::{Account, AudienceCommitment, Contract, ContractStatus, LedgerReason};
+use bts_sim::planning::production::{Concept, FavourId, PersonId, ProductionId, RequestId, Role};
 use bts_sim::planning::{AiringId, PlanError, Planner, PlanningOffer};
 use bts_sim::{BrandId, ProgrammeId, SimTick};
 use protocol::*;
@@ -68,7 +69,7 @@ impl Session {
             )),
             Ok(request) if request.api_version != API_VERSION => Err(PlayerError::new(
                 "unsupported_version",
-                "This adapter supports api_version 2.",
+                "This adapter supports api_version 3.",
             )),
             Ok(request) => self.execute(request.command),
         };
@@ -87,6 +88,34 @@ impl Session {
     fn apply(&mut self, command: Command) -> Result<(), PlayerError> {
         match command {
             Command::Inspect {} => return Ok(()),
+            Command::CreateProduction { concept } => {
+                self.planner
+                    .create_production(concept_input(concept)?)
+                    .map_err(player_error)?;
+            }
+            Command::ReviseProduction {
+                production_id,
+                concept,
+            } => self
+                .planner
+                .revise_production(ProductionId(production_id), concept_input(concept)?)
+                .map_err(player_error)?,
+            Command::DiscardProduction { production_id } => self
+                .planner
+                .discard_production(ProductionId(production_id))
+                .map_err(player_error)?,
+            Command::BookProduction {
+                production_id,
+                promise_request,
+                call_favour,
+            } => self
+                .planner
+                .book_production(
+                    ProductionId(production_id),
+                    promise_request.map(RequestId),
+                    call_favour.map(FavourId),
+                )
+                .map_err(player_error)?,
             Command::Reset {} => {
                 let mut fresh = scenario::planner().map_err(player_error)?;
                 fresh.retain_id_floor(&self.planner);
@@ -230,6 +259,74 @@ impl Session {
             settlement,
         }
     }
+    fn production_view(&self) -> ProductionView {
+        let state = self.planner.production();
+        ProductionView {
+            format: "standalone_interview_discussion",
+            duration_minutes: 45,
+            recording_ticks: 4,
+            post_ticks: 8,
+            people: state
+                .roster()
+                .map(|p| PersonInfo {
+                    id: p.id.0,
+                    name: p.name.clone(),
+                    role: match p.role {
+                        Role::Host => "host",
+                        Role::Guest => "guest",
+                    },
+                    fee: p.fee.0.to_string(),
+                    description: p.description.clone(),
+                    normal_until_tick: p.normal_until.0,
+                    favour_from_tick: p.favour_from.map(|t| t.0),
+                })
+                .collect(),
+            projects: state
+                .projects()
+                .map(|p| ProductionInfo {
+                    id: p.id.0,
+                    title: p.concept.title.clone(),
+                    host: p.concept.host.0,
+                    guests: p.concept.guests.map(|g| g.0),
+                    subject: p.concept.subject,
+                    tone: p.concept.tone,
+                    budget: p.concept.budget.0.to_string(),
+                    fees: p.fees.0.to_string(),
+                    record_at: p.concept.record_at.0,
+                    recording_end: p.recording_end.0,
+                    ready_at: p.ready_at.0,
+                    phase: p.phase.label(),
+                    programme: p.programme.map(|id| id.0),
+                    booked_at: p.booked_at.map(|t| t.0),
+                    promised_request: p.promised_request.map(|id| id.0),
+                    called_favour: p.called_favour.map(|id| id.0),
+                })
+                .collect(),
+            request: state.request().map(|r| RequestInfo {
+                id: r.id.0,
+                person: r.person.0,
+                co_guest: r.co_guest.0,
+                statement: r.statement.clone(),
+                promise: r.promise.as_ref().map(|p| PromiseInfo {
+                    production_id: p.production.0,
+                    promised_at: p.promised_at.0,
+                    fulfilled_at: p.fulfilled_at.map(|t| t.0),
+                    earned_favour: p.earned_favour.map(|id| id.0),
+                }),
+            }),
+            favours: state
+                .favours()
+                .map(|f| FavourInfo {
+                    id: f.id.0,
+                    owed_by: f.owed_by.0,
+                    earned_from: f.earned_from.0,
+                    earned_at: f.earned_at.0,
+                    called_for: f.called_for.map(|id| id.0),
+                    called_at: f.called_at.map(|t| t.0),
+                })
+                .collect(),
+        }
+    }
     pub fn report(&self) -> PlayerReport {
         let world = self.planner.world();
         let now = self.planner.now().0;
@@ -291,7 +388,11 @@ impl Session {
         let ledger = economy
             .ledger()
             .iter()
-            .filter(|l| l.from == Account::Station(PLAYER) || l.to == Account::Station(PLAYER))
+            .filter(|l| {
+                l.from == Account::Station(PLAYER)
+                    || l.to == Account::Station(PLAYER)
+                    || matches!(l.from, Account::ProductionEscrow(_))
+            })
             .map(|l| {
                 let airing = match l.reason {
                     LedgerReason::BroadcastCost => self
@@ -306,12 +407,19 @@ impl Session {
                     },
                 };
                 FinancialLine {
+                    production_id: match (l.from, l.to) {
+                        (Account::ProductionEscrow(id), _) | (_, Account::ProductionEscrow(id)) => {
+                            Some(id.0)
+                        }
+                        _ => None,
+                    },
                     tick: l.at.0,
                     airing_id: airing.map(|a| a.id.0),
-                    kind: if l.reason == LedgerReason::BroadcastCost {
-                        "broadcast_cost"
-                    } else {
-                        "advertising_payment"
+                    kind: match l.reason {
+                        LedgerReason::BroadcastCost => "broadcast_cost",
+                        LedgerReason::ProductionReserve => "production_reserve",
+                        LedgerReason::ProductionSpend => "production_spend",
+                        _ => "advertising_payment",
                     },
                     amount: l.amount.0.to_string(),
                 }
@@ -320,7 +428,9 @@ impl Session {
         let costs_paid = economy
             .ledger()
             .iter()
-            .filter(|l| l.from == Account::Station(PLAYER))
+            .filter(|l| {
+                l.from == Account::Station(PLAYER) && l.reason == LedgerReason::BroadcastCost
+            })
             .map(|l| u128::from(l.amount.0))
             .sum::<u128>()
             .to_string();
@@ -383,6 +493,7 @@ impl Session {
             next_airing,
             active_airing,
             cash: economy.cash(PLAYER).unwrap().0.to_string(),
+            production: self.production_view(),
             finances: Finances {
                 opening_cash: world
                     .stations
@@ -394,6 +505,18 @@ impl Session {
                     .to_string(),
                 costs_paid,
                 revenue,
+                production_committed: economy
+                    .ledger()
+                    .iter()
+                    .filter(|l| {
+                        l.from == Account::Station(PLAYER)
+                            && l.reason == LedgerReason::ProductionReserve
+                    })
+                    .map(|l| u128::from(l.amount.0))
+                    .sum::<u128>()
+                    .to_string(),
+                production_in_escrow: economy.production_escrow().to_string(),
+                production_spent: economy.production_costs().0.to_string(),
                 ledger,
             },
             stations: world
@@ -410,6 +533,12 @@ impl Session {
                 .programmes
                 .iter()
                 .map(|p| CatalogueEntry {
+                    production_id: self
+                        .planner
+                        .production()
+                        .projects()
+                        .find(|project| project.programme == Some(p.id))
+                        .map(|project| project.id.0),
                     id: p.id.0,
                     name: p.name.clone(),
                     genre: format!("{:?}", p.genre),
@@ -494,3 +623,27 @@ mod wasm {
 }
 #[cfg(test)]
 mod tests;
+
+fn concept_input(input: ProductionConceptInput) -> Result<Concept, PlayerError> {
+    if input.budget.is_empty() || !input.budget.bytes().all(|b| b.is_ascii_digit()) {
+        return Err(PlayerError::new(
+            "invalid_budget",
+            "Use a decimal string of integer credits for the budget.",
+        ));
+    }
+    let budget = input.budget.parse::<u64>().map_err(|_| {
+        PlayerError::new(
+            "invalid_budget",
+            "Budget is outside the supported integer range.",
+        )
+    })?;
+    Ok(Concept {
+        title: input.title,
+        host: PersonId(input.host),
+        guests: input.guests.map(PersonId),
+        subject: input.subject,
+        tone: input.tone,
+        budget: bts_sim::economy::Money(budget),
+        record_at: SimTick(input.record_at),
+    })
+}

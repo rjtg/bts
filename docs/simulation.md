@@ -74,7 +74,12 @@ Begin with a small inspectable rule set. Avoid a separate rule for every combina
 
 Purpose: let the player make informed creative and resource commitments.
 
-Concept → development → optional pilot → production → broadcast → renewal, revision, or cancellation.
+Proposed broader workflow: concept → development → optional pilot → production → broadcast → renewal, revision, or cancellation.
+
+Implemented subset: [one standalone discussion format](original-production.md),
+with free concept drafts, fixed recording/post-production time, paid talent
+commitments, completed library works and one explicit person-specific favour.
+Recurring editions, pilots, careers and general relationship effects remain proposals.
 
 A project specifies intended format, themes, tone, ambition, people, budget allocation, time, and production demands. Role-specific craft, task fit, relationships, and resources affect different execution dimensions.
 

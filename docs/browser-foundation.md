@@ -4,14 +4,15 @@ Status: implemented. The browser is the intended primary player interface;
 the CLI remains a developer tool. The first fourteen-slot integration harness
 has been replaced by the [programme-planning workspace](programme-planning.md).
 That specification documents the current seven-day scenario, explicit runtimes,
-15-minute ticks, processing cadence, protocol v2, observation boundary and tests.
-The original protocol v1 is no longer supported.
+15-minute ticks, processing cadence and observation boundary. [Original production](original-production.md)
+adds the bounded studio workflow and current protocol v3. Protocols v1/v2 are
+no longer supported.
 
 ## Architecture
 
 `bts-fuzzy` remains independent, dependency-free and extractable. `bts-sim`
 owns the typed-clock engine, planner, fuzzy models, exact integer accounts,
-quotes, audience-specific commitments, deadlines, off-air handling and causal
+recording commitments, production escrow, quotes, audience-specific commitments, deadlines, off-air handling and causal
 evidence. The old whole-hour CLI experiments still run on the same engine.
 No filesystem, terminal, browser, wall-clock or external-service dependencies
 enter the simulation.
@@ -19,7 +20,7 @@ enter the simulation.
 `bts-web::Session` owns one Rust planner/simulation per game session. It exposes
 `new`, `execute(Command)`, `dispatch_json(&str)` and `report()`. The wasm-bindgen
 ABI provides `new WebSession()`, `session.dispatch(json)`, `session.free()` and
-`api_version()` (2). Clone/apply/observe/commit keeps rejected commands atomic.
+`api_version()` (3). Clone/apply/observe/commit keeps rejected commands atomic.
 TypeScript owns controls and formatting, not simulation or accounting.
 
 Player observations are constructed from a whitelist, separately from developer
@@ -73,8 +74,13 @@ artifacts are ignored; Cargo.lock and package-lock.json are committed.
 
 CI retains native tests/doctests, formatting, Clippy, docs, original examples,
 all CLI exports and the copied standalone fuzzy checks. It builds all three
-libraries for Wasm, runs the planning example, and builds/tests/uploads a static
+libraries for Wasm, runs the planning and production examples, and builds/tests/uploads a static
 browser bundle. Uploading a bundle is not deploying it. The committed
 [planning evidence](../contrib/programme-planning/README.md) records actual
 local results; the [planning specification](programme-planning.md) distinguishes
 implemented behaviour from remaining proposals and limitations.
+
+The [production evidence](../contrib/original-production/README.md) includes actual
+Chromium workflow/native parity results and controlled public-report comparisons.
+Production observations disclose choices, fees, reservations, progress and personal
+promises, but exclude precise talent craft/fit and generated execution.

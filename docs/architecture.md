@@ -97,8 +97,8 @@ airing identity, processing cadence, browser/native parity evidence and limitati
 adapter or browser dependencies. Native and standalone checks remain, alongside
 Wasm target and browser smoke checks.
 
-Production, full season play, research, save/load and the full game interface
-remain unimplemented. A larger UI framework and save format remain open.
+Full season play, research, save/load and the full game interface remain
+unimplemented; original production is now a bounded standalone discussion experiment. A larger UI framework and save format remain open.
 
 
 ## Duration-aware browser planning
@@ -111,7 +111,7 @@ a tick planner, rather than pretending tick indices are hours or duplicating
 settlement in JavaScript. Generic accounting preserves the same audience-specific
 escrow, rounding and refund code for both modes. Publication/licensing are unchanged.
 
-Player protocol v2 replaces slot indices with airing IDs and explicit tick
+The planning milestone’s protocol v2 replaced slot indices with airing IDs and explicit tick
 boundaries. New starts pay once and generate one sampled ad opportunity; runtime
 occupies airtime, completion applies reception once, and every intervening tick
 advances decay/deadlines. Continuations compete without repeating costs or exposure.
@@ -120,4 +120,23 @@ The [planning specification](programme-planning.md) documents the exact update
 order, completion cap, forecast limitations and remaining commercial incentives.
 The browser workspace follows the [planning mockup](mockups/programme-planning.png)
 with a day timeline, competitor lane, catalogue and linked details/results/finances.
-It adds no publication, promotion, campaign shares, production or research.
+That milestone added no publication, promotion, campaign shares or research.
+
+
+## Bounded original production
+
+Implemented in `bts-sim::planning::production`: typed people/projects/requests/favours,
+participant intervals, immutable booked concepts and deterministic completion.
+`EconomyState` owns separate production escrow and expense accounts. Drafting is
+free; booking reserves the entire integer budget; recording spends it once.
+The planner processes recording boundaries during ordinary tick advancement,
+then inserts each completed standalone programme once, with audience familiarity
+initialised to zero. Originals use the existing pricing/broadcast/reception path.
+
+The adapter’s protocol **v3** adds explicit concept/book/revise/discard commands
+and whitelisted production observations, independently of developer JSON. Exact
+craft, subject fit and resulting execution remain internal. The TypeScript studio
+module renders choices/status and dispatches Rust commands; it calculates no
+quality, commitments or money. One recorded person-specific promise/reward/call
+experiment does not establish a general relationship or pooled Sway system.
+See [production semantics](original-production.md) for equations and limitations.

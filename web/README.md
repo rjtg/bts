@@ -1,6 +1,6 @@
 # Browser programme-planning workspace
 
-Retro TypeScript/HTML/CSS timeline, catalogue and airing details over the Rust `bts-web` adapter.
+Retro TypeScript/HTML/CSS timeline, original-production desk, catalogue and airing details over the Rust `bts-web` adapter.
 No simulation, pricing or accounting logic is implemented in JavaScript.
 
 See [browser foundation](../docs/browser-foundation.md) for prerequisites,
@@ -32,3 +32,7 @@ See [programme planning](../docs/programme-planning.md) for controls, stable
 airing IDs, quarter-hour cadence, provisional reporting and implemented limits.
 From the root, use `npm --prefix web run preview -- --host 0.0.0.0` to listen
 on all interfaces. All changes remain in memory until reset/reload.
+
+The **Production** desk supports free drafts, participant booking, explicit personal
+promises/favours, timed completion and handoff to the programme library. See
+[original production](../docs/original-production.md) for the bounded rules.

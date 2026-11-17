@@ -299,10 +299,10 @@ fn malformed_commands_preserve_the_pending_quote_and_useful_errors() {
     for invalid in [
         "{}",
         "not json",
-        r#"{"api_version":2,"command":{"type":"advance","to_tick":80,"extra":true}}"#,
-        r#"{"api_version":2,"command":{"type":"place","start_tick":-1,"programme":1}}"#,
-        r#"{"api_version":2,"command":{"type":"place","start_tick":1.5,"programme":1}}"#,
-        r#"{"api_version":2,"command":{"type":"remove","airing_id":4294967296}}"#,
+        r#"{"api_version":3,"command":{"type":"advance","to_tick":80,"extra":true}}"#,
+        r#"{"api_version":3,"command":{"type":"place","start_tick":-1,"programme":1}}"#,
+        r#"{"api_version":3,"command":{"type":"place","start_tick":1.5,"programme":1}}"#,
+        r#"{"api_version":3,"command":{"type":"remove","airing_id":4294967296}}"#,
     ] {
         let before = s.report();
         let response: Value = serde_json::from_str(&s.dispatch_json(invalid)).unwrap();
@@ -328,6 +328,11 @@ fn audit(value: &Value) {
                 assert!(
                     ![
                         "execution",
+                        "craft",
+                        "subject_fit",
+                        "preferred_tone",
+                        "recognition",
+                        "output",
                         "genre_tastes",
                         "preferred_tone",
                         "availability",
@@ -358,6 +363,12 @@ fn audit(value: &Value) {
                     "cash",
                     "cash_after",
                     "opening_cash",
+                    "budget",
+                    "fees",
+                    "fee",
+                    "production_committed",
+                    "production_in_escrow",
+                    "production_spent",
                     "costs_paid",
                     "revenue",
                     "amount",
@@ -468,4 +479,149 @@ fn an_unpayable_quote_does_not_replace_a_valid_pending_offer() {
         offer_id: token,
     })
     .unwrap();
+}
+
+fn production_concept() -> ProductionConceptInput {
+    ProductionConceptInput {
+        title: "Workshop Conversations".into(),
+        host: 1,
+        guests: [3, 4],
+        subject: bts_sim::planning::production::Subject::Science,
+        tone: bts_sim::planning::production::Tone::Calm,
+        budget: "1000".into(),
+        record_at: 40,
+    }
+}
+#[test]
+fn production_reports_remain_whitelisted_and_money_is_not_charged_twice() {
+    let mut s = Session::new().unwrap();
+    let report = s
+        .execute(Command::CreateProduction {
+            concept: production_concept(),
+        })
+        .unwrap();
+    let id = report.production.projects[0].id;
+    assert_eq!(report.cash, "20000");
+    let booked = s
+        .execute(Command::BookProduction {
+            production_id: id,
+            promise_request: Some(1),
+            call_favour: None,
+        })
+        .unwrap();
+    let work = booked.production.projects[0].programme.unwrap();
+    assert_eq!(booked.cash, "19000");
+    assert_eq!(booked.finances.production_in_escrow, "1000");
+    audit(&serde_json::to_value(booked).unwrap());
+    reject(
+        &mut s,
+        Command::Place {
+            programme: work,
+            start_tick: 72,
+            advertiser: None,
+        },
+        "production_not_ready",
+    );
+    let recorded = s.execute(Command::Advance { to_tick: 44 }).unwrap();
+    assert_eq!(recorded.cash, "19000");
+    assert_eq!(recorded.finances.production_spent, "1000");
+    assert_eq!(recorded.finances.production_in_escrow, "0");
+    assert_eq!(recorded.production.favours.len(), 1);
+    audit(&serde_json::to_value(recorded).unwrap());
+    let ready = s.execute(Command::Advance { to_tick: 52 }).unwrap();
+    assert!(ready
+        .catalogue
+        .iter()
+        .any(|p| p.id == work && p.production_id == Some(id)));
+    audit(&serde_json::to_value(ready).unwrap());
+    let airing = place(&mut s, work, 72, Some(2));
+    let token = quote(&mut s, airing);
+    s.execute(Command::AcceptOffer {
+        airing_id: airing,
+        offer_id: token,
+    })
+    .unwrap();
+    let report = s.execute(Command::Advance { to_tick: 75 }).unwrap();
+    audit(&serde_json::to_value(&report).unwrap());
+    assert_eq!(report.finances.costs_paid, "50");
+    assert_eq!(report.finances.production_committed, "1000");
+    assert_eq!(report.finances.production_spent, "1000");
+    assert_eq!(
+        report.cash.parse::<u64>().unwrap(),
+        20000 + report.finances.revenue.parse::<u64>().unwrap() - 1050
+    );
+    assert!(report
+        .finances
+        .ledger
+        .iter()
+        .any(|l| l.production_id == Some(id) && l.kind == "production_spend"));
+}
+#[test]
+fn production_invalid_commands_reset_ids_and_personal_favour_isolation() {
+    let mut a = Session::new().unwrap();
+    let mut b = Session::new().unwrap();
+    let id = a
+        .execute(Command::CreateProduction {
+            concept: production_concept(),
+        })
+        .unwrap()
+        .production
+        .projects[0]
+        .id;
+    a.execute(Command::BookProduction {
+        production_id: id,
+        promise_request: Some(1),
+        call_favour: None,
+    })
+    .unwrap();
+    a.execute(Command::Advance { to_tick: 52 }).unwrap();
+    assert!(b.report().production.projects.is_empty());
+    assert!(b.report().production.favours.is_empty());
+    reject(
+        &mut b,
+        Command::BookProduction {
+            production_id: id,
+            promise_request: None,
+            call_favour: Some(1),
+        },
+        "unknown_production",
+    );
+    a.execute(Command::Reset {}).unwrap();
+    assert!(a.report().production.projects.is_empty());
+    assert!(a.report().production.favours.is_empty());
+    assert_eq!(a.report().cash, "20000");
+    let next = a
+        .execute(Command::CreateProduction {
+            concept: production_concept(),
+        })
+        .unwrap()
+        .production
+        .projects[0]
+        .id;
+    assert_ne!(id, next);
+    reject(
+        &mut a,
+        Command::BookProduction {
+            production_id: id,
+            promise_request: Some(1),
+            call_favour: None,
+        },
+        "unknown_production",
+    );
+    for json in [
+        r#"{"api_version":3,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":9007199254740993,"record_at":40}}}"#,
+        r#"{"api_version":3,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"unknown","tone":"calm","budget":"1000","record_at":40}}}"#,
+    ] {
+        let before = a.report();
+        let response: Value = serde_json::from_str(&a.dispatch_json(json)).unwrap();
+        assert_eq!(response["error"]["code"], "malformed_command");
+        assert_eq!(before, a.report());
+    }
+    let mut bad = production_concept();
+    bad.budget = "18446744073709551616".into();
+    reject(
+        &mut a,
+        Command::CreateProduction { concept: bad },
+        "invalid_budget",
+    );
 }
