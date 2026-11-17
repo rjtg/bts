@@ -1,6 +1,11 @@
 # Advertiser-funded experiment snapshot
 
-Current schema-2 comparisons on Rust/Cargo 1.98.1. All costs, rates and models
+Historical schema-2 comparisons from commit `9f10d5f` (brand-wide valuation).
+Current code uses audience-specific valuation and schema 3. Reproduce these
+exact artifacts at that commit; the command below emits current results on
+current code. See `contrib/advertiser-value` for the new matched controls.
+
+Schema-2 comparisons on Rust/Cargo 1.98.1. All costs, rates and models
 are provisional. Reports expose actual developer-only information.
 
 - `summary.txt`: readable output of all four economy cases.

@@ -4,7 +4,7 @@ use bts_sim::{
 };
 use std::{env, error::Error, fs, path::PathBuf};
 
-const HELP: &str = "Usage: bts-cli demo [--case all|broad|targeted|disappointing] [--json PATH] [--trace]\n       bts-cli economy [--case all|mass-broad|mass-targeted|specialist-broad|specialist-targeted] [--json PATH] [--trace]\n\nDeterministic developer experiments. JSON includes inputs, traces and economy accounts.\nCounts are viewer-slot impressions, not cumulative unique reach.";
+const HELP: &str = "Usage: bts-cli demo [--case all|broad|targeted|disappointing] [--json PATH] [--trace]\n       bts-cli economy [--case all|mass-broad|mass-targeted|specialist-broad|specialist-targeted] [--json PATH] [--trace]\n       bts-cli advertiser-value [--json PATH] [--trace]\n\nDeterministic developer experiments. JSON includes inputs, traces and economy accounts.\nCounts are viewer-slot impressions, not cumulative unique reach.";
 
 fn summary(report: &DeveloperReport) {
     println!("\n{} (identical initial state and competitor)", report.case);
@@ -56,7 +56,22 @@ fn summary(report: &DeveloperReport) {
 }
 fn trace(report: &DeveloperReport) {
     for slot in &report.slots {
-        println!("  Hour {} (+{}h)", slot.action.at.0, slot.elapsed_hours);
+        println!(
+            "  Hour {} (+{}h): planned {}, aired {}",
+            slot.action.at.0,
+            slot.elapsed_hours,
+            slot.action.broadcasts.len(),
+            slot.aired.broadcasts.len()
+        );
+        for off in &slot.off_air {
+            println!(
+                "    Off air {:?}: cash {}, required {}, programme {:?}",
+                off.planned.station,
+                off.available_cash.0,
+                off.required_cost.0,
+                off.planned.programme
+            );
+        }
         for audience in &slot.allocations {
             println!(
                 "    {:?}: available {:.1}, not watching {:.1}",
@@ -91,13 +106,14 @@ fn trace(report: &DeveloperReport) {
 }
 fn run() -> Result<(), Box<dyn Error>> {
     let mut args = env::args().skip(1);
-    let economy = match args.next().as_deref() {
+    let command = match args.next().as_deref() {
         Some("--help" | "-h") => {
             println!("{HELP}");
             return Ok(());
         }
-        Some("demo") => false,
-        Some("economy") => true,
+        Some("demo") => "demo",
+        Some("economy") => "economy",
+        Some("advertiser-value") => "advertiser-value",
         _ => return Err(HELP.into()),
     };
     let mut selection = "all".to_string();
@@ -115,7 +131,45 @@ fn run() -> Result<(), Box<dyn Error>> {
             _ => return Err(format!("unknown argument {arg:?}\n{HELP}").into()),
         }
     }
-    if economy {
+    if command == "advertiser-value" {
+        if selection != "all" {
+            return Err("advertiser-value runs all matched controls; omit --case".into());
+        }
+        let cases = bts_sim::advertiser_value::run()?;
+        let reports = cases
+            .iter()
+            .map(developer::advertiser_value_report)
+            .collect::<Vec<_>>();
+        println!("Developer advertiser-value counterfactuals: same viewing conditions, nonbinding caps.\ncase | relevant delivery | value-weighted delivery | credits | campaign hype | credits/hype");
+        for report in &reports {
+            println!(
+                "{} | {:.2} | {:.2} | {} | {:.4} | {:.2}",
+                report.case,
+                report.offer.forecast_relevant_delivery,
+                report.offer.value_weighted_delivery,
+                report.payment.0,
+                report.campaign_generated_hype,
+                report.credits_per_hype_point.unwrap_or(0.0)
+            );
+            println!(
+                "  Post-campaign demand {:.4}; next unaccepted quote {} credits",
+                report.post_campaign_demand.pressure, report.next_quote.payment.0
+            );
+            if verbose {
+                println!(
+                    "  Quote {:?}\n  Aired {:?}\n  Hype {:?}\n  Ledger {:?}",
+                    report.offer, report.slot.aired, report.slot.hype, report.ledger
+                );
+            }
+        }
+        println!("Repetition is not directly priced: matched hype/delivery can earn equal payment for less hype gain.\nLow hype preserves willingness per relevant impression; weak creative also reduces payable delivery.\nNo optimal strategy or economic balance is established by these fixed controls.");
+        if let Some(path) = json {
+            fs::write(&path, serde_json::to_vec_pretty(&reports)?)?;
+            println!("Wrote developer JSON to {}", path.display());
+        }
+        return Ok(());
+    }
+    if command == "economy" {
         use bts_sim::economy_demo;
         let cases: Vec<_> = economy_demo::Case::ALL
             .into_iter()
@@ -172,6 +226,7 @@ fn run() -> Result<(), Box<dyn Error>> {
             if verbose {
                 trace(&report.broadcasts);
                 for offer in &report.offers {
+                    println!("  Audience valuation {:?}", offer.valuation);
                     println!(
                         "  Quote hour {}: demand {:?}, price {:.3} -> {} credits",
                         offer.proposal.at.0, offer.demand, offer.uncapped_price, offer.payment.0

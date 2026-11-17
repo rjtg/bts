@@ -149,6 +149,8 @@ pub struct HypeReport {
 #[derive(Clone, Debug, Serialize)]
 pub struct SlotReport {
     pub action: Slot,
+    pub aired: Slot,
+    pub off_air: Vec<OffAir>,
     pub elapsed_hours: u32,
     pub allocations: Vec<AllocationReport>,
     pub hype: Vec<HypeReport>,
@@ -158,6 +160,8 @@ impl From<&SlotEvent> for SlotReport {
     fn from(event: &SlotEvent) -> Self {
         Self {
             action: event.action.clone(),
+            aired: event.aired.clone(),
+            off_air: event.off_air.clone(),
             elapsed_hours: event.elapsed_hours,
             financial: event.financial.clone(),
             allocations: event
@@ -381,7 +385,7 @@ pub fn report(run: &ExperimentRun) -> DeveloperReport {
             }
         })
         .collect();
-    DeveloperReport {schema_version:2,audience_scope:"Developer only: actual inputs and internal causal evidence; viewer-slot impressions are not unique reach".into(),case:run.case.clone(),initial_world:run.world.clone(),parameters:run.parameters,initial_hype:5.0,initial_willingness:0.5,initial_repetition:0.0,initial_hour:SimHour(0),summary:Summary {stations,first_station_return:returns,brands},slots:run.events.iter().map(SlotReport::from).collect()}
+    DeveloperReport {schema_version:3,audience_scope:"Developer only: actual inputs and internal causal evidence; viewer-slot impressions are not unique reach".into(),case:run.case.clone(),initial_world:run.world.clone(),parameters:run.parameters,initial_hype:5.0,initial_willingness:0.5,initial_repetition:0.0,initial_hour:SimHour(0),summary:Summary {stations,first_station_return:returns,brands},slots:run.events.iter().map(SlotReport::from).collect()}
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -389,7 +393,7 @@ pub struct ForecastAudienceReport {
     pub audience: AudienceId,
     pub priority: f64,
     pub expected_viewers: f64,
-    pub effectiveness: FuzzyReport,
+    pub effectiveness: Option<FuzzyReport>,
     pub relevant_delivery: f64,
 }
 #[derive(Clone, Debug, Serialize)]
@@ -400,7 +404,11 @@ pub struct OfferReport {
     pub deadline: SimHour,
     pub demand: crate::economy::Demand,
     pub audiences: Vec<ForecastAudienceReport>,
+    pub forecast_aired: Slot,
+    pub forecast_off_air: Vec<OffAir>,
     pub forecast_relevant_delivery: f64,
+    pub value_weighted_delivery: f64,
+    pub valuation: Vec<crate::economy::AudienceValuation>,
     pub promised_whole_delivery: u64,
     pub rate_per_thousand: crate::economy::Money,
     pub maximum_offer: crate::economy::Money,
@@ -423,10 +431,15 @@ impl From<&crate::economy::Offer> for OfferReport {
                     audience: a.audience,
                     priority: a.priority,
                     expected_viewers: a.viewers,
-                    effectiveness: (&a.effectiveness).into(),
+                    effectiveness: a.effectiveness.as_ref().map(FuzzyReport::from),
+
                     relevant_delivery: a.relevant_delivery,
                 })
                 .collect(),
+            forecast_aired: offer.forecast.aired.clone(),
+            forecast_off_air: offer.forecast.off_air.clone(),
+            value_weighted_delivery: offer.value_weighted_delivery,
+            valuation: offer.valuation.clone(),
             forecast_relevant_delivery: offer.forecast.relevant_delivery,
             promised_whole_delivery: offer.promised_delivery,
             rate_per_thousand: offer.rate_per_thousand,
@@ -537,7 +550,7 @@ pub fn economy_report(run: &crate::economy_demo::Run) -> EconomyReport {
         })
         .collect();
     EconomyReport {
-        schema_version: 2,
+        schema_version: 3,
         kind: "advertising_economy_developer_only".into(),
         brand: run.brand,
         broadcasts: report(&run.experiment),
@@ -563,5 +576,59 @@ pub fn economy_report(run: &crate::economy_demo::Run) -> EconomyReport {
             total_money: book.total_money(),
             ledger: book.ledger().to_vec(),
         },
+    }
+}
+
+/// Developer-only matched-state valuation counterfactual, not an empirical estimate.
+#[derive(Clone, Debug, Serialize)]
+pub struct AdvertiserValueReport {
+    pub schema_version: u32,
+    pub kind: String,
+    pub case: String,
+    pub initial_world: World,
+    pub parameters: Parameters,
+    pub initial_hype: f64,
+    pub initial_repetition: f64,
+    pub offer: OfferReport,
+    pub slot: SlotReport,
+    pub campaign_generated_hype: f64,
+    pub payment: crate::economy::Money,
+    pub credits_per_hype_point: Option<f64>,
+    pub post_campaign_demand: crate::economy::Demand,
+    pub next_quote: OfferReport,
+    pub ledger: Vec<crate::economy::LedgerEntry>,
+    pub total_money: u128,
+}
+pub fn advertiser_value_report(
+    case: &crate::advertiser_value::CaseResult,
+) -> AdvertiserValueReport {
+    let campaign_generated_hype = case
+        .event
+        .hype
+        .iter()
+        .map(|h| h.campaign_generated)
+        .sum::<f64>();
+    let payment = case.event.financial.settlements[0].payment;
+    AdvertiserValueReport {
+        schema_version: 3,
+        kind: "advertiser_value_developer_counterfactual".into(),
+        case: case.name.clone(),
+        initial_world: case.world.clone(),
+        parameters: case.parameters,
+        initial_hype: case.initial_hype,
+        initial_repetition: case.initial_repetition,
+        offer: (&case.offer).into(),
+        slot: (&case.event).into(),
+        campaign_generated_hype,
+        payment,
+        credits_per_hype_point: if campaign_generated_hype > 0.0 {
+            Some(payment.0 as f64 / campaign_generated_hype)
+        } else {
+            None
+        },
+        post_campaign_demand: case.post_campaign_demand.clone(),
+        next_quote: (&case.next_quote).into(),
+        ledger: case.final_state.economy().ledger().to_vec(),
+        total_money: case.final_state.economy().total_money(),
     }
 }

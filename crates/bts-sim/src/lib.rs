@@ -12,6 +12,7 @@
 //! ```
 #![forbid(unsafe_code)]
 
+pub mod advertiser_value;
 pub mod demo;
 pub mod developer;
 pub mod economy;
@@ -332,10 +333,19 @@ pub struct HypeChange {
     pub repetition_after: f64,
     pub advertisements: Vec<AdExposure>,
 }
+/// Deterministic funding failure of a valid station plan.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct OffAir {
+    pub planned: Broadcast,
+    pub available_cash: Money,
+    pub required_cost: Money,
+}
 /// Immutable developer evidence from a committed transition, independent of rendering.
 #[derive(Clone, Debug, PartialEq)]
 pub struct SlotEvent {
     pub action: Slot,
+    pub aired: Slot,
+    pub off_air: Vec<OffAir>,
     pub elapsed_hours: u32,
     pub allocations: Vec<Allocation>,
     pub hype: Vec<HypeChange>,
@@ -434,6 +444,36 @@ impl Simulation {
                 return Err(Error::Invalid("unknown advertised brand".into()));
             }
         }
+        economy::validate_inventory(&self.state.economy, action)?;
+        let mut aired = Slot {
+            at: action.at,
+            broadcasts: Vec::new(),
+        };
+        let mut off_air = Vec::new();
+        for station in &self.world.stations {
+            if let Some(broadcast) = action.broadcasts.iter().find(|b| b.station == station.id) {
+                let programme = self
+                    .world
+                    .programmes
+                    .iter()
+                    .find(|p| p.id == broadcast.programme)
+                    .expect("validated programme");
+                let available_cash = self
+                    .state
+                    .economy
+                    .cash(station.id)
+                    .expect("configured station");
+                if available_cash < programme.broadcast_cost {
+                    off_air.push(OffAir {
+                        planned: broadcast.clone(),
+                        available_cash,
+                        required_cost: programme.broadcast_cost,
+                    });
+                } else {
+                    aired.broadcasts.push(broadcast.clone());
+                }
+            }
+        }
         let elapsed_hours = action.at.0 - self.state.now.0;
         let mut next = self.state.clone();
         let mut allocations = Vec::new();
@@ -443,7 +483,7 @@ impl Simulation {
             let available = population * audience.availability[period];
             let mut viewing = Vec::new();
             for station in &self.world.stations {
-                let Some(broadcast) = action.broadcasts.iter().find(|b| b.station == station.id)
+                let Some(broadcast) = aired.broadcasts.iter().find(|b| b.station == station.id)
                 else {
                     continue;
                 };
@@ -521,7 +561,7 @@ impl Simulation {
                     );
                 let mut advertisements = Vec::new();
                 for v in &allocation.viewing {
-                    let broadcast = action
+                    let broadcast = aired
                         .broadcasts
                         .iter()
                         .find(|b| b.station == v.station)
@@ -587,6 +627,8 @@ impl Simulation {
             next,
             SlotEvent {
                 action: action.clone(),
+                aired,
+                off_air,
                 elapsed_hours,
                 allocations,
                 hype,

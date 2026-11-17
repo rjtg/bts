@@ -1,6 +1,6 @@
 # Advertiser-funded headless economy
 
-Status: provisional implementation specification. This is a small experiment,
+Status: current schema-3 provisional implementation specification. This is a small experiment,
 not a market framework, calibrated economy, or finished player interface.
 
 ## Review corrections
@@ -38,16 +38,21 @@ priority p in [0,1] and desired hype H* in [0,100]. Empty/zero-priority targets
 produce no demand. There is no budget replenishment or credit.
 
 At quote time, per-audience deficit d = max(0,H*-H)/100.
-Demand D = sum(p*d)/sum(p), or 0 for zero total priority. Priorities need not
-sum to one. Demand uses current actual hype, not a player estimate. Future
+Diagnostic pressure D = sum(p*d)/sum(p), or 0 for zero total priority. This
+brand-wide summary is never multiplied by delivery to price offers. Priorities
+need not sum to one. Valuation uses current actual hype, not a player estimate. Future
 hype decay is not speculated into demand; explicit time advancement updates it.
 Reports disclose each priority, desired/current hype, deficit and contribution.
 
 Forecast audience delivery uses current known programme attributes, loyalty,
 availability, rival schedule and ad effectiveness, via a read-only preview of
-the proposed slot. Relevant delivery F = sum(expected viewers*p*effectiveness).
-Offer = floor(min(available budget, maximum offer, rate*F/1000*D)).
-No budget or demand multiplier can exceed the independent caps. A zero-money
+the proposed slot after resolving current cash availability. Per-audience
+relevant delivery F_i=expected viewers_i*p_i*effectiveness_i; total F=sum(F_i).
+Valuation V_i=F_i*d_i. Uncapped price=sum(rate/1000*V_i), in target order.
+Offer=floor(min(available budget, maximum offer, uncapped price)). Valuation
+rows are separate from delivery forecasts. A satisfied reached target has
+zero value even if another, unreached audience has unmet demand. No caps can
+be exceeded by deficit-driven valuation. See [hardening controls](advertiser-hardening.md). A zero-money
 or zero-whole-delivery offer cannot be accepted. Forecasts are deterministic
 model estimates, not guarantees: changing programmes, competitors or availability
 of an actual broadcast may underdeliver. The actual action is supplied separately.
@@ -74,11 +79,19 @@ zero, including when time skips the booking. A conflicting brand on reserved
 inventory is invalid; unpaid/unreserved ads remain allowed for the original
 hype-only experiments. No late makegoods or cancellation mechanism is provided.
 
-At each action: validate action; compute audience/loyalty/hype from a common
-snapshot; debit each airing's programme broadcast cost from station cash to a
-cost sink; record booked delivery; settle all contracts whose deadline <= now;
-commit the complete state. Costs require pre-settlement cash (no implicit loan).
-An error at any stage commits nothing, including money, time, hype and ledger.
+At each action: validate the whole plan, then resolve each station's ability
+to pay from pre-slot cash. Unaffordable planned programmes go off air with an
+inspectable funding record. Resolve audience allocation, satisfaction/loyalty
+and ad hype against only the aired broadcasts. Charge those broadcasts' costs
+to the cost sink; record booked delivery; settle all contracts due at/before
+now; commit. A cancelled programme has no viewing, learning, cost, ad exposure
+or campaign effects. Other stations continue; time and passive decay advance.
+Missing contracted delivery follows the same refund rule. Same-slot receipts
+can fund later broadcasts, but cannot retroactively fund this slot. Malformed
+plans remain atomic errors, including unknown IDs or conflicting booked ads
+on an unfunded station. Valid but unfunded plans succeed with off-air events.
+Quotes use the same current-cash resolution and never assume loans or future
+receipts; an already unfunded station has zero forecast delivery/value.
 
 At the first action at/after deadline, pay floor(P*min(U,T)/T) to station cash
 using exact u128 intermediate arithmetic. Return P-payment to brand budget.
@@ -126,14 +139,14 @@ independent of viewers and charged per actual airing, including unwatched ones.
 | Everyday Snacks | 800 credits | Young: priority 1, desired 40; households: 1, 40; specialists: .1, 15 |
 | Precision Equipment | 3,500 credits | Specialists: priority 1, desired 45; young and households: .02, 5 each |
 
-Default six-day results for the first station, before the idle period:
+Current six-day results for the first station, before the idle period:
 
 | Advertiser / programming | Viewer-slot impressions | Actual weighted relevant delivery | Revenue | Broadcast costs | Profit |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Mass / broad | 89,570 | 68,145.51 | 2,462 | 1,800 | 662 |
-| Mass / targeted | 25,196 | 11,691.84 | 2,272 | 600 | 1,672 |
-| Specialist / broad | 89,570 | 3,426.01 | 2,652 | 1,800 | 852 |
-| Specialist / targeted | 25,196 | 7,585.68 | 2,661 | 600 | 2,061 |
+| Mass / broad | 89,570 | 45,143.84 | 2,955 | 1,800 | 1,155 |
+| Mass / targeted | 25,196 | 11,691.84 | 2,351 | 600 | 1,751 |
+| Specialist / broad | 89,570 | 3,426.01 | 2,640 | 1,800 | 840 |
+| Specialist / targeted | 25,196 | 6,975.60 | 2,954 | 600 | 2,354 |
 
 Relevant delivery in this table retains fractional expectations for inspection;
 contract promises/credits are separately floored whole units. Forecast and
@@ -143,52 +156,52 @@ missing ads/broadcasts refund everything, while overdelivery earns no bonus.
 These are not evidence of prediction accuracy under uncertainty.
 
 Broad mass programming supports a mass advertiser with substantially more
-relevant delivery and higher final population-weighted snack hype (44.36 vs
+relevant delivery and higher final population-weighted snack hype (35.00 vs
 18.44). Specialist programming supports the equipment advertiser with fewer
 total viewers but more than twice the weighted relevant delivery. Both broad
 and targeted schedules are profitable for the first station here. The rival
 is deliberately unadvertised in every case and spends 1,200 credits; it is a
 fixed competitive control, not an economically optimized station.
 
-Campaign success reduces immediate demand: mass/broad pressure falls from
-.3381 to .0045; specialist/targeted falls from .3846 to .0008. After 48 hours
-idle, pressure recovers to .1437 and .2016 respectively. Quotes for the exact
-same future 18:00 slot before/after decay rise 23 -> 759 credits for mass/broad
-and 1 -> 431 for specialist/targeted. Forecast delivery is exactly unchanged,
-and remaining budgets stay 17,538 and 17,339 credits respectively. The recovery
-quotes are not accepted or included in revenue. An exhausted-budget test shows
-positive recovering demand still yields an unpayable zero-credit offer.
+Campaign success reduces diagnostic pressure: mass/broad falls from .3381
+to .0239; specialist/targeted from .3846 to .0152. After 48 idle hours these
+recover to .1918 and .2249. Per-audience values, not pressure D, price the
+quotes. The same future-slot offer rises 128 -> 1,062 credits for mass/broad
+and 31 -> 494 for specialist/targeted with unchanged forecast delivery and
+budgets of 17,045 and 17,046. Recovery quotes are not accepted. Positive
+recovering deficits cannot replenish an exhausted budget.
 
-Audience and station-profit rankings differ under the default costs. A
-controlled sensitivity test changes only broad comedy cost from 150 to zero:
-its mass-market profit becomes 2,462 credits, exceeding targeted programming's
-1,672, with identical allocations, delivery, hype and advertising revenue.
-Thus the model does not establish one universal optimal schedule. Cost and
-rate calibration are unproven. Lower-reach schedules can preserve urgency and
-change repeated-campaign incentives; no advertiser optimization or empirical
-claim justifies those incentives yet.
+Audience and station-profit rankings differ. Changing only broad programme
+cost from 150 to zero yields mass profit 2,955, exceeding targeted profit
+1,751 without changing allocations, delivery, hype or revenue. Costs and
+rates remain provisional. The [advertiser-value experiment](advertiser-hardening.md)
+now isolates saturation, repetition and creative quality; repetition-blind
+pricing can pay the same for less realized hype gain and preserve future
+willingness to pay. This is a documented incentive gap, not evidence of balance
+or a proven optimal strategy. The previous schema-2 snapshot at commit
+9f10d5f in `contrib/advertising-economy` is historical brand-wide valuation.
 
 Every action preserves 80,000 total credits across available budgets, station
 cash, outstanding escrow and the cost sink. Ledger replay reconstructs every
 account with nonnegative balances. End-of-run escrow is zero. All forecasts,
 priorities, deficits, actual audience delivery, settlements, and transfers are
-available in developer JSON schema 2 and the verbose CLI.
+available in developer JSON schema 3 and the verbose CLI.
 
 ## Validation and remaining limits
 
-Local checks on Rust/Cargo 1.98.1 passed 37 integration tests and five doctests,
+Local checks on Rust/Cargo 1.98.1 passed 48 integration tests and five doctests,
 formatting, Clippy with warnings denied, and Rustdoc with warnings denied.
 Both CLI modes and both examples ran successfully. All fuzzy-crate checks also
 passed offline after copying that crate outside the workspace. Fuzzy source
 and manifest are unchanged; its README only drops obsolete CI status wording.
-The [comparison snapshot](../contrib/advertising-economy/README.md) records the
-readable output and compact developer metrics/ledger. Original schema-1
-broadcasting artifacts remain explicitly labelled historical.
+The [valuation snapshot](../contrib/advertiser-value/README.md) records current
+controlled value comparisons. Original schema-1 broadcasting and schema-2
+economy artifacts remain explicitly labelled historical.
 
 Checks include formatting, workspace tests/doctests, Clippy and Rustdoc with
 warnings denied, both runnable examples, both CLI JSON exports, and extraction
 checks for a copied standalone `bts-fuzzy`. CI retains all standalone checks
-and runs the new economy export. Existing conservation/reproducibility tests
+and runs all three CLI exports, including advertiser-value. Existing conservation/reproducibility tests
 remain; new tests cover varied and empty collections, independent ad factors,
 conditional interactions, inventory, budgets/escrow, integer refunds,
 deadlines, ledger replay, failed-action atomicity, target priorities, demand
@@ -199,7 +212,7 @@ This is a weighted-aggregate target-delivery contract, not separate minimum
 quotas per audience. There are no auctions, credit, cancellations, late
 makegoods, inventory rescheduling, replenishing budgets, advertiser sales,
 ongoing station overhead, tax, inflation or insolvency proceedings. Integer
-cash cannot go negative: an unaffordable broadcast is rejected. Programme
+cash cannot go negative: an unaffordable broadcast goes off air for that slot. Programme
 attributes and tastes are fixed; forecasts know proposed schedules and do not
 predict intervening changes. Reports disclose true state; fair player evidence,
 research costs and information uncertainty remain open. The fixtures establish

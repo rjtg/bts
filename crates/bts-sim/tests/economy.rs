@@ -408,8 +408,15 @@ fn stale_modified_conflicting_and_unfunded_actions_are_atomic() {
     let offer = simulation.quote(&action, MAIN, SNACKS, action.at).unwrap();
     simulation.accept_offer(&offer).unwrap();
     let old = simulation.state().clone();
-    assert!(simulation.step(&action).is_err());
-    assert_eq!(simulation.state(), &old); // Main's tentative cost debit also rolls back.
+    let event = simulation.step(&action).unwrap();
+    assert_eq!(event.off_air.len(), 1);
+    assert_eq!(event.off_air[0].planned.station, RIVAL);
+    assert_eq!(event.aired.broadcasts.len(), 1);
+    assert_eq!(simulation.state().now(), action.at);
+    assert_eq!(
+        simulation.state().economy().total_money(),
+        old.economy().total_money()
+    );
 }
 #[test]
 fn targeting_priorities_and_deficits_are_inspectable_and_bounded() {

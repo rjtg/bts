@@ -33,7 +33,7 @@ fn exported_cases_have_readable_summaries_full_traces_and_reproduce() {
     let reports: Value = serde_json::from_slice(&data).unwrap();
     assert_eq!(reports.as_array().unwrap().len(), 3);
     for report in reports.as_array().unwrap() {
-        assert_eq!(report["schema_version"], 2);
+        assert_eq!(report["schema_version"], 3);
         assert_eq!(report["slots"].as_array().unwrap().len(), 13);
         assert_eq!(
             report["initial_world"]["audiences"]
@@ -118,7 +118,7 @@ fn economy_export_keeps_forecast_actual_contracts_and_accounts_distinct() {
     let reports: Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(reports.as_array().unwrap().len(), 4);
     for report in reports.as_array().unwrap() {
-        assert_eq!(report["schema_version"], 2);
+        assert_eq!(report["schema_version"], 3);
         assert_eq!(report["offers"].as_array().unwrap().len(), 12);
         assert_eq!(report["finances"]["total_money"], 80000);
         assert!(report["offers"][0]["audiences"][0]["effectiveness"]["rules"].is_array());
@@ -153,4 +153,61 @@ fn economy_export_keeps_forecast_actual_contracts_and_accounts_distinct() {
         .output()
         .unwrap();
     assert!(!invalid.status.success());
+}
+
+#[test]
+fn advertiser_value_export_is_controlled_complete_and_reproducible() {
+    let path = std::env::temp_dir().join(format!("bts-value-test-{}.json", std::process::id()));
+    let execute = || {
+        Command::new(env!("CARGO_BIN_EXE_bts-cli"))
+            .args(["advertiser-value", "--json"])
+            .arg(&path)
+            .output()
+            .unwrap()
+    };
+    let output = execute();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(text.contains("Repetition is not directly priced"));
+    assert!(text.contains("weak creative"));
+    let bytes = fs::read(&path).unwrap();
+    let reports: Value = serde_json::from_slice(&bytes).unwrap();
+    assert_eq!(reports.as_array().unwrap().len(), 6);
+    for report in reports.as_array().unwrap() {
+        assert_eq!(report["schema_version"], 3);
+        assert_eq!(report["total_money"], 200000);
+        assert!(report["offer"]["valuation"][0]["uncapped_value"].is_number());
+        assert!(report["offer"]["audiences"][0]["effectiveness"]["rules"].is_array());
+        assert_eq!(
+            report["slot"]["action"]["broadcasts"]
+                .as_array()
+                .unwrap()
+                .len(),
+            1
+        );
+        assert_eq!(
+            report["slot"]["aired"]["broadcasts"]
+                .as_array()
+                .unwrap()
+                .len(),
+            1
+        );
+        assert!(report["slot"]["off_air"].as_array().unwrap().is_empty());
+    }
+    assert_eq!(
+        reports[0]["offer"]["forecast_relevant_delivery"],
+        reports[2]["offer"]["forecast_relevant_delivery"]
+    );
+    assert_eq!(reports[0]["payment"], reports[2]["payment"]);
+    assert!(
+        reports[0]["campaign_generated_hype"].as_f64().unwrap()
+            > reports[2]["campaign_generated_hype"].as_f64().unwrap() * 3.0
+    );
+    assert!(execute().status.success());
+    assert_eq!(fs::read(&path).unwrap(), bytes);
+    fs::remove_file(path).unwrap();
 }

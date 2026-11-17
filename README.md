@@ -25,6 +25,7 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Architecture decisions](docs/architecture.md): crate boundaries and extraction plan.
 - [Headless experiment](docs/headless-experiment.md): broadcasting equations and developer reports.
 - [Advertising economy](docs/advertising-economy.md): provisional demand, contracts, accounting, and comparisons.
+- [Advertiser hardening](docs/advertiser-hardening.md): audience-specific value, off-air handling and pricing incentives.
 - [Contributor guidance](AGENTS.md): implementation principles for people and coding agents.
 
 ## Status
@@ -34,6 +35,7 @@ Design baseline and initial Cargo workspace, November 2026. The independent [`bt
 ## Run the broadcasting experiment
 
 ```sh
+cargo run -p bts-cli -- advertiser-value --json /tmp/bts-advertiser-value.json
 cargo run -p bts-cli -- economy --json /tmp/bts-economy.json
 cargo run -p bts-cli -- demo --json /tmp/bts-demo-results.json
 cargo run -p bts-cli -- demo --case targeted --trace
@@ -52,3 +54,8 @@ finite budgets, accepted offers reserve escrow, actual target delivery settles
 at a deadline, and broadcast costs reduce integer station cash. Inspect the
 ledger and forecast/actual breakdown with `--trace`. Hype is internal developer
 evidence; no finished player research interface is implied.
+
+Quotes value each reached audience's own unmet hype demand. Valid plans that a
+station cannot fund go off air for that slot while other stations continue;
+malformed commands remain errors. `advertiser-value` isolates saturation and
+repetition effects, including remaining incentives in delivery-based pricing.

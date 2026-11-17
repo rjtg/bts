@@ -70,7 +70,12 @@ adds finite budgets, explicit target priorities, demand, quotes, escrowed
 delivery contracts, integer cash, costs and a balanced financial ledger.
 Economy state participates in the same atomic slot transitions; quote/accept
 actions are deterministic and independently inspectable. Entity counts and
-broadcast hours are configured data, not fixed engine restrictions.
+broadcast hours are configured data, not fixed engine restrictions. Schema-3
+reports separate delivery forecasts from audience-specific valuation and
+preserve planned/actual airing plus funding failures. Unfunded broadcasts
+resolve off air before audience allocation; invalid plans still fail atomically.
+The [hardening controls](advertiser-hardening.md) keep remaining incentive
+questions explicit.
 Production, full season play, interactive scheduling and player front ends
 remain unimplemented. This
 document does not select a UI framework or save format.

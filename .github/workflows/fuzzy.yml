@@ -23,6 +23,7 @@ jobs:
       - run: cargo run -p bts-sim --example sugeno_semantics
       - run: cargo run -p bts-cli -- demo --json "$RUNNER_TEMP/bts-demo-results.json"
       - run: cargo run -p bts-cli -- economy --json "$RUNNER_TEMP/bts-economy-results.json"
+      - run: cargo run -p bts-cli -- advertiser-value --json "$RUNNER_TEMP/bts-advertiser-value.json"
       - name: Verify extraction outside workspace
         shell: bash
         run: |

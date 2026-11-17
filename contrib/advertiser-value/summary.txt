@@ -1,0 +1,18 @@
+Developer advertiser-value counterfactuals: same viewing conditions, nonbinding caps.
+case | relevant delivery | value-weighted delivery | credits | campaign hype | credits/hype
+low-hype/fresh | 6779.66 | 5762.71 | 5762 | 39.8001 | 144.77
+  Post-campaign demand 0.4527; next unaccepted quote 3069 credits
+high-hype/fresh | 6779.66 | 1694.92 | 1694 | 15.0423 | 112.62
+  Post-campaign demand 0.1089; next unaccepted quote 738 credits
+low-hype/repeated | 6779.66 | 5762.71 | 5762 | 9.9886 | 576.86
+  Post-campaign demand 0.7508; next unaccepted quote 5090 credits
+high-hype/repeated | 6779.66 | 1694.92 | 1694 | 3.7751 | 448.73
+  Post-campaign demand 0.2216; next unaccepted quote 1502 credits
+low-hype/weak-creative | 1694.92 | 1440.68 | 1440 | 12.0553 | 119.45
+  Post-campaign demand 0.7302; next unaccepted quote 1237 credits
+low-hype/weak-repeated | 1694.92 | 1440.68 | 1440 | 2.6020 | 553.41
+  Post-campaign demand 0.8247; next unaccepted quote 1397 credits
+Repetition is not directly priced: matched hype/delivery can earn equal payment for less hype gain.
+Low hype preserves willingness per relevant impression; weak creative also reduces payable delivery.
+No optimal strategy or economic balance is established by these fixed controls.
+Wrote developer JSON to contrib/advertiser-value/results.json

@@ -90,11 +90,22 @@ pub struct ForecastAudience {
     pub audience: AudienceId,
     pub priority: f64,
     pub viewers: f64,
-    pub effectiveness: ModelEvaluation,
+    pub effectiveness: Option<ModelEvaluation>,
     pub relevant_delivery: f64,
+}
+/// Quote-time value, separate from promised/actual relevant delivery.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct AudienceValuation {
+    pub audience: AudienceId,
+    pub relevant_delivery: f64,
+    pub deficit: f64,
+    pub value_weighted_delivery: f64,
+    pub uncapped_value: f64,
 }
 #[derive(Clone, Debug, PartialEq)]
 pub struct DeliveryForecast {
+    pub aired: Slot,
+    pub off_air: Vec<OffAir>,
     pub audiences: Vec<ForecastAudience>,
     pub relevant_delivery: f64,
 }
@@ -106,6 +117,8 @@ pub struct Offer {
     pub deadline: SimHour,
     pub demand: Demand,
     pub forecast: DeliveryForecast,
+    pub value_weighted_delivery: f64,
+    pub valuation: Vec<AudienceValuation>,
     pub promised_delivery: u64,
     pub rate_per_thousand: Money,
     pub maximum_offer: Money,
@@ -360,33 +373,50 @@ impl Simulation {
         let demand = self.demand(brand)?;
         let advertiser = self.world.brands.iter().find(|b| b.id == brand).unwrap();
         let (_, event) = self.evaluate_slot(proposal)?;
-        let audiences = advertiser
+        let audiences = demand
             .targets
             .iter()
-            .map(|t| {
-                let hype = event
+            .map(|target| {
+                let ad = event
                     .hype
                     .iter()
-                    .find(|h| h.brand == brand && h.audience == t.audience)
-                    .unwrap();
-                let ad = hype
-                    .advertisements
-                    .iter()
-                    .find(|a| a.station == station)
-                    .unwrap();
+                    .find(|h| h.brand == brand && h.audience == target.audience)
+                    .and_then(|h| h.advertisements.iter().find(|a| a.station == station));
+                let viewers = ad.map(|a| a.viewers).unwrap_or(0.0);
+                let relevant_delivery = ad
+                    .map(|a| a.viewers * target.priority * a.effectiveness.trace.output)
+                    .unwrap_or(0.0);
                 ForecastAudience {
-                    audience: t.audience,
-                    priority: t.priority,
-                    viewers: ad.viewers,
-                    effectiveness: ad.effectiveness.clone(),
-                    relevant_delivery: ad.viewers * t.priority * ad.effectiveness.trace.output,
+                    audience: target.audience,
+                    priority: target.priority,
+                    viewers,
+                    effectiveness: ad.map(|a| a.effectiveness.clone()),
+                    relevant_delivery,
                 }
             })
             .collect::<Vec<_>>();
         let relevant_delivery = audiences.iter().map(|a| a.relevant_delivery).sum::<f64>();
+        let valuation = audiences
+            .iter()
+            .zip(&demand.targets)
+            .map(|(delivery, target)| {
+                let value_weighted_delivery = delivery.relevant_delivery * target.deficit;
+                AudienceValuation {
+                    audience: target.audience,
+                    relevant_delivery: delivery.relevant_delivery,
+                    deficit: target.deficit,
+                    value_weighted_delivery,
+                    uncapped_value: advertiser.rate_per_thousand.0 as f64 / 1000.0
+                        * value_weighted_delivery,
+                }
+            })
+            .collect::<Vec<_>>();
+        let value_weighted_delivery = valuation
+            .iter()
+            .map(|v| v.value_weighted_delivery)
+            .sum::<f64>();
         let promised_delivery = whole_delivery(relevant_delivery)?;
-        let uncapped_price =
-            advertiser.rate_per_thousand.0 as f64 * relevant_delivery / 1000.0 * demand.pressure;
+        let uncapped_price = valuation.iter().map(|v| v.uncapped_value).sum::<f64>();
         bounded(uncapped_price, 0.0, f64::MAX, "offer price arithmetic")?;
         let cap = advertiser.maximum_offer.0.min(demand.available_budget.0);
         let payment = Money(uncapped_price.min(cap as f64).floor() as u64);
@@ -396,9 +426,13 @@ impl Simulation {
             deadline,
             demand,
             forecast: DeliveryForecast {
+                aired: event.aired,
+                off_air: event.off_air,
                 audiences,
                 relevant_delivery,
             },
+            value_weighted_delivery,
+            valuation,
             promised_delivery,
             rate_per_thousand: advertiser.rate_per_thousand,
             maximum_offer: advertiser.maximum_offer,
@@ -449,7 +483,7 @@ impl Simulation {
         Ok(id)
     }
 }
-fn validate_inventory(book: &EconomyState, action: &Slot) -> Result<(), Error> {
+pub(crate) fn validate_inventory(book: &EconomyState, action: &Slot) -> Result<(), Error> {
     for broadcast in &action.broadcasts {
         if let Some(id) = book.sold.get(&(action.at, broadcast.station)) {
             let brand = book.contracts[id].offer.brand;
@@ -471,8 +505,8 @@ pub(crate) fn apply_slot(
     book: &mut EconomyState,
     event: &SlotEvent,
 ) -> Result<FinancialEvent, Error> {
-    let action = &event.action;
-    validate_inventory(book, action)?;
+    validate_inventory(book, &event.action)?;
+    let action = &event.aired;
     let start = book.ledger.len();
     for station in &world.stations {
         if let Some(broadcast) = action.broadcasts.iter().find(|b| b.station == station.id) {

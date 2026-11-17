@@ -3,6 +3,7 @@
 Run the advertiser-funded comparisons or the original unpaid-ad experiments:
 
 ```sh
+cargo run -p bts-cli -- advertiser-value --json /tmp/bts-advertiser-value.json
 cargo run -p bts-cli -- economy --json /tmp/bts-economy.json
 cargo run -p bts-cli -- economy --case specialist-targeted --trace
 cargo run -p bts-cli -- demo --case targeted --json /tmp/targeted.json
@@ -24,10 +25,16 @@ willingness, brand/audience hype, forecast versus actual target delivery,
 integer revenue/cost/profit, budgets and demand. `--trace` additionally prints
 inputs, fuzzy rules, offer targeting, actual delivery, settlements and ledger.
 `--json PATH` writes a JSON array even for one case. Developer report schema
-version 2 includes explicit forecasts, actual deliveries, contracts and account
-transfers. It is not a save file or stable interchange API.
+version 3 includes explicit forecasts, actual deliveries, contracts and account
+transfers, planned/actual airing and off-air records. It is not a save file or stable interchange API.
 
 Actual internal hype and preferences are developer-only. No player research
 interface is implemented. Hype is not advertiser sales; expected impressions
 are not unique reach. The comparisons do not establish balance or a universal
 winner. See [economy equations, results and limitations](../../docs/advertising-economy.md).
+
+`advertiser-value` runs six matched counterfactuals for hype, repetition and ad
+creative quality. It accepts `--json` and `--trace` and always runs all controls.
+Output separates relevant delivery, deficit-weighted value, integer payment
+and actual campaign hype gain. Reports expose the remaining repetition-blind
+pricing incentive; they do not establish an optimal strategy or market balance.
