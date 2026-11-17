@@ -4,7 +4,9 @@ Status: causal direction is agreed; algorithms, parameter values, update orderin
 
 The [headless experiment](headless-experiment.md) now implements a bounded
 subset: deterministic expected viewing shares, separate attraction and
-satisfaction, series willingness, and exposure-driven hype with decay.
+satisfaction, series willingness, and exposure-driven hype with decay. The
+[bounded economy](advertising-economy.md) connects that hype to finite-budget
+offers, target delivery contracts and station cash.
 Its precise equations are provisional experiments; the broader mechanisms
 below remain proposals. Developer reports expose actual state and are not
 player evidence.
@@ -103,7 +105,7 @@ A brand's target-hype gap drives urgency. Expected useful exposure, budget, comp
 
 Purchasing power is one targeting dimension. Affordable mass products and niche luxury products need different strategies. Purchase influence can cross household links: children may create demand fulfilled by parents.
 
-Proposed first contract model: payment for target-audience delivery within a deadline, with explicit bonuses or penalties. Later renewal offers and campaign studies reflect effectiveness. Direct hype-based payment is an alternative to test, not an agreed requirement.
+Implemented provisional contract experiment: a fixed maximum payment for weighted relevant target delivery in a booked station/hour, with an inclusive deadline and proportional underdelivery refund. Money is integer credits; offers reserve finite budget in escrow. Hype deficits influence future quoted demand, not settlement outcomes. See [economy equations](advertising-economy.md). More detailed contracts, bonuses, renewal negotiations and campaign studies remain open; this experiment is not a permanent commercial design.
 
 The station observes estimated outcomes. Attribution is uncertain when campaigns, competitors, news, and social transmission overlap. Brand health should use a coarse commercial model rather than equating hype directly with revenue.
 

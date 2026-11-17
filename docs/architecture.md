@@ -65,6 +65,12 @@ public beliefs are not implemented. Simulation never renders, reads files,
 uses wall time, or invokes randomness.
 
 The [experiment specification](headless-experiment.md) documents provisional
-allocation, return and hype equations. Production, contracts, season play,
-interactive scheduling and player front ends remain unimplemented. This
+allocation, return and hype equations. The [advertising economy](advertising-economy.md)
+adds finite budgets, explicit target priorities, demand, quotes, escrowed
+delivery contracts, integer cash, costs and a balanced financial ledger.
+Economy state participates in the same atomic slot transitions; quote/accept
+actions are deterministic and independently inspectable. Entity counts and
+broadcast hours are configured data, not fixed engine restrictions.
+Production, full season play, interactive scheduling and player front ends
+remain unimplemented. This
 document does not select a UI framework or save format.

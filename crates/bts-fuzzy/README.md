@@ -97,7 +97,6 @@ formatting, Clippy with warnings denied, documentation with warnings denied,
 and the runnable example. The same checks passed offline after copying the
 crate outside the workspace. LSP diagnostics were unavailable (server exit,
 then timeout); compiler and Cargo checks supplied semantic verification.
-The GitHub Actions workflow is added but has not yet run on GitHub.
 
 ## Limits and future proposals
 

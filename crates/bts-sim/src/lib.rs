@@ -14,8 +14,11 @@
 
 pub mod demo;
 pub mod developer;
+pub mod economy;
+pub mod economy_demo;
 pub mod models;
 
+use economy::{EconomyState, FinancialEvent, Money, Target};
 use models::{ModelEvaluation, Models};
 use serde::Serialize;
 use std::collections::{BTreeMap, BTreeSet};
@@ -33,14 +36,8 @@ id!(AudienceId, StationId, ProgrammeId, SeriesId, BrandId);
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub struct SimHour(pub u32);
 impl SimHour {
-    fn availability_index(self) -> Result<usize, Error> {
-        match self.0 % 24 {
-            18 => Ok(0),
-            21 => Ok(1),
-            _ => Err(Error::Invalid(
-                "broadcast slots must be at 18:00 or 21:00".into(),
-            )),
-        }
+    fn availability_index(self) -> usize {
+        (self.0 % 24) as usize
     }
 }
 
@@ -82,8 +79,8 @@ pub struct Audience {
     /// Comedy, drama, science affinities, in that order.
     pub genre_tastes: [f64; 3],
     pub preferred_tone: f64,
-    /// 18:00 and 21:00 availability fractions.
-    pub availability: [f64; 2],
+    /// Availability fraction for each hour of the day.
+    pub availability: [f64; 24],
     pub purchasing_power: f64,
     /// Snacks and equipment interests, in that order.
     pub product_interests: [f64; 2],
@@ -98,11 +95,13 @@ pub struct Programme {
     pub awareness: f64,
     pub cast_appeal: f64,
     pub execution: f64,
+    pub broadcast_cost: Money,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Station {
     pub id: StationId,
     pub name: String,
+    pub initial_cash: Money,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Brand {
@@ -111,6 +110,10 @@ pub struct Brand {
     pub product: Product,
     pub required_purchasing_power: f64,
     pub creative_quality: f64,
+    pub marketing_budget: Money,
+    pub maximum_offer: Money,
+    pub rate_per_thousand: Money,
+    pub targets: Vec<Target>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct World {
@@ -196,13 +199,6 @@ fn unique<T: Ord>(values: impl Iterator<Item = T>, context: &str) -> Result<(), 
 }
 impl World {
     fn validate(&self) -> Result<(), Error> {
-        if self.audiences.len() != 3
-            || self.stations.len() != 2
-            || self.brands.len() != 2
-            || self.programmes.is_empty()
-        {
-            return Err(Error::Invalid("experiment requires three audiences, two stations, two brands, and a nonempty catalogue".into()));
-        }
         unique(self.audiences.iter().map(|x| x.id), "audience")?;
         unique(self.programmes.iter().map(|x| x.id), "programme")?;
         unique(self.stations.iter().map(|x| x.id), "station")?;
@@ -223,12 +219,17 @@ impl World {
                 unit(*value, &format!("audience {:?}", a.id))?;
             }
         }
+        for station in &self.stations {
+            station.initial_cash.validate()?;
+        }
         for p in &self.programmes {
+            p.broadcast_cost.validate()?;
             for value in [p.tone, p.awareness, p.cast_appeal, p.execution] {
                 unit(value, &format!("programme {:?}", p.id))?;
             }
         }
         for b in &self.brands {
+            economy::validate_brand(b, &self.audiences)?;
             unit(b.creative_quality, "brand creative quality")?;
             bounded(
                 b.required_purchasing_power,
@@ -268,8 +269,12 @@ pub struct State {
     loyalty: BTreeMap<(AudienceId, SeriesId), f64>,
     hype: BTreeMap<(BrandId, AudienceId), f64>,
     repetition: BTreeMap<(BrandId, AudienceId), f64>,
+    economy: EconomyState,
 }
 impl State {
+    pub fn economy(&self) -> &EconomyState {
+        &self.economy
+    }
     pub fn now(&self) -> SimHour {
         self.now
     }
@@ -334,6 +339,7 @@ pub struct SlotEvent {
     pub elapsed_hours: u32,
     pub allocations: Vec<Allocation>,
     pub hype: Vec<HypeChange>,
+    pub financial: FinancialEvent,
 }
 
 #[derive(Clone, Debug)]
@@ -352,6 +358,7 @@ impl Simulation {
             loyalty: BTreeMap::new(),
             hype: BTreeMap::new(),
             repetition: BTreeMap::new(),
+            economy: EconomyState::new(&world),
         };
         for a in &world.audiences {
             for p in &world.programmes {
@@ -381,7 +388,15 @@ impl Simulation {
 
     /// Validate and apply one slot atomically. All viewing uses pre-slot loyalty.
     pub fn step(&mut self, action: &Slot) -> Result<SlotEvent, Error> {
-        let period = action.at.availability_index()?;
+        let (mut next, mut event) = self.evaluate_slot(action)?;
+        event.financial = economy::apply_slot(&self.world, &mut next.economy, &event)?;
+        next.economy.advance_revision()?;
+        self.state = next;
+        Ok(event)
+    }
+
+    fn evaluate_slot(&self, action: &Slot) -> Result<(State, SlotEvent), Error> {
+        let period = action.at.availability_index();
         if action.at <= self.state.now {
             return Err(Error::Invalid("slot time must strictly increase".into()));
         }
@@ -543,7 +558,12 @@ impl Simulation {
                 let repetition_after =
                     repetition_decayed + exposures / f64::from(audience.population);
                 bounded(after, 0.0, 100.0, "hype")?;
-                bounded(repetition_after, 0.0, 1e6, "repetition stock")?;
+                bounded(
+                    repetition_after,
+                    0.0,
+                    f64::from(u32::MAX),
+                    "repetition stock",
+                )?;
                 next.hype.insert(key, after);
                 next.repetition.insert(key, repetition_after);
                 hype.push(HypeChange {
@@ -563,12 +583,15 @@ impl Simulation {
             }
         }
         next.now = action.at;
-        self.state = next;
-        Ok(SlotEvent {
-            action: action.clone(),
-            elapsed_hours,
-            allocations,
-            hype,
-        })
+        Ok((
+            next,
+            SlotEvent {
+                action: action.clone(),
+                elapsed_hours,
+                allocations,
+                hype,
+                financial: FinancialEvent::default(),
+            },
+        ))
     }
 }

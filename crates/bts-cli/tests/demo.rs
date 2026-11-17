@@ -33,7 +33,7 @@ fn exported_cases_have_readable_summaries_full_traces_and_reproduce() {
     let reports: Value = serde_json::from_slice(&data).unwrap();
     assert_eq!(reports.as_array().unwrap().len(), 3);
     for report in reports.as_array().unwrap() {
-        assert_eq!(report["schema_version"], 1);
+        assert_eq!(report["schema_version"], 2);
         assert_eq!(report["slots"].as_array().unwrap().len(), 13);
         assert_eq!(
             report["initial_world"]["audiences"]
@@ -83,4 +83,74 @@ fn case_selection_trace_and_invalid_arguments() {
         assert!(!output.status.success());
         assert!(!output.stderr.is_empty());
     }
+}
+
+#[test]
+fn economy_export_keeps_forecast_actual_contracts_and_accounts_distinct() {
+    let path = std::env::temp_dir().join(format!("bts-economy-test-{}.json", std::process::id()));
+    let run = || {
+        Command::new(env!("CARGO_BIN_EXE_bts-cli"))
+            .args(["economy", "--json"])
+            .arg(&path)
+            .output()
+            .unwrap()
+    };
+    let output = run();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let summary = String::from_utf8(output.stdout).unwrap();
+    for phrase in [
+        "mass-broad",
+        "specialist-targeted",
+        "profit",
+        "remaining budget",
+        "Demand pressure",
+        "recovery after 48h",
+        "forecast",
+        "actual",
+    ] {
+        assert!(summary.contains(phrase), "missing {phrase}");
+    }
+    let bytes = fs::read(&path).unwrap();
+    let reports: Value = serde_json::from_slice(&bytes).unwrap();
+    assert_eq!(reports.as_array().unwrap().len(), 4);
+    for report in reports.as_array().unwrap() {
+        assert_eq!(report["schema_version"], 2);
+        assert_eq!(report["offers"].as_array().unwrap().len(), 12);
+        assert_eq!(report["finances"]["total_money"], 80000);
+        assert!(report["offers"][0]["audiences"][0]["effectiveness"]["rules"].is_array());
+        let budget = report["recovery_quote"]["demand"]["available_budget"]
+            .as_u64()
+            .unwrap();
+        assert!(report["recovery_quote"]["payment"].as_u64().unwrap() <= budget);
+        assert!(
+            report["recovery_quote"]["demand"]["pressure"]
+                .as_f64()
+                .unwrap()
+                > report["demand_after_campaigns"]["pressure"]
+                    .as_f64()
+                    .unwrap()
+        );
+        assert!(!report["contracts"].as_array().unwrap().is_empty());
+        for contract in report["contracts"].as_array().unwrap() {
+            assert!(contract["offer"]["forecast_relevant_delivery"].is_number());
+            assert!(contract["actual"]["credited_units"].is_u64());
+            let settlement = &contract["status"]["Settled"];
+            assert_eq!(
+                settlement["payment"].as_u64().unwrap() + settlement["refund"].as_u64().unwrap(),
+                contract["offer"]["payment"].as_u64().unwrap()
+            );
+        }
+    }
+    assert!(run().status.success());
+    assert_eq!(fs::read(&path).unwrap(), bytes);
+    fs::remove_file(path).unwrap();
+    let invalid = Command::new(env!("CARGO_BIN_EXE_bts-cli"))
+        .args(["economy", "--case", "not-a-case"])
+        .output()
+        .unwrap();
+    assert!(!invalid.status.success());
 }

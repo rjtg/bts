@@ -161,7 +161,7 @@ fn targeting_changes_hype_at_controlled_reach() {
 fn no_viewers_or_no_ads_means_zero_exposure_driven_hype() {
     let mut world = demo::world();
     for audience in &mut world.audiences {
-        audience.availability = [0.0, 0.0];
+        audience.availability = [0.0; 24];
     }
     let mut sim = Simulation::new(world, Parameters::default()).unwrap();
     let event = sim.step(&first(Case::Broad)).unwrap();
@@ -214,7 +214,7 @@ fn idle_hype_decays_by_elapsed_time_and_saturation_and_repetition_are_bounded() 
     }
     let mut world = demo::world();
     for a in &mut world.audiences {
-        a.availability = [1.0, 1.0];
+        a.availability = [1.0; 24];
     }
     let parameters = Parameters {
         loyalty_learning: 0.0,
@@ -334,7 +334,7 @@ fn invalid_actions_are_atomic_and_configuration_is_validated() {
     let good = first(Case::Broad);
     let mut invalid = vec![
         Slot {
-            at: SimHour(17),
+            at: SimHour(0),
             broadcasts: vec![],
         },
         Slot {
@@ -365,7 +365,7 @@ fn invalid_actions_are_atomic_and_configuration_is_validated() {
     assert_eq!(sim.state(), &state);
     for bad in [f64::NAN, f64::INFINITY, -0.1, 1.1] {
         let mut world = demo::world();
-        world.audiences[0].availability[0] = bad;
+        world.audiences[0].availability[18] = bad;
         assert!(Simulation::new(world, Parameters::default()).is_err());
         assert!(Models::default().attraction(bad, 0.5, 0.5, 0.5).is_err());
     }

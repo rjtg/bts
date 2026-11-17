@@ -152,12 +152,14 @@ pub struct SlotReport {
     pub elapsed_hours: u32,
     pub allocations: Vec<AllocationReport>,
     pub hype: Vec<HypeReport>,
+    pub financial: crate::economy::FinancialEvent,
 }
 impl From<&SlotEvent> for SlotReport {
     fn from(event: &SlotEvent) -> Self {
         Self {
             action: event.action.clone(),
             elapsed_hours: event.elapsed_hours,
+            financial: event.financial.clone(),
             allocations: event
                 .allocations
                 .iter()
@@ -379,5 +381,187 @@ pub fn report(run: &ExperimentRun) -> DeveloperReport {
             }
         })
         .collect();
-    DeveloperReport {schema_version:1,audience_scope:"Developer only: actual inputs and internal causal evidence; viewer-slot impressions are not unique reach".into(),case:run.case.clone(),initial_world:run.world.clone(),parameters:run.parameters,initial_hype:5.0,initial_willingness:0.5,initial_repetition:0.0,initial_hour:SimHour(0),summary:Summary {stations,first_station_return:returns,brands},slots:run.events.iter().map(SlotReport::from).collect()}
+    DeveloperReport {schema_version:2,audience_scope:"Developer only: actual inputs and internal causal evidence; viewer-slot impressions are not unique reach".into(),case:run.case.clone(),initial_world:run.world.clone(),parameters:run.parameters,initial_hype:5.0,initial_willingness:0.5,initial_repetition:0.0,initial_hour:SimHour(0),summary:Summary {stations,first_station_return:returns,brands},slots:run.events.iter().map(SlotReport::from).collect()}
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct ForecastAudienceReport {
+    pub audience: AudienceId,
+    pub priority: f64,
+    pub expected_viewers: f64,
+    pub effectiveness: FuzzyReport,
+    pub relevant_delivery: f64,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct OfferReport {
+    pub brand: BrandId,
+    pub station: StationId,
+    pub proposal: Slot,
+    pub deadline: SimHour,
+    pub demand: crate::economy::Demand,
+    pub audiences: Vec<ForecastAudienceReport>,
+    pub forecast_relevant_delivery: f64,
+    pub promised_whole_delivery: u64,
+    pub rate_per_thousand: crate::economy::Money,
+    pub maximum_offer: crate::economy::Money,
+    pub uncapped_price: f64,
+    pub payment: crate::economy::Money,
+}
+impl From<&crate::economy::Offer> for OfferReport {
+    fn from(offer: &crate::economy::Offer) -> Self {
+        Self {
+            brand: offer.brand,
+            station: offer.station,
+            proposal: offer.proposal().clone(),
+            deadline: offer.deadline,
+            demand: offer.demand.clone(),
+            audiences: offer
+                .forecast
+                .audiences
+                .iter()
+                .map(|a| ForecastAudienceReport {
+                    audience: a.audience,
+                    priority: a.priority,
+                    expected_viewers: a.viewers,
+                    effectiveness: (&a.effectiveness).into(),
+                    relevant_delivery: a.relevant_delivery,
+                })
+                .collect(),
+            forecast_relevant_delivery: offer.forecast.relevant_delivery,
+            promised_whole_delivery: offer.promised_delivery,
+            rate_per_thousand: offer.rate_per_thousand,
+            maximum_offer: offer.maximum_offer,
+            uncapped_price: offer.uncapped_price,
+            payment: offer.payment,
+        }
+    }
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct ContractReport {
+    pub id: crate::economy::ContractId,
+    pub offer: OfferReport,
+    pub actual: crate::economy::ActualDelivery,
+    pub delivered_at: Option<SimHour>,
+    pub status: crate::economy::ContractStatus,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct StationFinance {
+    pub station: StationId,
+    pub initial_cash: crate::economy::Money,
+    pub cash: crate::economy::Money,
+    pub revenue: u128,
+    pub broadcast_costs: u128,
+    pub profit: i128,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct BrandFinance {
+    pub brand: BrandId,
+    pub initial_budget: crate::economy::Money,
+    pub remaining_budget: crate::economy::Money,
+    pub unsettled_escrow: u128,
+    pub spent: u128,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct FinancialReport {
+    pub stations: Vec<StationFinance>,
+    pub brands: Vec<BrandFinance>,
+    pub cost_sink: crate::economy::Money,
+    pub total_money: u128,
+    pub ledger: Vec<crate::economy::LedgerEntry>,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct EconomyReport {
+    pub schema_version: u32,
+    pub kind: String,
+    pub brand: BrandId,
+    pub broadcasts: DeveloperReport,
+    pub offers: Vec<OfferReport>,
+    pub accepted: Vec<Option<crate::economy::ContractId>>,
+    pub recovery_quote: OfferReport,
+    pub before_cooling_quote: OfferReport,
+    pub demand_after_campaigns: crate::economy::Demand,
+    pub contracts: Vec<ContractReport>,
+    pub finances: FinancialReport,
+}
+pub fn economy_report(run: &crate::economy_demo::Run) -> EconomyReport {
+    use crate::economy::{Account, ContractStatus};
+    let book = run.experiment.final_state.economy();
+    let stations = run
+        .experiment
+        .world
+        .stations
+        .iter()
+        .map(|s| {
+            let cash = book.cash(s.id).unwrap();
+            StationFinance {
+                station: s.id,
+                initial_cash: s.initial_cash,
+                cash,
+                revenue: book
+                    .ledger()
+                    .iter()
+                    .filter(|e| e.to == Account::Station(s.id))
+                    .map(|e| u128::from(e.amount.0))
+                    .sum(),
+                broadcast_costs: book
+                    .ledger()
+                    .iter()
+                    .filter(|e| e.from == Account::Station(s.id))
+                    .map(|e| u128::from(e.amount.0))
+                    .sum(),
+                profit: i128::from(cash.0) - i128::from(s.initial_cash.0),
+            }
+        })
+        .collect();
+    let brands = run
+        .experiment
+        .world
+        .brands
+        .iter()
+        .map(|b| {
+            let remaining_budget = book.budget(b.id).unwrap();
+            let unsettled_escrow = book
+                .contracts()
+                .filter(|c| c.offer.brand == b.id && matches!(c.status, ContractStatus::Reserved))
+                .map(|c| u128::from(c.offer.payment.0))
+                .sum::<u128>();
+            BrandFinance {
+                brand: b.id,
+                initial_budget: b.marketing_budget,
+                remaining_budget,
+                unsettled_escrow,
+                spent: u128::from(b.marketing_budget.0)
+                    - u128::from(remaining_budget.0)
+                    - unsettled_escrow,
+            }
+        })
+        .collect();
+    EconomyReport {
+        schema_version: 2,
+        kind: "advertising_economy_developer_only".into(),
+        brand: run.brand,
+        broadcasts: report(&run.experiment),
+        offers: run.rounds.iter().map(|r| (&r.offer).into()).collect(),
+        accepted: run.rounds.iter().map(|r| r.accepted).collect(),
+        recovery_quote: (&run.recovery).into(),
+        before_cooling_quote: (&run.before_cooling_quote).into(),
+        demand_after_campaigns: run.demand_after_campaigns.clone(),
+        contracts: book
+            .contracts()
+            .map(|c| ContractReport {
+                id: c.id,
+                offer: (&c.offer).into(),
+                actual: c.actual.clone(),
+                delivered_at: c.delivered_at,
+                status: c.status.clone(),
+            })
+            .collect(),
+        finances: FinancialReport {
+            stations,
+            brands,
+            cost_sink: book.cost_sink(),
+            total_money: book.total_money(),
+            ledger: book.ledger().to_vec(),
+        },
+    }
 }

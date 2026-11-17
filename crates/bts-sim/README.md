@@ -1,37 +1,48 @@
 # bts-sim
 
-The first bounded headless broadcasting experiment. This is not a complete
-station-management game. The authoritative provisional equations, units,
-parameters, update order, and evidence are in
-[the experiment specification](../../docs/headless-experiment.md).
+A bounded headless broadcasting economy, not a complete management game.
+See the [broadcasting model](../../docs/headless-experiment.md) and
+[economy specification](../../docs/advertising-economy.md) for provisional
+rules, equations, units, rounding, update order, results and limits.
 
-`Simulation::new(World, Parameters)` validates ordinary Rust configuration and
-initializes private state. `Simulation::step(&Slot)` validates an ordered fixed
-action, computes all choices from one pre-broadcast snapshot, then commits
-loyalty, hype, repetition and explicit `SimHour`. Failed actions do not mutate
-state. `State` getters are developer inspection, not player observations.
+`Simulation::new(World, Parameters)` validates Rust configuration and initializes
+private biological/economic state. Collection sizes are unrestricted; empty
+collections are valid subject to references. Availability is a 24-hour array;
+any strictly increasing integer simulated hour can be resolved. Demos retain
+three groups, two stations, four programmes, two brands and 18:00/21:00 slots.
 
-`models::Models` owns TV-specific attraction, satisfaction, and ad-effectiveness
-rules. Every gradual response uses complementary low/high rules because a
-single active Sugeno rule always returns its constant consequent.
+`Simulation::step(&Slot)` reads common pre-slot loyalty, partitions each audience
+between stations and not watching, updates satisfaction/return willingness and
+hype, charges integer broadcast costs, records contract delivery, settles due
+contracts and commits atomically. Failed actions leave all state untouched.
+`State` inspection getters are developer tools, not player observations.
 
-`demo::{world, schedule, run}` supplies three groups, two stations, four
-programmes, two brands and the three comparison cases. `developer::report`
-converts immutable causal events to explicit serializable developer DTOs;
-there is no state serialization, file I/O, wall clock, or randomness here.
+`models::Models` owns TV rules including two conditional interactions and
+creative-gated advertising effectiveness. Complementary low/high rules preserve
+gradual Sugeno responses. Effective weights are never confidence/probabilities.
+
+`Simulation::{demand, quote}` expose actual target priorities, current/desired
+hype, capped demand, forecast audience delivery and full fuzzy evaluations.
+`accept_offer` revalidates a fresh quote, reserves finite marketing budget and
+one station/hour ad slot. Deadlines settle actual delivery using exact integer
+pro-rata payment and refunds. `State::economy()` exposes immutable contracts,
+balances, escrow and the balanced transfer ledger. No credit or replenishment
+is available. Broadcasts need cash before same-slot settlement.
+
+`demo` keeps the original unpaid-ad experiments. `economy_demo` compares both
+advertiser types under both schedules, followed by decay and a recovery quote.
+`developer::{report, economy_report}` convert immutable causal evidence to
+schema-version-2 JSON-ready DTOs. Internal state is not serializable. Simulation
+uses no filesystem I/O, rendering, wall clock or randomness.
 
 ```sh
 cargo test -p bts-sim
 cargo run -p bts-sim --example sugeno_semantics
-cargo run -p bts-cli -- demo --json /tmp/bts-demo-results.json
+cargo run -p bts-cli -- economy --json /tmp/bts-economy.json
 ```
 
-Expected viewers are fractional and conserve each group's population per
-slot. Series willingness is group-level, not identified returning people.
-Hype points stay in [0,100]; zero actual ad viewers imply zero campaign gain.
-All input traits are finite unit intervals; parameters and actions are checked.
-Configuration currently requires exactly three groups, two stations and two
-brands. The two daily broadcast timestamps are 18:00 and 21:00. These limits
-are deliberate; there is no general content-loading framework.
-
-Publication remains disabled and licensing is unchanged.
+Viewers are fractional expectations, not unique individual reach. Hype is
+bounded [0,100]; zero ad exposure implies zero campaign gain. Contract units
+are floored weighted relevant impressions, not rounded raw people. Models and
+costs are provisional; no balance or real-world validity is established.
+Publication stays disabled; licensing is unchanged.

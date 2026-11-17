@@ -31,8 +31,8 @@ fn high(key: Feature) -> Condition<Feature> {
         Membership::rising(0.0, 1.0).expect("fixed valid curve"),
     )
 }
-fn paired(features: &[(Feature, f64)]) -> RuleSet<Feature> {
-    let rules = features
+fn paired(features: &[(Feature, f64)]) -> Vec<Rule<Feature>> {
+    features
         .iter()
         .flat_map(|(feature, weight)| {
             let weight = Degree::new(*weight).expect("fixed valid weight");
@@ -47,36 +47,71 @@ fn paired(features: &[(Feature, f64)]) -> RuleSet<Feature> {
                 Rule::new(format!("{feature:?}: high"), high(*feature), weight, 1.0).unwrap(),
             ]
         })
-        .collect();
-    RuleSet::new(rules, 0.0).expect("finite fallback")
+        .collect()
 }
 
+fn interaction(
+    rules: &mut Vec<Rule<Feature>>,
+    name: &str,
+    condition: Condition<Feature>,
+    weight: f64,
+) {
+    let weight = Degree::new(weight).unwrap();
+    rules.push(
+        Rule::new(
+            format!("{name}: low"),
+            condition.clone().negate(),
+            weight,
+            0.0,
+        )
+        .unwrap(),
+    );
+    rules.push(Rule::new(format!("{name}: high"), condition, weight, 1.0).unwrap());
+}
 impl Default for Models {
     fn default() -> Self {
-        let relevant = high(Feature::ProductInterest).and(
-            high(Feature::Affordability)
-                .and(high(Feature::CreativeQuality).or(high(Feature::Satisfaction))),
+        let mut attraction = paired(&[
+            (Feature::GenreFit, 0.35),
+            (Feature::ToneFit, 0.10),
+            (Feature::Awareness, 0.30),
+            (Feature::CastAppeal, 0.25),
+        ]);
+        interaction(
+            &mut attraction,
+            "cast with genre fit",
+            high(Feature::GenreFit).and(high(Feature::CastAppeal)),
+            0.25,
+        );
+        let mut satisfaction = paired(&[
+            (Feature::GenreFit, 0.15),
+            (Feature::ToneFit, 0.15),
+            (Feature::Execution, 0.70),
+        ]);
+        interaction(
+            &mut satisfaction,
+            "execution with genre fit",
+            high(Feature::GenreFit).and(high(Feature::Execution)),
+            0.30,
+        );
+        let creative = high(Feature::ProductInterest)
+            .and(high(Feature::Affordability).and(high(Feature::CreativeQuality)));
+        let mut advertising = Vec::new();
+        interaction(
+            &mut advertising,
+            "relevant creative",
+            creative.clone(),
+            0.75,
+        );
+        interaction(
+            &mut advertising,
+            "context supports creative",
+            creative.and(high(Feature::Satisfaction)),
+            0.25,
         );
         Self {
-            attraction: paired(&[
-                (Feature::GenreFit, 0.35),
-                (Feature::ToneFit, 0.10),
-                (Feature::Awareness, 0.30),
-                (Feature::CastAppeal, 0.25),
-            ]),
-            satisfaction: paired(&[
-                (Feature::GenreFit, 0.15),
-                (Feature::ToneFit, 0.15),
-                (Feature::Execution, 0.70),
-            ]),
-            advertising: RuleSet::new(
-                vec![
-                    Rule::new("ineffective", relevant.clone().negate(), Degree::ONE, 0.0).unwrap(),
-                    Rule::new("relevant and effective", relevant, Degree::ONE, 1.0).unwrap(),
-                ],
-                0.0,
-            )
-            .unwrap(),
+            attraction: RuleSet::new(attraction, 0.0).unwrap(),
+            satisfaction: RuleSet::new(satisfaction, 0.0).unwrap(),
+            advertising: RuleSet::new(advertising, 0.0).unwrap(),
         }
     }
 }

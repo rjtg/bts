@@ -4,7 +4,7 @@ use bts_sim::{
 };
 use std::{env, error::Error, fs, path::PathBuf};
 
-const HELP:&str="Usage: bts-cli demo [--case all|broad|targeted|disappointing] [--json PATH] [--trace]\n\nDeterministic developer experiment. JSON contains full inputs, rules and traces.\nCounts are viewer-slot impressions; they are not cumulative unique reach.";
+const HELP: &str = "Usage: bts-cli demo [--case all|broad|targeted|disappointing] [--json PATH] [--trace]\n       bts-cli economy [--case all|mass-broad|mass-targeted|specialist-broad|specialist-targeted] [--json PATH] [--trace]\n\nDeterministic developer experiments. JSON includes inputs, traces and economy accounts.\nCounts are viewer-slot impressions, not cumulative unique reach.";
 
 fn summary(report: &DeveloperReport) {
     println!("\n{} (identical initial state and competitor)", report.case);
@@ -91,14 +91,15 @@ fn trace(report: &DeveloperReport) {
 }
 fn run() -> Result<(), Box<dyn Error>> {
     let mut args = env::args().skip(1);
-    match args.next().as_deref() {
+    let economy = match args.next().as_deref() {
         Some("--help" | "-h") => {
             println!("{HELP}");
             return Ok(());
         }
-        Some("demo") => {}
+        Some("demo") => false,
+        Some("economy") => true,
         _ => return Err(HELP.into()),
-    }
+    };
     let mut selection = "all".to_string();
     let mut json: Option<PathBuf> = None;
     let mut verbose = false;
@@ -113,6 +114,96 @@ fn run() -> Result<(), Box<dyn Error>> {
             }
             _ => return Err(format!("unknown argument {arg:?}\n{HELP}").into()),
         }
+    }
+    if economy {
+        use bts_sim::economy_demo;
+        let cases: Vec<_> = economy_demo::Case::ALL
+            .into_iter()
+            .filter(|c| selection == "all" || selection == c.name())
+            .collect();
+        if cases.is_empty() {
+            return Err(format!("unknown economy case {selection:?}\n{HELP}").into());
+        }
+        let reports = cases
+            .into_iter()
+            .map(|case| economy_demo::run(case).map(|run| developer::economy_report(&run)))
+            .collect::<Result<Vec<_>, _>>()?;
+        println!("Developer-only advertiser-funded economy. Integer credits; provisional coefficients.\nActual targeting/hype are internal evidence, not player research.");
+        for report in &reports {
+            summary(&report.broadcasts);
+            for station in &report.finances.stations {
+                println!(
+                    "  {:?}: revenue {}, broadcast costs {}, profit {}, cash {}",
+                    station.station,
+                    station.revenue,
+                    station.broadcast_costs,
+                    station.profit,
+                    station.cash.0
+                );
+            }
+            for brand in &report.finances.brands {
+                println!(
+                    "  {:?}: spent {}, remaining budget {}, escrow {}",
+                    brand.brand, brand.spent, brand.remaining_budget.0, brand.unsettled_escrow
+                );
+            }
+            if let (Some(first), Some(last)) = (report.offers.first(), report.offers.last()) {
+                println!(
+                    "  Demand pressure {:.4} -> {:.4}; recovery after 48h {:.4} (budget {})",
+                    first.demand.pressure,
+                    report.demand_after_campaigns.pressure,
+                    report.recovery_quote.demand.pressure,
+                    report.recovery_quote.demand.available_budget.0
+                );
+                println!("  First forecast {:.2} relevant impressions, promised {}, offer {} credits; final offer {}; recovery offer {}",first.forecast_relevant_delivery,first.promised_whole_delivery,first.payment.0,last.payment.0,report.recovery_quote.payment.0);
+            }
+            println!("  Same future-slot quote before/after decay: {} -> {} credits; forecast delivery unchanged at {:.2}",report.before_cooling_quote.payment.0,report.recovery_quote.payment.0,report.recovery_quote.forecast_relevant_delivery);
+            let forecast_total = report
+                .contracts
+                .iter()
+                .map(|c| c.offer.forecast_relevant_delivery)
+                .sum::<f64>();
+            let actual_total = report
+                .contracts
+                .iter()
+                .map(|c| c.actual.relevant_delivery)
+                .sum::<f64>();
+            println!("  Accepted campaign target delivery: forecast {:.2}, actual {:.2} relevant impressions",forecast_total,actual_total);
+            if verbose {
+                trace(&report.broadcasts);
+                for offer in &report.offers {
+                    println!(
+                        "  Quote hour {}: demand {:?}, price {:.3} -> {} credits",
+                        offer.proposal.at.0, offer.demand, offer.uncapped_price, offer.payment.0
+                    );
+                    for audience in &offer.audiences {
+                        println!(
+                            "    forecast {:?}: priority {}, viewers {:.2}, relevant {:.2}; {:?}",
+                            audience.audience,
+                            audience.priority,
+                            audience.expected_viewers,
+                            audience.relevant_delivery,
+                            audience.effectiveness
+                        );
+                    }
+                }
+                for contract in &report.contracts {
+                    println!(
+                        "  Contract {:?}: actual {:?}, status {:?}",
+                        contract.id, contract.actual, contract.status
+                    );
+                }
+                for entry in &report.finances.ledger {
+                    println!("  Ledger {:?}", entry);
+                }
+            }
+        }
+        println!("\nControlled comparisons: reach, target delivery and station profit can favour different schedules.\nDemand recovery cannot replenish spent budget. Hype is not advertiser sales; no universal winner is claimed.");
+        if let Some(path) = json {
+            fs::write(&path, serde_json::to_vec_pretty(&reports)?)?;
+            println!("\nWrote full developer JSON to {}", path.display());
+        }
+        return Ok(());
     }
     let cases: Vec<_> = Case::ALL
         .into_iter()

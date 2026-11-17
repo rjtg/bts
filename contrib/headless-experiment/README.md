@@ -1,5 +1,10 @@
 # Headless experiment results
 
+Historical schema-1 output from commit `b74d453`, before the reviewed fuzzy
+interactions and advertiser-funded economy. Current code emits schema 2 with
+different rules/results. Reproduce these exact artifacts from that commit;
+the command below produces current results when run on current code.
+
 Developer-only output from the first bounded broadcasting experiment, using
 identical initial conditions for the broad, targeted, and disappointing cases.
 All parameters are provisional. These results do not establish economic value,

@@ -1,0 +1,2544 @@
+{
+  "schema_version": 2,
+  "kind": "advertising_economy_comparison",
+  "runs": [
+    {
+      "case": "mass-broad",
+      "brand": 1,
+      "station_audience_summary": [
+        {
+          "station": 1,
+          "viewer_slot_impressions": 89570.40084811352,
+          "mean_satisfaction": 0.7887851548243552
+        },
+        {
+          "station": 2,
+          "viewer_slot_impressions": 60043.06855756565,
+          "mean_satisfaction": 0.7049644379634947
+        }
+      ],
+      "finances": {
+        "stations": [
+          {
+            "station": 1,
+            "initial_cash": 20000,
+            "cash": 20662,
+            "revenue": 2462,
+            "broadcast_costs": 1800,
+            "profit": 662
+          },
+          {
+            "station": 2,
+            "initial_cash": 20000,
+            "cash": 18800,
+            "revenue": 0,
+            "broadcast_costs": 1200,
+            "profit": -1200
+          }
+        ],
+        "brands": [
+          {
+            "brand": 1,
+            "initial_budget": 20000,
+            "remaining_budget": 17538,
+            "unsettled_escrow": 0,
+            "spent": 2462
+          },
+          {
+            "brand": 2,
+            "initial_budget": 20000,
+            "remaining_budget": 20000,
+            "unsettled_escrow": 0,
+            "spent": 0
+          }
+        ],
+        "cost_sink": 3000,
+        "total_money": 80000,
+        "ledger": [
+          {
+            "at": 0,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 1
+            },
+            "amount": 1640,
+            "reason": "Reserve"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Escrow": 1
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 1640,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 2
+            },
+            "amount": 449,
+            "reason": "Reserve"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Escrow": 2
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 449,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 3
+            },
+            "amount": 184,
+            "reason": "Reserve"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Escrow": 3
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 184,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 4
+            },
+            "amount": 26,
+            "reason": "Reserve"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Escrow": 4
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 26,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 5
+            },
+            "amount": 22,
+            "reason": "Reserve"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Escrow": 5
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 22,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 6
+            },
+            "amount": 18,
+            "reason": "Reserve"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Escrow": 6
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 18,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 7
+            },
+            "amount": 23,
+            "reason": "Reserve"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Escrow": 7
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 23,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 8
+            },
+            "amount": 18,
+            "reason": "Reserve"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Escrow": 8
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 18,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 9
+            },
+            "amount": 23,
+            "reason": "Reserve"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Escrow": 9
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 23,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 10
+            },
+            "amount": 18,
+            "reason": "Reserve"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Escrow": 10
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 18,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 11
+            },
+            "amount": 23,
+            "reason": "Reserve"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Escrow": 11
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 23,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 12
+            },
+            "amount": 18,
+            "reason": "Reserve"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Escrow": 12
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 18,
+            "reason": "DeliveryPayment"
+          }
+        ]
+      },
+      "initial_demand": {
+        "brand": 1,
+        "at": 0,
+        "targets": [
+          {
+            "audience": 1,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 5.0,
+            "deficit": 0.35,
+            "weighted_deficit": 0.35
+          },
+          {
+            "audience": 2,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 5.0,
+            "deficit": 0.35,
+            "weighted_deficit": 0.35
+          },
+          {
+            "audience": 3,
+            "priority": 0.1,
+            "desired_hype": 15.0,
+            "current_hype": 5.0,
+            "deficit": 0.1,
+            "weighted_deficit": 0.010000000000000002
+          }
+        ],
+        "total_priority": 2.1,
+        "pressure": 0.33809523809523806,
+        "available_budget": 20000
+      },
+      "demand_after_campaigns": {
+        "brand": 1,
+        "at": 141,
+        "targets": [
+          {
+            "audience": 1,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 54.361032694346626,
+            "deficit": 0.0,
+            "weighted_deficit": 0.0
+          },
+          {
+            "audience": 2,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 47.73531374077921,
+            "deficit": 0.0,
+            "weighted_deficit": 0.0
+          },
+          {
+            "audience": 3,
+            "priority": 0.1,
+            "desired_hype": 15.0,
+            "current_hype": 5.506504850976877,
+            "deficit": 0.09493495149023122,
+            "weighted_deficit": 0.009493495149023123
+          }
+        ],
+        "total_priority": 2.1,
+        "pressure": 0.004520711975725297,
+        "available_budget": 17538
+      },
+      "recovered_demand": {
+        "brand": 1,
+        "at": 189,
+        "targets": [
+          {
+            "audience": 1,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 27.180516347173313,
+            "deficit": 0.12819483652826688,
+            "weighted_deficit": 0.12819483652826688
+          },
+          {
+            "audience": 2,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 23.867656870389606,
+            "deficit": 0.16132343129610394,
+            "weighted_deficit": 0.16132343129610394
+          },
+          {
+            "audience": 3,
+            "priority": 0.1,
+            "desired_hype": 15.0,
+            "current_hype": 2.7532524254884385,
+            "deficit": 0.12246747574511561,
+            "weighted_deficit": 0.012246747574511562
+          }
+        ],
+        "total_priority": 2.1,
+        "pressure": 0.1436976263804202,
+        "available_budget": 17538
+      },
+      "same_future_slot_offer_before_decay": 23,
+      "same_future_slot_offer_after_decay": 759,
+      "same_future_slot_forecast_delivery": 6610.889686455284,
+      "accepted_forecast_relevant_delivery": 68145.5057061214,
+      "actual_relevant_delivery": 68145.5057061214
+    },
+    {
+      "case": "mass-targeted",
+      "brand": 1,
+      "station_audience_summary": [
+        {
+          "station": 1,
+          "viewer_slot_impressions": 25195.59233237671,
+          "mean_satisfaction": 0.7069481857844185
+        },
+        {
+          "station": 2,
+          "viewer_slot_impressions": 107747.05939450249,
+          "mean_satisfaction": 0.7006343038533878
+        }
+      ],
+      "finances": {
+        "stations": [
+          {
+            "station": 1,
+            "initial_cash": 20000,
+            "cash": 21672,
+            "revenue": 2272,
+            "broadcast_costs": 600,
+            "profit": 1672
+          },
+          {
+            "station": 2,
+            "initial_cash": 20000,
+            "cash": 18800,
+            "revenue": 0,
+            "broadcast_costs": 1200,
+            "profit": -1200
+          }
+        ],
+        "brands": [
+          {
+            "brand": 1,
+            "initial_budget": 20000,
+            "remaining_budget": 17728,
+            "unsettled_escrow": 0,
+            "spent": 2272
+          },
+          {
+            "brand": 2,
+            "initial_budget": 20000,
+            "remaining_budget": 20000,
+            "unsettled_escrow": 0,
+            "spent": 0
+          }
+        ],
+        "cost_sink": 1800,
+        "total_money": 80000,
+        "ledger": [
+          {
+            "at": 0,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 1
+            },
+            "amount": 350,
+            "reason": "Reserve"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Escrow": 1
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 350,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 2
+            },
+            "amount": 194,
+            "reason": "Reserve"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Escrow": 2
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 194,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 3
+            },
+            "amount": 247,
+            "reason": "Reserve"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Escrow": 3
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 247,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 4
+            },
+            "amount": 161,
+            "reason": "Reserve"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Escrow": 4
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 161,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 5
+            },
+            "amount": 210,
+            "reason": "Reserve"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Escrow": 5
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 210,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 6
+            },
+            "amount": 147,
+            "reason": "Reserve"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Escrow": 6
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 147,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 7
+            },
+            "amount": 193,
+            "reason": "Reserve"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Escrow": 7
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 193,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 8
+            },
+            "amount": 139,
+            "reason": "Reserve"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Escrow": 8
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 139,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 9
+            },
+            "amount": 184,
+            "reason": "Reserve"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Escrow": 9
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 184,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 10
+            },
+            "amount": 135,
+            "reason": "Reserve"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Escrow": 10
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 135,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 11
+            },
+            "amount": 179,
+            "reason": "Reserve"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Escrow": 11
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 179,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 12
+            },
+            "amount": 133,
+            "reason": "Reserve"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Escrow": 12
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 133,
+            "reason": "DeliveryPayment"
+          }
+        ]
+      },
+      "initial_demand": {
+        "brand": 1,
+        "at": 0,
+        "targets": [
+          {
+            "audience": 1,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 5.0,
+            "deficit": 0.35,
+            "weighted_deficit": 0.35
+          },
+          {
+            "audience": 2,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 5.0,
+            "deficit": 0.35,
+            "weighted_deficit": 0.35
+          },
+          {
+            "audience": 3,
+            "priority": 0.1,
+            "desired_hype": 15.0,
+            "current_hype": 5.0,
+            "deficit": 0.1,
+            "weighted_deficit": 0.010000000000000002
+          }
+        ],
+        "total_priority": 2.1,
+        "pressure": 0.33809523809523806,
+        "available_budget": 20000
+      },
+      "demand_after_campaigns": {
+        "brand": 1,
+        "at": 141,
+        "targets": [
+          {
+            "audience": 1,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 20.90629905993494,
+            "deficit": 0.1909370094006506,
+            "weighted_deficit": 0.1909370094006506
+          },
+          {
+            "audience": 2,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 19.18370498797256,
+            "deficit": 0.2081629501202744,
+            "weighted_deficit": 0.2081629501202744
+          },
+          {
+            "audience": 3,
+            "priority": 0.1,
+            "desired_hype": 15.0,
+            "current_hype": 9.217044852166717,
+            "deficit": 0.057829551478332825,
+            "weighted_deficit": 0.005782955147833283
+          }
+        ],
+        "total_priority": 2.1,
+        "pressure": 0.19280138793750393,
+        "available_budget": 17728
+      },
+      "recovered_demand": {
+        "brand": 1,
+        "at": 189,
+        "targets": [
+          {
+            "audience": 1,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 10.45314952996747,
+            "deficit": 0.2954685047003253,
+            "weighted_deficit": 0.2954685047003253
+          },
+          {
+            "audience": 2,
+            "priority": 1.0,
+            "desired_hype": 40.0,
+            "current_hype": 9.59185249398628,
+            "deficit": 0.3040814750601372,
+            "weighted_deficit": 0.3040814750601372
+          },
+          {
+            "audience": 3,
+            "priority": 0.1,
+            "desired_hype": 15.0,
+            "current_hype": 4.608522426083359,
+            "deficit": 0.10391477573916642,
+            "weighted_deficit": 0.010391477573916643
+          }
+        ],
+        "total_priority": 2.1,
+        "pressure": 0.29044831301637103,
+        "available_budget": 17728
+      },
+      "same_future_slot_offer_before_decay": 176,
+      "same_future_slot_offer_after_decay": 265,
+      "same_future_slot_forecast_delivery": 1141.2312506429953,
+      "accepted_forecast_relevant_delivery": 11691.841007870002,
+      "actual_relevant_delivery": 11691.841007870002
+    },
+    {
+      "case": "specialist-broad",
+      "brand": 2,
+      "station_audience_summary": [
+        {
+          "station": 1,
+          "viewer_slot_impressions": 89570.40084811352,
+          "mean_satisfaction": 0.7887851548243552
+        },
+        {
+          "station": 2,
+          "viewer_slot_impressions": 60043.06855756565,
+          "mean_satisfaction": 0.7049644379634947
+        }
+      ],
+      "finances": {
+        "stations": [
+          {
+            "station": 1,
+            "initial_cash": 20000,
+            "cash": 20852,
+            "revenue": 2652,
+            "broadcast_costs": 1800,
+            "profit": 852
+          },
+          {
+            "station": 2,
+            "initial_cash": 20000,
+            "cash": 18800,
+            "revenue": 0,
+            "broadcast_costs": 1200,
+            "profit": -1200
+          }
+        ],
+        "brands": [
+          {
+            "brand": 1,
+            "initial_budget": 20000,
+            "remaining_budget": 20000,
+            "unsettled_escrow": 0,
+            "spent": 0
+          },
+          {
+            "brand": 2,
+            "initial_budget": 20000,
+            "remaining_budget": 17348,
+            "unsettled_escrow": 0,
+            "spent": 2652
+          }
+        ],
+        "cost_sink": 3000,
+        "total_money": 80000,
+        "ledger": [
+          {
+            "at": 0,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 1
+            },
+            "amount": 374,
+            "reason": "Reserve"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Escrow": 1
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 374,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 2
+            },
+            "amount": 387,
+            "reason": "Reserve"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Escrow": 2
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 387,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 3
+            },
+            "amount": 222,
+            "reason": "Reserve"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Escrow": 3
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 222,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 4
+            },
+            "amount": 276,
+            "reason": "Reserve"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Escrow": 4
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 276,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 5
+            },
+            "amount": 165,
+            "reason": "Reserve"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Escrow": 5
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 165,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 6
+            },
+            "amount": 231,
+            "reason": "Reserve"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Escrow": 6
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 231,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 7
+            },
+            "amount": 141,
+            "reason": "Reserve"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Escrow": 7
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 141,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 8
+            },
+            "amount": 210,
+            "reason": "Reserve"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Escrow": 8
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 210,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 9
+            },
+            "amount": 129,
+            "reason": "Reserve"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Escrow": 9
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 129,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 10
+            },
+            "amount": 200,
+            "reason": "Reserve"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Escrow": 10
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 200,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 11
+            },
+            "amount": 122,
+            "reason": "Reserve"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Escrow": 11
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 122,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 12
+            },
+            "amount": 195,
+            "reason": "Reserve"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Escrow": 12
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 195,
+            "reason": "DeliveryPayment"
+          }
+        ]
+      },
+      "initial_demand": {
+        "brand": 2,
+        "at": 0,
+        "targets": [
+          {
+            "audience": 3,
+            "priority": 1.0,
+            "desired_hype": 45.0,
+            "current_hype": 5.0,
+            "deficit": 0.4,
+            "weighted_deficit": 0.4
+          },
+          {
+            "audience": 1,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 5.0,
+            "deficit": 0.0,
+            "weighted_deficit": 0.0
+          },
+          {
+            "audience": 2,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 5.0,
+            "deficit": 0.0,
+            "weighted_deficit": 0.0
+          }
+        ],
+        "total_priority": 1.04,
+        "pressure": 0.38461538461538464,
+        "available_budget": 20000
+      },
+      "demand_after_campaigns": {
+        "brand": 2,
+        "at": 141,
+        "targets": [
+          {
+            "audience": 3,
+            "priority": 1.0,
+            "desired_hype": 45.0,
+            "current_hype": 30.271688049097328,
+            "deficit": 0.14728311950902673,
+            "weighted_deficit": 0.14728311950902673
+          },
+          {
+            "audience": 1,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 6.445951927824591,
+            "deficit": 0.0,
+            "weighted_deficit": 0.0
+          },
+          {
+            "audience": 2,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 11.213430757794917,
+            "deficit": 0.0,
+            "weighted_deficit": 0.0
+          }
+        ],
+        "total_priority": 1.04,
+        "pressure": 0.14161838414329492,
+        "available_budget": 17348
+      },
+      "recovered_demand": {
+        "brand": 2,
+        "at": 189,
+        "targets": [
+          {
+            "audience": 3,
+            "priority": 1.0,
+            "desired_hype": 45.0,
+            "current_hype": 15.135844024548664,
+            "deficit": 0.29864155975451334,
+            "weighted_deficit": 0.29864155975451334
+          },
+          {
+            "audience": 1,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 3.2229759639122957,
+            "deficit": 0.017770240360877043,
+            "weighted_deficit": 0.0003554048072175409
+          },
+          {
+            "audience": 2,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 5.606715378897459,
+            "deficit": 0.0,
+            "weighted_deficit": 0.0
+          }
+        ],
+        "total_priority": 1.04,
+        "pressure": 0.2874970813093566,
+        "available_budget": 17348
+      },
+      "same_future_slot_offer_before_decay": 119,
+      "same_future_slot_offer_after_decay": 242,
+      "same_future_slot_forecast_delivery": 240.90897622285723,
+      "accepted_forecast_relevant_delivery": 3426.011313915545,
+      "actual_relevant_delivery": 3426.011313915545
+    },
+    {
+      "case": "specialist-targeted",
+      "brand": 2,
+      "station_audience_summary": [
+        {
+          "station": 1,
+          "viewer_slot_impressions": 25195.59233237671,
+          "mean_satisfaction": 0.7069481857844185
+        },
+        {
+          "station": 2,
+          "viewer_slot_impressions": 107747.05939450249,
+          "mean_satisfaction": 0.7006343038533878
+        }
+      ],
+      "finances": {
+        "stations": [
+          {
+            "station": 1,
+            "initial_cash": 20000,
+            "cash": 22061,
+            "revenue": 2661,
+            "broadcast_costs": 600,
+            "profit": 2061
+          },
+          {
+            "station": 2,
+            "initial_cash": 20000,
+            "cash": 18800,
+            "revenue": 0,
+            "broadcast_costs": 1200,
+            "profit": -1200
+          }
+        ],
+        "brands": [
+          {
+            "brand": 1,
+            "initial_budget": 20000,
+            "remaining_budget": 20000,
+            "unsettled_escrow": 0,
+            "spent": 0
+          },
+          {
+            "brand": 2,
+            "initial_budget": 20000,
+            "remaining_budget": 17339,
+            "unsettled_escrow": 0,
+            "spent": 2661
+          }
+        ],
+        "cost_sink": 1800,
+        "total_money": 80000,
+        "ledger": [
+          {
+            "at": 0,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 1
+            },
+            "amount": 687,
+            "reason": "Reserve"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Escrow": 1
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 687,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 2
+            },
+            "amount": 643,
+            "reason": "Reserve"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Escrow": 2
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 643,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 3
+            },
+            "amount": 255,
+            "reason": "Reserve"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Escrow": 3
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 255,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 4
+            },
+            "amount": 306,
+            "reason": "Reserve"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Escrow": 4
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 306,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 5
+            },
+            "amount": 61,
+            "reason": "Reserve"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Escrow": 5
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 61,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 6
+            },
+            "amount": 156,
+            "reason": "Reserve"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Escrow": 6
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 156,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 7
+            },
+            "amount": 296,
+            "reason": "Reserve"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Escrow": 7
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 296,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 8
+            },
+            "amount": 41,
+            "reason": "Reserve"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Escrow": 8
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 41,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 9
+            },
+            "amount": 136,
+            "reason": "Reserve"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Escrow": 9
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 136,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 10
+            },
+            "amount": 1,
+            "reason": "Reserve"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Escrow": 10
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 1,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 11
+            },
+            "amount": 79,
+            "reason": "Reserve"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Escrow": 11
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 79,
+            "reason": "DeliveryPayment"
+          }
+        ]
+      },
+      "initial_demand": {
+        "brand": 2,
+        "at": 0,
+        "targets": [
+          {
+            "audience": 3,
+            "priority": 1.0,
+            "desired_hype": 45.0,
+            "current_hype": 5.0,
+            "deficit": 0.4,
+            "weighted_deficit": 0.4
+          },
+          {
+            "audience": 1,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 5.0,
+            "deficit": 0.0,
+            "weighted_deficit": 0.0
+          },
+          {
+            "audience": 2,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 5.0,
+            "deficit": 0.0,
+            "weighted_deficit": 0.0
+          }
+        ],
+        "total_priority": 1.04,
+        "pressure": 0.38461538461538464,
+        "available_budget": 20000
+      },
+      "demand_after_campaigns": {
+        "brand": 2,
+        "at": 141,
+        "targets": [
+          {
+            "audience": 3,
+            "priority": 1.0,
+            "desired_hype": 45.0,
+            "current_hype": 48.34272728485351,
+            "deficit": 0.0,
+            "weighted_deficit": 0.0
+          },
+          {
+            "audience": 1,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 2.1606507694358577,
+            "deficit": 0.028393492305641425,
+            "weighted_deficit": 0.0005678698461128285
+          },
+          {
+            "audience": 2,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 3.7251466848516506,
+            "deficit": 0.012748533151483494,
+            "weighted_deficit": 0.0002549706630296699
+          }
+        ],
+        "total_priority": 1.04,
+        "pressure": 0.0007911927972524022,
+        "available_budget": 17339
+      },
+      "recovered_demand": {
+        "brand": 2,
+        "at": 189,
+        "targets": [
+          {
+            "audience": 3,
+            "priority": 1.0,
+            "desired_hype": 45.0,
+            "current_hype": 24.171363642426755,
+            "deficit": 0.20828636357573246,
+            "weighted_deficit": 0.20828636357573246
+          },
+          {
+            "audience": 1,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 1.0803253847179288,
+            "deficit": 0.03919674615282071,
+            "weighted_deficit": 0.0007839349230564143
+          },
+          {
+            "audience": 2,
+            "priority": 0.02,
+            "desired_hype": 5.0,
+            "current_hype": 1.8625733424258253,
+            "deficit": 0.031374266575741744,
+            "weighted_deficit": 0.0006274853315148349
+          }
+        ],
+        "total_priority": 1.04,
+        "pressure": 0.2016324844522151,
+        "available_budget": 17339
+      },
+      "same_future_slot_offer_before_decay": 1,
+      "same_future_slot_offer_after_decay": 431,
+      "same_future_slot_forecast_delivery": 611.0029321715834,
+      "accepted_forecast_relevant_delivery": 7585.68031519364,
+      "actual_relevant_delivery": 7585.68031519364
+    }
+  ]
+}

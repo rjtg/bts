@@ -1,174 +1,156 @@
-# First headless broadcasting experiment
+# Headless broadcasting model
 
-Status: implementation specification for a bounded experiment. All equations,
-content, units, and coefficients below are provisional, not approved balance or
-a resolution of the wider simulation proposals. No randomness is used.
+Status: implemented experimental substrate, with provisional content, equations
+and coefficients. The [advertising economy](advertising-economy.md) now connects
+this model to finite-budget demand, delivery contracts and station finances.
+Neither milestone completes the first-playable game or validates balance.
 
-## Boundary and content
+## Boundary and data
 
-`bts-sim` owns TV rules, configuration, explicit simulated hours, ordered actions,
-state, and immutable developer events. `bts-cli` runs fixed cases and renders
-summaries/JSON. `bts-fuzzy` remains generic and independently extractable.
-Developer report construction is separate from state mutation. Developer reports
-expose actual tastes and model inputs; they are unsuitable for players. Public
-beliefs and a restricted observation layer are not implemented.
+`bts-sim` owns typed world data, explicit integer simulated hours, TV fuzzy
+rules, state transitions and immutable causal events. `bts-cli` runs fixed
+comparisons and renders readable/JSON developer reports. `bts-fuzzy` remains
+generic and independently extractable. Actual state is private and not
+serializable. Report conversion is separate from mutation; reports deliberately
+expose actual tastes/hype and are not a player research interface. Public beliefs
+and restricted player observations are unimplemented.
 
-Three groups: young viewers (6,000), households (11,000), specialists (2,500).
-Each has genre affinities, a preferred tone, two slot availabilities, purchasing
-power, and two product interests. Two stations compete at 18:00 and 21:00 each
-day. Four programmes represent broad comedy, specialist science, promoted but
-poorly executed comedy, and a reliable competing drama. Stable typed identifiers
-explicitly connect programmes to series, broadcasts to stations/programmes/ads,
-loyalty to audience/series, and hype/repetition to brand/audience.
+There are no exact engine entity counts. All collections may be empty, subject
+to typed references: an empty catalogue allows only idle stations; no brands
+means no ads; no audiences means no delivery or paid offers. IDs and per-brand
+target audience IDs must be unique and references must exist. Populations are
+positive u32. Any strictly increasing u32 simulated hour after origin 0 is valid;
+24 hourly availability fractions select by hour modulo 24.
 
-The three cases change only the first station's programme. The competitor,
-ads (specialist equipment at 18:00, everyday snacks at 21:00), times, populations,
-and all initial state are identical. Six days of broadcasts are followed by an
-empty slot 48 hours later, exposing decay without campaign activity. These are
-viewer-slot impressions, not cumulative unique reach. Slots represent snapshots
-of an hour-long broadcast, resolved at the named hour; there is no within-slot
-channel switching, concurrent slot overlap, or individual viewer identity.
+Small fixed fixtures remain in `demo`: young viewers (6,000), households
+(11,000), specialists (2,500), two stations, four programmes and two brands.
+Groups have genre affinities, tone preference, availability, purchasing power
+and product interests. Programmes have genre, tone, awareness, cast appeal and
+execution. The experiment broadcasts at 18:00 and 21:00 for six days and then
+advances 48 idle hours. Each action is an hour-long slot snapshot. There is no
+within-slot switching or individual viewer identity.
 
-## Inputs and fuzzy rules
+`demo` changes only the first station's programme across broad, targeted and
+disappointing cases. The rival, unpaid ad placements (equipment at 18:00,
+snacks at 21:00), initial state and timing stay fixed. `economy_demo` instead
+quotes/accepts one selected advertiser at each broadcast and settles contracts.
+These are separate controlled experiments, with the same broadcasting model.
 
-All feature values are finite in [0,1]. High(x) is the rising ramp from 0 to 1;
-Low(x) is its complement. Each weighted low/high pair contributes constants
-0/1, so the complementary pair's total effective weight is its configured
-weight. The complete evaluator returns a weighted average, never activation
-multiplied by the consequent. Effective-weight sums are neither probabilities
-nor confidence. A focused regression contrasts a lone high rule at x=.25
-(output 1) with a complementary pair (output .25).
+## Fuzzy semantics and interactions
 
-Attraction = weighted fuzzy average of genre affinity (.35), tone fit (.10),
-awareness (.30), and cast appeal (.25). Tone fit = 1 - absolute difference
-between programme tone and audience preference. Execution is deliberately
-absent: promotion and stars may attract viewers to disappointing work.
+All features are finite [0,1]. High(x) is a rising 0..1 ramp; Low(x)=1-High(x).
+AND=min, OR=max, NOT=complement. A complementary low/high pair emitting 0/1
+produces a gradual response. Sugeno computes a weighted average, not activation
+times output. Weight sums are normalization terms, not probabilities/confidence.
+`cargo run -p bts-sim --example sugeno_semantics` demonstrates high-only output
+1 at x=.25 versus complementary output .25. No new feature catalogue was added
+for the reviewed interactions.
 
-Satisfaction = weighted fuzzy average of genre fit (.15), tone fit (.15), and
-execution (.70). Awareness is deliberately absent. These linear initial models
-are intentionally simple fuzzy rule experiments, not calibrated psychology.
+Let g=genre affinity, t=1-|preferred tone-programme tone|, a=awareness,
+c=cast appeal, e=execution. Previous linear scores were
+A0=.35g+.10t+.30a+.25c and S0=.15g+.15t+.70e.
+Current attraction A=(A0+.25*min(g,c))/1.25, with a complementary interaction
+pair for cast appeal AND genre fit. Current satisfaction
+S=(S0+.30*min(g,e))/1.30, with a complementary pair for execution AND fit.
+Fit makes cast/craft useful rather than independently interchangeable points.
+Tests distinguish equal old linear scores by at least .09/.10 in these models.
+Execution still cannot affect attraction; awareness cannot improve satisfaction.
 
-Advertising effectiveness uses a nested condition:
-High(interest) AND (High(affordability) AND
-(High(creative quality) OR High(satisfaction))). A complementary NOT rule emits
-0; the positive rule emits 1, both weight 1. Thus output varies gradually and
-is zero when interest or affordability is zero. Affordability =
-min(1, purchasing power / brand's required purchasing power).
+Ad effectiveness = .75*min(product interest, affordability, creative quality)
++ .25*min(product interest, affordability, creative quality, satisfaction).
+Each term is a nested AND complementary pair with the stated weight.
+Affordability=min(1,purchasing power/brand requirement). Programme satisfaction
+supports an effective ad but cannot replace creative quality. Zero creative,
+interest or affordability gives zero effectiveness. Satisfaction=0 retains the
+base creative response; independent-factor tests cover all four features.
 
-## Slot update order and equations
+## Update order, units and equations
 
-1. Validate the complete action before mutation: increasing legal timestamp,
-   unique known stations, known programmes/brands; configuration and numeric
-   bounds were validated at construction. A failed action leaves state intact.
-2. From previous time to slot time, decay each brand/audience hype H (points,
-   [0,100]) and repetition stock R (expected impressions/person):
-   Hdecay = H * 2^(-elapsed_hours / 48),
-   Rdecay = R * 2^(-elapsed_hours / 24). Initial H=5, R=0.
-3. Read a common pre-broadcast loyalty snapshot L (audience/series, [0,1],
-   initially .5). Utility per station = attraction² * (.2 + 1.6*L).
-   Idle station utility=0. Outside/not-watching utility=.18.
-   Available viewers = population * slot availability.
-   Station viewers = available * utility / (.18 + sum station utilities).
-   Not watching = population - sum station viewers, including unavailable
-   people. Counts are fractional deterministic expectations, not sampled or
-   rounded integer people. Reports also retain available non-viewers.
-4. Compute satisfaction independently. For each audience/series, aggregate
-   both stations before updating once:
-   Lnew = L + .9 * (series viewers/population) * (viewer-weighted satisfaction-L).
-   Unwatched series do not update. This is expected willingness, not tracked
-   individual retention. Subsequent utilities reflect this new willingness.
-5. One ad per broadcast reaches exactly that broadcast's viewers. For each
-   brand/audience, aggregate station exposures before applying any hype pulse:
-   E = sum viewers/population; Q = sum (viewers/population * effectiveness).
-   Dose = .8 * Q / (1+Rdecay).
-   Campaign gain = (100-Hdecay) * (1-exp(-Dose)).
-   Hnew = Hdecay + campaign gain; Rnew = Rdecay + E.
-   Exposure volume is separate from fuzzy effectiveness. Zero viewers implies
-   exactly zero campaign gain. Repetition suppresses marginal response;
-   remaining headroom provides saturation. State is bounded and checked for
-   finite values. Decay and campaign gains are reported separately.
-6. Commit state and explicit time, return a developer event. Report conversion
-   does not mutate state. No filesystem, wall clock, randomness, or rendering
-   occurs in simulation. Rule, audience, station, and brand order is explicit.
+1. Validate the whole action (increasing hour, unique known stations, known
+   programmes/brands). Work on tentative state; errors commit nothing.
+2. Decay brand/audience hype H in [0,100] points and repetition R in expected
+   impressions/person from previous time to this action:
+   Hdecay=H*2^(-elapsed_hours/48), Rdecay=R*2^(-elapsed_hours/24).
+   Initial H=5, R=0. Half-lives are configurable [1,1,000,000] hours.
+3. Use common pre-slot series willingness L in [0,1], initially .5.
+   Station utility = A²*(.2+1.6L); idle utility=0; outside utility=.18.
+   Available viewers = population*hourly availability.
+   Station viewers = available*utility/(outside utility+sum station utilities).
+   Not watching = population-sum station viewers, including unavailable people.
+   Also report available non-viewers. Counts are fractional deterministic
+   expectations, not integer samples or unique reach across time.
+4. Compute satisfaction independently. Aggregate both/all stations for each
+   audience/series, then update once:
+   Lnew=L+.9*(series viewers/population)*(viewer-weighted S-L).
+   Unwatched series do not change. This is group-level willingness, not tracked
+   individual retention. It affects subsequent station utilities.
+5. An ad reaches exactly its broadcast's allocated viewers. Aggregate by
+   brand/audience before updating any hype:
+   E=sum(ad viewers/population), Q=sum(ad viewers/population*effectiveness).
+   Dose=.8*Q/(1+Rdecay); campaign gain=(100-Hdecay)*(1-exp(-Dose)).
+   Hnew=Hdecay+gain, Rnew=Rdecay+E. Saturation uses remaining headroom;
+   repetition reduces marginal response. Zero viewers means exactly zero
+   campaign gain, even if fuzzy effectiveness is positive. R is finite and
+   bounded by the maximum elapsed u32 hour count because each action is at
+   least one hour apart and exposure/person per action is at most one.
+6. Charge broadcast costs from pre-settlement station cash, record actual
+   booked delivery, settle due contracts, then commit time and all state.
+   Quote/accept actions reserve budget/inventory before broadcasts. See the
+   [economy specification](advertising-economy.md) for exact integer rules.
 
-The constants above live in `Parameters` (learning, outside utility, half-lives,
-hype gain) and the TV model rules; content is ordinary Rust data in `demo`.
-Changing data does not require a parser or content-loading framework.
+Other parameter bounds: outside utility positive and <=1; learning [0,1];
+campaign gain [0,5]. Brand purchasing-power requirement is positive normal f64
+and <=1. Inputs, outputs and state are finite and checked. Counts use ordinary
+IEEE-754 rounding, with accounting tests using numerical tolerances. Simulation
+uses no wall clock, filesystem, randomness, rendering or inference service.
 
-## Running and interpreting
+## Run and inspect
 
-Run `cargo run -p bts-cli -- demo` to compare cases. Use
-`cargo run -p bts-cli -- demo --case targeted --json /tmp/targeted.json` for one
-case and a machine-readable export; `--case all` is the default. JSON includes
-configuration, initial assumptions, fixed schedules, fuzzy inputs and complete
-condition/rule traces, allocation, satisfaction, loyalty, and hype decomposition.
-`--trace` prints detailed per-slot diagnostics in addition to the summary.
+```sh
+cargo run -p bts-cli -- demo --json /tmp/bts-demo.json
+cargo run -p bts-cli -- demo --case targeted --trace
+cargo run -p bts-cli -- economy --json /tmp/bts-economy.json
+```
 
-The smaller audience case trades aggregate reach for specialist exposure.
-The disappointing series can attract a premiere without sustaining return
-willingness. Advertising effectiveness comparisons at controlled exposure
-isolate targeting from reach. These experiments establish causal properties
-of this provisional model; they do not prove balance, real behaviour,
-profitability, season viability, or a universal best schedule. No money,
-contracts, production, save files, demographics, AI, or UI are implemented.
+JSON schema version 2 includes configuration, initial assumptions, actions,
+full fuzzy inputs/condition/rule traces, allocations, satisfaction/willingness,
+hype decomposition and financial events. Economy reports add offers, forecast
+versus actual delivery, deadlines, settlements, budgets and the complete ledger.
+This is a developer inspection format, not a stable public protocol or save.
 
-## Observed demo results
-
-With the default data and parameters on Rust 1.98.1:
+Current unpaid-ad demo results (rounded):
 
 | Case | First station viewer-slot impressions | Mean satisfaction | Specialist equipment hype in specialist group |
 | --- | ---: | ---: | ---: |
-| Broad | 91,002 | .798 | 24.07 |
-| Targeted | 30,959 | .784 | 37.58 |
-| Disappointing | 78,311 | .287 | 20.42 |
+| Broad | 89,570 | .789 | 17.17 |
+| Targeted | 25,196 | .707 | 33.37 |
+| Disappointing | 74,131 | .234 | 14.11 |
 
-Hype in this table is measured after the final broadcast, before the cooldown.
-The targeted case delivers higher specialist-group hype while the broad case
-produces higher population-weighted equipment hype (9.72 versus 7.40). Thus
-focusing on the small group sacrifices total reach and some aggregate brand
-response; there is no economic value function deciding which is preferable.
+Hype is before the cooldown. The disappointing series starts with .992
+attraction among young viewers but about .258 satisfaction; their early-slot
+viewers decline from 3,138 to 2,422. Advertising effectiveness and contract
+pricing remain separate from exposure volume. The [economy results](advertising-economy.md)
+show controlled financial comparisons and a cost-sensitivity reversal.
 
-For the disappointing series, young viewers' early-slot audience falls from
-3,113 to 2,545 and willingness falls from .500 to .320. Initial attraction is
-.990 despite satisfaction of .320. The same programme's attraction features
-remain fixed; learning and the competitor's improving loyalty change shares.
-After the final empty 48-hour interval, every brand/group's hype is halved
-with exactly zero campaign-generated gain. The regression example prints
-high-only output 1 at input .25 versus complementary-rule output .25.
+The original schema-1 baseline in `contrib/headless-experiment` belongs to
+commit b74d453, before these review corrections. It is historical evidence,
+not the output of current rules. Its linear-model results (91,002 broad
+impressions, 30,959 targeted) should not be compared as if generated by the
+same model version.
 
-These values are deterministic fixtures, not empirical claims. Alternative
-schedules, initial loyalty, coefficients, heterogeneous individual behaviour,
-unique reach, costs, and long-term competitive balance remain unproven.
+## Verification and limits
 
-## Validation and implementation limits
+Run formatting, workspace all-target tests/doctests, Clippy with warnings
+denied and Rustdoc with warnings denied. CI also runs both generic examples,
+both CLI modes, and all checks on a copied standalone `bts-fuzzy`.
+Tests cover audience conservation, distinct tastes, weak satisfaction despite
+promotion, targeting at controlled exposure, zero-exposure gain, decay/bounds,
+repetition, overlap, snapshot ordering, money/budget/ledger conservation,
+deadlines, inventory, refunds, atomic failures and reproducibility. LSP feedback
+can be stale; compiler/Cargo checks are the fallback.
 
-Local verification on Rust/Cargo 1.98.1 passed 22 integration tests and four
-doctests, formatting, Clippy with warnings denied, and documentation with
-warnings denied. Both runnable examples and the CLI JSON export succeeded.
-A fresh outside-workspace copy of unchanged `bts-fuzzy` passed formatting,
-tests, doctests, Clippy, documentation, and its example offline. LSP diagnostics
-were intermittently stale/timed out; final compiler/Cargo checks passed.
-The extended GitHub Actions workflow has not yet run remotely.
-
-Run `cargo fmt --all -- --check`, `cargo test --workspace --all-targets`,
-`cargo test --workspace --doc`, `cargo clippy --workspace --all-targets -- -D warnings`,
-and `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`.
-CI also runs both examples, the CLI JSON export, and unchanged extraction
-checks for a copied `bts-fuzzy`. The JSON CLI test parses full output and
-checks byte-identical repeated exports; simulation tests check conservation,
-controlled targeting, no-exposure gain, decay/bounds/repetition, common-snapshot
-updates, failed-action atomicity, gradual overlap, and reproducibility.
-
-Numeric configuration is bounded: outside utility is positive and at most 1;
-learning is [0,1]; half-lives are [1,1,000,000] hours; campaign gain is [0,5].
-Required purchasing power is positive normal `f64` and at most 1. Populations
-are positive `u32`; tastes and programme/brand traits are finite [0,1]. Time is
-an absolute `u32` hour, strictly increasing at the two supported daily slots.
-The engine validates first and commits after finite/bound checks; numerical
-failure leaves the old state intact. Expected counts use ordinary floating
-point and are compared within tolerances, not rounded into whole viewers.
-
-No model here identifies individuals, models beliefs, predicts sales, stores
-saves, or proves game balance. Developer JSON schema version 1 is an inspection
-format, not a stable public protocol. Publication stays disabled; licensing
-is unchanged.
+Parameters, tastes and rates are invented experimental inputs. No empirical
+validity, unique reach, individual retention, optimal strategy, stable long-run
+balance or full-season viability is established. No production, general market,
+politics, demographics, AI, saves or TUI is implemented. Publication remains
+disabled and licensing unchanged.

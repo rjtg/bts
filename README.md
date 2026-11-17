@@ -23,16 +23,18 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [First playable](docs/first-playable.md): a bounded proposal and acceptance criteria.
 - [Open questions](docs/open-questions.md): unresolved decisions and experiments.
 - [Architecture decisions](docs/architecture.md): crate boundaries and extraction plan.
-- [Headless experiment](docs/headless-experiment.md): implemented provisional equations, demo commands, and evidence.
+- [Headless experiment](docs/headless-experiment.md): broadcasting equations and developer reports.
+- [Advertising economy](docs/advertising-economy.md): provisional demand, contracts, accounting, and comparisons.
 - [Contributor guidance](AGENTS.md): implementation principles for people and coding agents.
 
 ## Status
 
-Design baseline and initial Cargo workspace, November 2026. The independent [`bts-fuzzy`](crates/bts-fuzzy/README.md) crate implements zero-order Sugeno inference, validated membership curves, nested conditions, traces, and an authoring macro. The first bounded headless broadcasting experiment is implemented in `bts-sim`, with a `bts-cli` comparison runner and developer JSON reports. The season loop and player interface are not implemented. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. No engine, UI framework, or AI model has been selected.
+Design baseline and initial Cargo workspace, November 2026. The independent [`bts-fuzzy`](crates/bts-fuzzy/README.md) crate implements zero-order Sugeno inference, validated membership curves, nested conditions, traces, and an authoring macro. A bounded headless broadcasting economy is implemented in `bts-sim`, with audience choice, hype-driven advertiser demand, delivery contracts and integer station finances. `bts-cli` provides controlled comparisons and developer JSON reports. The season loop and player interface are not implemented. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. No engine, UI framework, or AI model has been selected.
 
 ## Run the broadcasting experiment
 
 ```sh
+cargo run -p bts-cli -- economy --json /tmp/bts-economy.json
 cargo run -p bts-cli -- demo --json /tmp/bts-demo-results.json
 cargo run -p bts-cli -- demo --case targeted --trace
 cargo run -p bts-sim --example sugeno_semantics
@@ -43,3 +45,10 @@ a smaller specialist audience, and a promoted but disappointing series. Reports
 are developer-only and include actual hidden inputs. Counts are expected
 viewer-slot impressions, not cumulative unique reach. Coefficients are
 provisional; hype does not represent sales or revenue.
+
+The `economy` comparisons pair mass-market/specialist advertisers with broad/
+targeted programmes from identical starting conditions. Prices are capped by
+finite budgets, accepted offers reserve escrow, actual target delivery settles
+at a deadline, and broadcast costs reduce integer station cash. Inspect the
+ledger and forecast/actual breakdown with `--trace`. Hype is internal developer
+evidence; no finished player research interface is implied.

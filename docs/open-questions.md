@@ -10,7 +10,7 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
 | Time and pacing | Daily planning, broadcasts by slot | Compare workload and production lead times in a short season |
 | World setting | Fictional world with an 80s identity | Choose before writing substantial political or historical content |
 | Format depth | Scripted series plus basic interviews | Verify both fit shared audience and scheduling systems |
-| Advertising payment | Target-audience delivery contracts; hype affects demand and renewals | Compare clarity, incentives, and exploit risks with hype-based fees |
+| Advertising payment | Provisional delivery contracts implemented with deadline, escrow, capped offers and proportional underdelivery refunds; hype affects demand | Compare clarity, incentives, costs and exploit risks; see [economy experiment](advertising-economy.md). Permanent contract design remains open |
 | Hype versus awareness | Separate fast hype and slower awareness if justified | Test whether one variable makes established brands implausibly vanish |
 | Audience choice | Deterministic expected-share allocation with not-watching implemented as a provisional headless experiment; later stochastic choice remains open | Check accounting, smoothness, and diversity of outcomes; see [experiment](headless-experiment.md) |
 | Fuzzy semantics | Zero-order Sugeno, min/max/complement, explicit fallback, validation, traces and macros implemented | TV rule calibration remains experimental; see [experiment](headless-experiment.md) |

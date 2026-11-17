@@ -1,27 +1,33 @@
 # bts-cli
 
-Run and inspect the fixed headless broadcasting experiments:
+Run the advertiser-funded comparisons or the original unpaid-ad experiments:
 
 ```sh
-cargo run -p bts-cli -- demo
+cargo run -p bts-cli -- economy --json /tmp/bts-economy.json
+cargo run -p bts-cli -- economy --case specialist-targeted --trace
 cargo run -p bts-cli -- demo --case targeted --json /tmp/targeted.json
-cargo run -p bts-cli -- demo --case all --trace --json /tmp/all-cases.json
 ```
 
-Cases: `broad`, `targeted`, `disappointing`; default `all`. `--help` describes
-options; invalid options or output failures return nonzero exit status.
-Each case creates a fresh identical initial world and fixes the rival schedule,
-ads, timing and parameters. Only the first station's programme differs.
+Economy cases are `mass-broad`, `mass-targeted`, `specialist-broad`, and
+`specialist-targeted`. Original demo cases are `broad`, `targeted`, and
+`disappointing`. `--case all` is the default; `--help` describes options.
+Invalid arguments and output failures return nonzero exit status.
 
-The readable summary compares viewer-slot impressions, experienced
-satisfaction, group-level return willingness and brand/audience hype.
-`--trace` prints inputs and rule contributions, allocations and hype changes.
-`--json PATH` writes a JSON array (also for a single selected case) containing
-schema version 1 developer reports with full causal traces and fixed actions.
-The output is a report, not a save file or a stable interchange API.
+Each case starts fresh from identical configuration, cash/budgets and biological
+state. Same-advertiser comparisons change only the first station's programme;
+the rival, dates, costs per programme, and advertiser rules stay fixed. Quotes
+are accepted independently before each broadcast. A 48-hour idle period then
+shows demand recovery and an unaccepted quote with remaining budget.
 
-Reports intentionally reveal actual tastes and other hidden inputs. They
-must not be reused directly as player-facing observations. Hype is not
-revenue, expected impressions are not unique reach, and the cases do not
-establish economic balance or a universal winning schedule. See the
-[provisional equations and results](../../docs/headless-experiment.md).
+Summaries show expected viewer-slot impressions, satisfaction, return
+willingness, brand/audience hype, forecast versus actual target delivery,
+integer revenue/cost/profit, budgets and demand. `--trace` additionally prints
+inputs, fuzzy rules, offer targeting, actual delivery, settlements and ledger.
+`--json PATH` writes a JSON array even for one case. Developer report schema
+version 2 includes explicit forecasts, actual deliveries, contracts and account
+transfers. It is not a save file or stable interchange API.
+
+Actual internal hype and preferences are developer-only. No player research
+interface is implemented. Hype is not advertiser sales; expected impressions
+are not unique reach. The comparisons do not establish balance or a universal
+winner. See [economy equations, results and limitations](../../docs/advertising-economy.md).

@@ -40,14 +40,15 @@ Implement audience choice and satisfaction, basic programme attributes, brand ta
 Current implementation: the [bounded broadcasting experiment](headless-experiment.md)
 provides three audience groups, two stations, four programmes, two brands,
 fixed schedules, deterministic expected shares, return willingness, and hype
-traces. It supplies initial evidence for this stage, not a completed game or
+traces. The [bounded advertising economy](advertising-economy.md) adds target
+contracts, finite budgets, station cash, simple broadcast costs and a ledger. It supplies initial evidence for this stage, not a completed game or
 balance validation. Randomness and schedule optimisation are not implemented.
 
 Exit evidence: different audiences produce different outcomes; relevant reach affects hype; attraction differs from enjoyment; results are reproducible and explained.
 
 ### 2. Complete season loop
 
-Add cash, rights, contracts, production lead times, talent commitments, one competitor, and a research channel. Run a full season with scripted actions before building the interface.
+Prototype cash and delivery contracts now exist in the bounded economy. Rights, production lead times, talent commitments, and a research channel remain unimplemented. Run a full season with scripted actions before building the interface; the short economy comparisons do not complete this stage.
 
 Exit evidence: obligations resolve correctly; production tradeoffs matter; at least one useful audience opportunity can be discovered; multiple plausible strategies survive under appropriate conditions.
 
