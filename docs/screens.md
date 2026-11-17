@@ -1,7 +1,9 @@
 # Screens and interaction design
 
 Status: proposed screen organisation for mockups, based on agreed game direction.
-No mockup or production UI is implemented by this document. The existing
+[Visual concept mockups](mockups/README.md) cover station overview, programme
+planning and a production editorial profile. These are design references; no
+production UI is implemented by this document. The existing
 [browser harness](browser-foundation.md) is an integration test page; its two
 daily slots and forms are not constraints on the game design.
 
