@@ -27,4 +27,4 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 
 ## Status
 
-Design baseline and initial Cargo workspace, November 2026. The independent `bts-fuzzy` crate is scaffolded; no fuzzy evaluator or game implementation exists yet. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. No engine, UI framework, or AI model has been selected.
+Design baseline and initial Cargo workspace, November 2026. The independent [`bts-fuzzy`](crates/bts-fuzzy/README.md) crate implements zero-order Sugeno inference, validated membership curves, nested conditions, traces, and an authoring macro. No game implementation exists yet. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. No engine, UI framework, or AI model has been selected.

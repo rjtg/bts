@@ -2,7 +2,7 @@
 
 ## Fuzzy inference is an independent crate
 
-Status: accepted boundary. Initial evaluator details remain proposed.
+Status: accepted boundary; initial zero-order Sugeno evaluator implemented.
 Date: 2026-11-17.
 
 Develop the fuzzy machinery in `crates/bts-fuzzy`, within a Cargo workspace.
@@ -33,12 +33,16 @@ the simulation decides what those mean and how they affect the world.
 The initial name is provisional. Publication is disabled until naming,
 licensing, API stability, and release policy are decided.
 
-### Initial implementation proposal
+### Initial implementation
 
-Implement a focused evaluator ourselves, with a thin `macro_rules!` authoring
-layer over inspectable data. The initial target is zero-order Sugeno inference,
-nested conditions, a few membership curves, and explicit fallback behaviour.
-Do not implement multiple inference families speculatively.
+The focused evaluator uses a thin `macro_rules!` authoring layer over
+inspectable data. It implements zero-order Sugeno inference, nested conditions,
+ramp/triangle/trapezoid membership curves, and an explicit finite fallback.
+AND uses minimum, OR maximum, NOT complement. Rule activation times rule weight
+weights each constant consequent in the final weighted average. Zero total
+weight uses the fallback. Inputs and arithmetic must be finite. See the
+[crate semantics](../crates/bts-fuzzy/README.md) for the precise contract.
+Other inference families remain outside scope.
 
 Reuse candidates were briefly reviewed: rsfuzzy, velvetry, rust-fuzzylogic,
 and fuzzy_logic_engine_rs. The recommendation favours direct control over
@@ -47,6 +51,6 @@ a source/documentation review, not a compiled benchmark or numerical audit.
 
 ### Current state
 
-The workspace and empty library scaffold exist. Evaluation, macros,
-simulation crates, and front ends are not implemented. This document does
-not select a UI framework or save format.
+The standalone library, temperature/ventilation example, tests, and CI checks
+are implemented. Simulation crates and front ends are not implemented. This
+document does not select a UI framework or save format.
