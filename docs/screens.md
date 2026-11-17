@@ -1,11 +1,13 @@
 # Screens and interaction design
 
-Status: proposed screen organisation for mockups, based on agreed game direction.
+Status: broader screen organisation is proposed; the bounded programme-planning
+subset linked below is implemented.
 [Visual concept mockups](mockups/README.md) cover station overview, programme
 planning and a production editorial profile. These are design references; no
-production UI is implemented by this document. The existing
-[browser harness](browser-foundation.md) is an integration test page; its two
-daily slots and forms are not constraints on the game design.
+production UI is implemented by this document. The [programme-planning workspace](programme-planning.md) now implements a bounded
+subset: seven full days of quarter-hour planning, explicit runtimes, competitor
+lane, catalogue, contextual contracts/results and station finances. Other screens
+and publication/promotion/ad-share controls below remain proposals.
 
 ## Main workspaces
 
@@ -79,3 +81,15 @@ Readability, clear hierarchy and understandable decisions take precedence over
 literal terminal limitations. Use illustrative content unconstrained by the
 current fixture counts. Label mockup estimates and unknowns; do not present
 hidden simulation truth as normal player information.
+
+
+## Implemented planning subset
+
+The [planning milestone](programme-planning.md) follows the concept's timeline,
+parallel lane, library and contextual detail structure. Selection is independent
+of the Rust-calculated next airing. Stable airing IDs bind moves/removal,
+quotes, protected bookings, results and ledger entries. Empty airtime is explicit;
+advancement processes all ticks with a documented provisional start-snapshot cadence.
+All plans remain internal drafts; publication, promotion, campaign shares,
+production, research and a separate weekly view are deferred. The mockup's values
+and inconsistent runtimes are not imported as simulation rules.

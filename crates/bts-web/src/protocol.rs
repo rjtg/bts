@@ -1,8 +1,8 @@
-//! Player protocol v1. These whitelisted DTOs deliberately do not serialize engine evidence.
+//! Player protocol v2. These whitelisted DTOs deliberately do not serialize engine evidence.
 use serde::{Deserialize, Serialize};
 
-pub const API_VERSION: u32 = 1;
-pub const REPORTING: &str = "Provisional exact expected audience counts; not measured ratings. Delivery units are millionths of a relevant impression.";
+pub const API_VERSION: u32 = 2;
+pub const REPORTING: &str = "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. One ad exposure opportunity per airing; delivery units are millionths of a relevant impression.";
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -15,16 +15,32 @@ pub struct Request {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Command {
     Inspect {},
-    Plan {
-        slot: u32,
+    Place {
+        start_tick: u32,
         programme: u16,
         advertiser: Option<u16>,
     },
-    RequestOffer {},
+    Move {
+        airing_id: u32,
+        start_tick: u32,
+    },
+    Remove {
+        airing_id: u32,
+    },
+    SetAdvertiser {
+        airing_id: u32,
+        advertiser: Option<u16>,
+    },
+    RequestOffer {
+        airing_id: u32,
+    },
     AcceptOffer {
+        airing_id: u32,
         offer_id: String,
     },
-    Advance {},
+    Advance {
+        to_tick: u32,
+    },
     Reset {},
 }
 
@@ -57,7 +73,14 @@ pub enum Response {
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct PlayerReport {
     pub reporting: &'static str,
-    pub next_slot: Option<usize>,
+    pub now_tick: u32,
+    pub end_tick: u32,
+    pub tick_minutes: u16,
+    pub next_airing: Option<u32>,
+    pub active_airing: Option<u32>,
+    pub stations: Vec<StationInfo>,
+    pub gaps: Vec<Gap>,
+    pub finances: Finances,
     pub cash: String,
     pub catalogue: Vec<CatalogueEntry>,
     pub advertisers: Vec<Advertiser>,
@@ -78,6 +101,7 @@ pub struct CatalogueEntry {
     pub awareness: f64,
     pub cast_appeal: f64,
     pub broadcast_cost: String,
+    pub duration_minutes: u16,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Advertiser {
@@ -86,21 +110,49 @@ pub struct Advertiser {
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct ScheduleEntry {
-    pub slot: usize,
-    pub day: usize,
-    pub hour: u32,
-    pub programme: Option<u16>,
+    pub airing_id: u32,
+    pub station: u16,
+    pub programme: u16,
+    pub start_tick: u32,
+    pub end_tick: u32,
     pub proposed_advertiser: Option<u16>,
-    pub rival_programme: u16,
-    pub locked: bool,
-    pub completed: bool,
+    pub booked: bool,
+    pub status: &'static str,
+    pub editable: bool,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct StationInfo {
+    pub id: u16,
+    pub name: String,
+    pub is_player: bool,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct Gap {
+    pub start_tick: u32,
+    pub end_tick: u32,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct Finances {
+    pub opening_cash: String,
+    pub costs_paid: String,
+    pub revenue: String,
+    pub ledger: Vec<FinancialLine>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct FinancialLine {
+    pub tick: u32,
+    pub airing_id: Option<u32>,
+    pub kind: &'static str,
+    pub amount: String,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Quote {
     pub offer_id: String,
     pub advertiser: u16,
-    pub slot: usize,
-    pub deadline_hour: u32,
+    pub airing_id: u32,
+    pub start_tick: u32,
+    pub end_tick: u32,
+    pub deadline_tick: u32,
     pub maximum_payment: String,
     pub targets: Vec<Commitment>,
 }
@@ -113,9 +165,10 @@ pub struct Commitment {
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Booking {
+    pub airing_id: u32,
     pub contract_id: String,
     pub advertiser: u16,
-    pub deadline_hour: u32,
+    pub deadline_tick: u32,
     pub maximum_payment: String,
     pub targets: Vec<Commitment>,
     pub settlement: Option<ContractResult>,
@@ -137,8 +190,10 @@ pub struct TargetResult {
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct BroadcastReport {
-    pub slot: usize,
-    pub at_hour: u32,
+    pub airing_id: u32,
+    pub start_tick: u32,
+    pub end_tick: u32,
+    pub snapshot_tick: u32,
     pub aired_programme: Option<u16>,
     pub aired_advertiser: Option<u16>,
     pub off_air: bool,

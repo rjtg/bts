@@ -1,219 +1,324 @@
 use super::*;
-use serde_json::{json, Value};
-
-fn plan(session: &mut Session, programme: u16, advertiser: Option<u16>) -> PlayerReport {
-    session
-        .execute(Command::Plan {
-            slot: session.cursor as u32,
-            programme,
-            advertiser,
-        })
-        .unwrap()
+use serde_json::Value;
+fn place(s: &mut Session, programme: u16, start_tick: u32, advertiser: Option<u16>) -> u32 {
+    let previous = s
+        .report()
+        .schedule
+        .iter()
+        .map(|a| a.airing_id)
+        .collect::<Vec<_>>();
+    s.execute(Command::Place {
+        programme,
+        start_tick,
+        advertiser,
+    })
+    .unwrap()
+    .schedule
+    .iter()
+    .find(|a| !previous.contains(&a.airing_id))
+    .unwrap()
+    .airing_id
 }
-fn quote(session: &mut Session) -> String {
-    session
-        .execute(Command::RequestOffer {})
+fn quote(s: &mut Session, id: u32) -> String {
+    s.execute(Command::RequestOffer { airing_id: id })
         .unwrap()
         .offer
         .unwrap()
         .offer_id
 }
-fn reject(session: &mut Session, command: Command, code: &str) {
-    let before = format!("{:?}", session.simulation.state());
-    let observation = session.report();
-    let token_counter = session.next_offer;
-    assert_eq!(session.execute(command).unwrap_err().code, code);
-    assert_eq!(session.report(), observation);
-    assert_eq!(format!("{:?}", session.simulation.state()), before);
-    assert_eq!(session.next_offer, token_counter);
+fn reject(s: &mut Session, command: Command, code: &str) {
+    let state = format!("{:?}", s.planner);
+    let before = s.report();
+    let counter = s.next_offer;
+    assert_eq!(s.execute(command).unwrap_err().code, code);
+    assert_eq!(before, s.report());
+    assert_eq!(state, format!("{:?}", s.planner));
+    assert_eq!(counter, s.next_offer);
 }
 
 #[test]
-fn native_sequence_matches_direct_simulation_and_settlement() {
-    let mut session = Session::new().unwrap();
-    plan(&mut session, 1, Some(1));
-    let mut native = Simulation::new(scenario::world(), Parameters::default()).unwrap();
-    let slot = session.slot(true).unwrap();
-    let offer = native.quote(&slot, PLAYER, BrandId(1), slot.at).unwrap();
-    let contract = native.accept_offer(&offer).unwrap();
-    let token = quote(&mut session);
-    session
-        .execute(Command::AcceptOffer { offer_id: token })
-        .unwrap();
-    let report = session.execute(Command::Advance {}).unwrap();
-    let event = native.step(&slot).unwrap();
-    assert_eq!(native.state(), session.simulation.state());
+fn place_move_remove_ids_and_overlap_are_atomic() {
+    let mut s = Session::new().unwrap();
+    let a = place(&mut s, 1, 72, None);
+    let b = place(&mut s, 2, 74, None);
     assert_eq!(
-        report.cash,
-        native.state().economy().cash(PLAYER).unwrap().0.to_string()
-    );
-    assert_eq!(
-        report.contracts[0],
-        session.booking(native.state().economy().contract(contract).unwrap())
-    );
-    for (observed, internal) in report.results[0].audiences.iter().zip(event.allocations) {
-        assert!(
-            (observed.player_viewers + observed.rival_viewers + observed.not_watching
-                - internal.population as f64)
-                .abs()
-                < 1e-8
-        );
-    }
-    assert!(
-        report.contracts[0]
-            .settlement
-            .as_ref()
+        s.report()
+            .schedule
+            .iter()
+            .find(|a| a.airing_id == b)
             .unwrap()
-            .payment
-            .parse::<u64>()
-            .unwrap()
-            > 0
+            .end_tick,
+        77
     );
-}
-
-#[test]
-fn invalid_commands_are_atomic_and_keep_a_valid_offer_usable() {
-    let mut session = Session::new().unwrap();
-    reject(&mut session, Command::Advance {}, "plan_required");
-    plan(&mut session, 1, Some(1));
-    let token = quote(&mut session);
     reject(
-        &mut session,
-        Command::Plan {
-            slot: 0,
-            programme: 65535,
+        &mut s,
+        Command::Move {
+            airing_id: b,
+            start_tick: 73,
+        },
+        "overlap",
+    );
+    reject(
+        &mut s,
+        Command::Place {
+            programme: 1,
+            start_tick: 71,
+            advertiser: None,
+        },
+        "overlap",
+    );
+    reject(
+        &mut s,
+        Command::Place {
+            programme: 999,
+            start_tick: 80,
             advertiser: None,
         },
         "unknown_programme",
     );
     reject(
-        &mut session,
-        Command::Plan {
-            slot: 14,
+        &mut s,
+        Command::Place {
             programme: 1,
-            advertiser: None,
-        },
-        "invalid_slot",
-    );
-    reject(
-        &mut session,
-        Command::Plan {
-            slot: 0,
-            programme: 1,
-            advertiser: Some(99),
+            start_tick: 80,
+            advertiser: Some(999),
         },
         "unknown_advertiser",
     );
-    for invalid in [
-        "{}",
-        "not json",
-        r#"{"api_version":1,"command":{"type":"advance","extra":true}}"#,
-        r#"{"api_version":1,"command":{"type":"plan","slot":0,"programme":-1}}"#,
-        r#"{"api_version":1,"command":{"type":"plan","slot":0,"programme":1.5}}"#,
-        r#"{"api_version":1,"command":{"type":"accept_offer","offer_id":9007199254740993}}"#,
-        r#"{"api_version":1,"command":{"type":"plan","slot":4294967296,"programme":1}}"#,
-    ] {
-        let before = session.report();
-        let response: Value = serde_json::from_str(&session.dispatch_json(invalid)).unwrap();
-        assert_eq!(response["error"]["code"], "malformed_command");
-        assert_eq!(session.report(), before);
-    }
-    let before = session.report();
-    assert!(session
-        .dispatch_json(r#"{"api_version":2,"command":{"type":"inspect"}}"#)
-        .contains("unsupported_version"));
-    assert_eq!(before, session.report());
-    session
-        .execute(Command::AcceptOffer { offer_id: token })
-        .unwrap();
     reject(
-        &mut session,
-        Command::Plan {
-            slot: 0,
-            programme: 2,
-            advertiser: Some(2),
+        &mut s,
+        Command::Place {
+            programme: 5,
+            start_tick: 670,
+            advertiser: None,
+        },
+        "invalid_time",
+    );
+    let rival = s
+        .report()
+        .schedule
+        .iter()
+        .find(|a| a.station != PLAYER.0)
+        .unwrap()
+        .airing_id;
+    reject(
+        &mut s,
+        Command::Remove { airing_id: rival },
+        "competitor_read_only",
+    );
+    s.execute(Command::Move {
+        airing_id: b,
+        start_tick: 80,
+    })
+    .unwrap();
+    s.execute(Command::Remove { airing_id: a }).unwrap();
+    let c = place(&mut s, 1, 72, None);
+    assert_ne!(a, c);
+    assert_eq!(s.report().next_airing, Some(c));
+    assert!(s
+        .report()
+        .gaps
+        .iter()
+        .any(|g| g.start_tick == 74 && g.end_tick == 80));
+}
+
+#[test]
+fn offers_and_commitments_bind_to_selected_identity_not_next_airing() {
+    let mut s = Session::new().unwrap();
+    let first = place(&mut s, 1, 72, None);
+    let selected = place(&mut s, 2, 80, Some(2));
+    let token = quote(&mut s, selected);
+    let report = s.report();
+    assert_eq!(report.next_airing, Some(first));
+    assert_eq!(report.offer.unwrap().airing_id, selected);
+    reject(
+        &mut s,
+        Command::AcceptOffer {
+            airing_id: first,
+            offer_id: token.clone(),
+        },
+        "stale_offer",
+    );
+    s.execute(Command::AcceptOffer {
+        airing_id: selected,
+        offer_id: token.clone(),
+    })
+    .unwrap();
+    assert_eq!(s.report().contracts[0].airing_id, selected);
+    reject(
+        &mut s,
+        Command::AcceptOffer {
+            airing_id: selected,
+            offer_id: token,
+        },
+        "stale_offer",
+    );
+    reject(
+        &mut s,
+        Command::Move {
+            airing_id: selected,
+            start_tick: 84,
         },
         "booking_locked",
     );
-    reject(&mut session, Command::RequestOffer {}, "already_booked");
-    session.execute(Command::Advance {}).unwrap();
-    assert_eq!(session.report().contracts.len(), 1);
     reject(
-        &mut session,
-        Command::Plan {
-            slot: 0,
-            programme: 1,
+        &mut s,
+        Command::Remove {
+            airing_id: selected,
+        },
+        "booking_locked",
+    );
+    reject(
+        &mut s,
+        Command::SetAdvertiser {
+            airing_id: selected,
             advertiser: None,
         },
-        "invalid_slot",
+        "booking_locked",
+    );
+    s.execute(Command::Advance { to_tick: 74 }).unwrap();
+    assert!(s.report().contracts[0].settlement.is_none());
+    let report = s.execute(Command::Advance { to_tick: 83 }).unwrap();
+    assert_eq!(
+        report
+            .results
+            .iter()
+            .map(|r| r.airing_id)
+            .collect::<Vec<_>>(),
+        vec![first, selected]
+    );
+    assert!(report.contracts[0].settlement.is_some());
+    assert_eq!(report.active_airing, None);
+    assert_eq!(report.finances.costs_paid, "200");
+    let settlement = report.contracts[0].settlement.as_ref().unwrap();
+    assert_eq!(
+        settlement.payment.parse::<u64>().unwrap() + settlement.refund.parse::<u64>().unwrap(),
+        report.contracts[0].maximum_payment.parse::<u64>().unwrap()
     );
 }
 
 #[test]
-fn stale_offers_reset_and_isolation() {
+fn stale_offers_edits_reset_and_session_isolation() {
     let mut a = Session::new().unwrap();
     let mut b = Session::new().unwrap();
-    plan(&mut a, 1, Some(1));
-    plan(&mut b, 1, Some(1));
-    let old = quote(&mut a);
-    let b_token = quote(&mut b);
+    let id = place(&mut a, 1, 72, Some(1));
+    let other = place(&mut b, 1, 72, Some(1));
+    let old = quote(&mut a, id);
+    let own = quote(&mut b, other);
     reject(
         &mut b,
         Command::AcceptOffer {
+            airing_id: other,
             offer_id: old.clone(),
         },
         "stale_offer",
     );
-    plan(&mut a, 2, Some(2));
+    a.execute(Command::Move {
+        airing_id: id,
+        start_tick: 76,
+    })
+    .unwrap();
     reject(
         &mut a,
         Command::AcceptOffer {
-            offer_id: old.clone(),
+            airing_id: id,
+            offer_id: old,
         },
         "stale_offer",
     );
-    let fresh = quote(&mut a);
+    let fresh = quote(&mut a, id);
     a.execute(Command::Reset {}).unwrap();
-    assert_eq!(a.report(), Session::new().unwrap().report());
-    plan(&mut a, 1, Some(1));
-    let newest = quote(&mut a);
-    assert_ne!(old, newest);
-    assert_ne!(fresh, newest);
+    let newid = place(&mut a, 1, 72, Some(1));
+    assert_ne!(id, newid);
+    reject(&mut a, Command::Remove { airing_id: id }, "unknown_airing");
+    quote(&mut a, newid);
     reject(
         &mut a,
-        Command::AcceptOffer { offer_id: fresh },
+        Command::AcceptOffer {
+            airing_id: newid,
+            offer_id: fresh,
+        },
         "stale_offer",
     );
-    b.execute(Command::AcceptOffer { offer_id: b_token })
-        .unwrap();
-    b.execute(Command::Advance {}).unwrap();
-    assert_eq!(a.cursor, 0);
+    b.execute(Command::AcceptOffer {
+        airing_id: other,
+        offer_id: own,
+    })
+    .unwrap();
+    b.execute(Command::Advance { to_tick: 74 }).unwrap();
+    assert_eq!(a.report().now_tick, 0);
+    assert!(a.report().results.is_empty());
     assert_eq!(a.report().cash, "20000");
-    assert_eq!(a.simulation.state().economy().contracts().count(), 0);
 }
 
 #[test]
-fn seven_days_unbooked_ads_completion_and_reproducibility() {
+fn native_planner_parity_and_tick_vs_batch_reproducibility() {
     let mut a = Session::new().unwrap();
-    let mut b = Session::new().unwrap();
-    for index in 0..SLOT_COUNT {
-        for s in [&mut a, &mut b] {
-            plan(s, 1 + (index % 7) as u16, Some(1));
-            s.execute(Command::Advance {}).unwrap();
-        }
-        assert_eq!(a.report(), b.report());
-        assert_eq!(a.simulation.state(), b.simulation.state());
-        assert!(a
-            .report()
-            .results
-            .last()
-            .unwrap()
-            .aired_advertiser
-            .is_none());
+    let mut native = scenario::planner().unwrap();
+    let id = place(&mut a, 1, 72, Some(1));
+    let nativeid = native
+        .place(ProgrammeId(1), SimTick(72), Some(BrandId(1)))
+        .unwrap();
+    assert_eq!(id, nativeid.0);
+    let token = quote(&mut a, id);
+    let nq = native.quote(nativeid).unwrap();
+    native.accept(&nq).unwrap();
+    a.execute(Command::AcceptOffer {
+        airing_id: id,
+        offer_id: token,
+    })
+    .unwrap();
+    let mut individual = a.clone();
+    a.execute(Command::Advance { to_tick: 96 }).unwrap();
+    native.advance_to(SimTick(96)).unwrap();
+    for tick in 1..=96 {
+        individual
+            .execute(Command::Advance { to_tick: tick })
+            .unwrap();
     }
-    assert_eq!(a.report().next_slot, None);
-    reject(&mut a, Command::Advance {}, "scenario_complete");
-    reject(&mut a, Command::RequestOffer {}, "scenario_complete");
+    assert_eq!(a.planner.state(), native.state());
+    assert_eq!(a.report(), individual.report());
+    for result in &a.report().results {
+        for audience in &result.audiences {
+            assert!(
+                (audience.player_viewers + audience.rival_viewers + audience.not_watching
+                    - f64::from(audience.population))
+                .abs()
+                    < 1e-8
+            );
+        }
+    }
+    assert_eq!(a.planner.state().economy().total_money(), 80000);
+}
+
+#[test]
+fn malformed_commands_preserve_the_pending_quote_and_useful_errors() {
+    let mut s = Session::new().unwrap();
+    let id = place(&mut s, 1, 72, Some(1));
+    let token = quote(&mut s, id);
+    for invalid in [
+        "{}",
+        "not json",
+        r#"{"api_version":2,"command":{"type":"advance","to_tick":80,"extra":true}}"#,
+        r#"{"api_version":2,"command":{"type":"place","start_tick":-1,"programme":1}}"#,
+        r#"{"api_version":2,"command":{"type":"place","start_tick":1.5,"programme":1}}"#,
+        r#"{"api_version":2,"command":{"type":"remove","airing_id":4294967296}}"#,
+    ] {
+        let before = s.report();
+        let response: Value = serde_json::from_str(&s.dispatch_json(invalid)).unwrap();
+        assert_eq!(response["error"]["code"], "malformed_command");
+        assert_eq!(s.report(), before);
+    }
+    let response: Value =
+        serde_json::from_str(&s.dispatch_json(r#"{"api_version":1,"command":{"type":"inspect"}}"#))
+            .unwrap();
+    assert_eq!(response["error"]["code"], "unsupported_version");
+    reject(&mut s, Command::Advance { to_tick: 673 }, "invalid_advance");
+    s.execute(Command::AcceptOffer {
+        airing_id: id,
+        offer_id: token,
+    })
+    .unwrap();
 }
 
 fn audit(value: &Value) {
@@ -252,6 +357,10 @@ fn audit(value: &Value) {
                 if [
                     "cash",
                     "cash_after",
+                    "opening_cash",
+                    "costs_paid",
+                    "revenue",
+                    "amount",
                     "broadcast_cost",
                     "maximum_payment",
                     "allocated_payment",
@@ -265,92 +374,98 @@ fn audit(value: &Value) {
                 {
                     let text = value.as_str().expect("lossless decimal string");
                     assert!(!text.is_empty() && text.bytes().all(|b| b.is_ascii_digit()));
-                    text.parse::<u64>().unwrap();
+                    text.parse::<u128>().unwrap();
                 }
                 audit(value);
             }
         }
         Value::Array(values) => {
-            for v in values {
-                audit(v);
+            for value in values {
+                audit(value);
             }
         }
         _ => (),
     }
 }
 #[test]
-fn all_serialized_player_phases_are_whitelisted_and_finances_lossless() {
+fn serialized_player_phases_hide_internal_state_and_preserve_money_strings() {
     let mut s = Session::new().unwrap();
-    for command in [
-        json!({"type":"inspect"}),
-        json!({"type":"plan","slot":0,"programme":1,"advertiser":1}),
-        json!({"type":"request_offer"}),
-    ] {
-        audit(
-            &serde_json::from_str::<Value>(
-                &s.dispatch_json(&json!({"api_version":1,"command":command}).to_string()),
-            )
-            .unwrap(),
-        );
-    }
-    let token = s.report().offer.unwrap().offer_id;
-    s.execute(Command::AcceptOffer { offer_id: token }).unwrap();
     audit(&serde_json::to_value(s.report()).unwrap());
-    s.execute(Command::Advance {}).unwrap();
+    let id = place(&mut s, 1, 72, Some(1));
+    let token = quote(&mut s, id);
     audit(&serde_json::to_value(s.report()).unwrap());
-    // Full u64 range remains textual, even beyond JavaScript's safe integer range.
+    s.execute(Command::AcceptOffer {
+        airing_id: id,
+        offer_id: token,
+    })
+    .unwrap();
+    audit(&serde_json::to_value(s.report()).unwrap());
+    s.execute(Command::Advance { to_tick: 96 }).unwrap();
+    audit(&serde_json::to_value(s.report()).unwrap());
     let mut report = s.report();
     report.cash = u64::MAX.to_string();
-    let serialized = serde_json::to_value(report).unwrap();
-    assert_eq!(serialized["cash"], "18446744073709551615");
-    audit(&serialized);
-    // Changing hidden content does not change a pre-broadcast catalogue observation.
+    let encoded = serde_json::to_value(report).unwrap();
+    assert_eq!(encoded["cash"], "18446744073709551615");
+    audit(&encoded);
     let mut hidden = Session::new().unwrap();
-    let mut world = scenario::world();
-    for p in &mut world.programmes {
+    let mut w = scenario::world();
+    for p in &mut w.programmes {
         p.execution = 0.123456789;
     }
-    hidden.simulation = Simulation::new(world, Parameters::default()).unwrap();
-    assert_eq!(hidden.report(), Session::new().unwrap().report());
+    hidden.planner =
+        Planner::new(w, bts_sim::Parameters::default(), PLAYER, SimTick(672), &[]).unwrap();
+    // Catalogue observation is independent of hidden execution.
+    assert_eq!(
+        hidden.report().catalogue,
+        Session::new().unwrap().report().catalogue
+    );
 }
 
 #[test]
-fn no_payable_offer_and_missing_advertiser_do_not_change_session() {
+fn varied_evening_results_unaccepted_ads_gaps_and_week_completion() {
     let mut s = Session::new().unwrap();
-    plan(&mut s, 1, None);
-    reject(&mut s, Command::RequestOffer {}, "no_advertiser");
-    let mut world = scenario::world();
-    world.brands[0].marketing_budget = bts_sim::economy::Money(0);
-    s.simulation = Simulation::new(world, Parameters::default()).unwrap();
-    plan(&mut s, 1, Some(1));
-    reject(&mut s, Command::RequestOffer {}, "no_payable_offer");
+    for (programme, tick) in [(1, 72), (2, 74), (5, 80)] {
+        place(&mut s, programme, tick, Some(1));
+    }
+    s.execute(Command::Advance { to_tick: 96 }).unwrap();
+    let report = s.report();
+    assert_eq!(report.results.len(), 3);
+    assert!(report.results.iter().all(|r| r.aired_advertiser.is_none()));
+    assert!(report.contracts.is_empty());
+    assert_eq!(report.finances.costs_paid, "300");
+    let immutable = report.results;
+    s.execute(Command::Advance { to_tick: 672 }).unwrap();
+    assert_eq!(s.report().results, immutable);
+    assert_eq!(s.report().now_tick, s.report().end_tick);
+    reject(&mut s, Command::Advance { to_tick: 673 }, "invalid_advance");
+    s.execute(Command::Reset {}).unwrap();
+    assert_eq!(s.report().now_tick, 0);
+    assert_eq!(s.report().cash, "20000");
+    assert!(s.report().results.is_empty());
 }
 
 #[test]
-fn unaffordable_plan_reports_off_air_without_blocking_rival() {
+fn an_unpayable_quote_does_not_replace_a_valid_pending_offer() {
     let mut s = Session::new().unwrap();
-    // A low-cash fixture isolates the engine's funding path through the adapter.
-    let mut world = scenario::world();
-    world
-        .stations
-        .iter_mut()
-        .find(|station| station.id == PLAYER)
-        .unwrap()
-        .initial_cash = bts_sim::economy::Money(0);
-    s.simulation = Simulation::new(world, Parameters::default()).unwrap();
-    let initial_money = s.simulation.state().economy().total_money();
-    plan(&mut s, 1, Some(1));
-    reject(&mut s, Command::RequestOffer {}, "no_payable_offer");
-    let report = s.execute(Command::Advance {}).unwrap();
-    let r = &report.results[0];
-    assert!(r.off_air);
-    assert!(r.aired_programme.is_none() && r.aired_advertiser.is_none());
-    assert_eq!(r.broadcast_cost, "0");
-    assert_eq!(r.cash_after, "0");
-    assert!(r
-        .audiences
-        .iter()
-        .all(|a| a.player_viewers == 0.0 && a.rival_viewers > 0.0));
-    assert_eq!(s.simulation.state().economy().total_money(), initial_money);
-    audit(&serde_json::to_value(report).unwrap());
+    let evening = place(&mut s, 1, 72, Some(1));
+    let overnight = place(&mut s, 1, 0, Some(1));
+    let no_ad = place(&mut s, 1, 80, None);
+    let token = quote(&mut s, evening);
+    reject(
+        &mut s,
+        Command::RequestOffer {
+            airing_id: overnight,
+        },
+        "no_payable_offer",
+    );
+    reject(
+        &mut s,
+        Command::RequestOffer { airing_id: no_ad },
+        "no_advertiser",
+    );
+    s.execute(Command::AcceptOffer {
+        airing_id: evening,
+        offer_id: token,
+    })
+    .unwrap();
 }

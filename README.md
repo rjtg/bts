@@ -29,12 +29,13 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Advertising economy](docs/advertising-economy.md): provisional demand, contracts, accounting, and comparisons.
 - [Advertiser hardening](docs/advertiser-hardening.md): audience-specific value, off-air handling and pricing incentives.
 - [Commitments and episodes](docs/episodes-and-commitments.md): audience-specific settlement, standalone works, familiarity and continuity.
-- [Browser foundation](docs/browser-foundation.md): Wasm sessions, player protocol, test page and local build.
+- [Browser foundation](docs/browser-foundation.md): Wasm sessions, player protocol and local build.
+- [Programme planning](docs/programme-planning.md): playable timeline, airing identities, cadence, controls and evidence.
 - [Contributor guidance](AGENTS.md): implementation principles for people and coding agents.
 
 ## Status
 
-Design baseline and initial Cargo workspace, November 2026. The independent [`bts-fuzzy`](crates/bts-fuzzy/README.md) crate implements zero-order Sugeno inference, validated membership curves, nested conditions, traces, and an authoring macro. A bounded headless broadcasting economy is implemented in `bts-sim`, with audience choice, hype-driven advertiser demand, delivery contracts and integer station finances. `bts-cli` provides controlled comparisons and developer JSON reports. A thin `bts-web` adapter and TypeScript/Vite browser harness now support fourteen planned broadcasts, Rust-calculated ad contracts and restricted player reports. The complete season loop and full game interface remain unimplemented. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. The browser harness uses plain TypeScript, HTML and CSS; no game engine or AI model is selected.
+Design baseline and initial Cargo workspace, November 2026. The independent [`bts-fuzzy`](crates/bts-fuzzy/README.md) crate implements zero-order Sugeno inference, validated membership curves, nested conditions, traces, and an authoring macro. A bounded headless broadcasting economy is implemented in `bts-sim`, with audience choice, hype-driven advertiser demand, delivery contracts and integer station finances. `bts-cli` provides controlled comparisons and developer JSON reports. A thin `bts-web` adapter and TypeScript/Vite browser harness now provide a playable seven-day programme-planning workspace with 15-minute ticks, real runtimes, editable broadcasts, Rust-calculated ad contracts and restricted player reports. The complete season loop and full game interface remain unimplemented. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. The browser harness uses plain TypeScript, HTML and CSS; no game engine or AI model is selected.
 
 ## Run the broadcasting experiment
 
@@ -73,7 +74,7 @@ fraction of a group; it is not measured individual reach. Series attachment
 and actual broadcast history are separate state.
 
 
-## Run the browser harness
+## Run the browser planning workspace
 
 ```sh
 rustup target add wasm32-unknown-unknown
@@ -86,7 +87,13 @@ npm run dev
 
 `npm run build` produces the static `web/dist/` bundle. `npm run test:e2e`
 runs real Chromium tests after `npx playwright install --with-deps chromium`.
-Player protocol v1 excludes internal preferences, hype, execution and fuzzy
-traces. Audience delivery uses explicitly provisional exact expected counts;
+Player protocol v2 excludes internal preferences, hype, execution and fuzzy
+traces. Audience delivery uses explicitly provisional start-of-airing expected counts;
 measured ratings and research remain future work. See the [browser guide](docs/browser-foundation.md)
 for contractual edit constraints, JSON money strings and verification results.
+
+The planner supports placing, moving and removing future broadcasts across seven
+full days. Durations occupy real airtime; gaps are off air. Offers and results
+name an airing ID, and accepted bookings lock its programme/time/advertiser.
+Selected-airing actions are separate from next-to-air controls. Use
+`cargo run -p bts-web --example planning_evening` for the reproducible native evening.

@@ -19,6 +19,7 @@ pub mod economy;
 pub mod economy_demo;
 pub mod episodes_demo;
 pub mod models;
+pub mod planning;
 pub mod programmes;
 
 use economy::{EconomyState, FinancialEvent, Money, Target};
@@ -38,9 +39,40 @@ id!(AudienceId, StationId, ProgrammeId, SeriesId, BrandId);
 /// Absolute simulated hours since experiment origin, unrelated to wall time.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub struct SimHour(pub u32);
-impl SimHour {
+/// Clock units are explicit; the legacy experiments and planning share mechanics.
+mod clock_sealed {
+    pub trait Sealed {}
+    impl Sealed for super::SimHour {}
+    impl Sealed for super::SimTick {}
+}
+pub trait Clock: clock_sealed::Sealed + Copy + std::fmt::Debug + Eq + Ord + Serialize {
+    fn zero() -> Self;
+    fn availability_index(self) -> usize;
+    fn elapsed_hours(self, before: Self) -> f64;
+}
+impl Clock for SimHour {
+    fn zero() -> Self {
+        Self(0)
+    }
     fn availability_index(self) -> usize {
         (self.0 % 24) as usize
+    }
+    fn elapsed_hours(self, before: Self) -> f64 {
+        f64::from(self.0 - before.0)
+    }
+}
+/// Absolute 15-minute simulated ticks. Intervals are [start,end).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+pub struct SimTick(pub u32);
+impl Clock for SimTick {
+    fn zero() -> Self {
+        Self(0)
+    }
+    fn availability_index(self) -> usize {
+        ((self.0 / 4) % 24) as usize
+    }
+    fn elapsed_hours(self, before: Self) -> f64 {
+        f64::from(self.0 - before.0) / 4.0
     }
 }
 
@@ -111,6 +143,8 @@ pub struct Programme {
     pub cast_appeal: f64,
     pub execution: f64,
     pub broadcast_cost: Money,
+    /// Positive runtime, in whole 15-minute ticks expressed as minutes.
+    pub duration_minutes: u16,
 }
 impl Programme {
     pub fn series(&self) -> Option<SeriesId> {
@@ -182,8 +216,8 @@ pub struct Broadcast {
 }
 /// Fixed ordered action. An empty broadcast list advances decay without exposure.
 #[derive(Clone, Debug, PartialEq, Serialize)]
-pub struct Slot {
-    pub at: SimHour,
+pub struct Slot<T: Clock = SimHour> {
+    pub at: T,
     pub broadcasts: Vec<Broadcast>,
 }
 
@@ -274,6 +308,11 @@ impl World {
         }
         for p in &self.programmes {
             p.broadcast_cost.validate()?;
+            if p.duration_minutes == 0 || !p.duration_minutes.is_multiple_of(15) {
+                return Err(Error::Invalid(
+                    "programme duration must be a positive multiple of 15 minutes".into(),
+                ));
+            }
             for value in [p.tone, p.awareness, p.cast_appeal, p.execution] {
                 unit(value, &format!("programme {:?}", p.id))?;
             }
@@ -314,22 +353,22 @@ impl Parameters {
 
 /// Actual world state. No serialization or player-facing view is provided.
 #[derive(Clone, Debug, PartialEq)]
-pub struct State {
-    now: SimHour,
+pub struct State<T: Clock = SimHour> {
+    now: T,
     loyalty: BTreeMap<(AudienceId, SeriesId), f64>,
     hype: BTreeMap<(BrandId, AudienceId), f64>,
     repetition: BTreeMap<(BrandId, AudienceId), f64>,
-    economy: EconomyState,
+    economy: EconomyState<T>,
     familiarity: BTreeMap<(AudienceId, ProgrammeId), f64>,
     reception: BTreeMap<(AudienceId, ProgrammeId), f64>,
     progress: BTreeMap<(AudienceId, SeriesId), u32>,
-    broadcasts: Vec<programmes::BroadcastRecord>,
+    broadcasts: Vec<programmes::BroadcastRecord<T>>,
 }
-impl State {
-    pub fn economy(&self) -> &EconomyState {
+impl<T: Clock> State<T> {
+    pub fn economy(&self) -> &EconomyState<T> {
         &self.economy
     }
-    pub fn now(&self) -> SimHour {
+    pub fn now(&self) -> T {
         self.now
     }
     pub fn loyalty(&self, audience: AudienceId, series: SeriesId) -> Option<f64> {
@@ -399,29 +438,34 @@ pub struct OffAir {
 }
 /// Immutable developer evidence from a committed transition, independent of rendering.
 #[derive(Clone, Debug, PartialEq)]
-pub struct SlotEvent {
-    pub action: Slot,
-    pub aired: Slot,
+pub struct SlotEvent<T: Clock = SimHour> {
+    pub action: Slot<T>,
+    pub aired: Slot<T>,
     pub off_air: Vec<OffAir>,
-    pub elapsed_hours: u32,
+    pub elapsed_hours: f64,
+    /// Stations starting a fresh airing; continuations do not repeat full costs/effects.
+    pub starting: Vec<StationId>,
     pub allocations: Vec<Allocation>,
     pub hype: Vec<HypeChange>,
-    pub financial: FinancialEvent,
+    pub financial: FinancialEvent<T>,
 }
 
+/// Legacy whole-hour point experiments. The planner uses the same engine with ticks.
+pub type Simulation = Engine<SimHour>;
+
 #[derive(Clone, Debug)]
-pub struct Simulation {
+pub struct Engine<T: Clock> {
     world: World,
     parameters: Parameters,
     models: Models,
-    state: State,
+    state: State<T>,
 }
-impl Simulation {
+impl<T: Clock> Engine<T> {
     pub fn new(world: World, parameters: Parameters) -> Result<Self, Error> {
         world.validate()?;
         parameters.validate()?;
         let mut state = State {
-            now: SimHour(0),
+            now: T::zero(),
             loyalty: BTreeMap::new(),
             hype: BTreeMap::new(),
             repetition: BTreeMap::new(),
@@ -457,12 +501,12 @@ impl Simulation {
     pub fn parameters(&self) -> Parameters {
         self.parameters
     }
-    pub fn state(&self) -> &State {
+    pub fn state(&self) -> &State<T> {
         &self.state
     }
 
     /// Validate and apply one slot atomically. All viewing uses pre-slot loyalty.
-    pub fn step(&mut self, action: &Slot) -> Result<SlotEvent, Error> {
+    pub fn step(&mut self, action: &Slot<T>) -> Result<SlotEvent<T>, Error> {
         let (mut next, mut event) = self.evaluate_slot(action)?;
         event.financial = economy::apply_slot(&self.world, &mut next.economy, &event)?;
         next.economy.advance_revision()?;
@@ -470,8 +514,16 @@ impl Simulation {
         Ok(event)
     }
 
-    fn evaluate_slot(&self, action: &Slot) -> Result<(State, SlotEvent), Error> {
-        let period = action.at.availability_index();
+    fn evaluate_slot(&self, action: &Slot<T>) -> Result<(State<T>, SlotEvent<T>), Error> {
+        self.evaluate_cadence(action, None, action.at.availability_index())
+    }
+
+    fn evaluate_cadence(
+        &self,
+        action: &Slot<T>,
+        starts: Option<&BTreeSet<StationId>>,
+        period: usize,
+    ) -> Result<(State<T>, SlotEvent<T>), Error> {
         if action.at <= self.state.now {
             return Err(Error::Invalid("slot time must strictly increase".into()));
         }
@@ -528,7 +580,9 @@ impl Simulation {
                     .economy
                     .cash(station.id)
                     .expect("configured station");
-                if available_cash < programme.broadcast_cost {
+                if starts.is_none_or(|set| set.contains(&station.id))
+                    && available_cash < programme.broadcast_cost
+                {
                     off_air.push(OffAir {
                         planned: broadcast.clone(),
                         available_cash,
@@ -539,7 +593,7 @@ impl Simulation {
                 }
             }
         }
-        let elapsed_hours = action.at.0 - self.state.now.0;
+        let elapsed_hours = action.at.elapsed_hours(self.state.now);
         let mut next = self.state.clone();
         let mut allocations = Vec::new();
         // Station configuration order, not action-list order, determines summation.
@@ -610,13 +664,15 @@ impl Simulation {
                 viewing,
             });
         }
-        self.update_programme_history(&mut next, &mut allocations)?;
-        for broadcast in &aired.broadcasts {
-            next.broadcasts.push(programmes::BroadcastRecord {
-                at: action.at,
-                station: broadcast.station,
-                programme: broadcast.programme,
-            });
+        if starts.is_none() {
+            self.update_programme_history(&mut next, &mut allocations)?;
+            for broadcast in &aired.broadcasts {
+                next.broadcasts.push(programmes::BroadcastRecord {
+                    at: action.at,
+                    station: broadcast.station,
+                    programme: broadcast.programme,
+                });
+            }
         }
         let mut hype = Vec::new();
         for brand in &self.world.brands {
@@ -624,13 +680,10 @@ impl Simulation {
                 let key = (brand.id, audience.id);
                 let before = self.state.hype[&key];
                 let repetition_before = self.state.repetition[&key];
-                let decayed = before
-                    * 2.0_f64
-                        .powf(-f64::from(elapsed_hours) / self.parameters.hype_half_life_hours);
+                let decayed =
+                    before * 2.0_f64.powf(-elapsed_hours / self.parameters.hype_half_life_hours);
                 let repetition_decayed = repetition_before
-                    * 2.0_f64.powf(
-                        -f64::from(elapsed_hours) / self.parameters.repetition_half_life_hours,
-                    );
+                    * 2.0_f64.powf(-elapsed_hours / self.parameters.repetition_half_life_hours);
                 let mut advertisements = Vec::new();
                 for v in &allocation.viewing {
                     let broadcast = aired
@@ -638,7 +691,9 @@ impl Simulation {
                         .iter()
                         .find(|b| b.station == v.station)
                         .unwrap();
-                    if broadcast.advertisement != Some(brand.id) {
+                    if broadcast.advertisement != Some(brand.id)
+                        || starts.is_some_and(|set| !set.contains(&v.station))
+                    {
                         continue;
                     }
                     let interest = audience.product_interests[brand.product.index()];
@@ -702,6 +757,16 @@ impl Simulation {
                 aired,
                 off_air,
                 elapsed_hours,
+                starting: self
+                    .world
+                    .stations
+                    .iter()
+                    .filter(|s| {
+                        action.broadcasts.iter().any(|b| b.station == s.id)
+                            && starts.is_none_or(|set| set.contains(&s.id))
+                    })
+                    .map(|s| s.id)
+                    .collect(),
                 allocations,
                 hype,
                 financial: FinancialEvent::default(),

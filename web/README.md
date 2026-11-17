@@ -1,6 +1,6 @@
-# Browser integration harness
+# Browser programme-planning workspace
 
-Functional TypeScript/HTML/CSS controls over the Rust `bts-web` adapter.
+Retro TypeScript/HTML/CSS timeline, catalogue and airing details over the Rust `bts-web` adapter.
 No simulation, pricing or accounting logic is implemented in JavaScript.
 
 See [browser foundation](../docs/browser-foundation.md) for prerequisites,
@@ -24,6 +24,11 @@ npm run preview
 
 Serve the generated `dist/` directory over HTTP. No deployment is performed.
 Rebuild Wasm after Rust changes. `WASM_BINDGEN` can select a non-PATH CLI.
-Playwright starts/stops the preview server itself on 127.0.0.1:4173; stop any
-manual preview before running tests. `PLAYWRIGHT_BROWSERS_PATH` may select a
+Playwright starts/stops the preview server itself on 127.0.0.1:4174; a manual
+preview on port 4173 may remain running. `PLAYWRIGHT_BROWSERS_PATH` may select a
 custom browser cache directory.
+
+See [programme planning](../docs/programme-planning.md) for controls, stable
+airing IDs, quarter-hour cadence, provisional reporting and implemented limits.
+From the root, use `npm --prefix web run preview -- --host 0.0.0.0` to listen
+on all interfaces. All changes remain in memory until reset/reload.

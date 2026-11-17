@@ -77,9 +77,9 @@ pub struct TargetDemand {
     pub weighted_deficit: f64,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
-pub struct Demand {
+pub struct Demand<T: Clock = SimHour> {
     pub brand: BrandId,
-    pub at: SimHour,
+    pub at: T,
     pub targets: Vec<TargetDemand>,
     pub total_priority: f64,
     pub pressure: f64,
@@ -104,20 +104,20 @@ pub struct AudienceValuation {
     pub contractible: bool,
 }
 #[derive(Clone, Debug, PartialEq)]
-pub struct DeliveryForecast {
-    pub aired: Slot,
+pub struct DeliveryForecast<T: Clock = SimHour> {
+    pub aired: Slot<T>,
     pub off_air: Vec<OffAir>,
     pub audiences: Vec<ForecastAudience>,
     pub relevant_delivery: f64,
 }
 /// Inspectable quote; acceptance recomputes and compares every field.
 #[derive(Clone, Debug, PartialEq)]
-pub struct Offer {
+pub struct Offer<T: Clock = SimHour> {
     pub brand: BrandId,
     pub station: StationId,
-    pub deadline: SimHour,
-    pub demand: Demand,
-    pub forecast: DeliveryForecast,
+    pub deadline: T,
+    pub demand: Demand<T>,
+    pub forecast: DeliveryForecast<T>,
     pub value_weighted_delivery: f64,
     pub valuation: Vec<AudienceValuation>,
     pub promised_delivery: u64,
@@ -125,11 +125,11 @@ pub struct Offer {
     pub maximum_offer: Money,
     pub uncapped_price: f64,
     pub payment: Money,
-    proposal: Slot,
+    proposal: Slot<T>,
     revision: u64,
 }
-impl Offer {
-    pub fn proposal(&self) -> &Slot {
+impl<T: Clock> Offer<T> {
+    pub fn proposal(&self) -> &Slot<T> {
         &self.proposal
     }
 }
@@ -170,9 +170,9 @@ pub struct ActualDelivery {
     pub credited_units: u64,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
-pub struct Settlement {
+pub struct Settlement<T: Clock = SimHour> {
     pub contract: ContractId,
-    pub at: SimHour,
+    pub at: T,
     pub promised_delivery: u64,
     pub credited_delivery: u64,
     pub audiences: Vec<AudienceSettlement>,
@@ -180,18 +180,18 @@ pub struct Settlement {
     pub refund: Money,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
-pub enum ContractStatus {
+pub enum ContractStatus<T: Clock = SimHour> {
     Reserved,
-    Settled(Settlement),
+    Settled(Settlement<T>),
 }
 #[derive(Clone, Debug, PartialEq)]
-pub struct Contract {
+pub struct Contract<T: Clock = SimHour> {
     pub id: ContractId,
-    pub offer: Offer,
+    pub offer: Offer<T>,
     pub commitments: Vec<AudienceCommitment>,
     pub actual: ActualDelivery,
-    pub delivered_at: Option<SimHour>,
-    pub status: ContractStatus,
+    pub delivered_at: Option<T>,
+    pub status: ContractStatus<T>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub enum Account {
@@ -208,32 +208,41 @@ pub enum LedgerReason {
     BroadcastCost,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
-pub struct LedgerEntry {
-    pub at: SimHour,
+pub struct LedgerEntry<T: Clock = SimHour> {
+    pub at: T,
     pub from: Account,
     pub to: Account,
     pub amount: Money,
     pub reason: LedgerReason,
 }
-#[derive(Clone, Debug, Default, PartialEq, Serialize)]
-pub struct FinancialEvent {
-    pub ledger: Vec<LedgerEntry>,
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct FinancialEvent<T: Clock = SimHour> {
+    pub ledger: Vec<LedgerEntry<T>>,
     pub deliveries: Vec<(ContractId, ActualDelivery)>,
-    pub settlements: Vec<Settlement>,
+    pub settlements: Vec<Settlement<T>>,
+}
+impl<T: Clock> Default for FinancialEvent<T> {
+    fn default() -> Self {
+        Self {
+            ledger: vec![],
+            deliveries: vec![],
+            settlements: vec![],
+        }
+    }
 }
 /// Internal balances and obligations. No serialization: this is not a save format.
 #[derive(Clone, Debug, PartialEq)]
-pub struct EconomyState {
+pub struct EconomyState<T: Clock = SimHour> {
     budgets: BTreeMap<BrandId, Money>,
     cash: BTreeMap<StationId, Money>,
     cost_sink: Money,
-    contracts: BTreeMap<ContractId, Contract>,
-    sold: BTreeMap<(SimHour, StationId), ContractId>,
-    ledger: Vec<LedgerEntry>,
+    contracts: BTreeMap<ContractId, Contract<T>>,
+    sold: BTreeMap<(T, StationId), ContractId>,
+    ledger: Vec<LedgerEntry<T>>,
     revision: u64,
     next_contract: u64,
 }
-impl EconomyState {
+impl<T: Clock> EconomyState<T> {
     pub(crate) fn new(world: &World) -> Self {
         Self {
             budgets: world
@@ -263,13 +272,13 @@ impl EconomyState {
     pub fn cost_sink(&self) -> Money {
         self.cost_sink
     }
-    pub fn ledger(&self) -> &[LedgerEntry] {
+    pub fn ledger(&self) -> &[LedgerEntry<T>] {
         &self.ledger
     }
-    pub fn contracts(&self) -> impl Iterator<Item = &Contract> {
+    pub fn contracts(&self) -> impl Iterator<Item = &Contract<T>> {
         self.contracts.values()
     }
-    pub fn contract(&self, id: ContractId) -> Option<&Contract> {
+    pub fn contract(&self, id: ContractId) -> Option<&Contract<T>> {
         self.contracts.get(&id)
     }
     pub fn escrow(&self) -> u128 {
@@ -296,14 +305,7 @@ impl EconomyState {
             .ok_or_else(|| Error::Invalid("state revision overflow".into()))?;
         Ok(())
     }
-    fn transfer(
-        &mut self,
-        at: SimHour,
-        from: Account,
-        to: Account,
-        amount: Money,
-        reason: LedgerReason,
-    ) {
+    fn transfer(&mut self, at: T, from: Account, to: Account, amount: Money, reason: LedgerReason) {
         if amount.0 > 0 {
             self.ledger.push(LedgerEntry {
                 at,
@@ -327,7 +329,7 @@ fn micro_delivery(value: f64) -> Result<u64, Error> {
     whole_delivery(value * DELIVERY_UNITS_PER_IMPRESSION as f64)
 }
 
-fn commitments(offer: &Offer) -> Result<Vec<AudienceCommitment>, Error> {
+fn commitments<T: Clock>(offer: &Offer<T>) -> Result<Vec<AudienceCommitment>, Error> {
     let mut rows = offer
         .forecast
         .audiences
@@ -385,9 +387,9 @@ fn commitments(offer: &Offer) -> Result<Vec<AudienceCommitment>, Error> {
     Ok(rows)
 }
 
-impl Simulation {
+impl<T: Clock> Engine<T> {
     /// Current actual hype pressure; finite budget is shown separately.
-    pub fn demand(&self, brand: BrandId) -> Result<Demand, Error> {
+    pub fn demand(&self, brand: BrandId) -> Result<Demand<T>, Error> {
         let brand = self
             .world
             .brands
@@ -429,11 +431,21 @@ impl Simulation {
     /// Read-only complete-schedule forecast; never debits costs or changes state.
     pub fn quote(
         &self,
-        proposal: &Slot,
+        proposal: &Slot<T>,
         station: StationId,
         brand: BrandId,
-        deadline: SimHour,
-    ) -> Result<Offer, Error> {
+        deadline: T,
+    ) -> Result<Offer<T>, Error> {
+        self.quote_cadence(proposal, station, brand, deadline, None)
+    }
+    pub(crate) fn quote_cadence(
+        &self,
+        proposal: &Slot<T>,
+        station: StationId,
+        brand: BrandId,
+        deadline: T,
+        cadence: Option<(&BTreeSet<StationId>, usize)>,
+    ) -> Result<Offer<T>, Error> {
         if deadline < proposal.at {
             return Err(Error::Invalid("deadline precedes booked broadcast".into()));
         }
@@ -458,7 +470,10 @@ impl Simulation {
         validate_inventory(&self.state.economy, proposal)?;
         let demand = self.demand(brand)?;
         let advertiser = self.world.brands.iter().find(|b| b.id == brand).unwrap();
-        let (_, event) = self.evaluate_slot(proposal)?;
+        let (_, event) = match cadence {
+            Some((starts, period)) => self.evaluate_cadence(proposal, Some(starts), period)?,
+            None => self.evaluate_slot(proposal)?,
+        };
         let audiences = demand
             .targets
             .iter()
@@ -534,10 +549,13 @@ impl Simulation {
         })
     }
     /// Reserve a fresh quote atomically; no application-supplied prices are trusted.
-    pub fn accept_offer(&mut self, offer: &Offer) -> Result<ContractId, Error> {
+    pub fn accept_offer(&mut self, offer: &Offer<T>) -> Result<ContractId, Error> {
         if &self.quote(&offer.proposal, offer.station, offer.brand, offer.deadline)? != offer {
             return Err(Error::Invalid("stale or modified offer".into()));
         }
+        self.reserve_verified_offer(offer)
+    }
+    pub(crate) fn reserve_verified_offer(&mut self, offer: &Offer<T>) -> Result<ContractId, Error> {
         if offer.payment.0 == 0 {
             return Err(Error::Invalid("offer has no payable delivery".into()));
         }
@@ -576,7 +594,10 @@ impl Simulation {
         Ok(id)
     }
 }
-pub(crate) fn validate_inventory(book: &EconomyState, action: &Slot) -> Result<(), Error> {
+pub(crate) fn validate_inventory<T: Clock>(
+    book: &EconomyState<T>,
+    action: &Slot<T>,
+) -> Result<(), Error> {
     for broadcast in &action.broadcasts {
         if let Some(id) = book.sold.get(&(action.at, broadcast.station)) {
             let brand = book.contracts[id].offer.brand;
@@ -593,16 +614,20 @@ pub(crate) fn validate_inventory(book: &EconomyState, action: &Slot) -> Result<(
     Ok(())
 }
 /// Called only against a tentative state; the caller commits after every check.
-pub(crate) fn apply_slot(
+pub(crate) fn apply_slot<T: Clock>(
     world: &World,
-    book: &mut EconomyState,
-    event: &SlotEvent,
-) -> Result<FinancialEvent, Error> {
+    book: &mut EconomyState<T>,
+    event: &SlotEvent<T>,
+) -> Result<FinancialEvent<T>, Error> {
     validate_inventory(book, &event.action)?;
     let action = &event.aired;
     let start = book.ledger.len();
     for station in &world.stations {
-        if let Some(broadcast) = action.broadcasts.iter().find(|b| b.station == station.id) {
+        if let Some(broadcast) = action
+            .broadcasts
+            .iter()
+            .find(|b| b.station == station.id && event.starting.contains(&b.station))
+        {
             let cost = world
                 .programmes
                 .iter()

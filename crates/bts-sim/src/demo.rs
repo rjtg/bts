@@ -82,6 +82,7 @@ pub fn world() -> World {
         ],
         programmes: vec![
             Programme {
+                duration_minutes: 60,
                 id: ProgrammeId(1),
                 kind: ProgrammeKind::Episode {
                     series: SeriesId(1),
@@ -96,6 +97,7 @@ pub fn world() -> World {
                 broadcast_cost: Money(150),
             },
             Programme {
+                duration_minutes: 60,
                 id: ProgrammeId(2),
                 kind: ProgrammeKind::Episode {
                     series: SeriesId(2),
@@ -110,6 +112,7 @@ pub fn world() -> World {
                 broadcast_cost: Money(50),
             },
             Programme {
+                duration_minutes: 60,
                 id: ProgrammeId(3),
                 kind: ProgrammeKind::Episode {
                     series: SeriesId(3),
@@ -124,6 +127,7 @@ pub fn world() -> World {
                 broadcast_cost: Money(400),
             },
             Programme {
+                duration_minutes: 60,
                 id: ProgrammeId(4),
                 kind: ProgrammeKind::Episode {
                     series: SeriesId(4),

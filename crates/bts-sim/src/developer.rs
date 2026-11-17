@@ -166,7 +166,8 @@ impl From<&SlotEvent> for SlotReport {
             action: event.action.clone(),
             aired: event.aired.clone(),
             off_air: event.off_air.clone(),
-            elapsed_hours: event.elapsed_hours,
+            // This DTO remains the legacy whole-hour experiment export.
+            elapsed_hours: event.elapsed_hours as u32,
             financial: event.financial.clone(),
             allocations: event
                 .allocations

@@ -41,3 +41,9 @@ For example, the planning image labels Riverside Ep. 3 as three hours while the
 library lists 60-minute episodes, and the Late Shift next-edition date conflicts
 with its displayed Mon–Thu frequency. Neither example establishes a game rule.
 Audience forecasts require research; unavailable results must stay visibly unknown.
+
+The [implemented planning workspace](../programme-planning.md) now follows the
+planning concept's layout and colour direction. The reference still includes
+future controls (publication, campaign shares and other workspaces) that are not
+implemented. Actual local browser evidence is kept in
+[contrib/programme-planning](../../contrib/programme-planning/README.md).

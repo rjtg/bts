@@ -1,44 +1,30 @@
-//! Browser session adapter. Rust owns decisions, accounting and the observation boundary.
-//! JSON protocol v1 is independent of bts-sim's developer export schema.
+//! Versioned browser commands and restricted player observations over the Rust planner.
 #![forbid(unsafe_code)]
-
 pub mod protocol;
 pub mod scenario;
 
-use bts_sim::economy::{AudienceCommitment, Contract, ContractId, ContractStatus, Offer};
-use bts_sim::{BrandId, Broadcast, Parameters, ProgrammeId, Simulation, Slot};
+use bts_sim::economy::{Account, AudienceCommitment, Contract, ContractStatus, LedgerReason};
+use bts_sim::planning::{AiringId, PlanError, Planner, PlanningOffer};
+use bts_sim::{BrandId, ProgrammeId, SimTick};
 use protocol::*;
-use scenario::{PLAYER, RIVAL, RIVAL_PROGRAMME, SLOT_COUNT};
+use scenario::PLAYER;
 use std::sync::atomic::{AtomicU32, Ordering};
-
-// Namespaces prevent accidental cross-session token reuse. They are not security credentials.
 static NEXT_SESSION: AtomicU32 = AtomicU32::new(1);
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-struct Plan {
-    programme: ProgrammeId,
-    advertiser: Option<BrandId>,
-}
 #[derive(Clone)]
 struct Pending {
     token: String,
-    offer: Offer,
+    quote: PlanningOffer,
     targets: Vec<Commitment>,
 }
-
-/// One simulation per independently owned session. No DOM, I/O, clock or RNG.
+/// Each game session exclusively owns its simulation. Rejections are atomic.
 #[derive(Clone)]
 pub struct Session {
-    simulation: Simulation,
+    planner: Planner,
     namespace: u32,
     next_offer: u64,
-    cursor: usize,
-    plans: Vec<Option<Plan>>,
-    bookings: Vec<Option<ContractId>>,
     pending: Option<Pending>,
-    results: Vec<BroadcastReport>,
 }
-
 impl Session {
     pub fn new() -> Result<Self, PlayerError> {
         let namespace = NEXT_SESSION
@@ -47,26 +33,19 @@ impl Session {
                 PlayerError::new("session_limit", "Session identifier capacity exhausted.")
             })?;
         Ok(Self {
-            simulation: Self::initial_simulation()?,
+            planner: scenario::planner().map_err(player_error)?,
             namespace,
             next_offer: 1,
-            cursor: 0,
-            plans: vec![None; SLOT_COUNT],
-            bookings: vec![None; SLOT_COUNT],
             pending: None,
-            results: vec![],
         })
     }
-    fn initial_simulation() -> Result<Simulation, PlayerError> {
-        Simulation::new(scenario::world(), Parameters::default()).map_err(|_| engine_error())
-    }
-    /// Rejected commands leave the entire session unchanged, including pending offers.
     pub fn execute(&mut self, command: Command) -> Result<PlayerReport, PlayerError> {
         let mut candidate = self.clone();
         candidate.apply(command)?;
         let report = candidate.report();
-        // Build the serializable observation before committing the transition.
-        serde_json::to_string(&report).map_err(|_| engine_error())?;
+        serde_json::to_string(&report).map_err(|_| {
+            PlayerError::new("report_error", "Could not construct a player report.")
+        })?;
         *self = candidate;
         Ok(report)
     }
@@ -78,7 +57,7 @@ impl Session {
             )),
             Ok(request) if request.api_version != API_VERSION => Err(PlayerError::new(
                 "unsupported_version",
-                "This adapter supports api_version 1.",
+                "This adapter supports api_version 2.",
             )),
             Ok(request) => self.execute(request.command),
         };
@@ -92,223 +71,101 @@ impl Session {
                 error,
             },
         };
-        serde_json::to_string(&response).expect("player DTOs contain only serializable values")
+        serde_json::to_string(&response).expect("player DTOs are serializable")
     }
     fn apply(&mut self, command: Command) -> Result<(), PlayerError> {
         match command {
-            Command::Inspect {} => (),
+            Command::Inspect {} => return Ok(()),
             Command::Reset {} => {
-                self.simulation = Self::initial_simulation()?;
-                self.cursor = 0;
-                self.plans.fill(None);
-                self.bookings.fill(None);
-                self.pending = None;
-                self.results.clear();
-                // Keep the token counter: reset must not make an old offer usable again.
+                let mut fresh = scenario::planner().map_err(player_error)?;
+                fresh.retain_id_floor(&self.planner);
+                self.planner = fresh;
             }
-            Command::Plan {
-                slot,
+            Command::Place {
+                start_tick,
                 programme,
                 advertiser,
             } => {
-                let slot = slot as usize;
-                if slot >= SLOT_COUNT || slot < self.cursor {
-                    return Err(PlayerError::new(
-                        "invalid_slot",
-                        "Choose an unplayed slot within the seven-day scenario.",
-                    ));
-                }
-                if self.bookings[slot].is_some() {
-                    return Err(PlayerError::new(
-                        "booking_locked",
-                        "An accepted booking locks this programme and advertiser until broadcast.",
-                    ));
-                }
-                if !self
-                    .simulation
-                    .world()
-                    .programmes
-                    .iter()
-                    .any(|p| p.id.0 == programme)
-                {
-                    return Err(PlayerError::new(
-                        "unknown_programme",
-                        "Choose a programme from the catalogue.",
-                    ));
-                }
-                if advertiser
-                    .is_some_and(|id| !self.simulation.world().brands.iter().any(|b| b.id.0 == id))
-                {
-                    return Err(PlayerError::new(
-                        "unknown_advertiser",
-                        "Choose a listed advertiser or no advertisement.",
-                    ));
-                }
-                self.plans[slot] = Some(Plan {
-                    programme: ProgrammeId(programme),
-                    advertiser: advertiser.map(BrandId),
-                });
-                self.pending = None;
-            }
-            Command::RequestOffer {} => {
-                self.require_current()?;
-                if self.bookings[self.cursor].is_some() {
-                    return Err(PlayerError::new(
-                        "already_booked",
-                        "This broadcast already has an accepted advertising contract.",
-                    ));
-                }
-                let plan = self.plan()?;
-                let brand = plan.advertiser.ok_or_else(|| {
-                    PlayerError::new(
-                        "no_advertiser",
-                        "Plan a broadcast with an advertiser before requesting an offer.",
+                self.planner
+                    .place(
+                        ProgrammeId(programme),
+                        SimTick(start_tick),
+                        advertiser.map(BrandId),
                     )
-                })?;
-                let slot = self.slot(true)?;
-                let offer = self
-                    .simulation
-                    .quote(&slot, PLAYER, brand, slot.at)
-                    .map_err(|_| engine_error())?;
-                if offer.payment.0 == 0 {
-                    return Err(PlayerError::new("no_payable_offer", "This advertiser has no payable offer for the planned broadcast. Try another programme or advertiser."));
-                }
-                // Preview acceptance on an isolated copy to use exactly the engine's rounding/terms.
-                let mut preview = self.simulation.clone();
-                let id = preview.accept_offer(&offer).map_err(|_| engine_error())?;
-                let contract = preview
-                    .state()
-                    .economy()
-                    .contract(id)
-                    .ok_or_else(engine_error)?;
-                let targets = self.commitments(&contract.commitments);
+                    .map_err(player_error)?;
+            }
+            Command::Move {
+                airing_id,
+                start_tick,
+            } => self
+                .planner
+                .move_airing(AiringId(airing_id), SimTick(start_tick))
+                .map_err(player_error)?,
+            Command::Remove { airing_id } => self
+                .planner
+                .remove(AiringId(airing_id))
+                .map_err(player_error)?,
+            Command::SetAdvertiser {
+                airing_id,
+                advertiser,
+            } => self
+                .planner
+                .set_advertiser(AiringId(airing_id), advertiser.map(BrandId))
+                .map_err(player_error)?,
+            Command::RequestOffer { airing_id } => {
+                let quote = self
+                    .planner
+                    .quote(AiringId(airing_id))
+                    .map_err(player_error)?;
+                let mut preview = self.planner.clone();
+                let contract = preview.accept(&quote).map_err(player_error)?;
+                let targets = self.commitments(
+                    &preview
+                        .state()
+                        .economy()
+                        .contract(contract)
+                        .expect("accepted contract")
+                        .commitments,
+                );
                 let token = format!("{}:{}", self.namespace, self.next_offer);
-                self.next_offer = self.next_offer.checked_add(1).ok_or_else(engine_error)?;
+                self.next_offer = self
+                    .next_offer
+                    .checked_add(1)
+                    .ok_or_else(|| PlayerError::new("capacity", "Offer capacity exhausted."))?;
                 self.pending = Some(Pending {
                     token,
-                    offer,
+                    quote,
                     targets,
                 });
+                return Ok(());
             }
-            Command::AcceptOffer { offer_id } => {
+            Command::AcceptOffer {
+                airing_id,
+                offer_id,
+            } => {
                 let pending = self
                     .pending
-                    .clone()
-                    .filter(|p| p.token == offer_id)
+                    .as_ref()
+                    .filter(|p| p.token == offer_id && p.quote.airing_id.0 == airing_id)
                     .ok_or_else(|| {
                         PlayerError::new(
                             "stale_offer",
-                            "Request a fresh offer for this session and current plan.",
+                            "Request a fresh offer for this exact airing and session.",
                         )
                     })?;
-                let id = self.simulation.accept_offer(&pending.offer).map_err(|_| {
-                    PlayerError::new(
-                        "stale_offer",
-                        "The offer is no longer valid. Request a fresh offer.",
-                    )
-                })?;
-                self.bookings[self.cursor] = Some(id);
-                self.pending = None;
+                self.planner.accept(&pending.quote).map_err(player_error)?;
             }
-            Command::Advance {} => {
-                let action =
-                    self.slot(self.bookings.get(self.cursor).is_some_and(Option::is_some))?;
-                let event = self.simulation.step(&action).map_err(|_| engine_error())?;
-                let aired = event.aired.broadcasts.iter().find(|b| b.station == PLAYER);
-                let audiences = event
-                    .allocations
-                    .iter()
-                    .map(|a| AudienceReport {
-                        audience: self.audience_name(a.audience),
-                        population: a.population,
-                        player_viewers: a
-                            .viewing
-                            .iter()
-                            .filter(|v| v.station == PLAYER)
-                            .map(|v| v.viewers)
-                            .sum(),
-                        rival_viewers: a
-                            .viewing
-                            .iter()
-                            .filter(|v| v.station == RIVAL)
-                            .map(|v| v.viewers)
-                            .sum(),
-                        not_watching: a.not_watching,
-                    })
-                    .collect();
-                let cost = aired
-                    .and_then(|b| {
-                        self.simulation
-                            .world()
-                            .programmes
-                            .iter()
-                            .find(|p| p.id == b.programme)
-                    })
-                    .map_or(0, |p| p.broadcast_cost.0);
-                self.results.push(BroadcastReport {
-                    slot: self.cursor,
-                    at_hour: action.at.0,
-                    aired_programme: aired.map(|b| b.programme.0),
-                    aired_advertiser: aired.and_then(|b| b.advertisement.map(|a| a.0)),
-                    off_air: aired.is_none(),
-                    broadcast_cost: cost.to_string(),
-                    cash_after: self.cash(),
-                    audiences,
-                });
-                self.cursor += 1;
-                self.pending = None;
+            Command::Advance { to_tick } => {
+                self.planner
+                    .advance_to(SimTick(to_tick))
+                    .map_err(player_error)?;
             }
         }
+        self.pending = None;
         Ok(())
     }
-    fn require_current(&self) -> Result<(), PlayerError> {
-        if self.cursor >= SLOT_COUNT {
-            Err(PlayerError::new(
-                "scenario_complete",
-                "All fourteen slots are complete. Reset to start again.",
-            ))
-        } else {
-            Ok(())
-        }
-    }
-    fn plan(&self) -> Result<&Plan, PlayerError> {
-        self.require_current()?;
-        self.plans[self.cursor].as_ref().ok_or_else(|| {
-            PlayerError::new(
-                "plan_required",
-                "Choose and plan a programme for the next slot.",
-            )
-        })
-    }
-    fn slot(&self, with_ad: bool) -> Result<Slot, PlayerError> {
-        let plan = self.plan()?;
-        Ok(Slot {
-            at: scenario::hour(self.cursor),
-            broadcasts: vec![
-                Broadcast {
-                    station: PLAYER,
-                    programme: plan.programme,
-                    advertisement: if with_ad { plan.advertiser } else { None },
-                },
-                Broadcast {
-                    station: RIVAL,
-                    programme: RIVAL_PROGRAMME,
-                    advertisement: None,
-                },
-            ],
-        })
-    }
-    fn cash(&self) -> String {
-        self.simulation
-            .state()
-            .economy()
-            .cash(PLAYER)
-            .expect("fixed player")
-            .0
-            .to_string()
-    }
     fn audience_name(&self, id: bts_sim::AudienceId) -> String {
-        self.simulation
+        self.planner
             .world()
             .audiences
             .iter()
@@ -327,7 +184,12 @@ impl Session {
             })
             .collect()
     }
-    fn booking(&self, contract: &Contract) -> Booking {
+    fn booking(&self, contract: &Contract<SimTick>) -> Booking {
+        let airing = self
+            .planner
+            .airings()
+            .find(|a| a.contract == Some(contract.id))
+            .expect("airing contract");
         let settlement = match &contract.status {
             ContractStatus::Reserved => None,
             ContractStatus::Settled(s) => Some(ContractResult {
@@ -348,21 +210,191 @@ impl Session {
             }),
         };
         Booking {
+            airing_id: airing.id.0,
             contract_id: contract.id.0.to_string(),
             advertiser: contract.offer.brand.0,
-            deadline_hour: contract.offer.deadline.0,
+            deadline_tick: contract.offer.deadline.0,
             maximum_payment: contract.offer.payment.0.to_string(),
             targets: self.commitments(&contract.commitments),
             settlement,
         }
     }
-    /// This whitelist is the only normal observation path. No developer inspector is exported.
     pub fn report(&self) -> PlayerReport {
-        let world = self.simulation.world();
+        let world = self.planner.world();
+        let now = self.planner.now().0;
+        let mut schedule = self
+            .planner
+            .airings()
+            .map(|a| ScheduleEntry {
+                airing_id: a.id.0,
+                station: a.station.0,
+                programme: a.programme.0,
+                start_tick: a.start.0,
+                end_tick: a.end.0,
+                proposed_advertiser: a.advertiser.map(|id| id.0),
+                booked: a.contract.is_some(),
+                status: if a.cancelled() {
+                    "off_air"
+                } else if a.result.is_some() {
+                    "completed"
+                } else if a.started() {
+                    "on_air"
+                } else {
+                    "planned"
+                },
+                editable: a.station == PLAYER && !a.started() && a.contract.is_none(),
+            })
+            .collect::<Vec<_>>();
+        schedule.sort_by_key(|a| (a.station, a.start_tick, a.airing_id));
+        let mut player = schedule
+            .iter()
+            .filter(|a| a.station == PLAYER.0)
+            .collect::<Vec<_>>();
+        player.sort_by_key(|a| (a.start_tick, a.airing_id));
+        let next_airing = player
+            .iter()
+            .find(|a| a.start_tick >= now)
+            .map(|a| a.airing_id);
+        let active_airing = player
+            .iter()
+            .find(|a| a.start_tick < now && now < a.end_tick)
+            .map(|a| a.airing_id);
+        let mut gaps = vec![];
+        let mut cursor = 0;
+        for a in &player {
+            if a.start_tick > cursor {
+                gaps.push(Gap {
+                    start_tick: cursor,
+                    end_tick: a.start_tick,
+                });
+            }
+            cursor = a.end_tick;
+        }
+        if cursor < self.planner.end().0 {
+            gaps.push(Gap {
+                start_tick: cursor,
+                end_tick: self.planner.end().0,
+            });
+        }
+        let economy = self.planner.state().economy();
+        let ledger = economy
+            .ledger()
+            .iter()
+            .filter(|l| l.from == Account::Station(PLAYER) || l.to == Account::Station(PLAYER))
+            .map(|l| {
+                let airing = match l.reason {
+                    LedgerReason::BroadcastCost => self
+                        .planner
+                        .airings()
+                        .find(|a| a.station == PLAYER && a.start.0 + 1 == l.at.0),
+                    _ => match l.from {
+                        Account::Escrow(id) => {
+                            self.planner.airings().find(|a| a.contract == Some(id))
+                        }
+                        _ => None,
+                    },
+                };
+                FinancialLine {
+                    tick: l.at.0,
+                    airing_id: airing.map(|a| a.id.0),
+                    kind: if l.reason == LedgerReason::BroadcastCost {
+                        "broadcast_cost"
+                    } else {
+                        "advertising_payment"
+                    },
+                    amount: l.amount.0.to_string(),
+                }
+            })
+            .collect::<Vec<_>>();
+        let costs_paid = economy
+            .ledger()
+            .iter()
+            .filter(|l| l.from == Account::Station(PLAYER))
+            .map(|l| u128::from(l.amount.0))
+            .sum::<u128>()
+            .to_string();
+        let revenue = economy
+            .ledger()
+            .iter()
+            .filter(|l| l.to == Account::Station(PLAYER))
+            .map(|l| u128::from(l.amount.0))
+            .sum::<u128>()
+            .to_string();
+        let mut results = self
+            .planner
+            .airings()
+            .filter(|a| a.station == PLAYER)
+            .filter_map(|a| {
+                a.result.as_ref().map(|r| BroadcastReport {
+                    airing_id: a.id.0,
+                    start_tick: a.start.0,
+                    end_tick: a.end.0,
+                    snapshot_tick: a.start.0,
+                    aired_programme: (!r.off_air).then_some(a.programme.0),
+                    aired_advertiser: if r.off_air || a.contract.is_none() {
+                        None
+                    } else {
+                        a.advertiser.map(|b| b.0)
+                    },
+                    off_air: r.off_air,
+                    broadcast_cost: r.cost.0.to_string(),
+                    cash_after: r.cash_after.0.to_string(),
+                    audiences: r
+                        .allocations
+                        .iter()
+                        .map(|allocation| AudienceReport {
+                            audience: self.audience_name(allocation.audience),
+                            population: allocation.population,
+                            player_viewers: allocation
+                                .viewing
+                                .iter()
+                                .filter(|v| v.station == PLAYER)
+                                .map(|v| v.viewers)
+                                .sum(),
+                            rival_viewers: allocation
+                                .viewing
+                                .iter()
+                                .filter(|v| v.station != PLAYER)
+                                .map(|v| v.viewers)
+                                .sum(),
+                            not_watching: allocation.not_watching,
+                        })
+                        .collect(),
+                })
+            })
+            .collect::<Vec<_>>();
+        results.sort_by_key(|r| (r.end_tick, r.airing_id));
         PlayerReport {
             reporting: REPORTING,
-            next_slot: (self.cursor < SLOT_COUNT).then_some(self.cursor),
-            cash: self.cash(),
+            now_tick: now,
+            end_tick: self.planner.end().0,
+            tick_minutes: 15,
+            next_airing,
+            active_airing,
+            cash: economy.cash(PLAYER).unwrap().0.to_string(),
+            finances: Finances {
+                opening_cash: world
+                    .stations
+                    .iter()
+                    .find(|s| s.id == PLAYER)
+                    .unwrap()
+                    .initial_cash
+                    .0
+                    .to_string(),
+                costs_paid,
+                revenue,
+                ledger,
+            },
+            stations: world
+                .stations
+                .iter()
+                .map(|s| StationInfo {
+                    id: s.id.0,
+                    name: s.name.clone(),
+                    is_player: s.id == PLAYER,
+                })
+                .collect(),
+            gaps,
             catalogue: world
                 .programmes
                 .iter()
@@ -381,7 +413,7 @@ impl Session {
                             .series
                             .iter()
                             .find(|s| s.id == id)
-                            .expect("validated series")
+                            .unwrap()
                             .name
                             .clone()
                     }),
@@ -390,6 +422,7 @@ impl Session {
                     awareness: p.awareness,
                     cast_appeal: p.cast_appeal,
                     broadcast_cost: p.broadcast_cost.0.to_string(),
+                    duration_minutes: p.duration_minutes,
                 })
                 .collect(),
             advertisers: world
@@ -400,51 +433,33 @@ impl Session {
                     name: b.name.clone(),
                 })
                 .collect(),
-            schedule: (0..SLOT_COUNT)
-                .map(|i| ScheduleEntry {
-                    slot: i,
-                    day: i / 2 + 1,
-                    hour: scenario::hour(i).0 % 24,
-                    programme: self.plans[i].as_ref().map(|p| p.programme.0),
-                    proposed_advertiser: self.plans[i]
-                        .as_ref()
-                        .and_then(|p| p.advertiser.map(|a| a.0)),
-                    rival_programme: RIVAL_PROGRAMME.0,
-                    locked: self.bookings[i].is_some(),
-                    completed: i < self.cursor,
-                })
-                .collect(),
-            offer: self.pending.as_ref().map(|p| Quote {
-                offer_id: p.token.clone(),
-                advertiser: p.offer.brand.0,
-                slot: self.cursor,
-                deadline_hour: p.offer.deadline.0,
-                maximum_payment: p.offer.payment.0.to_string(),
-                targets: p.targets.clone(),
+            schedule,
+            offer: self.pending.as_ref().map(|p| {
+                let airing = self.planner.airing(p.quote.airing_id).unwrap();
+                Quote {
+                    offer_id: p.token.clone(),
+                    airing_id: airing.id.0,
+                    start_tick: airing.start.0,
+                    end_tick: airing.end.0,
+                    advertiser: p.quote.offer.brand.0,
+                    deadline_tick: p.quote.offer.deadline.0,
+                    maximum_payment: p.quote.offer.payment.0.to_string(),
+                    targets: p.targets.clone(),
+                }
             }),
-            contracts: self
-                .simulation
-                .state()
-                .economy()
-                .contracts()
-                .map(|c| self.booking(c))
-                .collect(),
-            results: self.results.clone(),
+            contracts: economy.contracts().map(|c| self.booking(c)).collect(),
+            results,
         }
     }
 }
-fn engine_error() -> PlayerError {
-    PlayerError::new(
-        "simulation_rejected",
-        "The simulation could not apply this action. Reset the scenario if the problem persists.",
-    )
+fn player_error(error: PlanError) -> PlayerError {
+    PlayerError::new(error.code, error.message)
 }
 
 #[cfg(target_arch = "wasm32")]
 mod wasm {
     use super::*;
     use wasm_bindgen::prelude::*;
-
     #[wasm_bindgen]
     pub struct WebSession {
         session: Session,
@@ -466,6 +481,5 @@ mod wasm {
         API_VERSION
     }
 }
-
 #[cfg(test)]
 mod tests;

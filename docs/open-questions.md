@@ -14,7 +14,7 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
 | Hype versus awareness | Separate fast hype and slower awareness if justified | Test whether one variable makes established brands implausibly vanish |
 | Audience choice | Deterministic expected-share allocation with not-watching implemented as a provisional headless experiment; later stochastic choice remains open | Check accounting, smoothness, and diversity of outcomes; see [experiment](headless-experiment.md) |
 | Fuzzy semantics | Zero-order Sugeno, min/max/complement, explicit fallback, validation, traces and macros implemented | TV rule calibration remains experimental; see [experiment](headless-experiment.md) |
-| Browser UI development | Browser primary; Rust/Wasm adapter and plain TypeScript/HTML/CSS harness implemented | Validate schedule/contract/report usability before selecting a larger UI framework or polished retro presentation; see [browser foundation](browser-foundation.md) |
+| Browser UI development | Browser primary; Rust/Wasm adapter and plain TypeScript/HTML/CSS day-planning workspace implemented | Validate schedule/contract/report usability before selecting a larger UI framework or polished retro presentation; see [browser foundation](browser-foundation.md) |
 | Rust architecture | Cargo workspace; independent `bts-fuzzy` crate; simulation independent of interface | See [architecture](architecture.md); select remaining crates and persistence when needed |
 
 ## Newly agreed directions needing detailed mechanics

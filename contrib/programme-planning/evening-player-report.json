@@ -1,0 +1,984 @@
+{
+  "reporting": "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. One ad exposure opportunity per airing; delivery units are millionths of a relevant impression.",
+  "now_tick": 96,
+  "end_tick": 672,
+  "tick_minutes": 15,
+  "next_airing": null,
+  "active_airing": null,
+  "stations": [
+    {
+      "id": 1,
+      "name": "Channel One",
+      "is_player": true
+    },
+    {
+      "id": 2,
+      "name": "Channel Two",
+      "is_player": false
+    }
+  ],
+  "gaps": [
+    {
+      "start_tick": 0,
+      "end_tick": 72
+    },
+    {
+      "start_tick": 77,
+      "end_tick": 80
+    },
+    {
+      "start_tick": 86,
+      "end_tick": 672
+    }
+  ],
+  "finances": {
+    "opening_cash": "20000",
+    "costs_paid": "300",
+    "revenue": "996",
+    "ledger": [
+      {
+        "tick": 73,
+        "airing_id": 57,
+        "kind": "broadcast_cost",
+        "amount": "150"
+      },
+      {
+        "tick": 75,
+        "airing_id": 58,
+        "kind": "broadcast_cost",
+        "amount": "50"
+      },
+      {
+        "tick": 81,
+        "airing_id": 59,
+        "kind": "broadcast_cost",
+        "amount": "100"
+      },
+      {
+        "tick": 86,
+        "airing_id": 59,
+        "kind": "advertising_payment",
+        "amount": "996"
+      }
+    ]
+  },
+  "cash": "20696",
+  "catalogue": [
+    {
+      "id": 1,
+      "name": "Neighbourhood Laughs",
+      "genre": "Comedy",
+      "kind": "episode",
+      "series_name": "Demo series 1",
+      "episode": 1,
+      "tone": 0.8,
+      "awareness": 0.8,
+      "cast_appeal": 0.75,
+      "broadcast_cost": "150",
+      "duration_minutes": 30
+    },
+    {
+      "id": 2,
+      "name": "Workshop Science",
+      "genre": "Science",
+      "kind": "episode",
+      "series_name": "Demo series 2",
+      "episode": 1,
+      "tone": 0.15,
+      "awareness": 0.5,
+      "cast_appeal": 0.35,
+      "broadcast_cost": "50",
+      "duration_minutes": 45
+    },
+    {
+      "id": 3,
+      "name": "The Big Premiere",
+      "genre": "Comedy",
+      "kind": "episode",
+      "series_name": "Demo series 3",
+      "episode": 1,
+      "tone": 0.8,
+      "awareness": 1.0,
+      "cast_appeal": 1.0,
+      "broadcast_cost": "400",
+      "duration_minutes": 60
+    },
+    {
+      "id": 4,
+      "name": "Evening Stories",
+      "genre": "Drama",
+      "kind": "episode",
+      "series_name": "Demo series 4",
+      "episode": 1,
+      "tone": 0.45,
+      "awareness": 0.65,
+      "cast_appeal": 0.6,
+      "broadcast_cost": "100",
+      "duration_minutes": 60
+    },
+    {
+      "id": 5,
+      "name": "The Long Weekend",
+      "genre": "Drama",
+      "kind": "standalone",
+      "series_name": null,
+      "episode": null,
+      "tone": 0.45,
+      "awareness": 0.65,
+      "cast_appeal": 0.6,
+      "broadcast_cost": "100",
+      "duration_minutes": 90
+    },
+    {
+      "id": 6,
+      "name": "Neighbourhood Laughs: episode 2",
+      "genre": "Comedy",
+      "kind": "episode",
+      "series_name": "Demo series 1",
+      "episode": 2,
+      "tone": 0.8,
+      "awareness": 0.8,
+      "cast_appeal": 0.75,
+      "broadcast_cost": "150",
+      "duration_minutes": 30
+    },
+    {
+      "id": 7,
+      "name": "Neighbourhood Laughs: episode 3",
+      "genre": "Comedy",
+      "kind": "episode",
+      "series_name": "Demo series 1",
+      "episode": 3,
+      "tone": 0.8,
+      "awareness": 0.8,
+      "cast_appeal": 0.75,
+      "broadcast_cost": "150",
+      "duration_minutes": 30
+    }
+  ],
+  "advertisers": [
+    {
+      "id": 1,
+      "name": "Everyday Snacks"
+    },
+    {
+      "id": 2,
+      "name": "Precision Equipment"
+    }
+  ],
+  "schedule": [
+    {
+      "airing_id": 57,
+      "station": 1,
+      "programme": 1,
+      "start_tick": 72,
+      "end_tick": 74,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 58,
+      "station": 1,
+      "programme": 2,
+      "start_tick": 74,
+      "end_tick": 77,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 59,
+      "station": 1,
+      "programme": 5,
+      "start_tick": 80,
+      "end_tick": 86,
+      "proposed_advertiser": 1,
+      "booked": true,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 1,
+      "station": 2,
+      "programme": 1,
+      "start_tick": 64,
+      "end_tick": 66,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 2,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 66,
+      "end_tick": 69,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 3,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 69,
+      "end_tick": 73,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 4,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 73,
+      "end_tick": 79,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 5,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 79,
+      "end_tick": 83,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 6,
+      "station": 2,
+      "programme": 3,
+      "start_tick": 83,
+      "end_tick": 87,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 7,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 87,
+      "end_tick": 90,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 8,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 90,
+      "end_tick": 96,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "completed",
+      "editable": false
+    },
+    {
+      "airing_id": 9,
+      "station": 2,
+      "programme": 1,
+      "start_tick": 160,
+      "end_tick": 162,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 10,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 162,
+      "end_tick": 165,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 11,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 165,
+      "end_tick": 169,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 12,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 169,
+      "end_tick": 175,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 13,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 175,
+      "end_tick": 179,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 14,
+      "station": 2,
+      "programme": 3,
+      "start_tick": 179,
+      "end_tick": 183,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 15,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 183,
+      "end_tick": 186,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 16,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 186,
+      "end_tick": 192,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 17,
+      "station": 2,
+      "programme": 1,
+      "start_tick": 256,
+      "end_tick": 258,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 18,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 258,
+      "end_tick": 261,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 19,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 261,
+      "end_tick": 265,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 20,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 265,
+      "end_tick": 271,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 21,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 271,
+      "end_tick": 275,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 22,
+      "station": 2,
+      "programme": 3,
+      "start_tick": 275,
+      "end_tick": 279,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 23,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 279,
+      "end_tick": 282,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 24,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 282,
+      "end_tick": 288,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 25,
+      "station": 2,
+      "programme": 1,
+      "start_tick": 352,
+      "end_tick": 354,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 26,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 354,
+      "end_tick": 357,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 27,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 357,
+      "end_tick": 361,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 28,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 361,
+      "end_tick": 367,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 29,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 367,
+      "end_tick": 371,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 30,
+      "station": 2,
+      "programme": 3,
+      "start_tick": 371,
+      "end_tick": 375,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 31,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 375,
+      "end_tick": 378,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 32,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 378,
+      "end_tick": 384,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 33,
+      "station": 2,
+      "programme": 1,
+      "start_tick": 448,
+      "end_tick": 450,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 34,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 450,
+      "end_tick": 453,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 35,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 453,
+      "end_tick": 457,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 36,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 457,
+      "end_tick": 463,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 37,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 463,
+      "end_tick": 467,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 38,
+      "station": 2,
+      "programme": 3,
+      "start_tick": 467,
+      "end_tick": 471,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 39,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 471,
+      "end_tick": 474,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 40,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 474,
+      "end_tick": 480,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 41,
+      "station": 2,
+      "programme": 1,
+      "start_tick": 544,
+      "end_tick": 546,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 42,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 546,
+      "end_tick": 549,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 43,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 549,
+      "end_tick": 553,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 44,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 553,
+      "end_tick": 559,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 45,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 559,
+      "end_tick": 563,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 46,
+      "station": 2,
+      "programme": 3,
+      "start_tick": 563,
+      "end_tick": 567,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 47,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 567,
+      "end_tick": 570,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 48,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 570,
+      "end_tick": 576,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 49,
+      "station": 2,
+      "programme": 1,
+      "start_tick": 640,
+      "end_tick": 642,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 50,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 642,
+      "end_tick": 645,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 51,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 645,
+      "end_tick": 649,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 52,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 649,
+      "end_tick": 655,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 53,
+      "station": 2,
+      "programme": 4,
+      "start_tick": 655,
+      "end_tick": 659,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 54,
+      "station": 2,
+      "programme": 3,
+      "start_tick": 659,
+      "end_tick": 663,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 55,
+      "station": 2,
+      "programme": 2,
+      "start_tick": 663,
+      "end_tick": 666,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    },
+    {
+      "airing_id": 56,
+      "station": 2,
+      "programme": 5,
+      "start_tick": 666,
+      "end_tick": 672,
+      "proposed_advertiser": null,
+      "booked": false,
+      "status": "planned",
+      "editable": false
+    }
+  ],
+  "offer": null,
+  "contracts": [
+    {
+      "airing_id": 59,
+      "contract_id": "1",
+      "advertiser": 1,
+      "deadline_tick": 86,
+      "maximum_payment": "1046",
+      "targets": [
+        {
+          "audience": "Young viewers",
+          "forecast_relevant_delivery": 1564.223005827549,
+          "promised_units": "1564223005",
+          "allocated_payment": "437"
+        },
+        {
+          "audience": "Households",
+          "forecast_relevant_delivery": 2171.5051030538903,
+          "promised_units": "2171505103",
+          "allocated_payment": "608"
+        },
+        {
+          "audience": "Specialists",
+          "forecast_relevant_delivery": 7.489687424620631,
+          "promised_units": "7489687",
+          "allocated_payment": "1"
+        }
+      ],
+      "settlement": {
+        "payment": "996",
+        "refund": "50",
+        "targets": [
+          {
+            "audience": "Young viewers",
+            "promised_units": "1564223005",
+            "credited_units": "1525557777",
+            "allocated_payment": "437",
+            "payment": "426",
+            "refund": "11"
+          },
+          {
+            "audience": "Households",
+            "promised_units": "2171505103",
+            "credited_units": "2039159678",
+            "allocated_payment": "608",
+            "payment": "570",
+            "refund": "38"
+          },
+          {
+            "audience": "Specialists",
+            "promised_units": "7489687",
+            "credited_units": "7046642",
+            "allocated_payment": "1",
+            "payment": "0",
+            "refund": "1"
+          }
+        ]
+      }
+    }
+  ],
+  "results": [
+    {
+      "airing_id": 57,
+      "start_tick": 72,
+      "end_tick": 74,
+      "snapshot_tick": 72,
+      "aired_programme": 1,
+      "aired_advertiser": null,
+      "off_air": false,
+      "broadcast_cost": "150",
+      "cash_after": "19850",
+      "audiences": [
+        {
+          "audience": "Young viewers",
+          "population": 6000,
+          "player_viewers": 2791.321251577045,
+          "rival_viewers": 1314.7760302580518,
+          "not_watching": 1893.9027181649035
+        },
+        {
+          "audience": "Households",
+          "population": 11000,
+          "player_viewers": 4839.337632180084,
+          "rival_viewers": 3654.6103652026914,
+          "not_watching": 2506.0520026172235
+        },
+        {
+          "audience": "Specialists",
+          "population": 2500,
+          "player_viewers": 336.443244600713,
+          "rival_viewers": 803.6666331703357,
+          "not_watching": 1359.8901222289514
+        }
+      ]
+    },
+    {
+      "airing_id": 58,
+      "start_tick": 74,
+      "end_tick": 77,
+      "snapshot_tick": 74,
+      "aired_programme": 2,
+      "aired_advertiser": null,
+      "off_air": false,
+      "broadcast_cost": "50",
+      "cash_after": "19800",
+      "audiences": [
+        {
+          "audience": "Young viewers",
+          "population": 6000,
+          "player_viewers": 498.71197362147535,
+          "rival_viewers": 2815.3981321097044,
+          "not_watching": 2685.88989426882
+        },
+        {
+          "audience": "Households",
+          "population": 11000,
+          "player_viewers": 1196.7584597455127,
+          "rival_viewers": 6285.137089194671,
+          "not_watching": 3518.1044510598167
+        },
+        {
+          "audience": "Specialists",
+          "population": 2500,
+          "player_viewers": 608.2788490971678,
+          "rival_viewers": 615.9102525488161,
+          "not_watching": 1275.810898354016
+        }
+      ]
+    },
+    {
+      "airing_id": 59,
+      "start_tick": 80,
+      "end_tick": 86,
+      "snapshot_tick": 80,
+      "aired_programme": 5,
+      "aired_advertiser": 1,
+      "off_air": false,
+      "broadcast_cost": "100",
+      "cash_after": "20696",
+      "audiences": [
+        {
+          "audience": "Young viewers",
+          "population": 6000,
+          "player_viewers": 2006.2975328409527,
+          "rival_viewers": 2046.8776331934703,
+          "not_watching": 1946.824833965577
+        },
+        {
+          "audience": "Households",
+          "population": 11000,
+          "player_viewers": 2598.9290019061664,
+          "rival_viewers": 2869.6049264201347,
+          "not_watching": 5531.466071673699
+        },
+        {
+          "audience": "Specialists",
+          "population": 2500,
+          "player_viewers": 704.6642863877137,
+          "rival_viewers": 773.1078076614554,
+          "not_watching": 1022.227905950831
+        }
+      ]
+    }
+  ]
+}

@@ -157,8 +157,8 @@ Later elections: calculate eligible population, turnout, and divided support wit
 Agreed direction: one tick is 15 simulated minutes, four ticks per hour and
 96 per day. No continuously running wall clock is required. Advancing a day
 processes all intervening ticks and scheduled activity rather than resolving
-only its destination. Current experiments/browser still use explicit
-whole-hour broadcast snapshots; the tick design is not implemented yet.
+only its destination. The browser now implements a bounded tick planner; legacy CLI comparisons retain
+whole-hour point snapshots. See [programme-planning cadence](programme-planning.md).
 
 A programme occupies its duration across ticks. Tick resolution is not a
 requirement to run every rule on every tick:
@@ -171,11 +171,15 @@ requirement to run every rule on every tick:
 | Daily boundary | Selected gradual cultural processes and summaries |
 | Due tick | Research/report delivery, completion or settlement |
 
-These triggers are proposed processing semantics to validate. In particular,
+These triggers remain the broader proposed processing semantics. The implemented
+planner uses a provisional one-start-snapshot cadence, completes reception once
+at the work's end, and advances passive decay/deadlines at every tick. It does
+not integrate interval viewing or ad blocks; see [exact implemented order](programme-planning.md). In particular,
 splitting a work into four ticks must not charge four full broadcast costs,
 treat it as four fresh episodes, or multiply full-viewing satisfaction updates.
-Define duration-normalised exposure, accumulated viewing and completion effects
-before migration. Account for interval viewers separately from unique reach.
+The implemented normalization is one sampled delivery opportunity per airing,
+with no sum of tick audiences. Stored starting reception is applied once at
+completion. Duration-integrated exposure and retention remain future work. Account for interval viewers separately from unique reach.
 
 Use consistent pre-update snapshots for interacting changes and deterministic
 ordering for scheduled actions. Exact phase ordering remains open. Quantities

@@ -1,23 +1,32 @@
 <!doctype html>
-<html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Behind the Screens · browser experiment</title></head>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101d2c"><title>Behind the Screens · Programme planning</title></head>
 <body>
-<main>
-  <header><p class="eyebrow">Behind the Screens · integration experiment</p><h1>Seven days on air</h1><p>Plan a programme, review a Rust-calculated offer, then broadcast against a fixed rival.</p></header>
-  <p id="status" role="status">Loading WebAssembly…</p>
-  <p id="error" role="alert" hidden></p>
-  <div id="controls" hidden>
-    <section><h2>Your next broadcast</h2><p id="position"></p><p>Station cash: <strong id="cash"></strong> credits</p>
-      <div class="fields"><label>Decision slot<select id="slot"></select></label><label>Programme<select id="programme"></select></label><label>Prospective advertiser<select id="advertiser"></select></label></div>
-      <p id="programme-info"></p>
-      <div class="buttons"><button id="plan">Plan broadcast</button><button id="quote">Request offer for next slot</button><button id="accept" disabled>Accept offer</button><button id="advance">Advance next slot</button><button id="reset" class="secondary">Reset scenario</button></div>
-      <p>Acceptance locks the programme and advertiser for that slot. Unaccepted advertisements do not air. Offers are available only for the next slot; future plans remain editable.</p>
+<header class="masthead"><div class="brand"><span class="signal" aria-hidden="true"><i></i><i></i><i></i></span><span>BEHIND <small>THE</small> SCREENS</span></div><div class="clock"><span id="clock">Day 1 · 00:00</span><strong>PAUSED</strong></div><div class="cash">Cash <strong id="cash">—</strong><small>credits</small></div></header>
+<p id="status" role="status" class="load-status">Loading WebAssembly…</p><p id="error" role="alert" hidden></p>
+<div id="controls" class="app" hidden>
+  <aside class="rail"><span class="rail-caption">YOUR STATION</span><a href="#planning" class="active">▦ Planning</a><a href="#results">▤ Results</a><a href="#finances">≡ Finances</a><div class="rail-note">SEVEN DAYS<br><strong>Draft schedule</strong><p>Make television.<br>See who watches.</p></div><button id="reset" class="quiet">Reset experiment</button></aside>
+  <main>
+    <section class="transport" aria-label="Time controls"><div><span class="overline">NEXT TO AIR · YOUR CHANNEL</span><strong id="next-airing">Nothing planned</strong><span id="on-air"></span></div><div class="transport-buttons"><button id="advance-tick" class="quiet">+15 min</button><button id="advance-next">Run next airing</button><button id="advance-day" class="quiet">Finish current day</button></div></section>
+    <section id="planning" class="planning-panel"><div class="section-heading"><div><p class="overline">BROADCAST DESK</p><h1>Programme planning</h1></div><div class="day-controls"><button id="previous-day" class="quiet" aria-label="Previous planning day">‹</button><label>Planning day<select id="day"></select></label><button id="next-day" class="quiet" aria-label="Next planning day">›</button></div></div>
+      <div class="timeline-toolbar"><span><i class="key draft"></i>Draft <i class="key booked"></i>Booked <i class="key selected"></i>Selected <i class="key history"></i>Aired</span><div><button id="jump-now" class="text-button">Now</button><button id="jump-evening" class="text-button">Evening</button><button id="jump-midnight" class="text-button">00:00</button></div></div>
+      <div id="timeline-scroller" class="timeline-scroller" tabindex="0" aria-label="Full-day programme timeline; scroll horizontally from 00:00 to 24:00"><div id="timeline" class="timeline"></div></div>
+      <div class="timeline-footer"><span>24-hour timeline · 15-minute grid · click a gap to set placement time</span><span id="day-gaps"></span></div>
     </section>
-    <section><h2>Advertising offer</h2><div id="offer">No current offer.</div></section>
-    <section><h2>Contracts and results</h2><div id="contracts"></div><div id="results">No broadcasts yet.</div></section>
-    <section><h2>Public schedule</h2><div class="scroll"><table><thead><tr><th>Day / hour</th><th>Your programme</th><th>Rival programme</th><th>Status</th></tr></thead><tbody id="schedule"></tbody></table></div></section>
-    <section><h2>Reporting limits</h2><p id="reporting"></p><p>This harness exposes no developer inspector. Audience research, measured ratings and measurement-based settlement remain future work. All world data runs locally, so this is an observation boundary, not protection against inspecting client memory.</p></section>
-  </div>
-</main>
-<script type="module" src="/src/main.ts"></script>
-</body></html>
+    <div class="workspace">
+      <section class="library panel" aria-labelledby="library-title"><div class="panel-heading"><h2 id="library-title">Programme library</h2><label class="sr-only" for="genre-filter">Filter library by genre</label><select id="genre-filter"><option value="all">All genres</option><option>Comedy</option><option>Drama</option><option>Science</option></select></div><div id="catalogue" class="catalogue"></div>
+        <form id="place-form" class="placement"><span class="overline">PLACE FROM LIBRARY</span><strong id="place-name"></strong><div class="form-row"><label>Day<select id="place-day"></select></label><label>Start time<select id="place-time"></select></label></div><button id="place" type="submit">Place broadcast</button><small id="place-note"></small></form>
+      </section>
+      <section id="details" class="details panel" aria-labelledby="details-title"><div class="panel-heading"><h2 id="details-title">Broadcast details</h2><span class="tag">SELECTED AIRING</span></div><div id="selection-empty" class="empty-state"><span class="screen-icon" aria-hidden="true">▣</span><h3>Your schedule starts here.</h3><p>Choose a programme from the library, pick a time, and place it on your channel. Select any broadcast to move it, arrange advertising or review its result.</p><p class="muted">Selecting an airing does not change which one airs next.</p></div><div id="selection-content" hidden>
+          <div class="selected-header"><span id="selected-genre" class="genre-tile" aria-hidden="true"></span><div><span id="selected-id" class="overline"></span><h3 id="selected-name"></h3><p id="selected-window"></p><span id="selected-status" class="tag"></span></div></div>
+          <p id="known-details" class="muted"></p><div class="forecast-note">Audience forecast unavailable · research is not implemented. Advertising quotes below contain provisional contractual forecasts.</div>
+          <fieldset id="edit-controls"><legend>Move or remove this airing</legend><div class="form-row"><label>Day<select id="move-day"></select></label><label>Start time<select id="move-time"></select></label><button id="move">Move airing</button><button id="remove" class="danger">Remove</button></div></fieldset><p id="lock-note" class="muted"></p>
+          <div class="ad-controls"><label>Prospective advertiser<select id="advertiser"></select></label><button id="set-advertiser" class="quiet">Set advertiser</button><button id="quote">Request offer</button></div><p class="muted small">An ad airs only after acceptance. A booking locks the airing's programme, start, duration and advertiser.</p>
+          <div id="offer"></div><div id="selected-contract"></div><div id="selected-result"></div><button id="advance-selected" class="quiet">Run through selected airing</button>
+        </div></section>
+    </div>
+    <section id="results" class="panel lower-panel"><div class="panel-heading"><h2>Broadcast results</h2><span class="tag">PROVISIONAL REPORTING</span></div><div id="results-list"></div></section>
+    <section id="finances" class="panel lower-panel"><div class="panel-heading"><h2>Station finances</h2><span class="tag">INTEGER CREDITS</span></div><div id="finance-summary" class="finance-summary"></div><div id="ledger"></div></section>
+    <footer><p id="reporting"></p><p>No publication, promotion, ad-break shares, production, research or save/load in this experiment. No developer inspector. Client-side observation filtering is not a security guarantee.</p></footer>
+  </main>
+</div>
+<script type="module" src="/src/main.ts"></script></body></html>

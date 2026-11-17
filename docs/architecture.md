@@ -13,7 +13,7 @@ It may later be extracted into a separate project.
 | Crate | Owns |
 | --- | --- |
 | bts-fuzzy | Generic membership curves, expressions, rules, inference, validation, traces, authoring macro |
-| bts-sim | Typed entities, TV-specific rules, explicit time, deterministic state transitions, developer evidence |
+| bts-sim | Typed entities/clocks, TV-specific rules, duration-aware planner, deterministic state transitions, exact accounts, developer evidence |
 | bts-cli | Fixed experiment orchestration, readable developer summaries and JSON export |
 | bts-web | Per-session simulation ownership, versioned commands, player observation whitelist, wasm-bindgen ABI |
 | web/ | TypeScript/HTML/CSS harness, Wasm initialization, controls and presentation |
@@ -86,16 +86,38 @@ State remains separate from developer DTOs.
 The browser is now the intended primary player interface; the CLI remains a
 developer tool. `bts-web` depends on `bts-sim`, owns a simulation per session and
 exposes versioned JSON commands through wasm-bindgen. The plain TypeScript,
-HTML and CSS Vite harness is a minimal integration page. Financial u64 values
+HTML and CSS Vite workspace provides a retro day planner. Financial u64 values
 cross the boundary as decimal strings. Exact expected counts are labelled
 provisional reporting; research and measurement-based settlement remain future
 work. Accepted bookings lock that broadcast's programme and advertiser in the
 adapter. Rejected commands are atomic. No developer inspector is exported.
-See [browser foundation](browser-foundation.md) for the implemented protocol,
-seven-day fixture, observation whitelist, real browser/native parity evidence,
-build instructions and limitations. Neither fuzzy nor simulation imports the
+See [browser foundation](browser-foundation.md) for the player boundary, local build and verification. See
+[programme planning](programme-planning.md) for the current seven-day tick schedule,
+airing identity, processing cadence, browser/native parity evidence and limitations. Neither fuzzy nor simulation imports the
 adapter or browser dependencies. Native and standalone checks remain, alongside
 Wasm target and browser smoke checks.
 
 Production, full season play, research, save/load and the full game interface
 remain unimplemented. A larger UI framework and save format remain open.
+
+
+## Duration-aware browser planning
+
+Implemented: `bts-sim::planning::Planner` owns half-open airing intervals, stable
+`AiringId`s, 15-minute `SimTick` time, overlap/funding checks and atomic advancement.
+The common engine/state/account/contract types have an explicit clock parameter;
+`Simulation` remains the `SimHour` point-experiment alias. The browser adapter owns
+a tick planner, rather than pretending tick indices are hours or duplicating
+settlement in JavaScript. Generic accounting preserves the same audience-specific
+escrow, rounding and refund code for both modes. Publication/licensing are unchanged.
+
+Player protocol v2 replaces slot indices with airing IDs and explicit tick
+boundaries. New starts pay once and generate one sampled ad opportunity; runtime
+occupies airtime, completion applies reception once, and every intervening tick
+advances decay/deadlines. Continuations compete without repeating costs or exposure.
+This is a provisional initial-snapshot cadence, not minute-integrated viewing.
+The [planning specification](programme-planning.md) documents the exact update
+order, completion cap, forecast limitations and remaining commercial incentives.
+The browser workspace follows the [planning mockup](mockups/programme-planning.png)
+with a day timeline, competitor lane, catalogue and linked details/results/finances.
+It adds no publication, promotion, campaign shares, production or research.

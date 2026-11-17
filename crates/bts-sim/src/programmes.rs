@@ -2,8 +2,8 @@
 use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct BroadcastRecord {
-    pub at: SimHour,
+pub struct BroadcastRecord<T: Clock = SimHour> {
+    pub at: T,
     pub station: StationId,
     pub programme: ProgrammeId,
 }
@@ -22,7 +22,7 @@ pub struct SelectionHistory {
     pub frontier_before: Option<u32>,
     pub frontier_after: Option<u32>,
 }
-impl State {
+impl<T: Clock> State<T> {
     pub fn familiarity(&self, audience: AudienceId, programme: ProgrammeId) -> Option<f64> {
         self.familiarity.get(&(audience, programme)).copied()
     }
@@ -32,11 +32,11 @@ impl State {
     pub fn series_progress(&self, audience: AudienceId, series: SeriesId) -> Option<u32> {
         self.progress.get(&(audience, series)).copied()
     }
-    pub fn broadcast_history(&self) -> &[BroadcastRecord] {
+    pub fn broadcast_history(&self) -> &[BroadcastRecord<T>] {
         &self.broadcasts
     }
 }
-impl Simulation {
+impl<T: Clock> Engine<T> {
     pub(crate) fn selection_history(
         &self,
         audience: AudienceId,
@@ -96,7 +96,7 @@ impl Simulation {
     }
     pub(crate) fn update_programme_history(
         &self,
-        next: &mut State,
+        next: &mut State<T>,
         allocations: &mut [Allocation],
     ) -> Result<(), Error> {
         for allocation in allocations {
