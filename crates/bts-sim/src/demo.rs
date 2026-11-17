@@ -41,6 +41,13 @@ fn availability(early: f64, late: f64) -> [f64; 24] {
 }
 pub fn world() -> World {
     World {
+        series: (1..=4)
+            .map(|id| Series {
+                id: SeriesId(id),
+                name: format!("Demo series {id}"),
+                continuity_strength: 0.0,
+            })
+            .collect(),
         audiences: vec![
             Audience {
                 id: YOUNG,
@@ -76,7 +83,10 @@ pub fn world() -> World {
         programmes: vec![
             Programme {
                 id: ProgrammeId(1),
-                series: SeriesId(1),
+                kind: ProgrammeKind::Episode {
+                    series: SeriesId(1),
+                    sequence: 1,
+                },
                 name: "Neighbourhood Laughs".into(),
                 genre: Genre::Comedy,
                 tone: 0.8,
@@ -87,7 +97,10 @@ pub fn world() -> World {
             },
             Programme {
                 id: ProgrammeId(2),
-                series: SeriesId(2),
+                kind: ProgrammeKind::Episode {
+                    series: SeriesId(2),
+                    sequence: 1,
+                },
                 name: "Workshop Science".into(),
                 genre: Genre::Science,
                 tone: 0.15,
@@ -98,7 +111,10 @@ pub fn world() -> World {
             },
             Programme {
                 id: ProgrammeId(3),
-                series: SeriesId(3),
+                kind: ProgrammeKind::Episode {
+                    series: SeriesId(3),
+                    sequence: 1,
+                },
                 name: "The Big Premiere".into(),
                 genre: Genre::Comedy,
                 tone: 0.8,
@@ -109,7 +125,10 @@ pub fn world() -> World {
             },
             Programme {
                 id: ProgrammeId(4),
-                series: SeriesId(4),
+                kind: ProgrammeKind::Episode {
+                    series: SeriesId(4),
+                    sequence: 1,
+                },
                 name: "Evening Stories".into(),
                 genre: Genre::Drama,
                 tone: 0.45,

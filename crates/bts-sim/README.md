@@ -30,8 +30,11 @@ hype, audience-specific valuation, forecast delivery and full fuzzy evaluations.
 Brand-wide pressure is diagnostic; each reached audience's own deficit prices
 its relevant delivery. Valuation and delivery guarantees are separate.
 `accept_offer` revalidates a fresh quote, reserves finite marketing budget and
-one station/hour ad slot. Deadlines settle actual delivery using exact integer
-pro-rata payment and refunds. `State::economy()` exposes immutable contracts,
+one station/hour ad slot. Acceptance freezes forecast, priority,
+micro-impression promise and allocated payment per audience. Deadlines settle
+each allocation against its own delivered units using exact integer arithmetic;
+other audiences cannot substitute or absorb its payment. Small positive delivery
+is supported at 10^-6 impression resolution. See [semantics](../../docs/episodes-and-commitments.md). `State::economy()` exposes immutable contracts,
 balances, escrow and the balanced transfer ledger. No credit or replenishment
 is available. Broadcasts need cash before same-slot settlement.
 
@@ -40,7 +43,7 @@ advertiser types under both schedules, followed by decay and a recovery quote.
 `advertiser_value` supplies matched-stock saturation/repetition/creative controls
 and reports remaining pricing incentives; see [hardening](../../docs/advertiser-hardening.md).
 `developer::{report, economy_report}` convert immutable causal evidence to
-schema-version-3 JSON-ready DTOs. Internal state is not serializable. Simulation
+schema-version-4 JSON-ready DTOs. Internal state is not serializable. Simulation
 uses no filesystem I/O, rendering, wall clock or randomness.
 
 ```sh
@@ -54,3 +57,10 @@ bounded [0,100]; zero ad exposure implies zero campaign gain. Contract units
 are floored weighted relevant impressions, not rounded raw people. Models and
 costs are provisional; no balance or real-world validity is established.
 Publication stays disabled; licensing is unchanged.
+
+Programme identity is `ProgrammeKind::Standalone` or `Episode {series, sequence}`;
+`World::series` contains shared identity and continuity. Actual broadcast history,
+work familiarity and reception, series attachment and exposure frontiers are
+separate internal state. Standalone works have null series attachment. History
+factors remain separate from base fuzzy traces and are inspectable in reports.
+`episodes_demo` supplies paired opening/repeat/continuity controls.

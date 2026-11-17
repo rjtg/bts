@@ -137,6 +137,10 @@ fn settled_delivery_does_not_reprice_the_accepted_value_after_hype_changes() {
     world.audiences[1].availability[18] = 1.0;
     world.brands[0].targets[0].desired_hype = 0.0;
     world.brands[0].targets[1].desired_hype = 10.0;
+    let mut promo = world.programmes[0].clone();
+    promo.id = ProgrammeId(50);
+    promo.kind = ProgrammeKind::Standalone;
+    world.programmes.push(promo);
     let mut simulation = Simulation::new(
         world,
         Parameters {
@@ -149,7 +153,9 @@ fn settled_delivery_does_not_reprice_the_accepted_value_after_hype_changes() {
     let offer = simulation.quote(&booked, MAIN, SNACKS, booked.at).unwrap();
     assert!(offer.payment.0 > 0);
     simulation.accept_offer(&offer).unwrap();
-    simulation.step(&controlled_action(18)).unwrap();
+    let mut promotion = controlled_action(18);
+    promotion.broadcasts[0].programme = ProgrammeId(50);
+    simulation.step(&promotion).unwrap();
     assert_eq!(simulation.demand(SNACKS).unwrap().pressure, 0.0);
     let event = simulation.step(&booked).unwrap();
     let settlement = &event.financial.settlements[0];
@@ -208,8 +214,8 @@ fn either_insolvent_station_goes_off_air_and_other_viewers_redistribute() {
             assert_eq!(
                 simulation
                     .state()
-                    .loyalty(allocation.audience, failed_programme.series),
-                initial.loyalty(allocation.audience, failed_programme.series)
+                    .loyalty(allocation.audience, failed_programme.series().unwrap()),
+                initial.loyalty(allocation.audience, failed_programme.series().unwrap())
             );
         }
         let failed_brand = event.off_air[0].planned.advertisement.unwrap();
@@ -267,8 +273,8 @@ fn all_off_air_advances_decay_and_time_without_show_effects_and_reproduces() {
     for audience in &world.audiences {
         for programme in &world.programmes {
             assert_eq!(
-                a.state().loyalty(audience.id, programme.series),
-                initial.loyalty(audience.id, programme.series)
+                a.state().loyalty(audience.id, programme.series().unwrap()),
+                initial.loyalty(audience.id, programme.series().unwrap())
             );
         }
     }

@@ -1,0 +1,67 @@
+Developer-only standalone and episode controls. Familiarity and continuity are provisional group expectations.
+
+standalone-movie: continuity None, learning 0.9
+  Hour 18 ProgrammeId(10) Standalone: base attraction 0.872, utility 0.760, viewers 6468.7, fresh 6468.7, familiarity 0.000->0.647, attachment None->None, frontier None->None
+    repeat 1.000, prior familiarity 1.000, continuity 1.000, predecessor None, reception factor 1.000
+
+strong-opening: continuity Some(0.7), learning 0.9
+  Hour 18 ProgrammeId(11) Episode { series: SeriesId(10), sequence: 1 }: base attraction 0.872, utility 0.760, viewers 6468.7, fresh 6468.7, familiarity 0.000->0.647, attachment Some(0.5)->Some(0.7463085979933566), frontier Some(0)->Some(1)
+    repeat 1.000, prior familiarity 1.000, continuity 1.000, predecessor None, reception factor 1.000
+  Hour 42 ProgrammeId(12) Episode { series: SeriesId(10), sequence: 2 }: base attraction 0.872, utility 1.051, viewers 6830.3, fresh 6830.3, familiarity 0.000->0.683, attachment Some(0.7463085979933566)->Some(0.8549727255982381), frontier Some(1)->Some(2)
+    repeat 1.000, prior familiarity 0.647, continuity 0.852, predecessor Some(0.9230769230769229), reception factor 1.164
+  Hour 66 ProgrammeId(13) Episode { series: SeriesId(10), sequence: 3 }: base attraction 0.872, utility 1.202, viewers 6958.1, fresh 6958.1, familiarity 0.000->0.696, attachment Some(0.8549727255982381)->Some(0.8976216042216824), frontier Some(2)->Some(3)
+    repeat 1.000, prior familiarity 0.665, continuity 0.859, predecessor Some(0.923076923076923), reception factor 1.173
+
+disappointing-opening: continuity Some(0.7), learning 0.9
+  Hour 18 ProgrammeId(11) Episode { series: SeriesId(10), sequence: 1 }: base attraction 0.872, utility 0.760, viewers 6468.7, fresh 6468.7, familiarity 0.000->0.647, attachment Some(0.5)->Some(0.3656498556399873), frontier Some(0)->Some(1)
+    repeat 1.000, prior familiarity 1.000, continuity 1.000, predecessor None, reception factor 1.000
+  Hour 42 ProgrammeId(12) Episode { series: SeriesId(10), sequence: 2 }: base attraction 0.872, utility 0.463, viewers 5760.0, fresh 5760.0, familiarity 0.000->0.576, attachment Some(0.3656498556399873)->Some(0.6546210147760174), frontier Some(1)->Some(2)
+    repeat 1.000, prior familiarity 0.647, continuity 0.852, predecessor Some(0.2692307692307693), reception factor 0.910
+  Hour 66 ProgrammeId(13) Episode { series: SeriesId(10), sequence: 3 }: base attraction 0.872, utility 0.910, viewers 6678.6, fresh 6678.6, familiarity 0.000->0.668, attachment Some(0.6546210147760174)->Some(0.8159830453637389), frontier Some(2)->Some(3)
+    repeat 1.000, prior familiarity 0.611, continuity 0.837, predecessor Some(0.9230769230769231), reception factor 1.146
+
+earlier-repeat-control: continuity Some(0.0), learning 0
+  Hour 18 ProgrammeId(11) Episode { series: SeriesId(10), sequence: 1 }: base attraction 0.872, utility 0.760, viewers 6468.7, fresh 6468.7, familiarity 0.000->0.647, attachment Some(0.5)->Some(0.5), frontier Some(0)->Some(1)
+    repeat 1.000, prior familiarity 1.000, continuity 1.000, predecessor None, reception factor 1.000
+  Hour 42 ProgrammeId(12) Episode { series: SeriesId(10), sequence: 2 }: base attraction 0.872, utility 0.885, viewers 6648.2, fresh 6648.2, familiarity 0.000->0.665, attachment Some(0.5)->Some(0.5), frontier Some(1)->Some(2)
+    repeat 1.000, prior familiarity 0.647, continuity 1.000, predecessor Some(0.9230769230769229), reception factor 1.164
+  Hour 66 ProgrammeId(11) Episode { series: SeriesId(10), sequence: 1 }: base attraction 0.872, utility 0.588, viewers 6125.6, fresh 2163.1, familiarity 0.647->0.863, attachment Some(0.5)->Some(0.5), frontier Some(2)->Some(2)
+    repeat 0.774, prior familiarity 1.000, continuity 1.000, predecessor None, reception factor 1.000
+  Hour 90 ProgrammeId(13) Episode { series: SeriesId(10), sequence: 3 }: base attraction 0.872, utility 0.889, viewers 6652.6, fresh 6652.6, familiarity 0.000->0.665, attachment Some(0.5)->Some(0.5), frontier Some(2)->Some(3)
+    repeat 1.000, prior familiarity 0.764, continuity 1.000, predecessor Some(0.923076923076923), reception factor 1.169
+
+fresh-movie-control: continuity Some(0.0), learning 0
+  Hour 18 ProgrammeId(11) Episode { series: SeriesId(10), sequence: 1 }: base attraction 0.872, utility 0.760, viewers 6468.7, fresh 6468.7, familiarity 0.000->0.647, attachment Some(0.5)->Some(0.5), frontier Some(0)->Some(1)
+    repeat 1.000, prior familiarity 1.000, continuity 1.000, predecessor None, reception factor 1.000
+  Hour 42 ProgrammeId(12) Episode { series: SeriesId(10), sequence: 2 }: base attraction 0.872, utility 0.885, viewers 6648.2, fresh 6648.2, familiarity 0.000->0.665, attachment Some(0.5)->Some(0.5), frontier Some(1)->Some(2)
+    repeat 1.000, prior familiarity 0.647, continuity 1.000, predecessor Some(0.9230769230769229), reception factor 1.164
+  Hour 66 ProgrammeId(10) Standalone: base attraction 0.872, utility 0.760, viewers 6468.7, fresh 6468.7, familiarity 0.000->0.647, attachment None->None, frontier None->None
+    repeat 1.000, prior familiarity 1.000, continuity 1.000, predecessor None, reception factor 1.000
+  Hour 90 ProgrammeId(13) Episode { series: SeriesId(10), sequence: 3 }: base attraction 0.872, utility 0.889, viewers 6652.6, fresh 6652.6, familiarity 0.000->0.665, attachment Some(0.5)->Some(0.5), frontier Some(2)->Some(3)
+    repeat 1.000, prior familiarity 0.656, continuity 1.000, predecessor Some(0.923076923076923), reception factor 1.169
+
+out-of-order-low: continuity Some(0.0), learning 0.9
+  Hour 18 ProgrammeId(13) Episode { series: SeriesId(10), sequence: 3 }: base attraction 0.872, utility 0.760, viewers 6468.7, fresh 6468.7, familiarity 0.000->0.647, attachment Some(0.5)->Some(0.7463085979933566), frontier Some(0)->Some(3)
+    repeat 1.000, prior familiarity 0.000, continuity 1.000, predecessor None, reception factor 1.000
+  Hour 42 ProgrammeId(11) Episode { series: SeriesId(10), sequence: 1 }: base attraction 0.872, utility 1.060, viewers 6838.8, fresh 6838.8, familiarity 0.000->0.684, attachment Some(0.7463085979933566)->Some(0.8551073450706487), frontier Some(3)->Some(3)
+    repeat 1.000, prior familiarity 1.000, continuity 1.000, predecessor None, reception factor 1.000
+  Hour 66 ProgrammeId(12) Episode { series: SeriesId(10), sequence: 2 }: base attraction 0.872, utility 1.399, viewers 7088.3, fresh 7088.3, familiarity 0.000->0.709, attachment Some(0.8551073450706487)->Some(0.8984681483478935), frontier Some(3)->Some(3)
+    repeat 1.000, prior familiarity 0.684, continuity 1.000, predecessor Some(0.923076923076923), reception factor 1.174
+
+out-of-order-high: continuity Some(1.0), learning 0.9
+  Hour 18 ProgrammeId(13) Episode { series: SeriesId(10), sequence: 3 }: base attraction 0.872, utility 0.304, viewers 5025.7, fresh 5025.7, familiarity 0.000->0.503, attachment Some(0.5)->Some(0.6913646120697107), frontier Some(0)->Some(3)
+    repeat 1.000, prior familiarity 0.000, continuity 0.400, predecessor None, reception factor 1.000
+  Hour 42 ProgrammeId(11) Episode { series: SeriesId(10), sequence: 1 }: base attraction 0.872, utility 0.993, viewers 6772.6, fresh 6772.6, familiarity 0.000->0.677, attachment Some(0.6913646120697107)->Some(0.8326009098708032), frontier Some(3)->Some(3)
+    repeat 1.000, prior familiarity 1.000, continuity 1.000, predecessor None, reception factor 1.000
+  Hour 66 ProgrammeId(12) Episode { series: SeriesId(10), sequence: 2 }: base attraction 0.872, utility 1.101, viewers 6875.8, fresh 6875.8, familiarity 0.000->0.688, attachment Some(0.8326009098708032)->Some(0.8885896313289153), frontier Some(3)->Some(3)
+    repeat 1.000, prior familiarity 0.677, continuity 0.806, predecessor Some(0.923076923076923), reception factor 1.172
+
+ordered-high-control: continuity Some(1.0), learning 0.9
+  Hour 18 ProgrammeId(11) Episode { series: SeriesId(10), sequence: 1 }: base attraction 0.872, utility 0.760, viewers 6468.7, fresh 6468.7, familiarity 0.000->0.647, attachment Some(0.5)->Some(0.7463085979933566), frontier Some(0)->Some(1)
+    repeat 1.000, prior familiarity 1.000, continuity 1.000, predecessor None, reception factor 1.000
+  Hour 42 ProgrammeId(12) Episode { series: SeriesId(10), sequence: 2 }: base attraction 0.872, utility 0.973, viewers 6750.7, fresh 6750.7, familiarity 0.000->0.675, attachment Some(0.7463085979933566)->Some(0.8537062568888846), frontier Some(1)->Some(2)
+    repeat 1.000, prior familiarity 0.647, continuity 0.788, predecessor Some(0.9230769230769229), reception factor 1.164
+  Hour 66 ProgrammeId(13) Episode { series: SeriesId(10), sequence: 3 }: base attraction 0.872, utility 1.111, viewers 6884.6, fresh 6884.6, familiarity 0.000->0.688, attachment Some(0.8537062568888846)->Some(0.8966893875949444), frontier Some(2)->Some(3)
+    repeat 1.000, prior familiarity 0.661, continuity 0.797, predecessor Some(0.923076923076923), reception factor 1.171
+Expected fresh viewers are group-level approximations, not measured individual reach. No universal balance is claimed.
+Wrote developer JSON to contrib/episodes-and-commitments/episodes.json

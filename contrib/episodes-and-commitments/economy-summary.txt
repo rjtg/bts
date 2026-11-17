@@ -1,0 +1,75 @@
+Developer-only advertiser-funded economy. Integer credits; provisional coefficients.
+Actual targeting/hype are internal evidence, not player research.
+
+mass-broad (identical initial state and competitor)
+  Channel One: 82915 viewer-slot impressions, mean satisfaction 0.787
+  Channel Two: 58786 viewer-slot impressions, mean satisfaction 0.704
+  Young viewers: early-slot viewers 2772 -> 2799; willingness Some(0.5) -> Some(0.7097113857695729)
+  Households: early-slot viewers 4820 -> 4754; willingness Some(0.5) -> Some(0.6866181875201008)
+  Specialists: early-slot viewers 346 -> 302; willingness Some(0.5) -> Some(0.49722810722704736)
+  Everyday Snacks: population-weighted hype 35.72, after 48h idle 17.86; specialist hype 4.20
+  Precision Equipment: population-weighted hype 0.65, after 48h idle 0.33; specialist hype 0.65
+  StationId(1): revenue 2918, broadcast costs 1800, profit 1118, cash 21118
+  StationId(2): revenue 0, broadcast costs 1200, profit -1200, cash 18800
+  BrandId(1): spent 2918, remaining budget 17082, escrow 0
+  BrandId(2): spent 0, remaining budget 20000, escrow 0
+  Demand pressure 0.3381 -> 0.0121; recovery after 48h 0.1913 (budget 17082)
+  First forecast 6065.50 relevant impressions, whole-delivery diagnostic 6065, offer 1697 credits; final offer 0; recovery offer 956
+  Same future-slot quote before/after decay: 44 -> 956 credits; forecast delivery unchanged at 6047.61
+  Accepted campaign target delivery: forecast 46229.92, actual 46229.92 relevant impressions
+
+mass-targeted (identical initial state and competitor)
+  Channel One: 26413 viewer-slot impressions, mean satisfaction 0.690
+  Channel Two: 94841 viewer-slot impressions, mean satisfaction 0.701
+  Young viewers: early-slot viewers 508 -> 492; willingness Some(0.5) -> Some(0.5193049643122031)
+  Households: early-slot viewers 1222 -> 1191; willingness Some(0.5) -> Some(0.5428110442416982)
+  Specialists: early-slot viewers 597 -> 629; willingness Some(0.5) -> Some(0.7615100967106543)
+  Everyday Snacks: population-weighted hype 19.88, after 48h idle 9.94; specialist hype 8.65
+  Precision Equipment: population-weighted hype 0.65, after 48h idle 0.33; specialist hype 0.65
+  StationId(1): revenue 2512, broadcast costs 600, profit 1912, cash 21912
+  StationId(2): revenue 0, broadcast costs 1200, profit -1200, cash 18800
+  BrandId(1): spent 2512, remaining budget 17488, escrow 0
+  BrandId(2): spent 0, remaining budget 20000, escrow 0
+  Demand pressure 0.3381 -> 0.1776; recovery after 48h 0.2829 (budget 17488)
+  First forecast 1294.18 relevant impressions, whole-delivery diagnostic 1294, offer 361 credits; final offer 136; recovery offer 287
+  Same future-slot quote before/after decay: 182 -> 287 credits; forecast delivery unchanged at 1233.49
+  Accepted campaign target delivery: forecast 13198.16, actual 13198.16 relevant impressions
+
+specialist-broad (identical initial state and competitor)
+  Channel One: 82915 viewer-slot impressions, mean satisfaction 0.787
+  Channel Two: 58786 viewer-slot impressions, mean satisfaction 0.704
+  Young viewers: early-slot viewers 2772 -> 2799; willingness Some(0.5) -> Some(0.7097113857695729)
+  Households: early-slot viewers 4820 -> 4754; willingness Some(0.5) -> Some(0.6866181875201008)
+  Specialists: early-slot viewers 346 -> 302; willingness Some(0.5) -> Some(0.49722810722704736)
+  Everyday Snacks: population-weighted hype 0.65, after 48h idle 0.33; specialist hype 0.65
+  Precision Equipment: population-weighted hype 11.90, after 48h idle 5.95; specialist hype 30.83
+  StationId(1): revenue 2676, broadcast costs 1800, profit 876, cash 20876
+  StationId(2): revenue 0, broadcast costs 1200, profit -1200, cash 18800
+  BrandId(1): spent 0, remaining budget 20000, escrow 0
+  BrandId(2): spent 2676, remaining budget 17324, escrow 0
+  Demand pressure 0.3846 -> 0.1362; recovery after 48h 0.2848 (budget 17324)
+  First forecast 278.01 relevant impressions, whole-delivery diagnostic 278, offer 369 credits; final offer 192; recovery offer 234
+  Same future-slot quote before/after decay: 112 -> 234 credits; forecast delivery unchanged at 240.24
+  Accepted campaign target delivery: forecast 3560.21, actual 3560.21 relevant impressions
+
+specialist-targeted (identical initial state and competitor)
+  Channel One: 26413 viewer-slot impressions, mean satisfaction 0.690
+  Channel Two: 94841 viewer-slot impressions, mean satisfaction 0.701
+  Young viewers: early-slot viewers 508 -> 492; willingness Some(0.5) -> Some(0.5193049643122031)
+  Households: early-slot viewers 1222 -> 1191; willingness Some(0.5) -> Some(0.5428110442416982)
+  Specialists: early-slot viewers 597 -> 629; willingness Some(0.5) -> Some(0.7615100967106543)
+  Everyday Snacks: population-weighted hype 0.65, after 48h idle 0.33; specialist hype 0.65
+  Precision Equipment: population-weighted hype 8.67, after 48h idle 4.33; specialist hype 44.94
+  StationId(1): revenue 2805, broadcast costs 600, profit 2205, cash 22205
+  StationId(2): revenue 0, broadcast costs 1200, profit -1200, cash 18800
+  BrandId(1): spent 0, remaining budget 20000, escrow 0
+  BrandId(2): spent 2805, remaining budget 17195, escrow 0
+  Demand pressure 0.3846 -> 0.0013; recovery after 48h 0.2180 (budget 17195)
+  First forecast 510.61 relevant impressions, whole-delivery diagnostic 510, offer 710 credits; final offer 162; recovery offer 421
+  Same future-slot quote before/after decay: 1 -> 421 credits; forecast delivery unchanged at 537.87
+  Accepted campaign target delivery: forecast 6959.96, actual 6959.96 relevant impressions
+
+Controlled comparisons: reach, target delivery and station profit can favour different schedules.
+Demand recovery cannot replenish spent budget. Hype is not advertiser sales; no universal winner is claimed.
+
+Wrote full developer JSON to /tmp/bts-economy-v4.json

@@ -26,6 +26,7 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Headless experiment](docs/headless-experiment.md): broadcasting equations and developer reports.
 - [Advertising economy](docs/advertising-economy.md): provisional demand, contracts, accounting, and comparisons.
 - [Advertiser hardening](docs/advertiser-hardening.md): audience-specific value, off-air handling and pricing incentives.
+- [Commitments and episodes](docs/episodes-and-commitments.md): audience-specific settlement, standalone works, familiarity and continuity.
 - [Contributor guidance](AGENTS.md): implementation principles for people and coding agents.
 
 ## Status
@@ -35,6 +36,7 @@ Design baseline and initial Cargo workspace, November 2026. The independent [`bt
 ## Run the broadcasting experiment
 
 ```sh
+cargo run -p bts-cli -- episodes --json /tmp/bts-episodes.json
 cargo run -p bts-cli -- advertiser-value --json /tmp/bts-advertiser-value.json
 cargo run -p bts-cli -- economy --json /tmp/bts-economy.json
 cargo run -p bts-cli -- demo --json /tmp/bts-demo-results.json
@@ -59,3 +61,10 @@ Quotes value each reached audience's own unmet hype demand. Valid plans that a
 station cannot fund go off air for that slot while other stations continue;
 malformed commands remain errors. `advertiser-value` isolates saturation and
 repetition effects, including remaining incentives in delivery-based pricing.
+
+Accepted contracts now freeze micro-impression commitments and allocated
+payment per audience, preventing cross-audience delivery substitution.
+`episodes` compares standalone movies, distinct series episodes, opening
+reception, earlier repeats and continuity. Work familiarity is an expected
+fraction of a group; it is not measured individual reach. Series attachment
+and actual broadcast history are separate state.

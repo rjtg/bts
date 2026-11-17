@@ -46,7 +46,7 @@ These are domain concepts, not a commitment to an inheritance hierarchy or datab
 
 Relationships connect entities. Events record things that happen and their consequences. Contracts and broadcast schedules explicitly track obligations; they need not become generic world entities.
 
-Brands are organisations with brand-specific state and behaviour. An advertisement is a creative asset used by a campaign, not an ordinary programme that audiences independently choose to watch. Formats, series, episodes, and assets need explicit links where relevant; their exact storage model is open.
+Brands are organisations with brand-specific state and behaviour. An advertisement is a creative asset used by a campaign, not an ordinary programme that audiences independently choose to watch. A bounded headless prototype now gives standalone works and sequenced episodes explicit programme identities linked to series definitions. Series attachment, work familiarity and actual broadcast history are distinct; continuity mechanics are provisional. Broader format, rights and asset storage remains open. See [episode model](episodes-and-commitments.md).
 
 ## Audience groups
 

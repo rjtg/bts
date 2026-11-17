@@ -303,10 +303,13 @@ fn simultaneous_same_series_uses_one_snapshot_and_aggregate_loyalty_update() {
     slot.broadcasts[1].advertisement = slot.broadcasts[0].advertisement;
     let event = sim.step(&slot).unwrap();
     for a in &event.allocations {
-        assert_eq!(a.viewing[0].loyalty_before, 0.5);
-        assert_eq!(a.viewing[1].loyalty_before, 0.5);
+        assert_eq!(a.viewing[0].loyalty_before, Some(0.5));
+        assert_eq!(a.viewing[1].loyalty_before, Some(0.5));
         close(a.viewing[0].viewers, a.viewing[1].viewers);
-        close(a.viewing[0].loyalty_after, a.viewing[1].loyalty_after);
+        close(
+            a.viewing[0].loyalty_after.unwrap(),
+            a.viewing[1].loyalty_after.unwrap(),
+        );
         let expected = 0.5
             + 0.9
                 * a.viewing
@@ -315,7 +318,7 @@ fn simultaneous_same_series_uses_one_snapshot_and_aggregate_loyalty_update() {
                         v.viewers / f64::from(a.population) * (v.satisfaction.trace.output - 0.5)
                     })
                     .sum::<f64>();
-        close(a.viewing[0].loyalty_after, expected);
+        close(a.viewing[0].loyalty_after.unwrap(), expected);
     }
     for h in event.hype.iter().filter(|h| h.brand == EQUIPMENT) {
         let a = event

@@ -101,6 +101,7 @@ pub struct AudienceValuation {
     pub deficit: f64,
     pub value_weighted_delivery: f64,
     pub uncapped_value: f64,
+    pub contractible: bool,
 }
 #[derive(Clone, Debug, PartialEq)]
 pub struct DeliveryForecast {
@@ -133,6 +134,26 @@ impl Offer {
     }
 }
 
+/// Integer contract delivery resolution; one unit is one millionth of a relevant impression.
+pub const DELIVERY_UNITS_PER_IMPRESSION: u64 = 1_000_000;
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct AudienceCommitment {
+    pub audience: AudienceId,
+    pub forecast_delivery: f64,
+    pub priority: f64,
+    pub promised_units: u64,
+    pub allocated_payment: Money,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct AudienceSettlement {
+    pub audience: AudienceId,
+    pub promised_units: u64,
+    pub credited_units: u64,
+    pub allocated_payment: Money,
+    pub payment: Money,
+    pub refund: Money,
+}
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct ActualAudience {
     pub audience: AudienceId,
@@ -140,6 +161,7 @@ pub struct ActualAudience {
     pub viewers: f64,
     pub effectiveness: f64,
     pub relevant_delivery: f64,
+    pub delivered_units: u64,
 }
 #[derive(Clone, Debug, Default, PartialEq, Serialize)]
 pub struct ActualDelivery {
@@ -153,6 +175,7 @@ pub struct Settlement {
     pub at: SimHour,
     pub promised_delivery: u64,
     pub credited_delivery: u64,
+    pub audiences: Vec<AudienceSettlement>,
     pub payment: Money,
     pub refund: Money,
 }
@@ -165,6 +188,7 @@ pub enum ContractStatus {
 pub struct Contract {
     pub id: ContractId,
     pub offer: Offer,
+    pub commitments: Vec<AudienceCommitment>,
     pub actual: ActualDelivery,
     pub delivered_at: Option<SimHour>,
     pub status: ContractStatus,
@@ -299,6 +323,68 @@ fn whole_delivery(value: f64) -> Result<u64, Error> {
     }
     Ok(value.floor() as u64)
 }
+fn micro_delivery(value: f64) -> Result<u64, Error> {
+    whole_delivery(value * DELIVERY_UNITS_PER_IMPRESSION as f64)
+}
+
+fn commitments(offer: &Offer) -> Result<Vec<AudienceCommitment>, Error> {
+    let mut rows = offer
+        .forecast
+        .audiences
+        .iter()
+        .map(|f| {
+            Ok(AudienceCommitment {
+                audience: f.audience,
+                forecast_delivery: f.relevant_delivery,
+                priority: f.priority,
+                promised_units: micro_delivery(f.relevant_delivery)?,
+                allocated_payment: Money(0),
+            })
+        })
+        .collect::<Result<Vec<_>, Error>>()?;
+    rows.sort_by_key(|r| r.audience);
+    let weights = rows
+        .iter()
+        .map(|r| {
+            if r.promised_units == 0 {
+                0.0
+            } else {
+                offer
+                    .valuation
+                    .iter()
+                    .find(|v| v.audience == r.audience)
+                    .map(|v| v.uncapped_value)
+                    .unwrap_or(0.0)
+            }
+        })
+        .collect::<Vec<_>>();
+    let eligible = weights
+        .iter()
+        .enumerate()
+        .filter(|(_, w)| **w > 0.0)
+        .map(|(i, _)| i)
+        .collect::<Vec<_>>();
+    let mut suffix = vec![0.0; eligible.len() + 1];
+    for j in (0..eligible.len()).rev() {
+        suffix[j] = weights[eligible[j]] + suffix[j + 1];
+    }
+    let mut remaining = offer.payment.0;
+    for (j, i) in eligible.iter().copied().enumerate() {
+        let amount = if j + 1 == eligible.len() {
+            remaining
+        } else {
+            ((remaining as f64 * (weights[i] / suffix[j]).clamp(0.0, 1.0)).floor() as u64)
+                .min(remaining)
+        };
+        rows[i].allocated_payment = Money(amount);
+        remaining -= amount;
+    }
+    if remaining != 0 {
+        return Err(Error::Invalid("no contractible value for payment".into()));
+    }
+    Ok(rows)
+}
+
 impl Simulation {
     /// Current actual hype pressure; finite budget is shown separately.
     pub fn demand(&self, brand: BrandId) -> Result<Demand, Error> {
@@ -401,16 +487,21 @@ impl Simulation {
             .zip(&demand.targets)
             .map(|(delivery, target)| {
                 let value_weighted_delivery = delivery.relevant_delivery * target.deficit;
-                AudienceValuation {
+                let contractible = micro_delivery(delivery.relevant_delivery)? > 0;
+                Ok(AudienceValuation {
+                    contractible,
                     audience: target.audience,
                     relevant_delivery: delivery.relevant_delivery,
                     deficit: target.deficit,
                     value_weighted_delivery,
-                    uncapped_value: advertiser.rate_per_thousand.0 as f64 / 1000.0
-                        * value_weighted_delivery,
-                }
+                    uncapped_value: if contractible {
+                        advertiser.rate_per_thousand.0 as f64 / 1000.0 * value_weighted_delivery
+                    } else {
+                        0.0
+                    },
+                })
             })
-            .collect::<Vec<_>>();
+            .collect::<Result<Vec<_>, Error>>()?;
         let value_weighted_delivery = valuation
             .iter()
             .map(|v| v.value_weighted_delivery)
@@ -447,9 +538,10 @@ impl Simulation {
         if &self.quote(&offer.proposal, offer.station, offer.brand, offer.deadline)? != offer {
             return Err(Error::Invalid("stale or modified offer".into()));
         }
-        if offer.payment.0 == 0 || offer.promised_delivery == 0 {
+        if offer.payment.0 == 0 {
             return Err(Error::Invalid("offer has no payable delivery".into()));
         }
+        let commitments = commitments(offer)?;
         let mut next = self.state.economy.clone();
         let id = ContractId(next.next_contract);
         next.next_contract = next
@@ -473,6 +565,7 @@ impl Simulation {
             Contract {
                 id,
                 offer: offer.clone(),
+                commitments,
                 actual: ActualDelivery::default(),
                 delivered_at: None,
                 status: ContractStatus::Reserved,
@@ -538,9 +631,7 @@ pub(crate) fn apply_slot(
         }
         if contract.offer.proposal.at == action.at && contract.delivered_at.is_none() {
             let audiences = contract
-                .offer
-                .demand
-                .targets
+                .commitments
                 .iter()
                 .map(|target| {
                     let ad = event
@@ -555,15 +646,16 @@ pub(crate) fn apply_slot(
                     let (viewers, effectiveness) = ad
                         .map(|a| (a.viewers, a.effectiveness.trace.output))
                         .unwrap_or((0.0, 0.0));
-                    ActualAudience {
+                    Ok(ActualAudience {
                         audience: target.audience,
                         priority: target.priority,
                         viewers,
                         effectiveness,
                         relevant_delivery: viewers * target.priority * effectiveness,
-                    }
+                        delivered_units: micro_delivery(viewers * target.priority * effectiveness)?,
+                    })
                 })
-                .collect::<Vec<_>>();
+                .collect::<Result<Vec<_>, Error>>()?;
             let relevant_delivery = audiences.iter().map(|a| a.relevant_delivery).sum();
             contract.actual = ActualDelivery {
                 audiences,
@@ -576,10 +668,35 @@ pub(crate) fn apply_slot(
         if contract.offer.deadline <= action.at {
             let promised = contract.offer.promised_delivery;
             let credited = contract.actual.credited_units;
-            let payment = Money(
-                (u128::from(contract.offer.payment.0) * u128::from(credited.min(promised))
-                    / u128::from(promised)) as u64,
-            );
+            let audience_settlements = contract
+                .commitments
+                .iter()
+                .map(|commitment| {
+                    let units = contract
+                        .actual
+                        .audiences
+                        .iter()
+                        .find(|a| a.audience == commitment.audience)
+                        .map(|a| a.delivered_units)
+                        .unwrap_or(0);
+                    let paid = if commitment.allocated_payment.0 == 0 {
+                        0
+                    } else {
+                        (u128::from(commitment.allocated_payment.0)
+                            * u128::from(units.min(commitment.promised_units))
+                            / u128::from(commitment.promised_units)) as u64
+                    };
+                    AudienceSettlement {
+                        audience: commitment.audience,
+                        promised_units: commitment.promised_units,
+                        credited_units: units,
+                        allocated_payment: commitment.allocated_payment,
+                        payment: Money(paid),
+                        refund: Money(commitment.allocated_payment.0 - paid),
+                    }
+                })
+                .collect::<Vec<_>>();
+            let payment = Money(audience_settlements.iter().map(|a| a.payment.0).sum());
             let refund = contract.offer.payment.subtract(payment)?;
             let station = contract.offer.station;
             let brand = contract.offer.brand;
@@ -588,6 +705,7 @@ pub(crate) fn apply_slot(
                 at: action.at,
                 promised_delivery: promised,
                 credited_delivery: credited,
+                audiences: audience_settlements,
                 payment,
                 refund,
             };

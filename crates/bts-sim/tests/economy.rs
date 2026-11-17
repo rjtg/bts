@@ -26,6 +26,7 @@ fn close(a: f64, b: f64) {
 fn arbitrary_world(audiences: usize, stations: usize, brands: usize, programmes: usize) -> World {
     let fixture = demo::world();
     World {
+        series: vec![],
         audiences: (0..audiences)
             .map(|i| {
                 let mut a = fixture.audiences[i % 3].clone();
@@ -45,7 +46,7 @@ fn arbitrary_world(audiences: usize, stations: usize, brands: usize, programmes:
             .map(|i| {
                 let mut p = fixture.programmes[i % 4].clone();
                 p.id = ProgrammeId(i as u16);
-                p.series = SeriesId(i as u16);
+                p.kind = ProgrammeKind::Standalone;
                 p
             })
             .collect(),
@@ -313,8 +314,14 @@ fn forecast_is_read_only_actual_delivery_is_independent_and_deadline_settles_onc
     assert_eq!(settlement.payment.0 + settlement.refund.0, offer.payment.0);
     assert_eq!(
         u128::from(settlement.payment.0),
-        u128::from(offer.payment.0) * u128::from(settlement.credited_delivery)
-            / u128::from(offer.promised_delivery)
+        settlement
+            .audiences
+            .iter()
+            .filter(|a| a.allocated_payment.0 > 0)
+            .map(|a| u128::from(a.allocated_payment.0)
+                * u128::from(a.credited_units.min(a.promised_units))
+                / u128::from(a.promised_units))
+            .sum::<u128>()
     );
     let balances = simulation.state().economy().clone();
     let event = simulation
@@ -367,7 +374,9 @@ fn skipped_or_omitted_advertisements_refund_and_overdelivery_earns_no_bonus() {
         .quote(&proposal, MAIN, SNACKS, proposal.at)
         .unwrap();
     simulation.accept_offer(&offer).unwrap();
-    let event = simulation.step(&slot(Case::Broad, SNACKS, 18)).unwrap();
+    let mut overdelivery = proposal.clone();
+    overdelivery.broadcasts.retain(|b| b.station == MAIN);
+    let event = simulation.step(&overdelivery).unwrap();
     let settlement = &event.financial.settlements[0];
     assert!(settlement.credited_delivery > settlement.promised_delivery);
     assert_eq!(settlement.payment, offer.payment);

@@ -17,7 +17,9 @@ pub mod demo;
 pub mod developer;
 pub mod economy;
 pub mod economy_demo;
+pub mod episodes_demo;
 pub mod models;
+pub mod programmes;
 
 use economy::{EconomyState, FinancialEvent, Money, Target};
 use models::{ModelEvaluation, Models};
@@ -86,10 +88,22 @@ pub struct Audience {
     /// Snacks and equipment interests, in that order.
     pub product_interests: [f64; 2],
 }
+/// Stable series identity; work-specific content lives on programmes.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct Series {
+    pub id: SeriesId,
+    pub name: String,
+    pub continuity_strength: f64,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+pub enum ProgrammeKind {
+    Standalone,
+    Episode { series: SeriesId, sequence: u32 },
+}
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Programme {
     pub id: ProgrammeId,
-    pub series: SeriesId,
+    pub kind: ProgrammeKind,
     pub name: String,
     pub genre: Genre,
     pub tone: f64,
@@ -97,6 +111,20 @@ pub struct Programme {
     pub cast_appeal: f64,
     pub execution: f64,
     pub broadcast_cost: Money,
+}
+impl Programme {
+    pub fn series(&self) -> Option<SeriesId> {
+        match self.kind {
+            ProgrammeKind::Standalone => None,
+            ProgrammeKind::Episode { series, .. } => Some(series),
+        }
+    }
+    pub fn sequence(&self) -> Option<u32> {
+        match self.kind {
+            ProgrammeKind::Standalone => None,
+            ProgrammeKind::Episode { sequence, .. } => Some(sequence),
+        }
+    }
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Station {
@@ -118,6 +146,7 @@ pub struct Brand {
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct World {
+    pub series: Vec<Series>,
     pub audiences: Vec<Audience>,
     pub programmes: Vec<Programme>,
     pub stations: Vec<Station>,
@@ -202,6 +231,26 @@ impl World {
     fn validate(&self) -> Result<(), Error> {
         unique(self.audiences.iter().map(|x| x.id), "audience")?;
         unique(self.programmes.iter().map(|x| x.id), "programme")?;
+        unique(self.series.iter().map(|x| x.id), "series")?;
+        let mut episode_sequences = BTreeSet::new();
+        for series in &self.series {
+            unit(series.continuity_strength, "series continuity strength")?;
+        }
+        for programme in &self.programmes {
+            if let ProgrammeKind::Episode { series, sequence } = programme.kind {
+                if sequence == 0 {
+                    return Err(Error::Invalid("episode sequence must be positive".into()));
+                }
+                if !self.series.iter().any(|s| s.id == series) {
+                    return Err(Error::Invalid("unknown programme series".into()));
+                }
+                if !episode_sequences.insert((series, sequence)) {
+                    return Err(Error::Invalid(
+                        "duplicate episode sequence within series".into(),
+                    ));
+                }
+            }
+        }
         unique(self.stations.iter().map(|x| x.id), "station")?;
         unique(self.brands.iter().map(|x| x.id), "brand")?;
         for a in &self.audiences {
@@ -271,6 +320,10 @@ pub struct State {
     hype: BTreeMap<(BrandId, AudienceId), f64>,
     repetition: BTreeMap<(BrandId, AudienceId), f64>,
     economy: EconomyState,
+    familiarity: BTreeMap<(AudienceId, ProgrammeId), f64>,
+    reception: BTreeMap<(AudienceId, ProgrammeId), f64>,
+    progress: BTreeMap<(AudienceId, SeriesId), u32>,
+    broadcasts: Vec<programmes::BroadcastRecord>,
 }
 impl State {
     pub fn economy(&self) -> &EconomyState {
@@ -294,13 +347,17 @@ impl State {
 pub struct Viewing {
     pub station: StationId,
     pub programme: ProgrammeId,
-    pub series: SeriesId,
+    pub series: Option<SeriesId>,
+    pub kind: ProgrammeKind,
+    pub history: programmes::SelectionHistory,
+    pub fresh_viewers: f64,
+    pub familiarity_after: f64,
     pub attraction: ModelEvaluation,
     pub satisfaction: ModelEvaluation,
     pub utility: f64,
     pub viewers: f64,
-    pub loyalty_before: f64,
-    pub loyalty_after: f64,
+    pub loyalty_before: Option<f64>,
+    pub loyalty_after: Option<f64>,
 }
 #[derive(Clone, Debug, PartialEq)]
 pub struct Allocation {
@@ -369,10 +426,18 @@ impl Simulation {
             hype: BTreeMap::new(),
             repetition: BTreeMap::new(),
             economy: EconomyState::new(&world),
+            familiarity: BTreeMap::new(),
+            reception: BTreeMap::new(),
+            progress: BTreeMap::new(),
+            broadcasts: Vec::new(),
         };
         for a in &world.audiences {
             for p in &world.programmes {
-                state.loyalty.insert((a.id, p.series), 0.5);
+                state.familiarity.insert((a.id, p.id), 0.0);
+            }
+            for series in &world.series {
+                state.loyalty.insert((a.id, series.id), 0.5);
+                state.progress.insert((a.id, series.id), 0);
             }
             for b in &world.brands {
                 state.hype.insert((b.id, a.id), 5.0);
@@ -502,12 +567,24 @@ impl Simulation {
                     programme.cast_appeal,
                 )?;
                 let satisfaction = self.models.satisfaction(genre, tone, programme.execution)?;
-                let loyalty_before = self.state.loyalty[&(audience.id, programme.series)];
-                let utility = attraction.trace.output.powi(2) * (0.2 + 1.6 * loyalty_before);
+                let history = self.selection_history(audience.id, programme)?;
+                let loyalty_before = programme
+                    .series()
+                    .and_then(|s| self.state.loyalty(audience.id, s));
+                let utility = attraction.trace.output.powi(2)
+                    * history.attachment_factor
+                    * history.reception_factor
+                    * history.continuity_factor
+                    * history.repeat_factor;
+                bounded(utility, 0.0, 3.0, "programme selection utility")?;
                 viewing.push(Viewing {
                     station: station.id,
                     programme: programme.id,
-                    series: programme.series,
+                    series: programme.series(),
+                    kind: programme.kind,
+                    fresh_viewers: 0.0,
+                    familiarity_after: history.familiarity,
+                    history,
                     attraction,
                     satisfaction,
                     utility,
@@ -518,22 +595,9 @@ impl Simulation {
             }
             let denominator =
                 self.parameters.outside_utility + viewing.iter().map(|v| v.utility).sum::<f64>();
-            let mut series_totals: BTreeMap<SeriesId, (f64, f64)> = BTreeMap::new();
             for v in &mut viewing {
                 v.viewers = available * (v.utility / denominator);
-                let total = series_totals.entry(v.series).or_default();
-                total.0 += v.viewers / population;
-                total.1 += (v.viewers / population) * v.satisfaction.trace.output;
-            }
-            for (series, (fraction, satisfaction_sum)) in series_totals {
-                let old = self.state.loyalty[&(audience.id, series)];
-                let updated =
-                    old + self.parameters.loyalty_learning * (satisfaction_sum - fraction * old);
-                unit(updated, "updated loyalty")?;
-                next.loyalty.insert((audience.id, series), updated);
-            }
-            for v in &mut viewing {
-                v.loyalty_after = next.loyalty[&(audience.id, v.series)];
+                v.fresh_viewers = v.viewers * (1.0 - v.history.familiarity);
             }
             let watched = viewing.iter().map(|v| v.viewers).sum::<f64>();
             bounded(watched, 0.0, available, "allocated viewers")?;
@@ -544,6 +608,14 @@ impl Simulation {
                 available_not_watching: available - watched,
                 not_watching: population - watched,
                 viewing,
+            });
+        }
+        self.update_programme_history(&mut next, &mut allocations)?;
+        for broadcast in &aired.broadcasts {
+            next.broadcasts.push(programmes::BroadcastRecord {
+                at: action.at,
+                station: broadcast.station,
+                programme: broadcast.programme,
             });
         }
         let mut hype = Vec::new();

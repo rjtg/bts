@@ -4,7 +4,7 @@ use bts_sim::{
 };
 use std::{env, error::Error, fs, path::PathBuf};
 
-const HELP: &str = "Usage: bts-cli demo [--case all|broad|targeted|disappointing] [--json PATH] [--trace]\n       bts-cli economy [--case all|mass-broad|mass-targeted|specialist-broad|specialist-targeted] [--json PATH] [--trace]\n       bts-cli advertiser-value [--json PATH] [--trace]\n\nDeterministic developer experiments. JSON includes inputs, traces and economy accounts.\nCounts are viewer-slot impressions, not cumulative unique reach.";
+const HELP: &str = "Usage: bts-cli demo [--case all|broad|targeted|disappointing] [--json PATH] [--trace]\n       bts-cli economy [--case all|mass-broad|mass-targeted|specialist-broad|specialist-targeted] [--json PATH] [--trace]\n       bts-cli advertiser-value [--json PATH] [--trace]\n       bts-cli episodes [--json PATH] [--trace]\n\nDeterministic developer experiments. JSON includes inputs, traces and economy accounts.\nCounts are viewer-slot impressions, not cumulative unique reach.";
 
 fn summary(report: &DeveloperReport) {
     println!("\n{} (identical initial state and competitor)", report.case);
@@ -31,7 +31,7 @@ fn summary(report: &DeveloperReport) {
             .unwrap()
             .name;
         println!(
-            "  {name}: early-slot viewers {:.0} -> {:.0}; willingness {:.3} -> {:.3}",
+            "  {name}: early-slot viewers {:.0} -> {:.0}; willingness {:?} -> {:?}",
             audience.first_early_viewers,
             audience.last_early_viewers,
             audience.initial_willingness,
@@ -78,7 +78,7 @@ fn trace(report: &DeveloperReport) {
                 audience.audience, audience.available, audience.total_not_watching
             );
             for viewing in &audience.viewing {
-                println!("      {:?}/{:?}: viewers {:.1}, attraction {:.3}, satisfaction {:.3}, willingness {:.3}->{:.3}",viewing.station,viewing.programme,viewing.expected_viewers,viewing.attraction.output,viewing.satisfaction.output,viewing.willingness_before,viewing.willingness_after);
+                println!("      {:?}/{:?}: viewers {:.1}, attraction {:.3}, satisfaction {:.3}, willingness {:?}->{:?}",viewing.station,viewing.programme,viewing.expected_viewers,viewing.attraction.output,viewing.satisfaction.output,viewing.willingness_before,viewing.willingness_after);
                 for (name, model) in [
                     ("attraction", &viewing.attraction),
                     ("satisfaction", &viewing.satisfaction),
@@ -114,6 +114,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("demo") => "demo",
         Some("economy") => "economy",
         Some("advertiser-value") => "advertiser-value",
+        Some("episodes") => "episodes",
         _ => return Err(HELP.into()),
     };
     let mut selection = "all".to_string();
@@ -130,6 +131,43 @@ fn run() -> Result<(), Box<dyn Error>> {
             }
             _ => return Err(format!("unknown argument {arg:?}\n{HELP}").into()),
         }
+    }
+    if command == "episodes" {
+        if selection != "all" {
+            return Err("episodes runs all controlled comparisons; omit --case".into());
+        }
+        let runs = bts_sim::episodes_demo::run()?;
+        let reports = runs.iter().map(developer::report).collect::<Vec<_>>();
+        println!("Developer-only standalone and episode controls. Familiarity and continuity are provisional group expectations.");
+        for report in &reports {
+            println!(
+                "\n{}: continuity {:?}, learning {}",
+                report.case,
+                report
+                    .initial_world
+                    .series
+                    .first()
+                    .map(|s| s.continuity_strength),
+                report.parameters.loyalty_learning
+            );
+            for slot in &report.slots {
+                for audience in &slot.allocations {
+                    for v in &audience.viewing {
+                        println!("  Hour {} {:?} {:?}: base attraction {:.3}, utility {:.3}, viewers {:.1}, fresh {:.1}, familiarity {:.3}->{:.3}, attachment {:?}->{:?}, frontier {:?}->{:?}",slot.action.at.0,v.programme,v.kind,v.attraction.output,v.utility,v.expected_viewers,v.fresh_viewers,v.history.familiarity,v.familiarity_after,v.willingness_before,v.willingness_after,v.history.frontier_before,v.history.frontier_after);
+                        println!("    repeat {:.3}, prior familiarity {:.3}, continuity {:.3}, predecessor {:?}, reception factor {:.3}",v.history.repeat_factor,v.history.prior_familiarity,v.history.continuity_factor,v.history.predecessor_reception,v.history.reception_factor);
+                    }
+                }
+            }
+            if verbose {
+                trace(report);
+            }
+        }
+        println!("Expected fresh viewers are group-level approximations, not measured individual reach. No universal balance is claimed.");
+        if let Some(path) = json {
+            fs::write(&path, serde_json::to_vec_pretty(&reports)?)?;
+            println!("Wrote developer JSON to {}", path.display());
+        }
+        return Ok(());
     }
     if command == "advertiser-value" {
         if selection != "all" {
@@ -209,7 +247,7 @@ fn run() -> Result<(), Box<dyn Error>> {
                     report.recovery_quote.demand.pressure,
                     report.recovery_quote.demand.available_budget.0
                 );
-                println!("  First forecast {:.2} relevant impressions, promised {}, offer {} credits; final offer {}; recovery offer {}",first.forecast_relevant_delivery,first.promised_whole_delivery,first.payment.0,last.payment.0,report.recovery_quote.payment.0);
+                println!("  First forecast {:.2} relevant impressions, whole-delivery diagnostic {}, offer {} credits; final offer {}; recovery offer {}",first.forecast_relevant_delivery,first.promised_whole_delivery,first.payment.0,last.payment.0,report.recovery_quote.payment.0);
             }
             println!("  Same future-slot quote before/after decay: {} -> {} credits; forecast delivery unchanged at {:.2}",report.before_cooling_quote.payment.0,report.recovery_quote.payment.0,report.recovery_quote.forecast_relevant_delivery);
             let forecast_total = report
@@ -244,8 +282,8 @@ fn run() -> Result<(), Box<dyn Error>> {
                 }
                 for contract in &report.contracts {
                     println!(
-                        "  Contract {:?}: actual {:?}, status {:?}",
-                        contract.id, contract.actual, contract.status
+                        "  Contract {:?}: commitments {:?}, actual {:?}, status {:?}",
+                        contract.id, contract.commitments, contract.actual, contract.status
                     );
                 }
                 for entry in &report.finances.ledger {

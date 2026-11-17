@@ -71,7 +71,7 @@ pub fn run(case: Case) -> Result<Run, Error> {
             .unwrap()
             .advertisement = Some(case.brand());
         let offer = simulation.quote(&action, MAIN, case.brand(), action.at)?;
-        let accepted = if offer.payment.0 > 0 && offer.promised_delivery > 0 {
+        let accepted = if offer.payment.0 > 0 {
             Some(simulation.accept_offer(&offer)?)
         } else {
             action

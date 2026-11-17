@@ -1,0 +1,6290 @@
+{
+  "schema_version": 4,
+  "kind": "audience_commitment_economy_snapshot",
+  "runs": [
+    {
+      "case": "mass-broad",
+      "audience_summary": [
+        {
+          "station": 1,
+          "viewer_slot_impressions": 82915.20407774969,
+          "mean_satisfaction": 0.7867069248891405
+        },
+        {
+          "station": 2,
+          "viewer_slot_impressions": 58785.52336935674,
+          "mean_satisfaction": 0.7041301486748454
+        }
+      ],
+      "finances": {
+        "stations": [
+          {
+            "station": 1,
+            "initial_cash": 20000,
+            "cash": 21118,
+            "revenue": 2918,
+            "broadcast_costs": 1800,
+            "profit": 1118
+          },
+          {
+            "station": 2,
+            "initial_cash": 20000,
+            "cash": 18800,
+            "revenue": 0,
+            "broadcast_costs": 1200,
+            "profit": -1200
+          }
+        ],
+        "brands": [
+          {
+            "brand": 1,
+            "initial_budget": 20000,
+            "remaining_budget": 17082,
+            "unsettled_escrow": 0,
+            "spent": 2918
+          },
+          {
+            "brand": 2,
+            "initial_budget": 20000,
+            "remaining_budget": 20000,
+            "unsettled_escrow": 0,
+            "spent": 0
+          }
+        ],
+        "cost_sink": 3000,
+        "total_money": 80000,
+        "ledger": [
+          {
+            "at": 0,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 1
+            },
+            "amount": 1697,
+            "reason": "Reserve"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Escrow": 1
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 1697,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 2
+            },
+            "amount": 430,
+            "reason": "Reserve"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Escrow": 2
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 430,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 3
+            },
+            "amount": 209,
+            "reason": "Reserve"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Escrow": 3
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 209,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 4
+            },
+            "amount": 19,
+            "reason": "Reserve"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Escrow": 4
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 19,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 5
+            },
+            "amount": 181,
+            "reason": "Reserve"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Escrow": 5
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 181,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 6
+            },
+            "amount": 121,
+            "reason": "Reserve"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Escrow": 6
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 121,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 7
+            },
+            "amount": 1,
+            "reason": "Reserve"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Escrow": 7
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 1,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 8
+            },
+            "amount": 156,
+            "reason": "Reserve"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Escrow": 8
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 156,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 9
+            },
+            "amount": 104,
+            "reason": "Reserve"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Escrow": 9
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 104,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "id": 1,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 18,
+          "deadline": 18,
+          "accepted_payment": 1697,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2217.762268605602,
+              "priority": 1.0,
+              "promised_units": 2217762268,
+              "allocated_payment": 620
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 3844.278620108776,
+              "priority": 1.0,
+              "promised_units": 3844278620,
+              "allocated_payment": 1076
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 3.463630596817678,
+              "priority": 0.1,
+              "promised_units": 3463630,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 2772.2028357570025,
+                "effectiveness": 0.8,
+                "relevant_delivery": 2217.762268605602,
+                "delivered_units": 2217762268
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 4819.830940220768,
+                "effectiveness": 0.7975961538461539,
+                "relevant_delivery": 3844.278620108776,
+                "delivered_units": 3844278620
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 346.36305968176777,
+                "effectiveness": 0.1,
+                "relevant_delivery": 3.463630596817678,
+                "delivered_units": 3463630
+              }
+            ],
+            "relevant_delivery": 6065.504519311196,
+            "credited_units": 6065
+          },
+          "status": {
+            "Settled": {
+              "contract": 1,
+              "at": 18,
+              "promised_delivery": 6065,
+              "credited_delivery": 6065,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2217762268,
+                  "credited_units": 2217762268,
+                  "allocated_payment": 620,
+                  "payment": 620,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 3844278620,
+                  "credited_units": 3844278620,
+                  "allocated_payment": 1076,
+                  "payment": 1076,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 3463630,
+                  "credited_units": 3463630,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 1697,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 2,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 21,
+          "deadline": 21,
+          "accepted_payment": 430,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2536.938768884286,
+              "priority": 1.0,
+              "promised_units": 2536938768,
+              "allocated_payment": 233
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1935.0368855984998,
+              "priority": 1.0,
+              "promised_units": 1935036885,
+              "allocated_payment": 196
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 4.519885149750246,
+              "priority": 0.1,
+              "promised_units": 4519885,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 3171.1734611053575,
+                "effectiveness": 0.8,
+                "relevant_delivery": 2536.938768884286,
+                "delivered_units": 2536938768
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 2426.086028960144,
+                "effectiveness": 0.7975961538461539,
+                "relevant_delivery": 1935.0368855984998,
+                "delivered_units": 1935036885
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 451.9885149750246,
+                "effectiveness": 0.1,
+                "relevant_delivery": 4.519885149750246,
+                "delivered_units": 4519885
+              }
+            ],
+            "relevant_delivery": 4476.495539632536,
+            "credited_units": 4476
+          },
+          "status": {
+            "Settled": {
+              "contract": 2,
+              "at": 21,
+              "promised_delivery": 4476,
+              "credited_delivery": 4476,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2536938768,
+                  "credited_units": 2536938768,
+                  "allocated_payment": 233,
+                  "payment": 233,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1935036885,
+                  "credited_units": 1935036885,
+                  "allocated_payment": 196,
+                  "payment": 196,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 4519885,
+                  "credited_units": 4519885,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 430,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 3,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 42,
+          "deadline": 42,
+          "accepted_payment": 209,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2220.898199409266,
+              "priority": 1.0,
+              "promised_units": 2220898199,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 3847.8358731998605,
+              "priority": 1.0,
+              "promised_units": 3847835873,
+              "allocated_payment": 208
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 3.35559028976435,
+              "priority": 0.1,
+              "promised_units": 3355590,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 2776.122749261582,
+                "effectiveness": 0.8,
+                "relevant_delivery": 2220.898199409266,
+                "delivered_units": 2220898199
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 4824.290907929903,
+                "effectiveness": 0.7975961538461539,
+                "relevant_delivery": 3847.8358731998605,
+                "delivered_units": 3847835873
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 335.55902897643494,
+                "effectiveness": 0.1,
+                "relevant_delivery": 3.35559028976435,
+                "delivered_units": 3355590
+              }
+            ],
+            "relevant_delivery": 6072.08966289889,
+            "credited_units": 6072
+          },
+          "status": {
+            "Settled": {
+              "contract": 3,
+              "at": 42,
+              "promised_delivery": 6072,
+              "credited_delivery": 6072,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2220898199,
+                  "credited_units": 2220898199,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 3847835873,
+                  "credited_units": 3847835873,
+                  "allocated_payment": 208,
+                  "payment": 208,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 3355590,
+                  "credited_units": 3355590,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 209,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 4,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 45,
+          "deadline": 45,
+          "accepted_payment": 19,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2482.067014508968,
+              "priority": 1.0,
+              "promised_units": 2482067014,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1903.6193341469384,
+              "priority": 1.0,
+              "promised_units": 1903619334,
+              "allocated_payment": 18
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 4.434622643118018,
+              "priority": 0.1,
+              "promised_units": 4434622,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 3102.58376813621,
+                "effectiveness": 0.8,
+                "relevant_delivery": 2482.067014508968,
+                "delivered_units": 2482067014
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 2386.695729370483,
+                "effectiveness": 0.7975961538461539,
+                "relevant_delivery": 1903.6193341469384,
+                "delivered_units": 1903619334
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 443.4622643118017,
+                "effectiveness": 0.1,
+                "relevant_delivery": 4.434622643118018,
+                "delivered_units": 4434622
+              }
+            ],
+            "relevant_delivery": 4390.120971299025,
+            "credited_units": 4390
+          },
+          "status": {
+            "Settled": {
+              "contract": 4,
+              "at": 45,
+              "promised_delivery": 4390,
+              "credited_delivery": 4390,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2482067014,
+                  "credited_units": 2482067014,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1903619334,
+                  "credited_units": 1903619334,
+                  "allocated_payment": 18,
+                  "payment": 18,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 4434622,
+                  "credited_units": 4434622,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 19,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 5,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 69,
+          "deadline": 69,
+          "accepted_payment": 181,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2483.397039250781,
+              "priority": 1.0,
+              "promised_units": 2483397039,
+              "allocated_payment": 45
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1892.5972515686735,
+              "priority": 1.0,
+              "promised_units": 1892597251,
+              "allocated_payment": 135
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 4.316965624471475,
+              "priority": 0.1,
+              "promised_units": 4316965,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 3104.246299063476,
+                "effectiveness": 0.8,
+                "relevant_delivery": 2483.397039250781,
+                "delivered_units": 2483397039
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 2372.876602328415,
+                "effectiveness": 0.7975961538461539,
+                "relevant_delivery": 1892.5972515686735,
+                "delivered_units": 1892597251
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 431.69656244714747,
+                "effectiveness": 0.1,
+                "relevant_delivery": 4.316965624471475,
+                "delivered_units": 4316965
+              }
+            ],
+            "relevant_delivery": 4380.311256443926,
+            "credited_units": 4380
+          },
+          "status": {
+            "Settled": {
+              "contract": 5,
+              "at": 69,
+              "promised_delivery": 4380,
+              "credited_delivery": 4380,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2483397039,
+                  "credited_units": 2483397039,
+                  "allocated_payment": 45,
+                  "payment": 45,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1892597251,
+                  "credited_units": 1892597251,
+                  "allocated_payment": 135,
+                  "payment": 135,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 4316965,
+                  "credited_units": 4316965,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 181,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 6,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 90,
+          "deadline": 90,
+          "accepted_payment": 121,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2214.771930233486,
+              "priority": 1.0,
+              "promised_units": 2214771930,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 3784.1331112219723,
+              "priority": 1.0,
+              "promised_units": 3784133111,
+              "allocated_payment": 120
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 3.1831342052004192,
+              "priority": 0.1,
+              "promised_units": 3183134,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 2768.464912791857,
+                "effectiveness": 0.8,
+                "relevant_delivery": 2214.771930233486,
+                "delivered_units": 2214771930
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 4744.422466149308,
+                "effectiveness": 0.7975961538461539,
+                "relevant_delivery": 3784.1331112219723,
+                "delivered_units": 3784133111
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 318.31342052004186,
+                "effectiveness": 0.1,
+                "relevant_delivery": 3.1831342052004192,
+                "delivered_units": 3183134
+              }
+            ],
+            "relevant_delivery": 6002.088175660659,
+            "credited_units": 6002
+          },
+          "status": {
+            "Settled": {
+              "contract": 6,
+              "at": 90,
+              "promised_delivery": 6002,
+              "credited_delivery": 6002,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2214771930,
+                  "credited_units": 2214771930,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 3784133111,
+                  "credited_units": 3784133111,
+                  "allocated_payment": 120,
+                  "payment": 120,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 3183134,
+                  "credited_units": 3183134,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 121,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 7,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 93,
+          "deadline": 93,
+          "accepted_payment": 1,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2499.4084349690147,
+              "priority": 1.0,
+              "promised_units": 2499408434,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1892.2043151558298,
+              "priority": 1.0,
+              "promised_units": 1892204315,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 4.192239673477715,
+              "priority": 0.1,
+              "promised_units": 4192239,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 3124.260543711268,
+                "effectiveness": 0.8,
+                "relevant_delivery": 2499.4084349690147,
+                "delivered_units": 2499408434
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 2372.3839514913357,
+                "effectiveness": 0.7975961538461539,
+                "relevant_delivery": 1892.2043151558298,
+                "delivered_units": 1892204315
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 419.22396734777146,
+                "effectiveness": 0.1,
+                "relevant_delivery": 4.192239673477715,
+                "delivered_units": 4192239
+              }
+            ],
+            "relevant_delivery": 4395.804989798323,
+            "credited_units": 4395
+          },
+          "status": {
+            "Settled": {
+              "contract": 7,
+              "at": 93,
+              "promised_delivery": 4395,
+              "credited_delivery": 4395,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2499408434,
+                  "credited_units": 2499408434,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1892204315,
+                  "credited_units": 1892204315,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 4192239,
+                  "credited_units": 4192239,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 1,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 8,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 117,
+          "deadline": 117,
+          "accepted_payment": 156,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2513.6524568659597,
+              "priority": 1.0,
+              "promised_units": 2513652456,
+              "allocated_payment": 30
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1895.0266693679212,
+              "priority": 1.0,
+              "promised_units": 1895026669,
+              "allocated_payment": 125
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 4.084456610796508,
+              "priority": 0.1,
+              "promised_units": 4084456,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 3142.0655710824494,
+                "effectiveness": 0.8,
+                "relevant_delivery": 2513.6524568659597,
+                "delivered_units": 2513652456
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 2375.922526995344,
+                "effectiveness": 0.7975961538461539,
+                "relevant_delivery": 1895.0266693679212,
+                "delivered_units": 1895026669
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 408.44566107965073,
+                "effectiveness": 0.1,
+                "relevant_delivery": 4.084456610796508,
+                "delivered_units": 4084456
+              }
+            ],
+            "relevant_delivery": 4412.763582844677,
+            "credited_units": 4412
+          },
+          "status": {
+            "Settled": {
+              "contract": 8,
+              "at": 117,
+              "promised_delivery": 4412,
+              "credited_delivery": 4412,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2513652456,
+                  "credited_units": 2513652456,
+                  "allocated_payment": 30,
+                  "payment": 30,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1895026669,
+                  "credited_units": 1895026669,
+                  "allocated_payment": 125,
+                  "payment": 125,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 4084456,
+                  "credited_units": 4084456,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 156,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 9,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 138,
+          "deadline": 138,
+          "accepted_payment": 104,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2239.5513825883263,
+              "priority": 1.0,
+              "promised_units": 2239551382,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 3792.1622133919254,
+              "priority": 1.0,
+              "promised_units": 3792162213,
+              "allocated_payment": 103
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 3.0242978505196154,
+              "priority": 0.1,
+              "promised_units": 3024297,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 2799.439228235408,
+                "effectiveness": 0.8,
+                "relevant_delivery": 2239.5513825883263,
+                "delivered_units": 2239551382
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 4754.489092136952,
+                "effectiveness": 0.7975961538461539,
+                "relevant_delivery": 3792.1622133919254,
+                "delivered_units": 3792162213
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 302.4297850519615,
+                "effectiveness": 0.1,
+                "relevant_delivery": 3.0242978505196154,
+                "delivered_units": 3024297
+              }
+            ],
+            "relevant_delivery": 6034.737893830771,
+            "credited_units": 6034
+          },
+          "status": {
+            "Settled": {
+              "contract": 9,
+              "at": 138,
+              "promised_delivery": 6034,
+              "credited_delivery": 6034,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2239551382,
+                  "credited_units": 2239551382,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 3792162213,
+                  "credited_units": 3792162213,
+                  "allocated_payment": 103,
+                  "payment": 103,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 3024297,
+                  "credited_units": 3024297,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 104,
+              "refund": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "mass-targeted",
+      "audience_summary": [
+        {
+          "station": 1,
+          "viewer_slot_impressions": 26413.389973784026,
+          "mean_satisfaction": 0.6903664256774138
+        },
+        {
+          "station": 2,
+          "viewer_slot_impressions": 94841.09883660816,
+          "mean_satisfaction": 0.7011224462875549
+        }
+      ],
+      "finances": {
+        "stations": [
+          {
+            "station": 1,
+            "initial_cash": 20000,
+            "cash": 21912,
+            "revenue": 2512,
+            "broadcast_costs": 600,
+            "profit": 1912
+          },
+          {
+            "station": 2,
+            "initial_cash": 20000,
+            "cash": 18800,
+            "revenue": 0,
+            "broadcast_costs": 1200,
+            "profit": -1200
+          }
+        ],
+        "brands": [
+          {
+            "brand": 1,
+            "initial_budget": 20000,
+            "remaining_budget": 17488,
+            "unsettled_escrow": 0,
+            "spent": 2512
+          },
+          {
+            "brand": 2,
+            "initial_budget": 20000,
+            "remaining_budget": 20000,
+            "unsettled_escrow": 0,
+            "spent": 0
+          }
+        ],
+        "cost_sink": 1800,
+        "total_money": 80000,
+        "ledger": [
+          {
+            "at": 0,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 1
+            },
+            "amount": 361,
+            "reason": "Reserve"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Escrow": 1
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 361,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 2
+            },
+            "amount": 219,
+            "reason": "Reserve"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Escrow": 2
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 219,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 3
+            },
+            "amount": 292,
+            "reason": "Reserve"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Escrow": 3
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 292,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 4
+            },
+            "amount": 190,
+            "reason": "Reserve"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Escrow": 4
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 190,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 5
+            },
+            "amount": 249,
+            "reason": "Reserve"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Escrow": 5
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 249,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 6
+            },
+            "amount": 166,
+            "reason": "Reserve"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Escrow": 6
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 166,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 7
+            },
+            "amount": 218,
+            "reason": "Reserve"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Escrow": 7
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 218,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 8
+            },
+            "amount": 151,
+            "reason": "Reserve"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Escrow": 8
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 151,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 9
+            },
+            "amount": 200,
+            "reason": "Reserve"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Escrow": 9
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 200,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 10
+            },
+            "amount": 142,
+            "reason": "Reserve"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Escrow": 10
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 142,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 11
+            },
+            "amount": 188,
+            "reason": "Reserve"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Escrow": 11
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 188,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Brand": 1
+            },
+            "to": {
+              "Escrow": 12
+            },
+            "amount": 136,
+            "reason": "Reserve"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Escrow": 12
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 136,
+            "reason": "DeliveryPayment"
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "id": 1,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 18,
+          "deadline": 18,
+          "accepted_payment": 361,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 373.69174979402476,
+              "priority": 1.0,
+              "promised_units": 373691749,
+              "allocated_payment": 104
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 914.5230591770419,
+              "priority": 1.0,
+              "promised_units": 914523059,
+              "allocated_payment": 256
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 5.966745174656132,
+              "priority": 0.1,
+              "promised_units": 5966745,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 508.22468914055935,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 373.69174979402476,
+                "delivered_units": 373691749
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 1221.7135279950205,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 914.5230591770419,
+                "delivered_units": 914523059
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 596.6745174656131,
+                "effectiveness": 0.1,
+                "relevant_delivery": 5.966745174656132,
+                "delivered_units": 5966745
+              }
+            ],
+            "relevant_delivery": 1294.1815541457229,
+            "credited_units": 1294
+          },
+          "status": {
+            "Settled": {
+              "contract": 1,
+              "at": 18,
+              "promised_delivery": 1294,
+              "credited_delivery": 1294,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 373691749,
+                  "credited_units": 373691749,
+                  "allocated_payment": 104,
+                  "payment": 104,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 914523059,
+                  "credited_units": 914523059,
+                  "allocated_payment": 256,
+                  "payment": 256,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 5966745,
+                  "credited_units": 5966745,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 361,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 2,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 21,
+          "deadline": 21,
+          "accepted_payment": 219,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 432.3990146769689,
+              "priority": 1.0,
+              "promised_units": 432399014,
+              "allocated_payment": 108
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 459.9506401571531,
+              "priority": 1.0,
+              "promised_units": 459950640,
+              "allocated_payment": 110
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 8.269875375336614,
+              "priority": 0.1,
+              "promised_units": 8269875,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 588.0671835543973,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 432.3990146769689,
+                "delivered_units": 432399014
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 614.4491531964536,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 459.9506401571531,
+                "delivered_units": 459950640
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 826.9875375336612,
+                "effectiveness": 0.1,
+                "relevant_delivery": 8.269875375336614,
+                "delivered_units": 8269875
+              }
+            ],
+            "relevant_delivery": 900.6195302094586,
+            "credited_units": 900
+          },
+          "status": {
+            "Settled": {
+              "contract": 2,
+              "at": 21,
+              "promised_delivery": 900,
+              "credited_delivery": 900,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 432399014,
+                  "credited_units": 432399014,
+                  "allocated_payment": 108,
+                  "payment": 108,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 459950640,
+                  "credited_units": 459950640,
+                  "allocated_payment": 110,
+                  "payment": 110,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 8269875,
+                  "credited_units": 8269875,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 219,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 3,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 42,
+          "deadline": 42,
+          "accepted_payment": 292,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 394.4180103020915,
+              "priority": 1.0,
+              "promised_units": 394418010,
+              "allocated_payment": 85
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 931.522944031328,
+              "priority": 1.0,
+              "promised_units": 931522944,
+              "allocated_payment": 206
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 6.321227697580998,
+              "priority": 0.1,
+              "promised_units": 6321227,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 536.4126202617695,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 394.4180103020915,
+                "delivered_units": 394418010
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 1244.4237145697894,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 931.522944031328,
+                "delivered_units": 931522944
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 632.1227697580997,
+                "effectiveness": 0.1,
+                "relevant_delivery": 6.321227697580998,
+                "delivered_units": 6321227
+              }
+            ],
+            "relevant_delivery": 1332.2621820310005,
+            "credited_units": 1332
+          },
+          "status": {
+            "Settled": {
+              "contract": 3,
+              "at": 42,
+              "promised_delivery": 1332,
+              "credited_delivery": 1332,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 394418010,
+                  "credited_units": 394418010,
+                  "allocated_payment": 85,
+                  "payment": 85,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 931522944,
+                  "credited_units": 931522944,
+                  "allocated_payment": 206,
+                  "payment": 206,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 6321227,
+                  "credited_units": 6321227,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 292,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 4,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 45,
+          "deadline": 45,
+          "accepted_payment": 190,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 445.245307939819,
+              "priority": 1.0,
+              "promised_units": 445245307,
+              "allocated_payment": 93
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 473.18490588519916,
+              "priority": 1.0,
+              "promised_units": 473184905,
+              "allocated_payment": 96
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 8.44647979213009,
+              "priority": 0.1,
+              "promised_units": 8446479,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 605.5382767848982,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 445.245307939819,
+                "delivered_units": 445245307
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 632.1288402319936,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 473.18490588519916,
+                "delivered_units": 473184905
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 844.6479792130087,
+                "effectiveness": 0.1,
+                "relevant_delivery": 8.44647979213009,
+                "delivered_units": 8446479
+              }
+            ],
+            "relevant_delivery": 926.8766936171482,
+            "credited_units": 926
+          },
+          "status": {
+            "Settled": {
+              "contract": 4,
+              "at": 45,
+              "promised_delivery": 926,
+              "credited_delivery": 926,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 445245307,
+                  "credited_units": 445245307,
+                  "allocated_payment": 93,
+                  "payment": 93,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 473184905,
+                  "credited_units": 473184905,
+                  "allocated_payment": 96,
+                  "payment": 96,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 8446479,
+                  "credited_units": 8446479,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 190,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 5,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 66,
+          "deadline": 66,
+          "accepted_payment": 249,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 393.1685332160486,
+              "priority": 1.0,
+              "promised_units": 393168533,
+              "allocated_payment": 70
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 944.961467893888,
+              "priority": 1.0,
+              "promised_units": 944961467,
+              "allocated_payment": 178
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 6.328734456809754,
+              "priority": 0.1,
+              "promised_units": 6328734,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 534.713318353198,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 393.1685332160486,
+                "delivered_units": 393168533
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 1262.3762705326183,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 944.961467893888,
+                "delivered_units": 944961467
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 632.8734456809754,
+                "effectiveness": 0.1,
+                "relevant_delivery": 6.328734456809754,
+                "delivered_units": 6328734
+              }
+            ],
+            "relevant_delivery": 1344.4587355667463,
+            "credited_units": 1344
+          },
+          "status": {
+            "Settled": {
+              "contract": 5,
+              "at": 66,
+              "promised_delivery": 1344,
+              "credited_delivery": 1344,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 393168533,
+                  "credited_units": 393168533,
+                  "allocated_payment": 70,
+                  "payment": 70,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 944961467,
+                  "credited_units": 944961467,
+                  "allocated_payment": 178,
+                  "payment": 178,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 6328734,
+                  "credited_units": 6328734,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 249,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 6,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 69,
+          "deadline": 69,
+          "accepted_payment": 166,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 437.332708778919,
+              "priority": 1.0,
+              "promised_units": 437332708,
+              "allocated_payment": 80
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 469.0415130149103,
+              "priority": 1.0,
+              "promised_units": 469041513,
+              "allocated_payment": 85
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 8.425653218030126,
+              "priority": 0.1,
+              "promised_units": 8425653,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 594.7770591474771,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 437.332708778919,
+                "delivered_units": 437332708
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 626.5936718503618,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 469.0415130149103,
+                "delivered_units": 469041513
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 842.5653218030125,
+                "effectiveness": 0.1,
+                "relevant_delivery": 8.425653218030126,
+                "delivered_units": 8425653
+              }
+            ],
+            "relevant_delivery": 914.7998750118594,
+            "credited_units": 914
+          },
+          "status": {
+            "Settled": {
+              "contract": 6,
+              "at": 69,
+              "promised_delivery": 914,
+              "credited_delivery": 914,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 437332708,
+                  "credited_units": 437332708,
+                  "allocated_payment": 80,
+                  "payment": 80,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 469041513,
+                  "credited_units": 469041513,
+                  "allocated_payment": 85,
+                  "payment": 85,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 8425653,
+                  "credited_units": 8425653,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 166,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 7,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 90,
+          "deadline": 90,
+          "accepted_payment": 218,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 382.97435551919295,
+              "priority": 1.0,
+              "promised_units": 382974355,
+              "allocated_payment": 60
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 931.9658858792233,
+              "priority": 1.0,
+              "promised_units": 931965885,
+              "allocated_payment": 157
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 6.307159954364668,
+              "priority": 0.1,
+              "promised_units": 6307159,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 520.8491300378719,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 382.97435551919295,
+                "delivered_units": 382974355
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 1245.015441636984,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 931.9658858792233,
+                "delivered_units": 931965885
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 630.7159954364666,
+                "effectiveness": 0.1,
+                "relevant_delivery": 6.307159954364668,
+                "delivered_units": 6307159
+              }
+            ],
+            "relevant_delivery": 1321.2474013527808,
+            "credited_units": 1321
+          },
+          "status": {
+            "Settled": {
+              "contract": 7,
+              "at": 90,
+              "promised_delivery": 1321,
+              "credited_delivery": 1321,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 382974355,
+                  "credited_units": 382974355,
+                  "allocated_payment": 60,
+                  "payment": 60,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 931965885,
+                  "credited_units": 931965885,
+                  "allocated_payment": 157,
+                  "payment": 157,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 6307159,
+                  "credited_units": 6307159,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 218,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 8,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 93,
+          "deadline": 93,
+          "accepted_payment": 151,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 424.8835332232001,
+              "priority": 1.0,
+              "promised_units": 424883533,
+              "allocated_payment": 73
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 459.3917181532744,
+              "priority": 1.0,
+              "promised_units": 459391718,
+              "allocated_payment": 77
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 8.401149138884511,
+              "priority": 0.1,
+              "promised_units": 8401149,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 577.8460501531687,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 424.8835332232001,
+                "delivered_units": 424883533
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 613.7024879632695,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 459.3917181532744,
+                "delivered_units": 459391718
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 840.1149138884509,
+                "effectiveness": 0.1,
+                "relevant_delivery": 8.401149138884511,
+                "delivered_units": 8401149
+              }
+            ],
+            "relevant_delivery": 892.676400515359,
+            "credited_units": 892
+          },
+          "status": {
+            "Settled": {
+              "contract": 8,
+              "at": 93,
+              "promised_delivery": 892,
+              "credited_delivery": 892,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 424883533,
+                  "credited_units": 424883533,
+                  "allocated_payment": 73,
+                  "payment": 73,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 459391718,
+                  "credited_units": 459391718,
+                  "allocated_payment": 77,
+                  "payment": 77,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 8401149,
+                  "credited_units": 8401149,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 151,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 9,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 114,
+          "deadline": 114,
+          "accepted_payment": 200,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 371.87966633429437,
+              "priority": 1.0,
+              "promised_units": 371879666,
+              "allocated_payment": 55
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 911.8637156478397,
+              "priority": 1.0,
+              "promised_units": 911863715,
+              "allocated_payment": 144
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 6.294737630610791,
+              "priority": 0.1,
+              "promised_units": 6294737,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 505.76023667799933,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 371.87966633429437,
+                "delivered_units": 371879666
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 1218.160904654789,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 911.8637156478397,
+                "delivered_units": 911863715
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 629.473763061079,
+                "effectiveness": 0.1,
+                "relevant_delivery": 6.294737630610791,
+                "delivered_units": 6294737
+              }
+            ],
+            "relevant_delivery": 1290.0381196127448,
+            "credited_units": 1290
+          },
+          "status": {
+            "Settled": {
+              "contract": 9,
+              "at": 114,
+              "promised_delivery": 1290,
+              "credited_delivery": 1290,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 371879666,
+                  "credited_units": 371879666,
+                  "allocated_payment": 55,
+                  "payment": 55,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 911863715,
+                  "credited_units": 911863715,
+                  "allocated_payment": 144,
+                  "payment": 144,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 6294737,
+                  "credited_units": 6294737,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 200,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 10,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 117,
+          "deadline": 117,
+          "accepted_payment": 142,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 412.9211587951248,
+              "priority": 1.0,
+              "promised_units": 412921158,
+              "allocated_payment": 68
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 449.09020990555433,
+              "priority": 1.0,
+              "promised_units": 449090209,
+              "allocated_payment": 73
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 8.38959512679646,
+              "priority": 0.1,
+              "promised_units": 8389595,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 561.5770957851835,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 412.9211587951248,
+                "delivered_units": 412921158
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 599.9406786149987,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 449.09020990555433,
+                "delivered_units": 449090209
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 838.9595126796459,
+                "effectiveness": 0.1,
+                "relevant_delivery": 8.38959512679646,
+                "delivered_units": 8389595
+              }
+            ],
+            "relevant_delivery": 870.4009638274757,
+            "credited_units": 870
+          },
+          "status": {
+            "Settled": {
+              "contract": 10,
+              "at": 117,
+              "promised_delivery": 870,
+              "credited_delivery": 870,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 412921158,
+                  "credited_units": 412921158,
+                  "allocated_payment": 68,
+                  "payment": 68,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 449090209,
+                  "credited_units": 449090209,
+                  "allocated_payment": 73,
+                  "payment": 73,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 8389595,
+                  "credited_units": 8389595,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 142,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 11,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 138,
+          "deadline": 138,
+          "accepted_payment": 188,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 361.96827993888706,
+              "priority": 1.0,
+              "promised_units": 361968279,
+              "allocated_payment": 52
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 891.7294568548384,
+              "priority": 1.0,
+              "promised_units": 891729456,
+              "allocated_payment": 135
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 6.290105778300616,
+              "priority": 0.1,
+              "promised_units": 6290105,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 492.28064749109785,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 361.96827993888706,
+                "delivered_units": 361968279
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 1191.2635004868746,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 891.7294568548384,
+                "delivered_units": 891729456
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 629.0105778300615,
+                "effectiveness": 0.1,
+                "relevant_delivery": 6.290105778300616,
+                "delivered_units": 6290105
+              }
+            ],
+            "relevant_delivery": 1259.987842572026,
+            "credited_units": 1259
+          },
+          "status": {
+            "Settled": {
+              "contract": 11,
+              "at": 138,
+              "promised_delivery": 1259,
+              "credited_delivery": 1259,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 361968279,
+                  "credited_units": 361968279,
+                  "allocated_payment": 52,
+                  "payment": 52,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 891729456,
+                  "credited_units": 891729456,
+                  "allocated_payment": 135,
+                  "payment": 135,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 6290105,
+                  "credited_units": 6290105,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 188,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 12,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 141,
+          "deadline": 141,
+          "accepted_payment": 136,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 402.57263953809286,
+              "priority": 1.0,
+              "promised_units": 402572639,
+              "allocated_payment": 65
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 439.647492728159,
+              "priority": 1.0,
+              "promised_units": 439647492,
+              "allocated_payment": 70
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 8.386000086814443,
+              "priority": 0.1,
+              "promised_units": 8386000,
+              "allocated_payment": 1
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 1.0,
+                "viewers": 547.503001333355,
+                "effectiveness": 0.7352884615384616,
+                "relevant_delivery": 402.57263953809286,
+                "delivered_units": 402572639
+              },
+              {
+                "audience": 2,
+                "priority": 1.0,
+                "viewers": 587.3261302983755,
+                "effectiveness": 0.7485576923076924,
+                "relevant_delivery": 439.647492728159,
+                "delivered_units": 439647492
+              },
+              {
+                "audience": 3,
+                "priority": 0.1,
+                "viewers": 838.6000086814441,
+                "effectiveness": 0.1,
+                "relevant_delivery": 8.386000086814443,
+                "delivered_units": 8386000
+              }
+            ],
+            "relevant_delivery": 850.6061323530663,
+            "credited_units": 850
+          },
+          "status": {
+            "Settled": {
+              "contract": 12,
+              "at": 141,
+              "promised_delivery": 850,
+              "credited_delivery": 850,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 402572639,
+                  "credited_units": 402572639,
+                  "allocated_payment": 65,
+                  "payment": 65,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 439647492,
+                  "credited_units": 439647492,
+                  "allocated_payment": 70,
+                  "payment": 70,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 8386000,
+                  "credited_units": 8386000,
+                  "allocated_payment": 1,
+                  "payment": 1,
+                  "refund": 0
+                }
+              ],
+              "payment": 136,
+              "refund": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "specialist-broad",
+      "audience_summary": [
+        {
+          "station": 1,
+          "viewer_slot_impressions": 82915.20407774969,
+          "mean_satisfaction": 0.7867069248891405
+        },
+        {
+          "station": 2,
+          "viewer_slot_impressions": 58785.52336935674,
+          "mean_satisfaction": 0.7041301486748454
+        }
+      ],
+      "finances": {
+        "stations": [
+          {
+            "station": 1,
+            "initial_cash": 20000,
+            "cash": 20876,
+            "revenue": 2676,
+            "broadcast_costs": 1800,
+            "profit": 876
+          },
+          {
+            "station": 2,
+            "initial_cash": 20000,
+            "cash": 18800,
+            "revenue": 0,
+            "broadcast_costs": 1200,
+            "profit": -1200
+          }
+        ],
+        "brands": [
+          {
+            "brand": 1,
+            "initial_budget": 20000,
+            "remaining_budget": 20000,
+            "unsettled_escrow": 0,
+            "spent": 0
+          },
+          {
+            "brand": 2,
+            "initial_budget": 20000,
+            "remaining_budget": 17324,
+            "unsettled_escrow": 0,
+            "spent": 2676
+          }
+        ],
+        "cost_sink": 3000,
+        "total_money": 80000,
+        "ledger": [
+          {
+            "at": 0,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 1
+            },
+            "amount": 369,
+            "reason": "Reserve"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Escrow": 1
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 369,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 2
+            },
+            "amount": 401,
+            "reason": "Reserve"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Escrow": 2
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 401,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 3
+            },
+            "amount": 228,
+            "reason": "Reserve"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Escrow": 3
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 228,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 4
+            },
+            "amount": 293,
+            "reason": "Reserve"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Escrow": 4
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 293,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 5
+            },
+            "amount": 167,
+            "reason": "Reserve"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Escrow": 5
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 167,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 6
+            },
+            "amount": 240,
+            "reason": "Reserve"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Escrow": 6
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 240,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 7
+            },
+            "amount": 137,
+            "reason": "Reserve"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Escrow": 7
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 137,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 8
+            },
+            "amount": 213,
+            "reason": "Reserve"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Escrow": 8
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 213,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 9
+            },
+            "amount": 122,
+            "reason": "Reserve"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Escrow": 9
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 122,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 10
+            },
+            "amount": 199,
+            "reason": "Reserve"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Escrow": 10
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 199,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 11
+            },
+            "amount": 115,
+            "reason": "Reserve"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Escrow": 11
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 115,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 12
+            },
+            "amount": 192,
+            "reason": "Reserve"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 150,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Escrow": 12
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 192,
+            "reason": "DeliveryPayment"
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "id": 1,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 18,
+          "deadline": 18,
+          "accepted_payment": 369,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2.772202835757003,
+              "priority": 0.02,
+              "promised_units": 2772202,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 11.567594256529842,
+              "priority": 0.02,
+              "promised_units": 11567594,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 263.6688791827457,
+              "priority": 1.0,
+              "promised_units": 263668879,
+              "allocated_payment": 369
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 2772.2028357570025,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 2.772202835757003,
+                "delivered_units": 2772202
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 4819.830940220768,
+                "effectiveness": 0.12,
+                "relevant_delivery": 11.567594256529842,
+                "delivered_units": 11567594
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 346.36305968176777,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 263.6688791827457,
+                "delivered_units": 263668879
+              }
+            ],
+            "relevant_delivery": 278.00867627503254,
+            "credited_units": 278
+          },
+          "status": {
+            "Settled": {
+              "contract": 1,
+              "at": 18,
+              "promised_delivery": 278,
+              "credited_delivery": 278,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2772202,
+                  "credited_units": 2772202,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 11567594,
+                  "credited_units": 11567594,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 263668879,
+                  "credited_units": 263668879,
+                  "allocated_payment": 369,
+                  "payment": 369,
+                  "refund": 0
+                }
+              ],
+              "payment": 369,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 2,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 21,
+          "deadline": 21,
+          "accepted_payment": 401,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 3.171173461105359,
+              "priority": 0.02,
+              "promised_units": 3171173,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 5.822606469504346,
+              "priority": 0.02,
+              "promised_units": 5822606,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 344.07625702473746,
+              "priority": 1.0,
+              "promised_units": 344076257,
+              "allocated_payment": 401
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 3171.1734611053575,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 3.171173461105359,
+                "delivered_units": 3171173
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 2426.086028960144,
+                "effectiveness": 0.12,
+                "relevant_delivery": 5.822606469504346,
+                "delivered_units": 5822606
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 451.9885149750246,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 344.07625702473746,
+                "delivered_units": 344076257
+              }
+            ],
+            "relevant_delivery": 353.0700369553472,
+            "credited_units": 353
+          },
+          "status": {
+            "Settled": {
+              "contract": 2,
+              "at": 21,
+              "promised_delivery": 353,
+              "credited_delivery": 353,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 3171173,
+                  "credited_units": 3171173,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 5822606,
+                  "credited_units": 5822606,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 344076257,
+                  "credited_units": 344076257,
+                  "allocated_payment": 401,
+                  "payment": 401,
+                  "refund": 0
+                }
+              ],
+              "payment": 401,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 3,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 42,
+          "deadline": 42,
+          "accepted_payment": 228,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2.7761227492615834,
+              "priority": 0.02,
+              "promised_units": 2776122,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 11.578298179031767,
+              "priority": 0.02,
+              "promised_units": 11578298,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 255.4443108083111,
+              "priority": 1.0,
+              "promised_units": 255444310,
+              "allocated_payment": 228
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 2776.122749261582,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 2.7761227492615834,
+                "delivered_units": 2776122
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 4824.290907929903,
+                "effectiveness": 0.12,
+                "relevant_delivery": 11.578298179031767,
+                "delivered_units": 11578298
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 335.55902897643494,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 255.4443108083111,
+                "delivered_units": 255444310
+              }
+            ],
+            "relevant_delivery": 269.79873173660445,
+            "credited_units": 269
+          },
+          "status": {
+            "Settled": {
+              "contract": 3,
+              "at": 42,
+              "promised_delivery": 269,
+              "credited_delivery": 269,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2776122,
+                  "credited_units": 2776122,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 11578298,
+                  "credited_units": 11578298,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 255444310,
+                  "credited_units": 255444310,
+                  "allocated_payment": 228,
+                  "payment": 228,
+                  "refund": 0
+                }
+              ],
+              "payment": 228,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 4,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 45,
+          "deadline": 45,
+          "accepted_payment": 293,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 3.102583768136211,
+              "priority": 0.02,
+              "promised_units": 3102583,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 5.728069750489159,
+              "priority": 0.02,
+              "promised_units": 5728069,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 337.58564870735904,
+              "priority": 1.0,
+              "promised_units": 337585648,
+              "allocated_payment": 293
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 3102.58376813621,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 3.102583768136211,
+                "delivered_units": 3102583
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 2386.695729370483,
+                "effectiveness": 0.12,
+                "relevant_delivery": 5.728069750489159,
+                "delivered_units": 5728069
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 443.4622643118017,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 337.58564870735904,
+                "delivered_units": 337585648
+              }
+            ],
+            "relevant_delivery": 346.4163022259844,
+            "credited_units": 346
+          },
+          "status": {
+            "Settled": {
+              "contract": 4,
+              "at": 45,
+              "promised_delivery": 346,
+              "credited_delivery": 346,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 3102583,
+                  "credited_units": 3102583,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 5728069,
+                  "credited_units": 5728069,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 337585648,
+                  "credited_units": 337585648,
+                  "allocated_payment": 293,
+                  "payment": 293,
+                  "refund": 0
+                }
+              ],
+              "payment": 293,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 5,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 66,
+          "deadline": 66,
+          "accepted_payment": 167,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2.753920952652601,
+              "priority": 0.02,
+              "promised_units": 2753920,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 11.427728242810778,
+              "priority": 0.02,
+              "promised_units": 11427728,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 249.56960998740954,
+              "priority": 1.0,
+              "promised_units": 249569609,
+              "allocated_payment": 167
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 2753.9209526526,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 2.753920952652601,
+                "delivered_units": 2753920
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 4761.553434504491,
+                "effectiveness": 0.12,
+                "relevant_delivery": 11.427728242810778,
+                "delivered_units": 11427728
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 327.8418522002096,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 249.56960998740954,
+                "delivered_units": 249569609
+              }
+            ],
+            "relevant_delivery": 263.7512591828729,
+            "credited_units": 263
+          },
+          "status": {
+            "Settled": {
+              "contract": 5,
+              "at": 66,
+              "promised_delivery": 263,
+              "credited_delivery": 263,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2753920,
+                  "credited_units": 2753920,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 11427728,
+                  "credited_units": 11427728,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 249569609,
+                  "credited_units": 249569609,
+                  "allocated_payment": 167,
+                  "payment": 167,
+                  "refund": 0
+                }
+              ],
+              "payment": 167,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 6,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 69,
+          "deadline": 69,
+          "accepted_payment": 240,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 3.104246299063477,
+              "priority": 0.02,
+              "promised_units": 3104246,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 5.694903845588196,
+              "priority": 0.02,
+              "promised_units": 5694903,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 328.629008162891,
+              "priority": 1.0,
+              "promised_units": 328629008,
+              "allocated_payment": 240
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 3104.246299063476,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 3.104246299063477,
+                "delivered_units": 3104246
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 2372.876602328415,
+                "effectiveness": 0.12,
+                "relevant_delivery": 5.694903845588196,
+                "delivered_units": 5694903
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 431.69656244714747,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 328.629008162891,
+                "delivered_units": 328629008
+              }
+            ],
+            "relevant_delivery": 337.4281583075427,
+            "credited_units": 337
+          },
+          "status": {
+            "Settled": {
+              "contract": 6,
+              "at": 69,
+              "promised_delivery": 337,
+              "credited_delivery": 337,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 3104246,
+                  "credited_units": 3104246,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 5694903,
+                  "credited_units": 5694903,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 328629008,
+                  "credited_units": 328629008,
+                  "allocated_payment": 240,
+                  "payment": 240,
+                  "refund": 0
+                }
+              ],
+              "payment": 240,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 7,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 90,
+          "deadline": 90,
+          "accepted_payment": 137,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2.768464912791858,
+              "priority": 0.02,
+              "promised_units": 2768464,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 11.38661391875834,
+              "priority": 0.02,
+              "promised_units": 11386613,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 242.31609137088185,
+              "priority": 1.0,
+              "promised_units": 242316091,
+              "allocated_payment": 137
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 2768.464912791857,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 2.768464912791858,
+                "delivered_units": 2768464
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 4744.422466149308,
+                "effectiveness": 0.12,
+                "relevant_delivery": 11.38661391875834,
+                "delivered_units": 11386613
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 318.31342052004186,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 242.31609137088185,
+                "delivered_units": 242316091
+              }
+            ],
+            "relevant_delivery": 256.47117020243206,
+            "credited_units": 256
+          },
+          "status": {
+            "Settled": {
+              "contract": 7,
+              "at": 90,
+              "promised_delivery": 256,
+              "credited_delivery": 256,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2768464,
+                  "credited_units": 2768464,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 11386613,
+                  "credited_units": 11386613,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 242316091,
+                  "credited_units": 242316091,
+                  "allocated_payment": 137,
+                  "payment": 137,
+                  "refund": 0
+                }
+              ],
+              "payment": 137,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 8,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 93,
+          "deadline": 93,
+          "accepted_payment": 213,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 3.124260543711269,
+              "priority": 0.02,
+              "promised_units": 3124260,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 5.693721483579206,
+              "priority": 0.02,
+              "promised_units": 5693721,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 319.134245143491,
+              "priority": 1.0,
+              "promised_units": 319134245,
+              "allocated_payment": 213
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 3124.260543711268,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 3.124260543711269,
+                "delivered_units": 3124260
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 2372.3839514913357,
+                "effectiveness": 0.12,
+                "relevant_delivery": 5.693721483579206,
+                "delivered_units": 5693721
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 419.22396734777146,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 319.134245143491,
+                "delivered_units": 319134245
+              }
+            ],
+            "relevant_delivery": 327.9522271707815,
+            "credited_units": 327
+          },
+          "status": {
+            "Settled": {
+              "contract": 8,
+              "at": 93,
+              "promised_delivery": 327,
+              "credited_delivery": 327,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 3124260,
+                  "credited_units": 3124260,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 5693721,
+                  "credited_units": 5693721,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 319134245,
+                  "credited_units": 319134245,
+                  "allocated_payment": 213,
+                  "payment": 213,
+                  "refund": 0
+                }
+              ],
+              "payment": 213,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 9,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 114,
+          "deadline": 114,
+          "accepted_payment": 122,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2.7861069378962036,
+              "priority": 0.02,
+              "promised_units": 2786106,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 11.392622242016591,
+              "priority": 0.02,
+              "promised_units": 11392622,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 235.65846573546895,
+              "priority": 1.0,
+              "promised_units": 235658465,
+              "allocated_payment": 122
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 2786.1069378962025,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 2.7861069378962036,
+                "delivered_units": 2786106
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 4746.92593417358,
+                "effectiveness": 0.12,
+                "relevant_delivery": 11.392622242016591,
+                "delivered_units": 11392622
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 309.5677710810758,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 235.65846573546895,
+                "delivered_units": 235658465
+              }
+            ],
+            "relevant_delivery": 249.83719491538176,
+            "credited_units": 249
+          },
+          "status": {
+            "Settled": {
+              "contract": 9,
+              "at": 114,
+              "promised_delivery": 249,
+              "credited_delivery": 249,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2786106,
+                  "credited_units": 2786106,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 11392622,
+                  "credited_units": 11392622,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 235658465,
+                  "credited_units": 235658465,
+                  "allocated_payment": 122,
+                  "payment": 122,
+                  "refund": 0
+                }
+              ],
+              "payment": 122,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 10,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 117,
+          "deadline": 117,
+          "accepted_payment": 199,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 3.1420655710824503,
+              "priority": 0.02,
+              "promised_units": 3142065,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 5.7022140647888255,
+              "priority": 0.02,
+              "promised_units": 5702214,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 310.92925949688413,
+              "priority": 1.0,
+              "promised_units": 310929259,
+              "allocated_payment": 199
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 3142.0655710824494,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 3.1420655710824503,
+                "delivered_units": 3142065
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 2375.922526995344,
+                "effectiveness": 0.12,
+                "relevant_delivery": 5.7022140647888255,
+                "delivered_units": 5702214
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 408.44566107965073,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 310.92925949688413,
+                "delivered_units": 310929259
+              }
+            ],
+            "relevant_delivery": 319.7735391327554,
+            "credited_units": 319
+          },
+          "status": {
+            "Settled": {
+              "contract": 10,
+              "at": 117,
+              "promised_delivery": 319,
+              "credited_delivery": 319,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 3142065,
+                  "credited_units": 3142065,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 5702214,
+                  "credited_units": 5702214,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 310929259,
+                  "credited_units": 310929259,
+                  "allocated_payment": 199,
+                  "payment": 199,
+                  "refund": 0
+                }
+              ],
+              "payment": 199,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 11,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 138,
+          "deadline": 138,
+          "accepted_payment": 115,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 2.799439228235409,
+              "priority": 0.02,
+              "promised_units": 2799439,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 11.410773821128684,
+              "priority": 0.02,
+              "promised_units": 11410773,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 230.2246738708057,
+              "priority": 1.0,
+              "promised_units": 230224673,
+              "allocated_payment": 115
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 2799.439228235408,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 2.799439228235409,
+                "delivered_units": 2799439
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 4754.489092136952,
+                "effectiveness": 0.12,
+                "relevant_delivery": 11.410773821128684,
+                "delivered_units": 11410773
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 302.4297850519615,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 230.2246738708057,
+                "delivered_units": 230224673
+              }
+            ],
+            "relevant_delivery": 244.4348869201698,
+            "credited_units": 244
+          },
+          "status": {
+            "Settled": {
+              "contract": 11,
+              "at": 138,
+              "promised_delivery": 244,
+              "credited_delivery": 244,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 2799439,
+                  "credited_units": 2799439,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 11410773,
+                  "credited_units": 11410773,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 230224673,
+                  "credited_units": 230224673,
+                  "allocated_payment": 115,
+                  "payment": 115,
+                  "refund": 0
+                }
+              ],
+              "payment": 115,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 12,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 141,
+          "deadline": 141,
+          "accepted_payment": 192,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 3.1546110554514284,
+              "priority": 0.02,
+              "promised_units": 3154611,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 5.7114467299310245,
+              "priority": 0.02,
+              "promised_units": 5711446,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 304.3985937859723,
+              "priority": 1.0,
+              "promised_units": 304398593,
+              "allocated_payment": 192
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 3154.611055451427,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 3.1546110554514284,
+                "delivered_units": 3154611
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 2379.7694708045938,
+                "effectiveness": 0.12,
+                "relevant_delivery": 5.7114467299310245,
+                "delivered_units": 5711446
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 399.8667898666303,
+                "effectiveness": 0.76125,
+                "relevant_delivery": 304.3985937859723,
+                "delivered_units": 304398593
+              }
+            ],
+            "relevant_delivery": 313.26465157135476,
+            "credited_units": 313
+          },
+          "status": {
+            "Settled": {
+              "contract": 12,
+              "at": 141,
+              "promised_delivery": 313,
+              "credited_delivery": 313,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 3154611,
+                  "credited_units": 3154611,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 5711446,
+                  "credited_units": 5711446,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 304398593,
+                  "credited_units": 304398593,
+                  "allocated_payment": 192,
+                  "payment": 192,
+                  "refund": 0
+                }
+              ],
+              "payment": 192,
+              "refund": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "specialist-targeted",
+      "audience_summary": [
+        {
+          "station": 1,
+          "viewer_slot_impressions": 26413.389973784026,
+          "mean_satisfaction": 0.6903664256774138
+        },
+        {
+          "station": 2,
+          "viewer_slot_impressions": 94841.09883660816,
+          "mean_satisfaction": 0.7011224462875549
+        }
+      ],
+      "finances": {
+        "stations": [
+          {
+            "station": 1,
+            "initial_cash": 20000,
+            "cash": 22205,
+            "revenue": 2805,
+            "broadcast_costs": 600,
+            "profit": 2205
+          },
+          {
+            "station": 2,
+            "initial_cash": 20000,
+            "cash": 18800,
+            "revenue": 0,
+            "broadcast_costs": 1200,
+            "profit": -1200
+          }
+        ],
+        "brands": [
+          {
+            "brand": 1,
+            "initial_budget": 20000,
+            "remaining_budget": 20000,
+            "unsettled_escrow": 0,
+            "spent": 0
+          },
+          {
+            "brand": 2,
+            "initial_budget": 20000,
+            "remaining_budget": 17195,
+            "unsettled_escrow": 0,
+            "spent": 2805
+          }
+        ],
+        "cost_sink": 1800,
+        "total_money": 80000,
+        "ledger": [
+          {
+            "at": 0,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 1
+            },
+            "amount": 710,
+            "reason": "Reserve"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Escrow": 1
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 710,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 18,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 2
+            },
+            "amount": 657,
+            "reason": "Reserve"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Escrow": 2
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 657,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 21,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 3
+            },
+            "amount": 255,
+            "reason": "Reserve"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Escrow": 3
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 255,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 42,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 4
+            },
+            "amount": 309,
+            "reason": "Reserve"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Escrow": 4
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 309,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 45,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 5
+            },
+            "amount": 74,
+            "reason": "Reserve"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Escrow": 5
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 74,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 66,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 6
+            },
+            "amount": 174,
+            "reason": "Reserve"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Escrow": 6
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 174,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 69,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 7
+            },
+            "amount": 6,
+            "reason": "Reserve"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Escrow": 7
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 6,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 90,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 8
+            },
+            "amount": 124,
+            "reason": "Reserve"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 93,
+            "from": {
+              "Escrow": 8
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 124,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 114,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 9
+            },
+            "amount": 275,
+            "reason": "Reserve"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Escrow": 9
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 275,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 117,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 10
+            },
+            "amount": 59,
+            "reason": "Reserve"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Escrow": 10
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 59,
+            "reason": "DeliveryPayment"
+          },
+          {
+            "at": 138,
+            "from": {
+              "Brand": 2
+            },
+            "to": {
+              "Escrow": 11
+            },
+            "amount": 162,
+            "reason": "Reserve"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 1
+            },
+            "to": "BroadcastCosts",
+            "amount": 50,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Station": 2
+            },
+            "to": "BroadcastCosts",
+            "amount": 100,
+            "reason": "BroadcastCost"
+          },
+          {
+            "at": 141,
+            "from": {
+              "Escrow": 11
+            },
+            "to": {
+              "Station": 1
+            },
+            "amount": 162,
+            "reason": "DeliveryPayment"
+          }
+        ]
+      },
+      "contracts": [
+        {
+          "id": 1,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 18,
+          "deadline": 18,
+          "accepted_payment": 710,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.5082246891405595,
+              "priority": 0.02,
+              "promised_units": 508224,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 2.932112467188049,
+              "priority": 0.02,
+              "promised_units": 2932112,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 507.1733398457711,
+              "priority": 1.0,
+              "promised_units": 507173339,
+              "allocated_payment": 710
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 508.22468914055935,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.5082246891405595,
+                "delivered_units": 508224
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 1221.7135279950205,
+                "effectiveness": 0.12,
+                "relevant_delivery": 2.932112467188049,
+                "delivered_units": 2932112
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 596.6745174656131,
+                "effectiveness": 0.85,
+                "relevant_delivery": 507.1733398457711,
+                "delivered_units": 507173339
+              }
+            ],
+            "relevant_delivery": 510.61367700209973,
+            "credited_units": 510
+          },
+          "status": {
+            "Settled": {
+              "contract": 1,
+              "at": 18,
+              "promised_delivery": 510,
+              "credited_delivery": 510,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 508224,
+                  "credited_units": 508224,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 2932112,
+                  "credited_units": 2932112,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 507173339,
+                  "credited_units": 507173339,
+                  "allocated_payment": 710,
+                  "payment": 710,
+                  "refund": 0
+                }
+              ],
+              "payment": 710,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 2,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 21,
+          "deadline": 21,
+          "accepted_payment": 657,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.5880671835543975,
+              "priority": 0.02,
+              "promised_units": 588067,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1.4746779676714885,
+              "priority": 0.02,
+              "promised_units": 1474677,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 702.939406903612,
+              "priority": 1.0,
+              "promised_units": 702939406,
+              "allocated_payment": 657
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 588.0671835543973,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.5880671835543975,
+                "delivered_units": 588067
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 614.4491531964536,
+                "effectiveness": 0.12,
+                "relevant_delivery": 1.4746779676714885,
+                "delivered_units": 1474677
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 826.9875375336612,
+                "effectiveness": 0.85,
+                "relevant_delivery": 702.939406903612,
+                "delivered_units": 702939406
+              }
+            ],
+            "relevant_delivery": 705.0021520548379,
+            "credited_units": 705
+          },
+          "status": {
+            "Settled": {
+              "contract": 2,
+              "at": 21,
+              "promised_delivery": 705,
+              "credited_delivery": 705,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 588067,
+                  "credited_units": 588067,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1474677,
+                  "credited_units": 1474677,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 702939406,
+                  "credited_units": 702939406,
+                  "allocated_payment": 657,
+                  "payment": 657,
+                  "refund": 0
+                }
+              ],
+              "payment": 657,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 3,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 42,
+          "deadline": 42,
+          "accepted_payment": 255,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.5364126202617696,
+              "priority": 0.02,
+              "promised_units": 536412,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 2.9866169149674944,
+              "priority": 0.02,
+              "promised_units": 2986616,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 537.3043542943848,
+              "priority": 1.0,
+              "promised_units": 537304354,
+              "allocated_payment": 255
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 536.4126202617695,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.5364126202617696,
+                "delivered_units": 536412
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 1244.4237145697894,
+                "effectiveness": 0.12,
+                "relevant_delivery": 2.9866169149674944,
+                "delivered_units": 2986616
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 632.1227697580997,
+                "effectiveness": 0.85,
+                "relevant_delivery": 537.3043542943848,
+                "delivered_units": 537304354
+              }
+            ],
+            "relevant_delivery": 540.8273838296141,
+            "credited_units": 540
+          },
+          "status": {
+            "Settled": {
+              "contract": 3,
+              "at": 42,
+              "promised_delivery": 540,
+              "credited_delivery": 540,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 536412,
+                  "credited_units": 536412,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 2986616,
+                  "credited_units": 2986616,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 537304354,
+                  "credited_units": 537304354,
+                  "allocated_payment": 255,
+                  "payment": 255,
+                  "refund": 0
+                }
+              ],
+              "payment": 255,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 4,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 45,
+          "deadline": 45,
+          "accepted_payment": 309,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.6055382767848985,
+              "priority": 0.02,
+              "promised_units": 605538,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1.5171092165567848,
+              "priority": 0.02,
+              "promised_units": 1517109,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 717.9507823310574,
+              "priority": 1.0,
+              "promised_units": 717950782,
+              "allocated_payment": 309
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 605.5382767848982,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.6055382767848985,
+                "delivered_units": 605538
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 632.1288402319936,
+                "effectiveness": 0.12,
+                "relevant_delivery": 1.5171092165567848,
+                "delivered_units": 1517109
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 844.6479792130087,
+                "effectiveness": 0.85,
+                "relevant_delivery": 717.9507823310574,
+                "delivered_units": 717950782
+              }
+            ],
+            "relevant_delivery": 720.0734298243991,
+            "credited_units": 720
+          },
+          "status": {
+            "Settled": {
+              "contract": 4,
+              "at": 45,
+              "promised_delivery": 720,
+              "credited_delivery": 720,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 605538,
+                  "credited_units": 605538,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1517109,
+                  "credited_units": 1517109,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 717950782,
+                  "credited_units": 717950782,
+                  "allocated_payment": 309,
+                  "payment": 309,
+                  "refund": 0
+                }
+              ],
+              "payment": 309,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 5,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 66,
+          "deadline": 66,
+          "accepted_payment": 74,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.5347133183531982,
+              "priority": 0.02,
+              "promised_units": 534713,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 3.0297030492782837,
+              "priority": 0.02,
+              "promised_units": 3029703,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 537.9424288288291,
+              "priority": 1.0,
+              "promised_units": 537942428,
+              "allocated_payment": 74
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 534.713318353198,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.5347133183531982,
+                "delivered_units": 534713
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 1262.3762705326183,
+                "effectiveness": 0.12,
+                "relevant_delivery": 3.0297030492782837,
+                "delivered_units": 3029703
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 632.8734456809754,
+                "effectiveness": 0.85,
+                "relevant_delivery": 537.9424288288291,
+                "delivered_units": 537942428
+              }
+            ],
+            "relevant_delivery": 541.5068451964605,
+            "credited_units": 541
+          },
+          "status": {
+            "Settled": {
+              "contract": 5,
+              "at": 66,
+              "promised_delivery": 541,
+              "credited_delivery": 541,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 534713,
+                  "credited_units": 534713,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 3029703,
+                  "credited_units": 3029703,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 537942428,
+                  "credited_units": 537942428,
+                  "allocated_payment": 74,
+                  "payment": 74,
+                  "refund": 0
+                }
+              ],
+              "payment": 74,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 6,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 69,
+          "deadline": 69,
+          "accepted_payment": 174,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.5947770591474772,
+              "priority": 0.02,
+              "promised_units": 594777,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1.5038248124408684,
+              "priority": 0.02,
+              "promised_units": 1503824,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 716.1805235325605,
+              "priority": 1.0,
+              "promised_units": 716180523,
+              "allocated_payment": 174
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 594.7770591474771,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.5947770591474772,
+                "delivered_units": 594777
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 626.5936718503618,
+                "effectiveness": 0.12,
+                "relevant_delivery": 1.5038248124408684,
+                "delivered_units": 1503824
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 842.5653218030125,
+                "effectiveness": 0.85,
+                "relevant_delivery": 716.1805235325605,
+                "delivered_units": 716180523
+              }
+            ],
+            "relevant_delivery": 718.2791254041489,
+            "credited_units": 718
+          },
+          "status": {
+            "Settled": {
+              "contract": 6,
+              "at": 69,
+              "promised_delivery": 718,
+              "credited_delivery": 718,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 594777,
+                  "credited_units": 594777,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1503824,
+                  "credited_units": 1503824,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 716180523,
+                  "credited_units": 716180523,
+                  "allocated_payment": 174,
+                  "payment": 174,
+                  "refund": 0
+                }
+              ],
+              "payment": 174,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 7,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 90,
+          "deadline": 90,
+          "accepted_payment": 6,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.520849130037872,
+              "priority": 0.02,
+              "promised_units": 520849,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 2.9880370599287613,
+              "priority": 0.02,
+              "promised_units": 2988037,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 536.1085961209966,
+              "priority": 1.0,
+              "promised_units": 536108596,
+              "allocated_payment": 6
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 520.8491300378719,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.520849130037872,
+                "delivered_units": 520849
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 1245.015441636984,
+                "effectiveness": 0.12,
+                "relevant_delivery": 2.9880370599287613,
+                "delivered_units": 2988037
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 630.7159954364666,
+                "effectiveness": 0.85,
+                "relevant_delivery": 536.1085961209966,
+                "delivered_units": 536108596
+              }
+            ],
+            "relevant_delivery": 539.6174823109633,
+            "credited_units": 539
+          },
+          "status": {
+            "Settled": {
+              "contract": 7,
+              "at": 90,
+              "promised_delivery": 539,
+              "credited_delivery": 539,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 520849,
+                  "credited_units": 520849,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 2988037,
+                  "credited_units": 2988037,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 536108596,
+                  "credited_units": 536108596,
+                  "allocated_payment": 6,
+                  "payment": 6,
+                  "refund": 0
+                }
+              ],
+              "payment": 6,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 8,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 93,
+          "deadline": 93,
+          "accepted_payment": 124,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.5778460501531689,
+              "priority": 0.02,
+              "promised_units": 577846,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1.4728859711118467,
+              "priority": 0.02,
+              "promised_units": 1472885,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 714.0976768051833,
+              "priority": 1.0,
+              "promised_units": 714097676,
+              "allocated_payment": 124
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 577.8460501531687,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.5778460501531689,
+                "delivered_units": 577846
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 613.7024879632695,
+                "effectiveness": 0.12,
+                "relevant_delivery": 1.4728859711118467,
+                "delivered_units": 1472885
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 840.1149138884509,
+                "effectiveness": 0.85,
+                "relevant_delivery": 714.0976768051833,
+                "delivered_units": 714097676
+              }
+            ],
+            "relevant_delivery": 716.1484088264483,
+            "credited_units": 716
+          },
+          "status": {
+            "Settled": {
+              "contract": 8,
+              "at": 93,
+              "promised_delivery": 716,
+              "credited_delivery": 716,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 577846,
+                  "credited_units": 577846,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1472885,
+                  "credited_units": 1472885,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 714097676,
+                  "credited_units": 714097676,
+                  "allocated_payment": 124,
+                  "payment": 124,
+                  "refund": 0
+                }
+              ],
+              "payment": 124,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 9,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 117,
+          "deadline": 117,
+          "accepted_payment": 275,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.5615770957851837,
+              "priority": 0.02,
+              "promised_units": 561577,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1.4398576286759968,
+              "priority": 0.02,
+              "promised_units": 1439857,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 713.1155857776989,
+              "priority": 1.0,
+              "promised_units": 713115585,
+              "allocated_payment": 275
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 561.5770957851835,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.5615770957851837,
+                "delivered_units": 561577
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 599.9406786149987,
+                "effectiveness": 0.12,
+                "relevant_delivery": 1.4398576286759968,
+                "delivered_units": 1439857
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 838.9595126796459,
+                "effectiveness": 0.85,
+                "relevant_delivery": 713.1155857776989,
+                "delivered_units": 713115585
+              }
+            ],
+            "relevant_delivery": 715.1170205021601,
+            "credited_units": 715
+          },
+          "status": {
+            "Settled": {
+              "contract": 9,
+              "at": 117,
+              "promised_delivery": 715,
+              "credited_delivery": 715,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 561577,
+                  "credited_units": 561577,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1439857,
+                  "credited_units": 1439857,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 713115585,
+                  "credited_units": 713115585,
+                  "allocated_payment": 275,
+                  "payment": 275,
+                  "refund": 0
+                }
+              ],
+              "payment": 275,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 10,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 138,
+          "deadline": 138,
+          "accepted_payment": 59,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.492280647491098,
+              "priority": 0.02,
+              "promised_units": 492280,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 2.859032401168499,
+              "priority": 0.02,
+              "promised_units": 2859032,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 534.6589911555523,
+              "priority": 1.0,
+              "promised_units": 534658991,
+              "allocated_payment": 59
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 492.28064749109785,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.492280647491098,
+                "delivered_units": 492280
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 1191.2635004868746,
+                "effectiveness": 0.12,
+                "relevant_delivery": 2.859032401168499,
+                "delivered_units": 2859032
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 629.0105778300615,
+                "effectiveness": 0.85,
+                "relevant_delivery": 534.6589911555523,
+                "delivered_units": 534658991
+              }
+            ],
+            "relevant_delivery": 538.0103042042118,
+            "credited_units": 538
+          },
+          "status": {
+            "Settled": {
+              "contract": 10,
+              "at": 138,
+              "promised_delivery": 538,
+              "credited_delivery": 538,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 492280,
+                  "credited_units": 492280,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 2859032,
+                  "credited_units": 2859032,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 534658991,
+                  "credited_units": 534658991,
+                  "allocated_payment": 59,
+                  "payment": 59,
+                  "refund": 0
+                }
+              ],
+              "payment": 59,
+              "refund": 0
+            }
+          }
+        },
+        {
+          "id": 11,
+          "delivery_units_per_impression": 1000000,
+          "booked_hour": 141,
+          "deadline": 141,
+          "accepted_payment": 162,
+          "commitments": [
+            {
+              "audience": 1,
+              "forecast_delivery": 0.5475030013333552,
+              "priority": 0.02,
+              "promised_units": 547503,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 2,
+              "forecast_delivery": 1.4095827127161011,
+              "priority": 0.02,
+              "promised_units": 1409582,
+              "allocated_payment": 0
+            },
+            {
+              "audience": 3,
+              "forecast_delivery": 712.8100073792275,
+              "priority": 1.0,
+              "promised_units": 712810007,
+              "allocated_payment": 162
+            }
+          ],
+          "actual": {
+            "audiences": [
+              {
+                "audience": 1,
+                "priority": 0.02,
+                "viewers": 547.503001333355,
+                "effectiveness": 0.05000000000000002,
+                "relevant_delivery": 0.5475030013333552,
+                "delivered_units": 547503
+              },
+              {
+                "audience": 2,
+                "priority": 0.02,
+                "viewers": 587.3261302983755,
+                "effectiveness": 0.12,
+                "relevant_delivery": 1.4095827127161011,
+                "delivered_units": 1409582
+              },
+              {
+                "audience": 3,
+                "priority": 1.0,
+                "viewers": 838.6000086814441,
+                "effectiveness": 0.85,
+                "relevant_delivery": 712.8100073792275,
+                "delivered_units": 712810007
+              }
+            ],
+            "relevant_delivery": 714.7670930932769,
+            "credited_units": 714
+          },
+          "status": {
+            "Settled": {
+              "contract": 11,
+              "at": 141,
+              "promised_delivery": 714,
+              "credited_delivery": 714,
+              "audiences": [
+                {
+                  "audience": 1,
+                  "promised_units": 547503,
+                  "credited_units": 547503,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 2,
+                  "promised_units": 1409582,
+                  "credited_units": 1409582,
+                  "allocated_payment": 0,
+                  "payment": 0,
+                  "refund": 0
+                },
+                {
+                  "audience": 3,
+                  "promised_units": 712810007,
+                  "credited_units": 712810007,
+                  "allocated_payment": 162,
+                  "payment": 162,
+                  "refund": 0
+                }
+              ],
+              "payment": 162,
+              "refund": 0
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

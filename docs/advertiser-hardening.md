@@ -13,13 +13,13 @@ finite and inspectable. Brand-wide pressure remains a diagnostic summary and
 has no role multiplying delivery. A satisfied reached audience contributes
 zero value even when other, unreached audiences have large deficits.
 
-Delivery F, valuation V, and settlement are distinct. Contract promises still
-floor aggregate relevant delivery, and actual relevant delivery settles the
-fixed accepted payment under the existing integer pro-rata/refund rules.
-Deficits do not retrospectively reprice contracts. Aggregate guarantees still
-allow substitution between target audiences; separate audience quotas remain
-unimplemented. Desired hype and deficit use the quote-time actual state,
-without pricing hypothetical future decay.
+Delivery F, valuation V, and settlement are distinct. Schema 4 closes the
+former aggregate substitution loophole: acceptance freezes per-audience
+forecast, priority, promised micro-impressions and payment allocation.
+Each row settles only its own delivery, with independent proportional refunds;
+overdelivery by satisfied or other audiences cannot compensate. Later hype
+cannot reprice contracts. Positive sub-whole delivery is supported at one
+millionth-impression resolution. See [full commitment semantics](episodes-and-commitments.md).
 
 ## Valid plans that cannot be funded
 
@@ -93,7 +93,7 @@ actual gain and lowers the offer through its audience's smaller deficit.
 Increasing repetition alone reduces gain about fourfold but leaves delivery,
 value and payment exactly unchanged. The repeated low-hype case retains a
 post-campaign deficit .7508 versus .4527 for the fresh case; its next unaccepted
-quote is 5,090 versus 3,069 credits. Both cases conserve 200,000 credits across
+quote (including the common work-familiarity effect) is 4,782 versus 2,883 credits. Both cases conserve 200,000 credits across
 cash, budget, escrow and costs.
 
 Thus preserving low hype increases willingness per equal relevant impression.
@@ -101,7 +101,7 @@ Repetition-blind pricing can pay equally for inefficient campaigns and leave
 more immediate future demand. This is an incentive problem in the surrogate
 valuation, even after removing cross-audience subsidy. Weak creative also
 preserves deficit (.7302) but reduces qualified delivery and payment to 1,440;
-its next quote is 1,237, below the strong fresh creative's 3,069. Inefficiency
+its next quote is 1,162, below the strong fresh creative's 2,883. Inefficiency
 is not uniformly profitable across factors. These one-step counterfactuals
 do not prove that deliberately preserving hype is an optimal cumulative
 station strategy. Finite budgets, costs, caps, timing, and alternative schedules
@@ -110,15 +110,15 @@ still matter.
 Remaining assumptions are explicit: relevant impressions proxy advertiser
 value; the price does not forecast marginal saturated/repeated hype gain or
 sales; rates and desired hype are invented; buyers do not optimize campaign
-frequency; contracts guarantee aggregate delivery instead of outcomes or
-per-audience quotas. Stock interventions isolate sensitivities and are not a
+frequency; contracts guarantee audience-specific relevant delivery instead of hype
+outcomes. Stock interventions isolate sensitivities and are not a
 claim that a planner can independently choose hype and repetition through a
 real history. Marginal-uplift pricing or frequency policies would require
 separate design decisions and experiments; neither is introduced here.
 
 ## Verification and reports
 
-Developer schema 3 separates `offer.forecast`, `offer.valuation`, and actual
+Developer schema 4 separates `offer.forecast`, `offer.valuation`, and actual
 contract delivery. Slot reports contain `action` (requested plan), `aired`
 (effective broadcasts), and `off_air` records. An off-air forecast has zero
 viewers/delivery and no fictitious ad evaluation (`effectiveness: null`).
@@ -139,11 +139,13 @@ atomic errors even on unfunded stations. Compiler/Cargo checks provide fallback
 when LSP diagnostics are stale. CI retains the standalone fuzzy-crate copy
 checks and adds the new CLI experiment/export.
 
-Local verification on Rust/Cargo 1.98.1 passed 48 integration tests, five
+Local verification on Rust/Cargo 1.98.1 passed 63 integration tests, five
 doctests, formatting, Clippy with warnings denied, and Rustdoc with warnings
-denied. Both generic examples and all three CLI modes/exports ran. A fresh
+denied. Both generic examples and all four CLI modes/exports ran. A fresh
 outside-workspace copy of unchanged `bts-fuzzy` passed formatting, tests,
-doctests, Clippy, documentation and its example offline. The controlled
+doctests, Clippy, documentation and its example offline. The historical
 [JSON and readable snapshot](../contrib/advertiser-value/README.md) records the
-new experiment. Source and manifest of `bts-fuzzy`, publication settings and
+schema-3 experiment. Current commands emit schema 4 and include work familiarity;
+[current episode/contract results](../contrib/episodes-and-commitments/README.md)
+record the new mechanics. Source and manifest of `bts-fuzzy`, publication settings and
 licensing remain unchanged.

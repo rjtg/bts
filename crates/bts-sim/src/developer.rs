@@ -108,13 +108,17 @@ impl From<&ModelEvaluation> for FuzzyReport {
 pub struct ViewingReport {
     pub station: StationId,
     pub programme: ProgrammeId,
-    pub series: SeriesId,
+    pub series: Option<SeriesId>,
+    pub kind: ProgrammeKind,
+    pub history: crate::programmes::SelectionHistory,
+    pub fresh_viewers: f64,
+    pub familiarity_after: f64,
     pub attraction: FuzzyReport,
     pub satisfaction: FuzzyReport,
     pub utility: f64,
     pub expected_viewers: f64,
-    pub willingness_before: f64,
-    pub willingness_after: f64,
+    pub willingness_before: Option<f64>,
+    pub willingness_after: Option<f64>,
 }
 #[derive(Clone, Debug, Serialize)]
 pub struct AllocationReport {
@@ -180,6 +184,10 @@ impl From<&SlotEvent> for SlotReport {
                             station: v.station,
                             programme: v.programme,
                             series: v.series,
+                            kind: v.kind,
+                            history: v.history.clone(),
+                            fresh_viewers: v.fresh_viewers,
+                            familiarity_after: v.familiarity_after,
                             attraction: (&v.attraction).into(),
                             satisfaction: (&v.satisfaction).into(),
                             utility: v.utility,
@@ -230,8 +238,8 @@ pub struct ReturnSummary {
     pub audience: AudienceId,
     pub first_early_viewers: f64,
     pub last_early_viewers: f64,
-    pub initial_willingness: f64,
-    pub final_willingness: f64,
+    pub initial_willingness: Option<f64>,
+    pub final_willingness: Option<f64>,
 }
 #[derive(Clone, Debug, Serialize)]
 pub struct BrandSummary {
@@ -247,11 +255,18 @@ pub struct Summary {
     pub brands: Vec<BrandSummary>,
 }
 #[derive(Clone, Debug, Serialize)]
+pub struct BroadcastHistoryReport {
+    pub at: SimHour,
+    pub station: StationId,
+    pub programme: ProgrammeId,
+}
+#[derive(Clone, Debug, Serialize)]
 pub struct DeveloperReport {
     pub schema_version: u32,
     pub audience_scope: String,
     pub case: String,
     pub initial_world: World,
+    pub broadcast_history: Vec<BroadcastHistoryReport>,
     pub parameters: Parameters,
     pub initial_hype: f64,
     pub initial_willingness: f64,
@@ -385,7 +400,7 @@ pub fn report(run: &ExperimentRun) -> DeveloperReport {
             }
         })
         .collect();
-    DeveloperReport {schema_version:3,audience_scope:"Developer only: actual inputs and internal causal evidence; viewer-slot impressions are not unique reach".into(),case:run.case.clone(),initial_world:run.world.clone(),parameters:run.parameters,initial_hype:5.0,initial_willingness:0.5,initial_repetition:0.0,initial_hour:SimHour(0),summary:Summary {stations,first_station_return:returns,brands},slots:run.events.iter().map(SlotReport::from).collect()}
+    DeveloperReport {schema_version:4,audience_scope:"Developer only: actual inputs and internal causal evidence; viewer-slot impressions are not unique reach".into(),case:run.case.clone(),initial_world:run.world.clone(),broadcast_history:run.final_state.broadcast_history().iter().map(|b|BroadcastHistoryReport {at:b.at,station:b.station,programme:b.programme}).collect(),parameters:run.parameters,initial_hype:5.0,initial_willingness:0.5,initial_repetition:0.0,initial_hour:SimHour(0),summary:Summary {stations,first_station_return:returns,brands},slots:run.events.iter().map(SlotReport::from).collect()}
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -451,8 +466,10 @@ impl From<&crate::economy::Offer> for OfferReport {
 }
 #[derive(Clone, Debug, Serialize)]
 pub struct ContractReport {
+    pub delivery_units_per_impression: u64,
     pub id: crate::economy::ContractId,
     pub offer: OfferReport,
+    pub commitments: Vec<crate::economy::AudienceCommitment>,
     pub actual: crate::economy::ActualDelivery,
     pub delivered_at: Option<SimHour>,
     pub status: crate::economy::ContractStatus,
@@ -550,7 +567,7 @@ pub fn economy_report(run: &crate::economy_demo::Run) -> EconomyReport {
         })
         .collect();
     EconomyReport {
-        schema_version: 3,
+        schema_version: 4,
         kind: "advertising_economy_developer_only".into(),
         brand: run.brand,
         broadcasts: report(&run.experiment),
@@ -562,8 +579,10 @@ pub fn economy_report(run: &crate::economy_demo::Run) -> EconomyReport {
         contracts: book
             .contracts()
             .map(|c| ContractReport {
+                delivery_units_per_impression: crate::economy::DELIVERY_UNITS_PER_IMPRESSION,
                 id: c.id,
                 offer: (&c.offer).into(),
+                commitments: c.commitments.clone(),
                 actual: c.actual.clone(),
                 delivered_at: c.delivered_at,
                 status: c.status.clone(),
@@ -610,7 +629,7 @@ pub fn advertiser_value_report(
         .sum::<f64>();
     let payment = case.event.financial.settlements[0].payment;
     AdvertiserValueReport {
-        schema_version: 3,
+        schema_version: 4,
         kind: "advertiser_value_developer_counterfactual".into(),
         case: case.name.clone(),
         initial_world: case.world.clone(),

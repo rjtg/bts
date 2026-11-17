@@ -37,6 +37,13 @@ Proposed sequence per broadcast slot:
 4. Resolve enjoyment from actual execution and audience fit.
 5. Update loyalty, reputation, word of mouth, and fatigue.
 
+The prototype now distinguishes standalone works and distinct sequenced
+episodes. Expected work familiarity, predecessor reception, shared series
+attachment and continuity affect later selection, using a common pre-slot
+snapshot. Repeats reach fewer expected fresh viewers and do not advance an
+episode sequence. These provisional equations are documented in the
+[episode experiment](episodes-and-commitments.md).
+
 Initial attraction and experienced satisfaction are distinct. A star can drive a premiere that loses viewers later. Promotion cannot directly manufacture enjoyment.
 
 Account for the same viewer only once within a slot. Advertising exposures count viewers of the associated broadcast; cumulative reach and repeated exposures are different measures.
@@ -100,6 +107,11 @@ Conceptual update, not a chosen equation:
 Next hype = retained hype + effective campaign exposure + relevant event / social effects.
 
 Clamp to meaningful bounds. Effective exposure depends on audience relevance, creative effectiveness, saturation headroom, repetition, and programme context. Repetition may reinforce a campaign before wearing it out. Calibrate decay by simulated elapsed time, not UI frames.
+
+Per-audience delivery commitments now prevent a satisfied audience from
+substituting for an underserved audience in settlement. Accepted prices and
+priorities are frozen; integer micro-impressions permit fractional delivery
+without division by zero. See [commitment and episode semantics](episodes-and-commitments.md).
 
 A brand's target-hype gap drives urgency. Expected useful exposure, budget, competition, and confidence constrain its offer. Closing the gap can reduce immediate spending; decay and new launches create future demand.
 

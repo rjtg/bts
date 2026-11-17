@@ -76,18 +76,22 @@ base creative response; independent-factor tests cover all four features.
    impressions/person from previous time to this action:
    Hdecay=H*2^(-elapsed_hours/48), Rdecay=R*2^(-elapsed_hours/24).
    Initial H=5, R=0. Half-lives are configurable [1,1,000,000] hours.
-3. Use common pre-slot series willingness L in [0,1], initially .5.
-   Station utility = A²*(.2+1.6L); idle/off-air utility=0; outside utility=.18.
-   Available viewers = population*hourly availability.
-   Station viewers = available*utility/(outside utility+sum station utilities).
-   Not watching = population-sum station viewers, including unavailable people.
-   Also report available non-viewers. Counts are fractional deterministic
-   expectations, not integer samples or unique reach across time.
-4. Compute satisfaction independently. Aggregate both/all stations for each
-   audience/series, then update once:
-   Lnew=L+.9*(series viewers/population)*(viewer-weighted S-L).
-   Unwatched series do not change. This is group-level willingness, not tracked
-   individual retention. It affects subsequent station utilities.
+3. Use the common pre-slot snapshot for every actual airing. Base fuzzy
+   attraction A is combined with series attachment (episodes only), observed
+   predecessor reception, continuity readiness and current-work familiarity.
+   See [exact provisional factors](episodes-and-commitments.md). Standalone
+   works have no series attachment. Utility is nonnegative and finite.
+   Available viewers = population*hourly availability. Station viewers =
+   available*utility/(outside utility+sum station utilities); outside utility
+   is .18 by default. Not watching=population-sum station viewers.
+4. Compute satisfaction independently. Expected fresh viewers for each work
+   are allocated viewers*(1-pre-slot work familiarity). Aggregate simultaneous
+   airings of the same work before familiarity/reception updates. Update
+   series attachment only from fresh episode viewing; standalone works never
+   gain attachment. Record sequence frontier as a diagnostic, and append only
+   actual aired broadcasts to history. Repeating an earlier episode does not
+   advance to a new episode. Familiarity assumes uniform independent choices
+   within a group, not identified viewers or measured unique reach.
 5. An ad reaches exactly its broadcast's allocated viewers. Aggregate by
    brand/audience before updating any hype:
    E=sum(ad viewers/population), Q=sum(ad viewers/population*effectiveness).
@@ -116,9 +120,9 @@ cargo run -p bts-cli -- demo --case targeted --trace
 cargo run -p bts-cli -- economy --json /tmp/bts-economy.json
 ```
 
-JSON schema version 3 includes configuration, initial assumptions, actions,
+JSON schema version 4 includes configuration, initial assumptions, actions,
 full fuzzy inputs/condition/rule traces, allocations, satisfaction/willingness,
-hype decomposition, planned/actual airing, off-air reasons and financial events. Economy reports add audience valuation rows, offers, forecast
+hype decomposition, planned/actual airing, off-air reasons and financial events. Economy reports add audience valuation rows, frozen audience commitments, offers, forecast
 versus actual delivery, deadlines, settlements, budgets and the complete ledger.
 This is a developer inspection format, not a stable public protocol or save.
 
@@ -126,15 +130,15 @@ Current unpaid-ad demo results (rounded):
 
 | Case | First station viewer-slot impressions | Mean satisfaction | Specialist equipment hype in specialist group |
 | --- | ---: | ---: | ---: |
-| Broad | 89,570 | .789 | 17.17 |
-| Targeted | 25,196 | .707 | 33.37 |
-| Disappointing | 74,131 | .234 | 14.11 |
+| Broad | 82,915 | 0.787 | 17.68 |
+| Targeted | 26,413 | 0.690 | 31.18 |
+| Disappointing | 75,603 | 0.232 | 15.92 |
 
-Hype is before the cooldown. The disappointing series starts with .992
-attraction among young viewers but about .258 satisfaction; their early-slot
-viewers decline from 3,138 to 2,422. Advertising effectiveness and contract
-pricing remain separate from exposure volume. The [economy results](advertising-economy.md)
-show controlled financial comparisons and a cost-sensitivity reversal.
+Hype is before the cooldown. These legacy schedules repeat the same episode
+ID, so familiarity now reduces fresh viewing; they are not successive new
+episodes. The [new episode controls](episodes-and-commitments.md) isolate
+opening quality, repeats and continuity with distinct work IDs. Advertising
+valuation, relevant delivery and audience-specific settlement remain separate.
 
 The original schema-1 baseline in `contrib/headless-experiment` belongs to
 commit b74d453, before these review corrections. It is historical evidence,
@@ -150,7 +154,7 @@ counterfactuals. Paid value and settlement guarantees are distinct quantities.
 
 Run formatting, workspace all-target tests/doctests, Clippy with warnings
 denied and Rustdoc with warnings denied. CI also runs both generic examples,
-both CLI modes, and all checks on a copied standalone `bts-fuzzy`.
+all four CLI modes, and all checks on a copied standalone `bts-fuzzy`.
 Tests cover audience conservation, distinct tastes, weak satisfaction despite
 promotion, targeting at controlled exposure, zero-exposure gain, decay/bounds,
 repetition, overlap, snapshot ordering, money/budget/ledger conservation,
