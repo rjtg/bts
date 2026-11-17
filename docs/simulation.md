@@ -9,7 +9,9 @@ satisfaction, series willingness, and exposure-driven hype with decay. The
 offers, target delivery contracts and station cash.
 Its precise equations are provisional experiments; the broader mechanisms
 below remain proposals. Developer reports expose actual state and are not
-player evidence.
+player evidence. The separate [browser adapter](browser-foundation.md) now
+constructs a restricted player observation, with explicitly provisional exact
+expected-count delivery reports and quoted contractual forecasts.
 
 ## Purpose
 
@@ -153,7 +155,7 @@ Group splits conserve population and inherit relevant memories, preferences, and
 
 Research trades money and time for evidence: broad polls, targeted studies, concept tests, pilots, campaign studies. Results can be noisy, biased, delayed, or outdated, but should still have measurable decision value.
 
-Do not show exact future ratings. Do not conceal every useful cause behind noise. Player experiments should improve understanding over repeated decisions.
+The eventual research interface should not show exact future ratings. The browser integration milestone temporarily exposes exact model delivery forecasts as contractual terms and exact expected past counts, labelled provisional rather than measured ratings; it adds no noise or research mechanics. Do not conceal every useful cause behind noise. Player experiments should improve understanding over repeated decisions.
 
 ## Optional AI concept interpretation
 

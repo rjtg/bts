@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Behind the Screens · browser experiment</title></head>
+<body>
+<main>
+  <header><p class="eyebrow">Behind the Screens · integration experiment</p><h1>Seven days on air</h1><p>Plan a programme, review a Rust-calculated offer, then broadcast against a fixed rival.</p></header>
+  <p id="status" role="status">Loading WebAssembly…</p>
+  <p id="error" role="alert" hidden></p>
+  <div id="controls" hidden>
+    <section><h2>Your next broadcast</h2><p id="position"></p><p>Station cash: <strong id="cash"></strong> credits</p>
+      <div class="fields"><label>Decision slot<select id="slot"></select></label><label>Programme<select id="programme"></select></label><label>Prospective advertiser<select id="advertiser"></select></label></div>
+      <p id="programme-info"></p>
+      <div class="buttons"><button id="plan">Plan broadcast</button><button id="quote">Request offer for next slot</button><button id="accept" disabled>Accept offer</button><button id="advance">Advance next slot</button><button id="reset" class="secondary">Reset scenario</button></div>
+      <p>Acceptance locks the programme and advertiser for that slot. Unaccepted advertisements do not air. Offers are available only for the next slot; future plans remain editable.</p>
+    </section>
+    <section><h2>Advertising offer</h2><div id="offer">No current offer.</div></section>
+    <section><h2>Contracts and results</h2><div id="contracts"></div><div id="results">No broadcasts yet.</div></section>
+    <section><h2>Public schedule</h2><div class="scroll"><table><thead><tr><th>Day / hour</th><th>Your programme</th><th>Rival programme</th><th>Status</th></tr></thead><tbody id="schedule"></tbody></table></div></section>
+    <section><h2>Reporting limits</h2><p id="reporting"></p><p>This harness exposes no developer inspector. Audience research, measured ratings and measurement-based settlement remain future work. All world data runs locally, so this is an observation boundary, not protection against inspecting client memory.</p></section>
+  </div>
+</main>
+<script type="module" src="/src/main.ts"></script>
+</body></html>

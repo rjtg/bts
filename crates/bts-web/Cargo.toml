@@ -1,0 +1,15 @@
+[package]
+name = "bts-web"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Versioned player-observation adapter for the browser experiment"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+bts-sim = { path = "../bts-sim" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+wasm-bindgen = "=0.2.130"

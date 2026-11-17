@@ -29,7 +29,7 @@ Counts are working limits, not requirements. Reduce content if necessary to fini
 
 Inspect results; commission broad or targeted research; acquire broadcast rights; create a structured production concept; hire available talent; allocate resources; book an interview guest; schedule programmes and advertisements; accept contracts; advance time; review outcomes; renew, revise, or cancel.
 
-Proposal: begin with daily planning and slot-based resolution. A headless version precedes a minimal TUI. Avoid free-text script interpretation in this milestone.
+Proposal: begin with daily planning and slot-based resolution. Headless models feed a browser interface through WebAssembly; the CLI remains a developer tool. Avoid free-text script interpretation in this milestone.
 
 ## Build sequence
 
@@ -48,13 +48,13 @@ Exit evidence: different audiences produce different outcomes; relevant reach af
 
 ### 2. Complete season loop
 
-Prototype cash and delivery contracts now exist in the bounded economy. Rights, production lead times, talent commitments, and a research channel remain unimplemented. Run a full season with scripted actions before building the interface; the short economy comparisons do not complete this stage.
+Prototype cash and delivery contracts now exist in the bounded economy. Rights, production lead times, talent commitments, and a research channel remain unimplemented. The short economy comparisons do not complete this stage. A bounded [browser integration](browser-foundation.md) now exercises existing mechanics before the full season, without adding production or research.
 
 Exit evidence: obligations resolve correctly; production tradeoffs matter; at least one useful audience opportunity can be discovered; multiple plausible strategies survive under appropriate conditions.
 
 ### 3. Playable interface
 
-Expose only legitimate player information through a minimal interface, preferably a TUI if it remains suitable. Provide scheduling, production, research, advertiser, and results views. Include save/load and a clear time-advance action.
+Expose only legitimate player information through a browser interface, building on the minimal Rust/Wasm harness. Provide scheduling, production, research, advertiser, and results views. Include save/load and a clear time-advance action.
 
 Exit evidence: someone can play the scenario without developer tools, understand obligations, and explain a reasonable next decision from the reports.
 

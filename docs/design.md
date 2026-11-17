@@ -12,7 +12,7 @@ Core loop: observe → acquire or produce → schedule and sell advertising → 
 
 The world supplies viewers, talent, guests, subjects, competitors, and advertisers. Simulate external society only far enough to create or resolve meaningful television decisions. The world continues without the player; the player's station can influence it without being its only cause.
 
-Rust is the development direction. Presentation is secondary: an 80s retro / 8-bit aesthetic, potentially a TUI. No particular engine or terminal framework is selected.
+Rust is the development direction, with the browser as the intended primary player interface through WebAssembly. The CLI remains a developer tool. A minimal TypeScript/HTML/CSS harness is implemented; a polished 80s retro / 8-bit presentation remains later work. No game engine is selected. See [browser foundation](browser-foundation.md).
 
 ## Goals and scenarios
 

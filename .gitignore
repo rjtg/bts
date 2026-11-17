@@ -1,1 +1,6 @@
 /target/
+/web/node_modules/
+/web/pkg/
+/web/dist/
+/web/test-results/
+/web/playwright-report/

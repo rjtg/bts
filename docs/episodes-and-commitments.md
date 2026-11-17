@@ -164,8 +164,10 @@ valuation. Fixed fixtures establish causal/accounting properties, not balance.
 Schema 4 adds programme kinds, series definitions, observed history, expected
 fresh viewing, selection factors, per-audience frozen commitments and audience
 settlement rows. Internal State is not serialized; developer DTO construction
-borrows immutable evidence. No player observation layer, listings, promotion,
-habits, ad-break changes, measurement, production, UI or politics is added.
+borrows immutable evidence. This episode milestone added no player observation layer, listings, promotion,
+habits, ad-break changes, measurement, production, UI or politics. The subsequent
+[browser foundation](browser-foundation.md) now adds a separate observation
+whitelist and minimal harness without changing these numerical mechanics.
 
 Local verification on Rust/Cargo 1.98.1 passed 63 integration tests and five
 doctests, formatting, Clippy with warnings denied, and Rustdoc with warnings

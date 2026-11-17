@@ -1,0 +1,17 @@
+{
+  "name": "bts-browser-harness",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "wasm": "node scripts/build-wasm.mjs",
+    "dev": "vite --host 127.0.0.1",
+    "build": "npm run wasm && tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "typescript": "6.0.3",
+    "vite": "8.3.8"
+  }
+}
