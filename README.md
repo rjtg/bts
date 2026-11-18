@@ -33,12 +33,13 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Browser foundation](docs/browser-foundation.md): Wasm sessions, player protocol and local build.
 - [Programme planning](docs/programme-planning.md): playable timeline, airing identities, cadence, controls and evidence.
 - [Production ambition draft](docs/production-ambition-draft.md): staged work, creative ambition, delivery shortfalls and downstream demands.
-- [Original production](docs/original-production.md): bounded discussion shows, talent commitments, budgets and personal favour experiment.
+- [Pooled Sway](docs/pooled-sway.md): finite requests, station-wide social capital and bounded production uses.
+- [Original production](docs/original-production.md): bounded discussion shows, talent commitments, budgets and pooled Sway requests.
 - [Contributor guidance](AGENTS.md): implementation principles for people and coding agents.
 
 ## Status
 
-Design baseline and initial Cargo workspace, November 2026. The independent [`bts-fuzzy`](crates/bts-fuzzy/README.md) crate implements zero-order Sugeno inference, validated membership curves, nested conditions, traces, and an authoring macro. A bounded headless broadcasting economy is implemented in `bts-sim`, with audience choice, hype-driven advertiser demand, delivery contracts and integer station finances. `bts-cli` provides controlled comparisons and developer JSON reports. A thin `bts-web` adapter and TypeScript/Vite browser harness now provide a playable seven-day programme-planning workspace with 15-minute ticks, real runtimes, editable broadcasts, Rust-calculated ad contracts and restricted player reports. A bounded original-production workflow now books a host and two guests, reserves cash and recording time, completes a standalone discussion show and adds it to the schedulable library. One explicit personal favour can secure a later guest booking. The complete season loop and full game interface remain unimplemented. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. The browser harness uses plain TypeScript, HTML and CSS; no game engine or AI model is selected.
+Design baseline and initial Cargo workspace, November 2026. The independent [`bts-fuzzy`](crates/bts-fuzzy/README.md) crate implements zero-order Sugeno inference, validated membership curves, nested conditions, traces, and an authoring macro. A bounded headless broadcasting economy is implemented in `bts-sim`, with audience choice, hype-driven advertiser demand, delivery contracts and integer station finances. `bts-cli` provides controlled comparisons and developer JSON reports. A thin `bts-web` adapter and TypeScript/Vite browser harness now provide a playable seven-day programme-planning workspace with 15-minute ticks, real runtimes, editable broadcasts, Rust-calculated ad contracts and restricted player reports. A bounded original-production workflow now books a host and two guests, reserves cash and recording time, completes a standalone discussion show and adds it to the schedulable library. Finite requests earn pooled Sway, spendable on another person’s negotiable participation or on bounded cooperation smoothing. The complete season loop and full game interface remain unimplemented. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. The browser harness uses plain TypeScript, HTML and CSS; no game engine or AI model is selected.
 
 ## Run the broadcasting experiment
 
@@ -90,7 +91,7 @@ npm run dev
 
 `npm run build` produces the static `web/dist/` bundle. `npm run test:e2e`
 runs real Chromium tests after `npx playwright install --with-deps chromium`.
-Player protocol v3 excludes internal preferences, hype, execution and fuzzy
+Player protocol v4 excludes internal preferences, hype, execution and fuzzy
 traces. Audience delivery uses explicitly provisional start-of-airing expected counts;
 measured ratings and research remain future work. See the [browser guide](docs/browser-foundation.md)
 for contractual edit constraints, JSON money strings and verification results.
@@ -103,6 +104,6 @@ Selected-airing actions are separate from next-to-air controls. Use
 
 Use the **Production** workspace to draft and book a show, run through recording,
 then select **Show in programme library** to schedule it and sell advertising.
-Nora Vale’s explicit co-guest request demonstrates earning and calling a personal
-favour. See the [production rules and comparison](docs/original-production.md);
+Nora Vale’s co-guest request and Rafi Linden’s calm discussion request earn
+station-wide Sway, spendable across people and productions. See the [production rules and comparison](docs/original-production.md);
 `cargo run -p bts-web --example production_experiment` reproduces the public reports.

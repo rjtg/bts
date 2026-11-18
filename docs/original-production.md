@@ -12,8 +12,7 @@ not a full production, careers or relationship system.
    and recording time. **Review concept** creates a free draft. Edit or discard
    drafts without charge; the server revalidates dates when booking.
 2. **Book production #ID** commits the cast and full budget. Optionally promise
-   Nora's listed co-guest request, or select an earned personal favour for a
-   later booking. Errors preserve the entire session and pending quote.
+   a listed request and select pooled Sway uses for this booking. Errors preserve the entire session and pending quote.
 3. Advance normally or **Run through production #ID**. This advances the whole
    world, including existing broadcasts, decay and deadlines; it is not a private
    production clock. States are draft → booked → recording → post-production → completed.
@@ -62,9 +61,9 @@ Within each atomic advance, Rust processes every interval `[t,t+1)`:
 2. Run existing broadcast cadence: actual affordable starts, audience allocation,
    one ad opportunity per new airing, decay, delivery and deadline settlement.
 3. Apply completed-airing reception/history once at `t+1`.
-4. Finish recordings ending at `t+1`, fulfil explicit promises once, then add
+4. Finish recordings ending at `t+1`, fulfil recording requests once, then add
    productions ready at `t+1` to the library once. Initialise audience familiarity
-   with each new standalone work to zero.
+   with each new standalone work to zero. Fulfil completed-production requests.
 
 At exactly `r`, the report may still show booked; recording begins when advancing
 into its first interval. At exactly `r+4` it is post-production; at `r+12` it is
@@ -84,9 +83,10 @@ Six fictional people form the fixed browser roster:
 | Jules Hart | Guest | 140 | Well-known performer, theatrical delivery |
 | Rafi Linden | Guest | 160 | Everyday life and popular culture |
 
-Nora's normal window ends at tick 192; recording must end by then. A personal
-favour permits a later recording starting at/after 192. Others are normally
-available throughout the scenario. Fees and conflicting commitments still apply.
+Nora's normal window ends at tick 192; recording must end by then. Jules has the same normal window. Explicit Sway negotiation permits either
+to record at/after tick 192; only one exceptional participant can be secured per
+booking in this bounded API. Other roster members are normally available throughout
+the scenario. Fees and conflicting commitments still apply.
 The UI offers budgets 600/1,000/1,500; Rust accepts any valid affordable integer
 budget. Selected public descriptions and costs inform choices without exposing
 precise talent coefficients or generated execution.
@@ -114,31 +114,20 @@ fit improves experienced quality; budget resources have a small saturating effec
 The production model is deterministic arithmetic feeding the existing TV-specific
 fuzzy models. It adds no randomness, files, wall clock or browser dependency.
 
-## One explicit personal favour
+## Pooled Sway requests and spending
 
-Nora requests Felix as co-guest. The player must explicitly promise request #1
-when booking a project containing both as guests. Booking records project ID and
-promise time. Actual recording completion fulfils that promise at `r+4`, records
-the fulfilment time and awards one favour owed by Nora. Ordinary casting without
-a promise earns nothing. The request is one-shot across the session: repeating
-the show, advancing again or promising another production cannot reward it again.
-
-Calling favour #1 at a later booking records destination project/time and spends
-it once. It secures only Nora outside her normal window. It cannot bypass a
-conflict, pay her fee, secure someone else, boost quality or be spent when she is
-normally available. Booking failure preserves the unused credit. There is no
-cancellation after a successful call. Promise, fulfilment, creditor, source and
-call remain inspectable in the production report.
-
-This person-specific experiment predates the agreed pooled Sway direction in
-[resource economies](resource-economies-idea.md). The intended system earns abstract
-Sway from granting requests and spends it across people and productions. The
-implemented personal credit is a prototype limitation, not that intended design.
-There is no numerical relationship score or exchange market.
+The personal-favour prototype has been removed. [Pooled Sway](pooled-sway.md)
+now belongs to the station, independently of request proposers. Two finite,
+explicit requests earn once at their required achievement: Nora's co-guest
+recording (4 Sway), and Rafi's completed calm everyday-life discussion (3 Sway).
+Booking alone earns nothing. The balance/history are inspectable. At booking,
+2 Sway can secure one explicitly negotiable participant and 2 can smooth
+cooperation; either, both or neither may be selected. Fees, conflicts and
+creative limitations still apply. Amounts/effects are provisional.
 
 ## Protocol and information boundary
 
-Current player API/schema version is **3**; v1/v2 are rejected. Existing planning
+Current player API/schema version is **4**; v1/v2/v3 are rejected. Existing planning
 commands retain their meanings. New strict typed commands are:
 
 | Command | Fields |
@@ -146,21 +135,21 @@ commands retain their meanings. New strict typed commands are:
 | `create_production` | `concept` |
 | `revise_production` | `production_id`, `concept` |
 | `discard_production` | `production_id` |
-| `book_production` | `production_id`, optional `promise_request`, optional `call_favour` |
+| `book_production` | `production_id`, optional `promise_request`, optional `exceptional_person`, `smooth_cooperation` boolean |
 
 A concept contains `title`, `host` ID, `guests` (two IDs), `subject` (`science`,
 `everyday_life`, `entertainment`), `tone` (`calm`, `conversational`, `lively`),
 `budget` (decimal string) and `record_at` (tick number). E.g.:
 
 ```json
-{"api_version":3,"command":{"type":"create_production","concept":{"title":"Workshop Conversations","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":"1000","record_at":40}}}
+{"api_version":4,"command":{"type":"create_production","concept":{"title":"Workshop Conversations","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":"1000","record_at":40}}}
 ```
 
 Rust owns all decisions and exact accounts. Player observations whitelist public
 roster/fees/windows, own choices, progress, budget/escrow/spend, programme provenance,
-and explicit promise/favour records. They exclude precise craft/fit/preferred-tone,
+and explicit request/Sway records. They exclude precise craft/fit/preferred-tone,
 hidden execution, exact audience tastes, hype/repetition and fuzzy evidence.
-Money crosses JavaScript as decimal strings; small project/person/favour IDs and
+Money crosses JavaScript as decimal strings; small project/person/request IDs and
 ticks are safe JSON integers. Project/work IDs are not reused after reset; reset
 clears commitments/promises/credits. Sessions remain isolated. Client-side filtering
 is not a security guarantee. Counts/quotes remain labelled provisional expected
@@ -184,30 +173,29 @@ isolated estimate of each coefficient or a balance claim. A focused Rust test
 changes only the host's subject fit and verifies a >0.04 change in specialist
 satisfaction, with the same other inputs.
 
-The separate favour sequence fulfils at tick 44, calls the single credit at 75
-for a day-3 recording at 232, finishes at 244, and broadcasts at 264–267. Without
-the credit the later booking is rejected atomically. With both ads settled, cash
-is 20,315: 20,000 − 2,000 production − 100 broadcast + 2,415 advertising.
-[Committed public reports and browser evidence](../contrib/original-production/README.md)
-record these outputs and verification. `--sequence` supplies the native command
-reference used for actual Wasm parity testing, not a save format.
+The current native example also demonstrates Nora's reward at tick 44 funding
+Jules's day-3 participation and cooperation smoothing, then Rafi's different
+request earning at completed-production tick 292. See [current Sway evidence](../contrib/pooled-sway/README.md).
+The [original comparison evidence](../contrib/original-production/README.md)
+is retained as a historical protocol-v3 snapshot. `--sequence` now supplies
+protocol-v4 native commands for Wasm parity testing, not a save format.
 
 ## Verification and remaining limits
 
 Tests cover full production/ad/broadcast flow, repeat airings without another
 production charge, conflicts and adjacent bookings, free edits/discards, invalid
-or expired concepts and money, insufficient funds, atomic rejection, promise
-mismatch/no implicit reward/one-shot reward/person-specific redemption, tick-batch
+or expired concepts and money, insufficient funds, atomic rejection, request
+mismatch/no implicit reward/one-shot reward/pooled spending, tick-batch
 reproducibility, ledger conservation, production-induced off-air/refunds and
 hidden-field exclusion in serialized reports. Real Chromium tests exercise both
-productions, favour earning/calling, conflicts, draft editing and native/Wasm parity.
+productions, Sway earning/spending, conflicts, draft editing and native/Wasm parity.
 
 Recording is reliable once booked; no cancellation, failure, studio/crew capacity,
 contracts with talent accounts or dynamic availability. Quality remains unknown
 to the player and influences existing satisfaction/ad-context models; no new
 review system or quality-driven programme popularity is claimed. No unfinished-work
 pre-scheduling. No recurring editions, pilots, awards, Glamour, Credibility,
-partisan backing, pooled Sway, general relationships, research, publication/promotion,
+partisan backing, general relationships, research, publication/promotion,
 campaign shares, save/load or wider world simulation. Existing start-snapshot
 viewing, one ad opportunity per airing and repetition-blind advertiser pricing
 remain provisional. Fixed fixtures do not establish economic balance.

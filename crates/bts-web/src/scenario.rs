@@ -83,6 +83,6 @@ pub fn planner() -> Result<Planner, PlanError> {
         &competitors,
     )?;
     let (roster, request) = bts_sim::planning::production::demo_roster();
-    planner.configure_production(roster, Some(request))?;
+    planner.configure_production(roster, request)?;
     Ok(planner)
 }

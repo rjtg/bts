@@ -67,6 +67,6 @@ factors remain separate from base fuzzy traces and are inspectable in reports.
 
 `planning::production` adds one bounded standalone interview/discussion format:
 free concepts, typed talent/project IDs, paid recording commitments, deterministic
-completion into the programme library and one explicit personal favour. Production
+completion into the programme library and finite requests earning pooled Sway. Production
 escrow/expenses remain part of the conserved ledger. See [original production](../../docs/original-production.md)
 for provisional equations, timing, hidden traits and limitations.

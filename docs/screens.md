@@ -4,7 +4,7 @@ Status: broader screen organisation is proposed; the bounded programme-planning
 and standalone discussion-production subsets linked below are implemented.
 [Visual concept mockups](mockups/README.md) cover station overview, programme
 planning and a production editorial profile. These are design references. The [original-production desk](original-production.md)
-implements one format with cast/creative choices, timed booking, budget and a personal favour. The [programme-planning workspace](programme-planning.md) now implements a bounded
+implements one format with cast/creative choices, timed booking, budget and pooled Sway. The [programme-planning workspace](programme-planning.md) now implements a bounded
 subset: seven full days of quarter-hour planning, explicit runtimes, competitor
 lane, catalogue, contextual contracts/results and station finances. Other screens
 and publication/promotion/ad-share controls below remain proposals.

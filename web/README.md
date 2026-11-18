@@ -33,6 +33,6 @@ airing IDs, quarter-hour cadence, provisional reporting and implemented limits.
 From the root, use `npm --prefix web run preview -- --host 0.0.0.0` to listen
 on all interfaces. All changes remain in memory until reset/reload.
 
-The **Production** desk supports free drafts, participant booking, explicit personal
-promises/favours, timed completion and handoff to the programme library. See
+The **Production** desk supports free drafts, participant booking, explicit
+requests and pooled Sway, timed completion and handoff to the programme library. See
 [original production](../docs/original-production.md) for the bounded rules.

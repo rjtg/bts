@@ -48,7 +48,7 @@ Exit evidence: different audiences produce different outcomes; relevant reach af
 
 ### 2. Complete season loop
 
-Prototype cash and delivery contracts now exist in the bounded economy. The bounded [original-production experiment](original-production.md) now implements standalone discussion concepts, lead times, talent commitments, budget reservation and one personal favour, integrated with the browser planner. Rights acquisition, a research channel and a full season remain unimplemented. These short controlled comparisons do not complete this stage.
+Prototype cash and delivery contracts now exist in the bounded economy. The bounded [original-production experiment](original-production.md) now implements standalone discussion concepts, lead times, talent commitments, budget reservation and pooled Sway requests and spending, integrated with the browser planner. Rights acquisition, a research channel and a full season remain unimplemented. These short controlled comparisons do not complete this stage.
 
 Exit evidence: obligations resolve correctly; production tradeoffs matter; at least one useful audience opportunity can be discovered; multiple plausible strategies survive under appropriate conditions.
 

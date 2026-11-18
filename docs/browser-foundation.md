@@ -5,7 +5,7 @@ the CLI remains a developer tool. The first fourteen-slot integration harness
 has been replaced by the [programme-planning workspace](programme-planning.md).
 That specification documents the current seven-day scenario, explicit runtimes,
 15-minute ticks, processing cadence and observation boundary. [Original production](original-production.md)
-adds the bounded studio workflow and current protocol v3. Protocols v1/v2 are
+adds the bounded studio workflow and current protocol v4. Protocols v1/v2/v3 are
 no longer supported.
 
 ## Architecture
@@ -20,7 +20,7 @@ enter the simulation.
 `bts-web::Session` owns one Rust planner/simulation per game session. It exposes
 `new`, `execute(Command)`, `dispatch_json(&str)` and `report()`. The wasm-bindgen
 ABI provides `new WebSession()`, `session.dispatch(json)`, `session.free()` and
-`api_version()` (3). Clone/apply/observe/commit keeps rejected commands atomic.
+`api_version()` (4). Clone/apply/observe/commit keeps rejected commands atomic.
 TypeScript owns controls and formatting, not simulation or accounting.
 
 Player observations are constructed from a whitelist, separately from developer
@@ -80,7 +80,6 @@ browser bundle. Uploading a bundle is not deploying it. The committed
 local results; the [planning specification](programme-planning.md) distinguishes
 implemented behaviour from remaining proposals and limitations.
 
-The [production evidence](../contrib/original-production/README.md) includes actual
+The [current Sway evidence](../contrib/pooled-sway/README.md) includes actual
 Chromium workflow/native parity results and controlled public-report comparisons.
-Production observations disclose choices, fees, reservations, progress and personal
-promises, but exclude precise talent craft/fit and generated execution.
+Production observations disclose choices, fees, reservations, progress, production requests and the pooled Sway history, but exclude precise talent craft/fit and generated execution.

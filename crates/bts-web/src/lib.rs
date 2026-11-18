@@ -4,7 +4,10 @@ pub mod protocol;
 pub mod scenario;
 
 use bts_sim::economy::{Account, AudienceCommitment, Contract, ContractStatus, LedgerReason};
-use bts_sim::planning::production::{Concept, FavourId, PersonId, ProductionId, RequestId, Role};
+use bts_sim::planning::production::{
+    Concept, PersonId, ProductionId, RequestId, Role, SwayReason, COOPERATION_COST,
+    PARTICIPATION_COST,
+};
 use bts_sim::planning::{AiringId, PlanError, Planner, PlanningOffer};
 use bts_sim::{BrandId, ProgrammeId, SimTick};
 use protocol::*;
@@ -69,7 +72,7 @@ impl Session {
             )),
             Ok(request) if request.api_version != API_VERSION => Err(PlayerError::new(
                 "unsupported_version",
-                "This adapter supports api_version 3.",
+                "This adapter supports api_version 4.",
             )),
             Ok(request) => self.execute(request.command),
         };
@@ -107,13 +110,15 @@ impl Session {
             Command::BookProduction {
                 production_id,
                 promise_request,
-                call_favour,
+                exceptional_person,
+                smooth_cooperation,
             } => self
                 .planner
                 .book_production(
                     ProductionId(production_id),
                     promise_request.map(RequestId),
-                    call_favour.map(FavourId),
+                    exceptional_person.map(PersonId),
+                    smooth_cooperation,
                 )
                 .map_err(player_error)?,
             Command::Reset {} => {
@@ -278,7 +283,7 @@ impl Session {
                     fee: p.fee.0.to_string(),
                     description: p.description.clone(),
                     normal_until_tick: p.normal_until.0,
-                    favour_from_tick: p.favour_from.map(|t| t.0),
+                    negotiable_from_tick: p.negotiable_from.map(|t| t.0),
                 })
                 .collect(),
             projects: state
@@ -299,30 +304,49 @@ impl Session {
                     programme: p.programme.map(|id| id.0),
                     booked_at: p.booked_at.map(|t| t.0),
                     promised_request: p.promised_request.map(|id| id.0),
-                    called_favour: p.called_favour.map(|id| id.0),
+                    exceptional_person: p.exceptional_person.map(|id| id.0),
+                    smooth_cooperation: p.smooth_cooperation,
                 })
                 .collect(),
-            request: state.request().map(|r| RequestInfo {
-                id: r.id.0,
-                person: r.person.0,
-                co_guest: r.co_guest.0,
-                statement: r.statement.clone(),
-                promise: r.promise.as_ref().map(|p| PromiseInfo {
-                    production_id: p.production.0,
-                    promised_at: p.promised_at.0,
-                    fulfilled_at: p.fulfilled_at.map(|t| t.0),
-                    earned_favour: p.earned_favour.map(|id| id.0),
-                }),
-            }),
-            favours: state
-                .favours()
-                .map(|f| FavourInfo {
-                    id: f.id.0,
-                    owed_by: f.owed_by.0,
-                    earned_from: f.earned_from.0,
-                    earned_at: f.earned_at.0,
-                    called_for: f.called_for.map(|id| id.0),
-                    called_at: f.called_at.map(|t| t.0),
+            requests: state
+                .requests()
+                .map(|r| RequestInfo {
+                    id: r.id.0,
+                    proposer: r.proposer.0,
+                    reward: r.reward,
+                    achievement: r.condition.achievement(),
+                    statement: r.statement.clone(),
+                    promise: r.promise.as_ref().map(|p| PromiseInfo {
+                        production_id: p.production.0,
+                        promised_at: p.promised_at.0,
+                        fulfilled_at: p.fulfilled_at.map(|t| t.0),
+                    }),
+                })
+                .collect(),
+            sway_balance: state.sway(),
+            participation_cost: PARTICIPATION_COST,
+            cooperation_cost: COOPERATION_COST,
+            sway_history: state
+                .sway_history()
+                .iter()
+                .map(|e| SwayHistoryInfo {
+                    tick: e.at.0,
+                    production_id: e.production.0,
+                    change: e.change,
+                    balance: e.balance,
+                    kind: match e.reason {
+                        SwayReason::RequestReward(_) => "request_reward",
+                        SwayReason::ExceptionalParticipation(_) => "exceptional_participation",
+                        SwayReason::Cooperation => "cooperation",
+                    },
+                    request_id: match e.reason {
+                        SwayReason::RequestReward(id) => Some(id.0),
+                        _ => None,
+                    },
+                    person_id: match e.reason {
+                        SwayReason::ExceptionalParticipation(id) => Some(id.0),
+                        _ => None,
+                    },
                 })
                 .collect(),
         }

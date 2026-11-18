@@ -125,7 +125,7 @@ That milestone added no publication, promotion, campaign shares or research.
 
 ## Bounded original production
 
-Implemented in `bts-sim::planning::production`: typed people/projects/requests/favours,
+Implemented in `bts-sim::planning::production`: typed people/projects/requests and pooled Sway,
 participant intervals, immutable booked concepts and deterministic completion.
 `EconomyState` owns separate production escrow and expense accounts. Drafting is
 free; booking reserves the entire integer budget; recording spends it once.
@@ -133,10 +133,10 @@ The planner processes recording boundaries during ordinary tick advancement,
 then inserts each completed standalone programme once, with audience familiarity
 initialised to zero. Originals use the existing pricing/broadcast/reception path.
 
-The adapter’s protocol **v3** adds explicit concept/book/revise/discard commands
+The adapter’s protocol **v4** adds explicit concept/book/revise/discard commands
 and whitelisted production observations, independently of developer JSON. Exact
 craft, subject fit and resulting execution remain internal. The TypeScript studio
 module renders choices/status and dispatches Rust commands; it calculates no
-quality, commitments or money. One recorded person-specific promise/reward/call
-experiment does not establish a general relationship or pooled Sway system.
+quality, commitments or money. Two finite request/reward paths and a pooled earning/spending ledger implement
+the bounded [Sway economy](pooled-sway.md), without a general quest or relationship framework.
 See [production semantics](original-production.md) for equations and limitations.

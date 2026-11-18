@@ -51,19 +51,21 @@ export function initialiseProduction(ui: Callbacks) {
     }
     rosterPreview();
     element<HTMLButtonElement>('create-production').disabled = report.now_tick >= report.end_tick;
-    const favourPanel = element('personal-favour'); favourPanel.replaceChildren(node('h3', 'A personal favour'));
-    const request = report.production.request;
-    if (request) {
-      favourPanel.append(node('p', `${personName(request.person)}: “${request.statement}”`));
-      if (!request.promise) favourPanel.append(node('p', 'One request, one reward. Explicitly promise it when booking the requested pair.', 'muted small'));
-      else {
-        const promise = request.promise;
-        favourPanel.append(node('p', `Promised for production #${promise.production_id} at ${ui.stamp(promise.promised_at)}.`));
-        favourPanel.append(node('p', promise.fulfilled_at === null ? 'Not fulfilled yet: the guests must record together.' : `Fulfilled at ${ui.stamp(promise.fulfilled_at)}. ${personName(request.person)} owes one personal favour.`));
-      }
+    const swayPanel = element('sway-panel'); swayPanel.replaceChildren(node('h3', `Pooled Sway · ${report.production.sway_balance}`));
+    swayPanel.append(node('p', 'Station-wide social capital. Earn from explicit completed requests; spend on anyone’s negotiable participation or on cooperation. Amounts and effects are provisional.', 'small muted'));
+    for (const request of report.production.requests) {
+      const card = node('article', '', 'sway-request'); card.id = `request-${request.id}`;
+      card.append(node('strong', `${personName(request.proposer)} · request #${request.id} · reward ${request.reward} Sway`), node('p', request.statement));
+      card.append(node('p', `Achievement required: ${request.achievement.replaceAll('_', ' ')}. Booking alone earns nothing.`, 'small'));
+      if (!request.promise) card.append(node('p', 'Available: explicitly promise this request when booking a matching concept.', 'muted small'));
+      else card.append(node('p', request.promise.fulfilled_at === null ? `Promised for production #${request.promise.production_id}; not fulfilled yet.` : `Fulfilled at ${ui.stamp(request.promise.fulfilled_at)} for production #${request.promise.production_id}. Reward earned once.`));
+      swayPanel.append(card);
     }
-    for (const favour of report.production.favours) favourPanel.append(node('p', favour.called_for === null ? `Favour #${favour.id}: ${personName(favour.owed_by)} can make time for one later production.` : `Favour #${favour.id} called in for production #${favour.called_for} at ${ui.stamp(favour.called_at!)}.`));
-    favourPanel.append(node('small', 'Person-specific experiment · no pooled Sway, fee discount or quality bonus.'));
+    if (report.production.sway_history.length) {
+      const history = node('ul'); history.id = 'sway-history';
+      for (const entry of report.production.sway_history) history.append(node('li', `${ui.stamp(entry.tick)} · production #${entry.production_id} · ${entry.kind.replaceAll('_', ' ')}${entry.person_id === null ? '' : `: ${personName(entry.person_id)}`}${entry.request_id === null ? '' : ` #${entry.request_id}`} · ${entry.change > 0 ? '+' : ''}${entry.change} Sway · balance ${entry.balance}`));
+      swayPanel.append(node('h4', 'Sway history'), history);
+    }
     const projects = element('production-projects'); projects.replaceChildren();
     if (!report.production.projects.length) projects.append(node('p', 'No production concepts yet. Review a concept to see its dates and fees before booking.', 'muted'));
     for (const p of report.production.projects) {
@@ -72,17 +74,21 @@ export function initialiseProduction(ui: Callbacks) {
       card.append(node('p', `${personName(p.host)} with ${p.guests.map(personName).join(' and ')}.`));
       card.append(node('p', `${p.subject.replace('_', ' ')} · ${p.tone} · budget ${ui.money(p.budget)} credits, including ${ui.money(p.fees)} in fees.`));
       card.append(node('p', `Record ${ui.stamp(p.record_at)}–${ui.stamp(p.recording_end)}. Library ready ${ui.stamp(p.ready_at)}.`, 'small muted'));
+      if (p.exceptional_person !== null) card.append(node('p', `Exceptional participation secured: ${personName(p.exceptional_person)}. Fees paid from the production budget.`, 'small'));
+      if (p.smooth_cooperation) card.append(node('p', 'Cooperation smoothing applied: tone-coordination shortfall halved. Craft and topic limitations remain; execution is unknown.', 'small'));
       const buttons = node('div', '', 'form-row');
       if (p.phase === 'draft') {
-        const promise = node('input'); promise.type = 'checkbox'; promise.id = `promise-${p.id}`;
-        if (request && !request.promise && p.guests.includes(request.person)) {
-          const label = node('label', '', 'check-label'); label.append(promise, node('span', `Promise ${personName(request.person)}’s request for ${personName(request.co_guest)} as co-guest`)); card.append(label);
-        }
-        const eligible = report.production.favours.filter(f => f.called_for === null && p.guests.includes(f.owed_by));
-        const favour = node('select'); favour.id = `call-favour-${p.id}`;
-        const none = node('option', 'Keep personal favour'); none.value = ''; favour.append(none);
-        if (eligible.length) { favour.append(...eligible.map(f => option(f.id, `Call ${personName(f.owed_by)}’s favour #${f.id}`))); const label = node('label', 'Personal favour for this booking'); label.append(favour); card.append(label); }
-        buttons.append(action(`Book production #${p.id}`, () => ui.send({ type: 'book_production', production_id: p.id, promise_request: promise.checked && request ? request.id : null, call_favour: favour.value === '' ? null : Number(favour.value) }), ''));
+        const promise = node('select'); promise.id = `request-choice-${p.id}`;
+        const none = node('option', 'No request promised'); none.value = ''; promise.append(none);
+        promise.append(...report.production.requests.filter(r => !r.promise).map(r => option(r.id, `Request #${r.id} · ${personName(r.proposer)} · ${r.reward} Sway`)));
+        const promiseLabel = node('label', 'Explicit request for this production'); promiseLabel.append(promise); card.append(promiseLabel);
+        const exceptional = node('select'); exceptional.id = `exceptional-${p.id}`;
+        const normal = node('option', 'Use normal availability'); normal.value = ''; exceptional.append(normal);
+        exceptional.append(...report.production.people.filter(t => [p.host, ...p.guests].includes(t.id) && t.negotiable_from_tick !== null && p.record_at >= t.negotiable_from_tick && p.recording_end > t.normal_until_tick).map(t => option(t.id, `Negotiate ${t.name} · ${report.production.participation_cost} Sway`)));
+        const exceptionalLabel = node('label', 'Exceptional participation · fees and conflicts still apply'); exceptionalLabel.append(exceptional); card.append(exceptionalLabel);
+        const smooth = node('input'); smooth.type = 'checkbox'; smooth.id = `smooth-${p.id}`;
+        const smoothLabel = node('label', '', 'check-label'); smoothLabel.append(smooth, node('span', `Smooth cooperation · ${report.production.cooperation_cost} Sway · halve tone-coordination shortfall; no guarantee of creative success`)); card.append(smoothLabel);
+        buttons.append(action(`Book production #${p.id}`, () => ui.send({ type: 'book_production', production_id: p.id, promise_request: promise.value === '' ? null : Number(promise.value), exceptional_person: exceptional.value === '' ? null : Number(exceptional.value), smooth_cooperation: smooth.checked }), ''));
         buttons.append(action('Edit draft', () => edit(p)), action('Discard draft', () => ui.send({ type: 'discard_production', production_id: p.id })));
       } else if (p.phase === 'completed') {
         card.append(node('p', `Completed programme #${p.programme} is in your library. Recording budget was spent once; each broadcast has its own airing cost.`, 'muted small'));

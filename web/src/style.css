@@ -577,9 +577,9 @@ input:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
 .production-roster { display:grid; gap:.5rem; font-size:.75rem; }
 .production-roster div { border-left:2px solid #8aa582; padding-left:.6rem; }
 .production-roster p { margin:.2rem 0; color:#bbcbc0; }
-.personal-favour { padding:.85rem; border:1px solid #bc9b61; background:#2e3028; margin-bottom:1rem; }
-.personal-favour h3,.production-card h3,.production-form h3 { font-size:1.2rem; }
-.personal-favour p,.production-card p { font-size:.85rem; }
+.sway-panel { padding:.85rem; border:1px solid #bc9b61; background:#2e3028; margin-bottom:1rem; }
+.sway-panel h3,.production-card h3,.production-form h3 { font-size:1.2rem; }
+.sway-panel p,.production-card p { font-size:.85rem; }
 .production-projects { display:grid; gap:.8rem; }
 .production-card { border:1px solid #7f998a; background:#132d38; padding:.9rem; scroll-margin-top:1rem; }
 .production-card .panel-heading { margin-bottom:.5rem; }
@@ -594,3 +594,6 @@ input:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
 .production-reserve-note { grid-column:1 / -1; }
 @media(max-width:780px) { .finance-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 .production-card h3 { min-width:0; overflow-wrap:anywhere; }
+
+.sway-request { border-top: 1px solid var(--line); padding-top: .7rem; margin-top: .7rem; }
+#sway-history { padding-left: 1.2rem; font-size: .85rem; line-height: 1.6; }

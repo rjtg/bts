@@ -203,7 +203,7 @@ function render(next: Report): void {
 function send(command: Command): void {
   try {
     const previousIds = report?.schedule.map(a => a.airing_id) ?? [];
-    const response: Response = JSON.parse(session.dispatch(JSON.stringify({ api_version: 3, command })));
+    const response: Response = JSON.parse(session.dispatch(JSON.stringify({ api_version: 4, command })));
     if (response.status === 'error') { error.textContent = `${response.error.code}: ${response.error.message}`; error.hidden = false; return; }
     error.hidden = true; productionUi?.commandSucceeded(command);
     if (command.type === 'place') {
@@ -222,7 +222,7 @@ function jump(tickInDay: number): void {
 function dayChanged(): void { viewedDay = Number(select('day').value); button('previous-day').disabled = viewedDay === 0; button('next-day').disabled = viewedDay === 6; renderTimeline(); }
 async function start(): Promise<void> {
   try {
-    await init(); if (api_version() !== 3) throw new Error('Unsupported player protocol version');
+    await init(); if (api_version() !== 4) throw new Error('Unsupported player protocol version');
     for (const id of ['day', 'place-day', 'move-day']) select(id).replaceChildren(...Array.from({ length: 7 }, (_, i) => option(i, `Day ${i + 1}`)));
     for (const id of ['place-time', 'move-time']) select(id).replaceChildren(...Array.from({ length: 96 }, (_, i) => option(i, time(i))));
     select('place-time').value = '72';

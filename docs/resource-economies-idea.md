@@ -25,12 +25,16 @@ talk-show guests, casting an actor, realising a screenplay or accommodating an
 anchor's requested tone. Fulfilling these earns Sway that can be spent elsewhere,
 including smoothing cooperation within productions. No individual creditor
 restricts redemption. Requests should create meaningful costs or constraints;
-ordinary paid work is not automatically a favour.
+ordinary paid work earns no Sway automatically. Future requests can support
+comebacks, opportunities for prodigies, excluded guests, neglected topics and
+ambitious adaptations of supposedly unfilmable novels. Those require their own
+concrete achievement conditions and are outside the implemented discussion slice.
 
-Open: amounts, fulfilment conditions, effective uses and repeat-reward safeguards.
-The [implemented production experiment](original-production.md) currently awards
-one named guest's personal favour. That behaviour remains documented as an
-implementation limit; pooled Sway is the intended direction.
+Implemented bounded subset: [pooled Sway](pooled-sway.md) replaces the personal
+favour prototype with two finite discussion-production requests, once-only
+achievement rewards, a station balance/history and two paid uses: exceptional
+participation and cooperation smoothing. Amounts and effects are provisional.
+Broader request types, rates and uses remain open.
 
 ## Glamour
 
@@ -80,4 +84,5 @@ No generic money exchange or interchangeable resource bonuses. Work through
 a favour/Sway example, an award/Glamour cycle and a reporting/opinion/loyalty
 sequence before choosing formulas. Preserve the distinction between actual
 world state, editorial knowledge, public perception and player evidence.
-These resource systems remain unimplemented.
+Only the bounded Sway subset is implemented. Glamour, Credibility, Backing and
+the wider editorial resource loop remain unimplemented.

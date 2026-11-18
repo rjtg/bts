@@ -78,7 +78,7 @@ Proposed broader workflow: concept → development → optional pilot → produc
 
 Implemented subset: [one standalone discussion format](original-production.md),
 with free concept drafts, fixed recording/post-production time, paid talent
-commitments, completed library works and one explicit person-specific favour.
+commitments, completed library works and finite requests and pooled Sway.
 Recurring editions, pilots, careers and general relationship effects remain proposals.
 
 A project specifies intended format, themes, tone, ambition, people, budget allocation, time, and production demands. Role-specific craft, task fit, relationships, and resources affect different execution dimensions.
@@ -97,7 +97,7 @@ Evidence: estimates, staff reports, milestones, pilots, and later audience respo
 
 ## Resource generation and editorial outcomes
 
-Agreed causal direction, unimplemented: see [station resources](design.md#station-resources-and-editorial-capital)
+Broader causal direction (bounded Sway subset implemented): see [station resources](design.md#station-resources-and-editorial-capital)
 and [resource economies](resource-economies-idea.md).
 
 Resolve fulfilled requests into pooled Sway once; spending is not restricted to
@@ -294,3 +294,7 @@ Before expanding scope, investigate:
 - Developer explanations tracing surprising results while player evidence remains limited.
 
 Separate random streams or equivalent isolation are proposed so unrelated new random draws do not unnecessarily disrupt comparisons.
+
+Implemented Sway mechanics are documented in [pooled Sway](pooled-sway.md): two
+finite production requests, achievement-timed rewards and atomic booking uses.
+The broader resource directions above remain separate from these provisional rules.

@@ -1,5 +1,9 @@
 # Original-production evidence
 
+Historical protocol-v3 snapshot. The personal-favour behaviour shown here has
+been replaced by [pooled Sway](../pooled-sway/README.md); retained outputs are
+original milestone evidence, not current protocol fixtures.
+
 Implemented/verified locally 2026-11-18. These are outputs from the real Rust
 session and built Wasm browser, not mockup values. No deployment was performed.
 

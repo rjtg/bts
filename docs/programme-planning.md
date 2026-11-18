@@ -163,12 +163,12 @@ session namespaces/counters across reset, preventing accidental stale reuse.
 ## Browser protocol and observation boundary
 
 The planning revision replaced slot indices with airing IDs and explicit tick
-boundaries. Current protocol **v3** adds production commands; old versions are rejected. Authoritative
+boundaries. Current protocol **v4** includes production commands and pooled Sway; old versions are rejected. Authoritative
 Rust DTOs live in [`protocol.rs`](../crates/bts-web/src/protocol.rs); TypeScript
 mirrors only that player contract. There is no developer-export or save schema reuse.
 
 ```json
-{"api_version":3,"command":{"type":"place","programme":1,"start_tick":72,"advertiser":null}}
+{"api_version":4,"command":{"type":"place","programme":1,"start_tick":72,"advertiser":null}}
 ```
 
 | Command | Fields | Target |

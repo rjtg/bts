@@ -1,8 +1,8 @@
-//! Player protocol v3. These whitelisted DTOs deliberately do not serialize engine evidence.
+//! Player protocol v4. These whitelisted DTOs deliberately do not serialize engine evidence.
 use bts_sim::planning::production::{Subject, Tone};
 use serde::{Deserialize, Serialize};
 
-pub const API_VERSION: u32 = 3;
+pub const API_VERSION: u32 = 4;
 pub const REPORTING: &str = "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. One ad exposure opportunity per airing; delivery units are millionths of a relevant impression.";
 
 #[derive(Clone, Debug, Deserialize)]
@@ -29,7 +29,8 @@ pub enum Command {
     BookProduction {
         production_id: u32,
         promise_request: Option<u16>,
-        call_favour: Option<u32>,
+        exceptional_person: Option<u16>,
+        smooth_cooperation: bool,
     },
     Place {
         start_tick: u32,
@@ -251,8 +252,11 @@ pub struct ProductionView {
     pub post_ticks: u32,
     pub people: Vec<PersonInfo>,
     pub projects: Vec<ProductionInfo>,
-    pub request: Option<RequestInfo>,
-    pub favours: Vec<FavourInfo>,
+    pub requests: Vec<RequestInfo>,
+    pub sway_balance: u32,
+    pub participation_cost: u32,
+    pub cooperation_cost: u32,
+    pub sway_history: Vec<SwayHistoryInfo>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct PersonInfo {
@@ -262,7 +266,7 @@ pub struct PersonInfo {
     pub fee: String,
     pub description: String,
     pub normal_until_tick: u32,
-    pub favour_from_tick: Option<u32>,
+    pub negotiable_from_tick: Option<u32>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct ProductionInfo {
@@ -281,13 +285,15 @@ pub struct ProductionInfo {
     pub programme: Option<u16>,
     pub booked_at: Option<u32>,
     pub promised_request: Option<u16>,
-    pub called_favour: Option<u32>,
+    pub exceptional_person: Option<u16>,
+    pub smooth_cooperation: bool,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct RequestInfo {
     pub id: u16,
-    pub person: u16,
-    pub co_guest: u16,
+    pub proposer: u16,
+    pub reward: u32,
+    pub achievement: &'static str,
     pub statement: String,
     pub promise: Option<PromiseInfo>,
 }
@@ -296,14 +302,14 @@ pub struct PromiseInfo {
     pub production_id: u32,
     pub promised_at: u32,
     pub fulfilled_at: Option<u32>,
-    pub earned_favour: Option<u32>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
-pub struct FavourInfo {
-    pub id: u32,
-    pub owed_by: u16,
-    pub earned_from: u32,
-    pub earned_at: u32,
-    pub called_for: Option<u32>,
-    pub called_at: Option<u32>,
+pub struct SwayHistoryInfo {
+    pub tick: u32,
+    pub production_id: u32,
+    pub change: i32,
+    pub balance: u32,
+    pub kind: &'static str,
+    pub request_id: Option<u16>,
+    pub person_id: Option<u16>,
 }

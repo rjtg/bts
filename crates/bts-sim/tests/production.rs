@@ -12,7 +12,7 @@ fn planner() -> Planner {
     )
     .unwrap();
     let (roster, request) = demo_roster();
-    p.configure_production(roster, Some(request)).unwrap();
+    p.configure_production(roster, request).unwrap();
     p
 }
 fn concept() -> Concept {
@@ -39,7 +39,7 @@ fn complete_pipeline_reserves_spends_once_releases_work_then_broadcasts() {
     let id = p.create_production(concept()).unwrap();
     assert_eq!(p.state().economy().cash(MAIN), Some(Money(20000)));
     assert!(p.state().economy().ledger().is_empty());
-    p.book_production(id, None, None).unwrap();
+    p.book_production(id, None, None, false).unwrap();
     let work = p.production().project(id).unwrap().programme.unwrap();
     assert_eq!(p.state().economy().cash(MAIN), Some(Money(19000)));
     assert_eq!(p.state().economy().production_escrow(), 1000);
@@ -123,10 +123,10 @@ fn conflicting_talent_bookings_and_immutable_booked_projects_are_atomic() {
             ..concept()
         })
         .unwrap();
-    p.book_production(a, None, None).unwrap();
+    p.book_production(a, None, None, false).unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(b, None, None),
+        |p| p.book_production(b, None, None, false),
         "talent_conflict",
     );
     unchanged(
@@ -137,7 +137,7 @@ fn conflicting_talent_bookings_and_immutable_booked_projects_are_atomic() {
     unchanged(&mut p, |p| p.discard_production(a), "production_locked");
     unchanged(
         &mut p,
-        |p| p.book_production(a, None, None),
+        |p| p.book_production(a, None, None, false),
         "production_locked",
     );
     p.revise_production(
@@ -148,7 +148,7 @@ fn conflicting_talent_bookings_and_immutable_booked_projects_are_atomic() {
         },
     )
     .unwrap();
-    p.book_production(b, None, None).unwrap();
+    p.book_production(b, None, None, false).unwrap();
     assert_eq!(p.state().economy().cash(MAIN), Some(Money(18000)));
 }
 
@@ -217,112 +217,147 @@ fn budgets_roles_dates_and_missing_people_are_validated_without_mutation() {
         .unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(id, None, None),
+        |p| p.book_production(id, None, None, false),
         "insufficient_production_funds",
     );
     p.advance_to(SimTick(41)).unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(id, None, None),
+        |p| p.book_production(id, None, None, false),
         "invalid_recording_time",
     );
 }
 
-#[test]
-fn a_recorded_promise_earns_one_personal_favour_and_call_secures_later_participation() {
-    let mut p = planner();
-    let first = p.create_production(concept()).unwrap();
-    p.book_production(first, Some(RequestId(1)), None).unwrap();
-    let promise = p.production().request().unwrap().promise.as_ref().unwrap();
-    assert_eq!(promise.production, first);
-    assert_eq!(promise.promised_at, SimTick(0));
-    assert!(promise.fulfilled_at.is_none());
-    assert_eq!(p.production().favours().count(), 0);
-    p.advance_to(SimTick(43)).unwrap();
-    assert_eq!(p.production().favours().count(), 0);
-    p.advance_to(SimTick(44)).unwrap();
-    assert_eq!(p.production().favours().count(), 1);
-    let favour = p.production().favours().next().unwrap().clone();
-    assert_eq!(favour.owed_by, PersonId(3));
-    assert_eq!(favour.earned_at, SimTick(44));
+fn earn(p: &mut Planner) {
+    let id = p.create_production(concept()).unwrap();
+    p.book_production(id, Some(RequestId(1)), None, false)
+        .unwrap();
     p.advance_to(SimTick(52)).unwrap();
-    assert_eq!(p.production().favours().count(), 1);
-    let later = p
-        .create_production(Concept {
-            title: "A later conversation".into(),
-            record_at: SimTick(232),
-            guests: [PersonId(3), PersonId(6)],
-            ..concept()
-        })
+    assert_eq!(p.production().sway(), 4);
+}
+fn later() -> Concept {
+    Concept {
+        host: PersonId(2),
+        guests: [PersonId(5), PersonId(6)],
+        record_at: SimTick(232),
+        subject: Subject::Entertainment,
+        tone: Tone::Calm,
+        ..concept()
+    }
+}
+#[test]
+fn recording_quest_earns_once_and_pool_secures_a_different_person_with_cooperation() {
+    let mut p = planner();
+    let total = p.state().economy().total_money();
+    let first = p.create_production(concept()).unwrap();
+    p.book_production(first, Some(RequestId(1)), None, false)
         .unwrap();
-    unchanged(
-        &mut p,
-        |p| p.book_production(later, None, None),
-        "favour_required",
-    );
-    p.book_production(later, None, Some(favour.id)).unwrap();
-    let used = p.production().favours().next().unwrap();
-    assert_eq!(used.called_for, Some(later));
-    assert_eq!(used.called_at, Some(SimTick(52)));
-    let third = p
-        .create_production(Concept {
-            record_at: SimTick(240),
-            ..concept()
-        })
-        .unwrap();
-    unchanged(
-        &mut p,
-        |p| p.book_production(third, None, Some(favour.id)),
-        "favour_already_called",
-    );
-    p.advance_to(SimTick(244)).unwrap();
-    assert_eq!(
-        p.production().project(later).unwrap().phase,
-        Phase::Completed
-    );
-    assert_eq!(p.production().favours().count(), 1);
+    assert_eq!(p.production().sway(), 0);
+    p.advance_to(SimTick(43)).unwrap();
+    assert_eq!(p.production().sway(), 0);
+    p.advance_to(SimTick(44)).unwrap();
+    assert_eq!(p.production().sway(), 4);
     assert_eq!(
         p.production()
-            .request()
+            .requests()
+            .next()
             .unwrap()
             .promise
             .as_ref()
             .unwrap()
-            .earned_favour,
-        Some(favour.id)
+            .fulfilled_at,
+        Some(SimTick(44))
     );
+    p.advance_to(SimTick(52)).unwrap();
+    assert_eq!(p.production().sway_history().len(), 1);
+    let second = p.create_production(later()).unwrap();
+    unchanged(
+        &mut p,
+        |p| p.book_production(second, None, None, false),
+        "exceptional_participation_required",
+    );
+    p.book_production(second, None, Some(PersonId(5)), true)
+        .unwrap();
+    assert_eq!(p.production().sway(), 0);
+    assert_eq!(p.production().sway_history().len(), 3);
+    assert_eq!(p.state().economy().cash(MAIN), Some(Money(18000)));
+    assert!(matches!(
+        p.production().sway_history()[1].reason,
+        SwayReason::ExceptionalParticipation(PersonId(5))
+    ));
+    unchanged(
+        &mut p,
+        |p| p.book_production(second, None, Some(PersonId(5)), true),
+        "production_locked",
+    );
+    p.advance_to(SimTick(244)).unwrap();
+    assert_eq!(p.production().sway(), 0);
+    assert_eq!(p.state().economy().total_money(), total);
+    let mut balance = 0_i64;
+    for entry in p.production().sway_history() {
+        balance += i64::from(entry.change);
+        assert_eq!(balance, i64::from(entry.balance));
+        assert!(balance >= 0);
+    }
 }
-
 #[test]
-fn ordinary_work_wrong_pair_and_repeat_promises_cannot_farm_or_transfer_rewards() {
+fn second_quest_requires_completed_calm_everyday_work_and_both_requests_are_finite() {
     let mut p = planner();
-    let wrong = p
+    let wrong = p.create_production(later()).unwrap();
+    unchanged(
+        &mut p,
+        |p| p.book_production(wrong, Some(RequestId(2)), Some(PersonId(5)), false),
+        "promise_mismatch",
+    );
+    p.discard_production(wrong).unwrap();
+    let id = p
         .create_production(Concept {
-            guests: [PersonId(3), PersonId(5)],
+            guests: [PersonId(4), PersonId(6)],
+            subject: Subject::EverydayLife,
+            ..concept()
+        })
+        .unwrap();
+    p.book_production(id, Some(RequestId(2)), None, false)
+        .unwrap();
+    p.advance_to(SimTick(44)).unwrap();
+    assert_eq!(p.production().sway(), 0);
+    p.advance_to(SimTick(51)).unwrap();
+    assert_eq!(p.production().sway(), 0);
+    p.advance_to(SimTick(52)).unwrap();
+    assert_eq!(p.production().sway(), 3);
+    let repeat = p
+        .create_production(Concept {
+            record_at: SimTick(60),
+            guests: [PersonId(4), PersonId(6)],
+            subject: Subject::EverydayLife,
             ..concept()
         })
         .unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(wrong, Some(RequestId(1)), None),
-        "promise_mismatch",
+        |p| p.book_production(repeat, Some(RequestId(2)), None, false),
+        "request_already_promised",
     );
-    p.discard_production(wrong).unwrap();
-    let ordinary = p.create_production(concept()).unwrap();
-    p.book_production(ordinary, None, None).unwrap();
+    p.book_production(repeat, None, None, false).unwrap();
+    p.advance_to(SimTick(80)).unwrap();
+    assert_eq!(p.production().sway(), 3);
+    assert_eq!(p.production().sway_history().len(), 1);
+}
+#[test]
+fn ordinary_casting_does_not_reward_and_mismatched_or_repeated_promises_fail() {
+    let mut p = planner();
+    let id = p.create_production(concept()).unwrap();
+    p.book_production(id, None, None, false).unwrap();
     p.advance_to(SimTick(52)).unwrap();
-    assert_eq!(p.production().favours().count(), 0);
-    assert!(p.production().request().unwrap().promise.is_none());
+    assert_eq!(p.production().sway(), 0);
     let promised = p
         .create_production(Concept {
-            record_at: SimTick(56),
+            record_at: SimTick(60),
             ..concept()
         })
         .unwrap();
-    p.book_production(promised, Some(RequestId(1)), None)
+    p.book_production(promised, Some(RequestId(1)), None, false)
         .unwrap();
-    p.advance_to(SimTick(68)).unwrap();
-    let favour = p.production().favours().next().unwrap().id;
     let repeat = p
         .create_production(Concept {
             record_at: SimTick(80),
@@ -331,37 +366,142 @@ fn ordinary_work_wrong_pair_and_repeat_promises_cannot_farm_or_transfer_rewards(
         .unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(repeat, Some(RequestId(1)), None),
+        |p| p.book_production(repeat, Some(RequestId(1)), None, false),
         "request_already_promised",
     );
-    p.book_production(repeat, None, None).unwrap();
     p.advance_to(SimTick(96)).unwrap();
-    assert_eq!(p.production().favours().count(), 1);
-    let another = p
+    assert_eq!(p.production().sway(), 4);
+    assert_eq!(p.production().sway_history().len(), 1);
+}
+#[test]
+fn sway_cannot_bypass_fees_conflicts_or_nonnegotiable_dates_and_failures_are_atomic() {
+    let mut p = planner();
+    let id = p.create_production(later()).unwrap();
+    unchanged(
+        &mut p,
+        |p| p.book_production(id, None, Some(PersonId(5)), true),
+        "insufficient_sway",
+    );
+    p.discard_production(id).unwrap();
+    earn(&mut p);
+    let id = p.create_production(later()).unwrap();
+    unchanged(
+        &mut p,
+        |p| p.book_production(id, None, Some(PersonId(3)), false),
+        "participation_mismatch",
+    );
+    p.book_production(id, None, Some(PersonId(5)), false)
+        .unwrap();
+    let conflict = p.create_production(later()).unwrap();
+    unchanged(
+        &mut p,
+        |p| p.book_production(conflict, None, Some(PersonId(5)), true),
+        "talent_conflict",
+    );
+    let expensive = p
         .create_production(Concept {
-            guests: [PersonId(5), PersonId(6)],
+            budget: Money(20000),
             record_at: SimTick(240),
-            ..concept()
+            ..later()
         })
         .unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(another, None, Some(favour)),
-        "favour_wrong_person",
+        |p| p.book_production(expensive, None, Some(PersonId(5)), false),
+        "insufficient_production_funds",
     );
+    let next = p
+        .create_production(Concept {
+            record_at: SimTick(244),
+            ..later()
+        })
+        .unwrap();
+    unchanged(
+        &mut p,
+        |p| p.book_production(next, None, Some(PersonId(5)), true),
+        "insufficient_sway",
+    );
+    // A listed person can still have a hard, non-negotiable unavailable window.
+    let mut hard = planner();
+    let (mut roster, requests) = demo_roster();
+    roster
+        .iter_mut()
+        .find(|p| p.id == PersonId(5))
+        .unwrap()
+        .negotiable_from = None;
+    hard.configure_production(roster, requests).unwrap();
+    earn(&mut hard);
+    let id = hard.create_production(later()).unwrap();
+    unchanged(
+        &mut hard,
+        |p| p.book_production(id, None, Some(PersonId(5)), false),
+        "participation_not_negotiable",
+    );
+    let ordinary = hard
+        .create_production(Concept {
+            record_at: SimTick(60),
+            ..concept()
+        })
+        .unwrap();
+    unchanged(
+        &mut hard,
+        |p| p.book_production(ordinary, None, Some(PersonId(3)), false),
+        "participation_not_needed",
+    );
+}
+#[test]
+fn cooperation_has_a_bounded_concrete_effect_without_changing_fees_or_guaranteeing_quality() {
+    let mut a = planner();
+    earn(&mut a);
+    let mut b = a.clone();
+    let c = Concept {
+        host: PersonId(2),
+        guests: [PersonId(5), PersonId(6)],
+        tone: Tone::Calm,
+        record_at: SimTick(60),
+        ..concept()
+    };
+    let x = a.create_production(c.clone()).unwrap();
+    let y = b.create_production(c).unwrap();
+    a.book_production(x, None, None, false).unwrap();
+    b.book_production(y, None, None, true).unwrap();
+    a.advance_to(SimTick(72)).unwrap();
+    b.advance_to(SimTick(72)).unwrap();
+    let work = |p: &Planner| p.world().programmes.last().unwrap().clone();
+    let plain = work(&a);
+    let smooth = work(&b);
+    assert!(smooth.execution > plain.execution);
+    assert!(smooth.execution - plain.execution <= 0.05);
+    assert!(smooth.execution < 0.85); // weak topic fit is not rescued by cooperation
+    assert_eq!(plain.cast_appeal, smooth.cast_appeal);
+    assert_eq!(a.state().economy(), b.state().economy());
+    assert_eq!(a.production().sway(), 4);
+    assert_eq!(b.production().sway(), 2);
 }
 
 #[test]
-fn ticking_in_batches_or_individually_reproduces_production_money_and_favours() {
+fn ticking_in_batches_or_individually_reproduces_production_money_and_sway() {
     let mut a = planner();
     let id = a.create_production(concept()).unwrap();
-    a.book_production(id, Some(RequestId(1)), None).unwrap();
+    a.book_production(id, Some(RequestId(1)), None, false)
+        .unwrap();
     let total = a.state().economy().total_money();
     let mut b = a.clone();
     a.advance_to(SimTick(96)).unwrap();
     for tick in 1..=96 {
         b.advance_to(SimTick(tick)).unwrap();
         assert_eq!(b.state().economy().total_money(), total);
+    }
+    assert_eq!(a.state(), b.state());
+    assert_eq!(a.production(), b.production());
+    assert_eq!(a.world(), b.world());
+    let x = a.create_production(later()).unwrap();
+    let y = b.create_production(later()).unwrap();
+    a.book_production(x, None, Some(PersonId(5)), true).unwrap();
+    b.book_production(y, None, Some(PersonId(5)), true).unwrap();
+    a.advance_to(SimTick(244)).unwrap();
+    for tick in 97..=244 {
+        b.advance_to(SimTick(tick)).unwrap();
     }
     assert_eq!(a.state(), b.state());
     assert_eq!(a.production(), b.production());
@@ -374,14 +514,14 @@ fn production_reserves_cash_before_broadcast_funding_and_ad_refunds_still_conser
     w.stations[0].initial_cash = Money(1000);
     let mut p = Planner::new(w, Parameters::default(), MAIN, SimTick(672), &[]).unwrap();
     let (r, q) = demo_roster();
-    p.configure_production(r, Some(q)).unwrap();
+    p.configure_production(r, q).unwrap();
     let total = p.state().economy().total_money();
     let airing = p.place(ProgrammeId(1), SimTick(72), Some(SNACKS)).unwrap();
     let quote = p.quote(airing).unwrap();
     let payment = quote.offer.payment;
     let contract = p.accept(&quote).unwrap();
     let project = p.create_production(concept()).unwrap();
-    p.book_production(project, None, None).unwrap();
+    p.book_production(project, None, None, false).unwrap();
     assert_eq!(p.state().economy().cash(MAIN), Some(Money(0)));
     p.advance_to(SimTick(96)).unwrap();
     assert!(p.airing(airing).unwrap().result.as_ref().unwrap().off_air);
@@ -408,7 +548,7 @@ fn production_reserves_cash_before_broadcast_funding_and_ad_refunds_still_conser
 fn produce_and_air(c: Concept) -> (Planner, ProductionId) {
     let mut p = planner();
     let id = p.create_production(c).unwrap();
-    p.book_production(id, None, None).unwrap();
+    p.book_production(id, None, None, false).unwrap();
     p.advance_to(SimTick(52)).unwrap();
     let work = p.production().project(id).unwrap().programme.unwrap();
     p.place(work, SimTick(72), None).unwrap();
@@ -446,12 +586,10 @@ fn creative_and_talent_choices_change_audiences_costs_and_experienced_satisfacti
     let mut mismatch = planner();
     let (mut roster, request) = demo_roster();
     roster[0].subject_fit[0] = 0.05;
-    mismatch
-        .configure_production(roster, Some(request))
-        .unwrap();
+    mismatch.configure_production(roster, request).unwrap();
     let run = |p: &mut Planner| {
         let id = p.create_production(concept()).unwrap();
-        p.book_production(id, None, None).unwrap();
+        p.book_production(id, None, None, false).unwrap();
         p.advance_to(SimTick(52)).unwrap();
         let work = p.production().project(id).unwrap().programme.unwrap();
         p.place(work, SimTick(72), None).unwrap();
@@ -469,4 +607,41 @@ fn creative_and_talent_choices_change_audiences_costs_and_experienced_satisfacti
             .output
     };
     assert!(run(&mut expert) > run(&mut mismatch) + 0.04);
+}
+
+#[test]
+fn invalid_request_configuration_cannot_create_infinite_or_duplicate_rewards() {
+    let mut p = planner();
+    let (roster, requests) = demo_roster();
+    let mut duplicate = requests.clone();
+    duplicate.push(requests[0].clone());
+    unchanged(
+        &mut p,
+        |p| p.configure_production(roster.clone(), duplicate),
+        "invalid_request",
+    );
+    let mut zero = requests.clone();
+    zero[0].reward = 0;
+    unchanged(
+        &mut p,
+        |p| p.configure_production(roster.clone(), zero),
+        "invalid_request",
+    );
+    let mut bad = requests.clone();
+    bad[0].condition = RequestCondition::CoGuests {
+        first: PersonId(1),
+        second: PersonId(4),
+    };
+    unchanged(
+        &mut p,
+        |p| p.configure_production(roster.clone(), bad),
+        "invalid_request",
+    );
+    let mut huge = requests.clone();
+    huge[0].reward = u32::MAX;
+    unchanged(
+        &mut p,
+        |p| p.configure_production(roster, huge),
+        "invalid_request",
+    );
 }

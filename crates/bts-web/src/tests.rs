@@ -299,10 +299,10 @@ fn malformed_commands_preserve_the_pending_quote_and_useful_errors() {
     for invalid in [
         "{}",
         "not json",
-        r#"{"api_version":3,"command":{"type":"advance","to_tick":80,"extra":true}}"#,
-        r#"{"api_version":3,"command":{"type":"place","start_tick":-1,"programme":1}}"#,
-        r#"{"api_version":3,"command":{"type":"place","start_tick":1.5,"programme":1}}"#,
-        r#"{"api_version":3,"command":{"type":"remove","airing_id":4294967296}}"#,
+        r#"{"api_version":4,"command":{"type":"advance","to_tick":80,"extra":true}}"#,
+        r#"{"api_version":4,"command":{"type":"place","start_tick":-1,"programme":1}}"#,
+        r#"{"api_version":4,"command":{"type":"place","start_tick":1.5,"programme":1}}"#,
+        r#"{"api_version":4,"command":{"type":"remove","airing_id":4294967296}}"#,
     ] {
         let before = s.report();
         let response: Value = serde_json::from_str(&s.dispatch_json(invalid)).unwrap();
@@ -506,7 +506,8 @@ fn production_reports_remain_whitelisted_and_money_is_not_charged_twice() {
         .execute(Command::BookProduction {
             production_id: id,
             promise_request: Some(1),
-            call_favour: None,
+            exceptional_person: None,
+            smooth_cooperation: false,
         })
         .unwrap();
     let work = booked.production.projects[0].programme.unwrap();
@@ -526,7 +527,7 @@ fn production_reports_remain_whitelisted_and_money_is_not_charged_twice() {
     assert_eq!(recorded.cash, "19000");
     assert_eq!(recorded.finances.production_spent, "1000");
     assert_eq!(recorded.finances.production_in_escrow, "0");
-    assert_eq!(recorded.production.favours.len(), 1);
+    assert_eq!(recorded.production.sway_balance, 4);
     audit(&serde_json::to_value(recorded).unwrap());
     let ready = s.execute(Command::Advance { to_tick: 52 }).unwrap();
     assert!(ready
@@ -557,7 +558,7 @@ fn production_reports_remain_whitelisted_and_money_is_not_charged_twice() {
         .any(|l| l.production_id == Some(id) && l.kind == "production_spend"));
 }
 #[test]
-fn production_invalid_commands_reset_ids_and_personal_favour_isolation() {
+fn production_invalid_commands_reset_ids_and_pooled_sway_isolation() {
     let mut a = Session::new().unwrap();
     let mut b = Session::new().unwrap();
     let id = a
@@ -571,24 +572,26 @@ fn production_invalid_commands_reset_ids_and_personal_favour_isolation() {
     a.execute(Command::BookProduction {
         production_id: id,
         promise_request: Some(1),
-        call_favour: None,
+        exceptional_person: None,
+        smooth_cooperation: false,
     })
     .unwrap();
     a.execute(Command::Advance { to_tick: 52 }).unwrap();
     assert!(b.report().production.projects.is_empty());
-    assert!(b.report().production.favours.is_empty());
+    assert!(b.report().production.sway_balance == 0);
     reject(
         &mut b,
         Command::BookProduction {
             production_id: id,
             promise_request: None,
-            call_favour: Some(1),
+            exceptional_person: Some(5),
+            smooth_cooperation: false,
         },
         "unknown_production",
     );
     a.execute(Command::Reset {}).unwrap();
     assert!(a.report().production.projects.is_empty());
-    assert!(a.report().production.favours.is_empty());
+    assert!(a.report().production.sway_balance == 0);
     assert_eq!(a.report().cash, "20000");
     let next = a
         .execute(Command::CreateProduction {
@@ -604,13 +607,14 @@ fn production_invalid_commands_reset_ids_and_personal_favour_isolation() {
         Command::BookProduction {
             production_id: id,
             promise_request: Some(1),
-            call_favour: None,
+            exceptional_person: None,
+            smooth_cooperation: false,
         },
         "unknown_production",
     );
     for json in [
-        r#"{"api_version":3,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":9007199254740993,"record_at":40}}}"#,
-        r#"{"api_version":3,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"unknown","tone":"calm","budget":"1000","record_at":40}}}"#,
+        r#"{"api_version":4,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":9007199254740993,"record_at":40}}}"#,
+        r#"{"api_version":4,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"unknown","tone":"calm","budget":"1000","record_at":40}}}"#,
     ] {
         let before = a.report();
         let response: Value = serde_json::from_str(&a.dispatch_json(json)).unwrap();
@@ -624,4 +628,42 @@ fn production_invalid_commands_reset_ids_and_personal_favour_isolation() {
         Command::CreateProduction { concept: bad },
         "invalid_budget",
     );
+}
+
+#[test]
+fn old_redemption_fields_are_rejected_and_failed_sway_spending_preserves_quotes() {
+    let mut s = Session::new().unwrap();
+    let project = s
+        .execute(Command::CreateProduction {
+            concept: production_concept(),
+        })
+        .unwrap()
+        .production
+        .projects[0]
+        .id;
+    let airing = place(&mut s, 1, 72, Some(1));
+    let token = quote(&mut s, airing);
+    reject(
+        &mut s,
+        Command::BookProduction {
+            production_id: project,
+            promise_request: Some(1),
+            exceptional_person: None,
+            smooth_cooperation: true,
+        },
+        "insufficient_sway",
+    );
+    let before = s.report();
+    let result: Value = serde_json::from_str(&s.dispatch_json(r#"{"api_version":4,"command":{"type":"book_production","production_id":1,"promise_request":1,"call_favour":1,"smooth_cooperation":false}}"#)).unwrap();
+    assert_eq!(result["error"]["code"], "malformed_command");
+    assert_eq!(before, s.report());
+    let result: Value =
+        serde_json::from_str(&s.dispatch_json(r#"{"api_version":3,"command":{"type":"inspect"}}"#))
+            .unwrap();
+    assert_eq!(result["error"]["code"], "unsupported_version");
+    s.execute(Command::AcceptOffer {
+        airing_id: airing,
+        offer_id: token,
+    })
+    .unwrap();
 }

@@ -150,9 +150,9 @@ losses; exact rules remain proposals. Truth, staff knowledge and player evidence
 stay distinct: reporting is assessed against what could reasonably be known,
 rather than requiring omniscience.
 
-These systems do not expand the current implementation milestone. The existing
-person-specific favour experiment is a prototype, not the intended pooled Sway
-design. Awards, resource stocks and this editorial loop remain unimplemented.
+These systems do not expand the current implementation milestone. The [bounded pooled-Sway experiment](pooled-sway.md) now implements two production
+requests and station-wide spending, replacing the personal-favour prototype.
+Awards and the other resource stocks/editorial loop remain unimplemented.
 
 ## Screens and scheduling direction
 
