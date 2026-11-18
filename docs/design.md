@@ -87,6 +87,15 @@ reputation and advertising, with role/format-specific recipes. Production
 projects consume time and resources; outputs may be aired, repeated, licensed
 or continued. Not every format requires scripts, pilots or the same stages.
 
+### Ambition and staged delivery
+
+See the [production ambition draft](production-ambition-draft.md) for a proposed
+workflow in which each stage attempts explicit creative ambitions using skilled
+people and paid time. Results can fall short gradually; reviews allow revision
+or extension. Finished material carries strengths, flaws and downstream demands.
+Creative ambition and difficulty of later production are separate concerns.
+This is a draft direction, not implemented behaviour.
+
 ### News and topical entertainment
 
 Produce a news format like any other show: choose host/team, budget, duration,

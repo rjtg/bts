@@ -32,6 +32,7 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Commitments and episodes](docs/episodes-and-commitments.md): audience-specific settlement, standalone works, familiarity and continuity.
 - [Browser foundation](docs/browser-foundation.md): Wasm sessions, player protocol and local build.
 - [Programme planning](docs/programme-planning.md): playable timeline, airing identities, cadence, controls and evidence.
+- [Production ambition draft](docs/production-ambition-draft.md): staged work, creative ambition, delivery shortfalls and downstream demands.
 - [Original production](docs/original-production.md): bounded discussion shows, talent commitments, budgets and personal favour experiment.
 - [Contributor guidance](AGENTS.md): implementation principles for people and coding agents.
 
