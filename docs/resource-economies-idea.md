@@ -36,6 +36,29 @@ achievement rewards, a station balance/history and two paid uses: exceptional
 participation and cooperation smoothing. Amounts and effects are provisional.
 Broader request types, rates and uses remain open.
 
+### Adjustable production support
+
+Updated direction: production cooperation spending should use a free slider or
+dial, not a fixed yes/no purchase. The player can allocate any available amount
+of Sway, including zero, with diminishing marginal returns. The current checkbox
+and fixed 2-Sway treatment are an implemented prototype, not this intended interaction.
+Exact spending granularity and the response curve remain to be chosen.
+
+Its production function is mitigation of identifiable cooperation deficiencies:
+bad cast chemistry, friction between an actor and director, or similar difficulties
+working together. Sway must not compensate for missing craft, weak acting/writing/
+directing ability or other skill deficiencies. Do not apply a general quality
+bonus or silently increase underlying skill values.
+
+Keep these causes separate in the model and developer evidence. More support
+can reduce an existing cooperation penalty within bounds, with smaller gains as
+spending rises; it cannot create a surplus quality bonus once that penalty is
+removed. With no relevant cooperation deficiency there is nothing to recover.
+Some conflicts may remain despite investment. Fees, time commitments and explicit
+participation negotiations remain separate constraints. Staff/player explanations
+must use legitimate evidence rather than expose exact hidden chemistry or skills.
+This correction does not implement a general relationship simulation.
+
 ## Glamour
 
 Award wins generate Glamour on an award-cycle timescale. Retained Glamour

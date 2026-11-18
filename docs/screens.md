@@ -143,7 +143,12 @@ Present Sway requests as opportunities: person portrait, short request, visible
 conditions/reward and progress such as **Promised → Recorded → Completed** where
 applicable. Use each request's actual fulfilment milestone; not every recording
 earns a reward. Spending should be a clear choice during booking, with the cost
-and consequence visible before confirmation.
+and consequence visible before confirmation. Production cooperation support
+should use a slider/dial allocating any available amount of Sway, including zero,
+rather than a fixed checkbox. Show the allocated amount and remaining balance.
+Diminishing returns mitigate cooperation deficiencies, not skill shortages; do
+not imply guaranteed creative success or reveal hidden chemistry coefficients.
+The current fixed-cost checkbox remains a prototype; see [resource direction](resource-economies-idea.md#adjustable-production-support).
 
 ### Results and language
 

@@ -58,6 +58,15 @@ favour identifier or redemption restriction remains. Normal fees are still paid
 in cash, and Sway cannot override overlaps or insufficient cash. Spending is final
 at booking; booked projects cannot be cancelled in this milestone.
 
+## Intended replacement for cooperation spending
+
+The fixed checkbox/cost below is the current experiment. The revised
+[design direction](resource-economies-idea.md#adjustable-production-support)
+calls for a freely adjustable Sway allocation with diminishing returns, reducing
+cooperation penalties such as bad chemistry. It must leave skill deficiencies
+untouched and cannot add quality beyond the recovered cooperation loss. That
+slider/dial and a broader deficiency model are not implemented by this milestone.
+
 ## Cooperation equation and limits
 
 The existing production model computes weighted tone fit:

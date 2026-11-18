@@ -597,3 +597,7 @@ input:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
 
 .sway-request { border-top: 1px solid var(--line); padding-top: .7rem; margin-top: .7rem; }
 #sway-history { padding-left: 1.2rem; font-size: .85rem; line-height: 1.6; }
+
+.talent-preview { display:flex; gap:.75rem; align-items:center; }
+.talent-preview section { min-width:0; }
+.talent-portrait { width:96px; height:96px; flex:none; object-fit:cover; image-rendering:pixelated; border:1px solid var(--line); }

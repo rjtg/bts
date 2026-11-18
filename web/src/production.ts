@@ -5,6 +5,8 @@ const element = <T extends HTMLElement = HTMLElement>(id: string) => document.ge
 const select = (id: string) => element<HTMLSelectElement>(id);
 function node<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', className = ''): HTMLElementTagNameMap[K] { const result = document.createElement(tag); result.textContent = text; result.className = className; return result; }
 function option(id: number, text: string): HTMLOptionElement { const result = node('option', text); result.value = String(id); return result; }
+// Fixed scenario artwork only; identity and simulation attributes remain in Rust.
+const portraitFiles: Record<number, string> = { 1: 'elian-north', 2: 'mina-sol', 3: 'nora-vale', 4: 'felix-reed', 5: 'jules-hart', 6: 'rafi-linden' };
 export function initialiseProduction(ui: Callbacks) {
   let editing: number | null = null;
   let initialized = false;
@@ -18,7 +20,13 @@ export function initialiseProduction(ui: Callbacks) {
     const ids = [select('production-host').value, select('production-guest-one').value, select('production-guest-two').value].map(Number);
     for (const id of ids) {
       const p = report.production.people.find(p => p.id === id); if (!p) continue;
-      const row = node('div'); row.append(node('strong', `${p.name} · ${ui.money(p.fee)} credits`), node('p', p.description)); preview.append(row);
+      const row = node('div', '', 'talent-preview');
+      const artwork = portraitFiles[id];
+      if (artwork) {
+        const portrait = node('img', '', 'talent-portrait'); portrait.src = `${import.meta.env.BASE_URL}portraits/${artwork}.png`;
+        portrait.alt = `Portrait of ${p.name}`; portrait.width = 96; portrait.height = 96; row.append(portrait);
+      }
+      const details = node('section'); details.append(node('strong', `${p.name} · ${ui.money(p.fee)} credits`), node('p', p.description)); row.append(details); preview.append(row);
     }
   }
   function edit(p: ProductionInfo): void {

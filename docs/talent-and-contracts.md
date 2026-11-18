@@ -48,6 +48,21 @@ The player must understand what is guaranteed, what is merely preferred, what
 cash is committed and which dates are reserved. Contracts should create decisions,
 not require routine negotiation of every minor clause.
 
+## Performer gender and character requirements
+
+Design direction: record a person's gender explicitly as authored roster data,
+separate from profession, craft, personality and portrait artwork. The initial
+portrait set includes male and female fictional people with varied ages and
+appearances. Gender must not be inferred from a name or image, or used as an
+implicit skill or genre-fit modifier.
+
+A dramatic character's gender belongs to the role definition, separately from
+the actor's identity. Casting briefs may have explicit gender requirements or
+be open; do not assume every role requires a fixed male/female match. How role
+requirements, actor preferences and rewrites affect eligibility remains an open
+casting mechanic. Discussion hosts and guests are not dramatic character roles.
+No gender-based eligibility checks are implemented in the discussion experiment.
+
 ## Roles, actors and episode continuity
 
 A scripted character/role has an identity separate from the actor portraying it.

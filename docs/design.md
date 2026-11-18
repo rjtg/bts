@@ -133,7 +133,9 @@ and open mechanics.
 - **Sway** is an abstract pooled resource earned by granting people's requests:
   guest pairings, casting, realising a screenplay or changing editorial tone.
   Spend it across negotiations and productions to smooth cooperation and help
-  chemistry. It is not a favour redeemable only from the person who earned it.
+  chemistry. Cooperation support should be a freely chosen investment with
+  diminishing returns that mitigates cooperation deficiencies, never missing
+  skill or craft. It is not a favour redeemable only from the person who earned it.
 - **Glamour** comes from winning awards and naturally decays. Holding it improves
   conditions with talent who value glamour; spending it grants significant
   performance boosts to specific airings. The affected performance dimensions,
