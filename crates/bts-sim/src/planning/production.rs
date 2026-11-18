@@ -2,11 +2,14 @@
 //! This state is not a player-report DTO. See docs/original-production.md.
 use super::*;
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeSet;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub struct ProductionId(pub u32);
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub struct PersonId(pub u16);
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+pub struct StudioId(pub u16);
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub struct RequestId(pub u16);
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
@@ -123,15 +126,17 @@ pub struct Production {
     pub phase: Phase,
     pub programme: Option<ProgrammeId>,
     pub booked_at: Option<SimTick>,
-    pub promised_request: Option<RequestId>,
+    pub studio: Option<StudioId>,
     pub exceptional_person: Option<PersonId>,
-    pub smooth_cooperation: bool,
+    pub cooperation_sway: u32,
     output: Option<Programme>,
+    pub outcome: Option<ProductionOutcome>,
 }
 #[derive(Clone, Debug, PartialEq)]
-pub struct Promise {
-    pub production: ProductionId,
-    pub promised_at: SimTick,
+pub struct QuestAcceptance {
+    pub accepted_at: SimTick,
+    pub deadline: SimTick,
+    pub production: Option<ProductionId>,
     pub fulfilled_at: Option<SimTick>,
 }
 /// Closed, deliberately small request vocabulary for the discussion experiment.
@@ -167,7 +172,8 @@ pub struct ProductionRequest {
     pub condition: RequestCondition,
     pub statement: String,
     pub reward: u32,
-    pub promise: Option<Promise>,
+    pub time_limit_ticks: u32,
+    pub acceptance: Option<QuestAcceptance>,
 }
 #[derive(Clone, Debug, PartialEq)]
 pub enum SwayReason {
@@ -184,10 +190,30 @@ pub struct SwayEntry {
     pub reason: SwayReason,
 }
 pub const PARTICIPATION_COST: u32 = 2;
-pub const COOPERATION_COST: u32 = 2;
+/// Authored collaboration difficulty, independent of individual ability.
+#[derive(Clone, Debug, PartialEq)]
+pub struct CooperationIssue {
+    pub people: [PersonId; 2],
+    pub penalty: f64,
+    pub known_note: Option<String>,
+}
+#[derive(Clone, Debug, PartialEq)]
+pub struct ProductionOutcome {
+    pub craft: f64,
+    pub subject_fit: f64,
+    pub tone_fit: f64,
+    pub resources: f64,
+    pub base_execution: f64,
+    pub cooperation_penalty: f64,
+    pub recovered_penalty: f64,
+    pub remaining_penalty: f64,
+    pub execution: f64,
+    pub issues: Vec<CooperationIssue>,
+}
 #[derive(Clone, Debug, PartialEq)]
 pub struct ProductionState {
     roster: BTreeMap<PersonId, Talent>,
+    issues: Vec<CooperationIssue>,
     projects: BTreeMap<ProductionId, Production>,
     requests: BTreeMap<RequestId, ProductionRequest>,
     sway: u32,
@@ -199,6 +225,7 @@ impl Default for ProductionState {
     fn default() -> Self {
         Self {
             roster: BTreeMap::new(),
+            issues: Vec::new(),
             projects: BTreeMap::new(),
             requests: BTreeMap::new(),
             sway: 0,
@@ -211,6 +238,9 @@ impl Default for ProductionState {
 impl ProductionState {
     pub fn roster(&self) -> impl Iterator<Item = &Talent> {
         self.roster.values()
+    }
+    pub fn cooperation_issues(&self) -> &[CooperationIssue] {
+        &self.issues
     }
     pub fn projects(&self) -> impl Iterator<Item = &Production> {
         self.projects.values()
@@ -275,7 +305,14 @@ impl Planner {
         roster: Vec<Talent>,
         requests: Vec<ProductionRequest>,
     ) -> Result<(), PlanError> {
-        if self.now().0 != 0 || !self.production.projects.is_empty() {
+        if self.now().0 != 0
+            || !self.production.projects.is_empty()
+            || self
+                .production
+                .requests
+                .values()
+                .any(|r| r.acceptance.is_some())
+        {
             return Err(error(
                 "production_config_locked",
                 "Production configuration is fixed once play starts.",
@@ -322,11 +359,12 @@ impl Planner {
                 || request_map.contains_key(&r.id)
                 || !map.contains_key(&r.proposer)
                 || !valid
-                || r.promise.is_some()
+                || r.acceptance.is_some()
+                || r.time_limit_ticks == 0
                 || r.reward == 0
                 || r.reward > i32::MAX as u32
             {
-                return Err(error("invalid_request", "Requests need unique IDs, existing people, valid conditions and positive bounded rewards, with no initial promise."));
+                return Err(error("invalid_request", "Requests need unique IDs, existing people, valid conditions and positive bounded rewards, with a positive time limit and no initial acceptance."));
             }
             total_reward = total_reward.checked_add(r.reward).ok_or_else(|| {
                 error(
@@ -336,8 +374,55 @@ impl Planner {
             })?;
             request_map.insert(r.id, r);
         }
+        if self
+            .staff
+            .values()
+            .flatten()
+            .any(|id| !map.contains_key(id))
+        {
+            return Err(error(
+                "invalid_roster",
+                "Keep every assigned staff member in the roster.",
+            ));
+        }
+        self.production.issues.clear();
         self.production.roster = map;
         self.production.requests = request_map;
+        Ok(())
+    }
+    /// Fixture configuration; never inferred from a portrait or public reputation.
+    pub fn configure_cooperation(
+        &mut self,
+        issues: Vec<CooperationIssue>,
+    ) -> Result<(), PlanError> {
+        if self.now().0 != 0
+            || !self.production.projects.is_empty()
+            || self
+                .production
+                .requests
+                .values()
+                .any(|r| r.acceptance.is_some())
+        {
+            return Err(error(
+                "production_config_locked",
+                "Configure cooperation before play starts.",
+            ));
+        }
+        let mut pairs = BTreeSet::new();
+        for issue in &issues {
+            let [a, b] = issue.people;
+            if a == b
+                || !self.production.roster.contains_key(&a)
+                || !self.production.roster.contains_key(&b)
+                || !pairs.insert(if a < b { [a, b] } else { [b, a] })
+                || !issue.penalty.is_finite()
+                || issue.penalty <= 0.0
+                || issue.penalty > 0.25
+            {
+                return Err(error("invalid_cooperation", "Cooperation issues need unique existing pairs and a finite penalty in (0, 0.25]."));
+            }
+        }
+        self.production.issues = issues;
         Ok(())
     }
     fn validate_concept(
@@ -370,6 +455,15 @@ impl Planner {
                 self.production.roster.get(&id).ok_or_else(|| {
                     error("unknown_person", "Choose participants from the roster.")
                 })?;
+            if self
+                .staff_owner(id)
+                .is_some_and(|owner| owner != self.player)
+            {
+                return Err(error(
+                    "foreign_staff",
+                    "This person works for the other station and cannot be assigned here.",
+                ));
+            }
             if person.role != role {
                 return Err(error(
                     "wrong_role",
@@ -420,10 +514,11 @@ impl Planner {
                 phase: Phase::Draft,
                 programme: None,
                 booked_at: None,
-                promised_request: None,
+                studio: None,
                 exceptional_person: None,
-                smooth_cooperation: false,
+                cooperation_sway: 0,
                 output: None,
+                outcome: None,
             },
         );
         self.production.next_project = next;
@@ -463,9 +558,8 @@ impl Planner {
     pub fn book_production(
         &mut self,
         id: ProductionId,
-        promise: Option<RequestId>,
         exceptional_person: Option<PersonId>,
-        smooth_cooperation: bool,
+        cooperation_sway: u32,
     ) -> Result<(), PlanError> {
         let p = self.production.project(id)?.clone();
         if p.phase != Phase::Draft {
@@ -522,34 +616,29 @@ impl Planner {
                 return Err(error("talent_conflict","A selected participant is already reserved for another recording at that time."));
             }
         }
-        if let Some(request_id) = promise {
-            let request =
-                self.production.requests.get(&request_id).ok_or_else(|| {
-                    error("unknown_request", "Choose a listed production request.")
-                })?;
-            if request.promise.is_some() {
-                return Err(error(
-                    "request_already_promised",
-                    "This finite request is already promised or fulfilled.",
-                ));
-            }
-            if !request.condition.matches(&p.concept) {
-                return Err(error(
-                    "promise_mismatch",
-                    "The concept does not meet the visible request conditions.",
-                ));
-            }
-        }
-        let sway_cost = if exceptional_person.is_some() {
+        let studio = (1..=self.studio_count(self.player))
+            .map(StudioId)
+            .find(|number| {
+                !self.production.projects.values().any(|other| {
+                    other.studio == Some(*number)
+                        && p.concept.record_at < other.recording_end
+                        && p.recording_end > other.concept.record_at
+                })
+            })
+            .ok_or_else(|| {
+                error(
+                    "studio_unavailable",
+                    "All of your studios are reserved for another recording at that time.",
+                )
+            })?;
+        let sway_cost = cooperation_sway.checked_add(if exceptional_person.is_some() {
             PARTICIPATION_COST
         } else {
             0
-        } + if smooth_cooperation {
-            COOPERATION_COST
-        } else {
-            0
-        };
-        if self.production.sway < sway_cost {
+        });
+        if cooperation_sway > i32::MAX as u32
+            || sway_cost.is_none_or(|cost| self.production.sway < cost)
+        {
             return Err(error(
                 "insufficient_sway",
                 "Not enough pooled Sway for all selected uses.",
@@ -575,7 +664,8 @@ impl Planner {
         let following = next_programme
             .checked_add(1)
             .ok_or_else(|| error("capacity", "Programme identifiers exhausted."))?;
-        let output = self.make_discussion(&p, ProgrammeId(next_programme), smooth_cooperation);
+        let (output, outcome) =
+            self.make_discussion(&p, ProgrammeId(next_programme), cooperation_sway);
         let mut candidate = self.clone();
         candidate
             .engine
@@ -590,21 +680,10 @@ impl Planner {
         booked.programme = Some(output.id);
         booked.output = Some(output);
         booked.booked_at = Some(self.now());
-        booked.promised_request = promise;
+        booked.studio = Some(studio);
         booked.exceptional_person = exceptional_person;
-        booked.smooth_cooperation = smooth_cooperation;
-        if let Some(request_id) = promise {
-            candidate
-                .production
-                .requests
-                .get_mut(&request_id)
-                .unwrap()
-                .promise = Some(Promise {
-                production: id,
-                promised_at: self.now(),
-                fulfilled_at: None,
-            });
-        }
+        booked.cooperation_sway = cooperation_sway;
+        booked.outcome = Some(outcome);
         if let Some(person) = exceptional_person {
             candidate.production.change_sway(
                 self.now(),
@@ -613,18 +692,23 @@ impl Planner {
                 SwayReason::ExceptionalParticipation(person),
             )?;
         }
-        if smooth_cooperation {
+        if cooperation_sway > 0 {
             candidate.production.change_sway(
                 self.now(),
                 id,
-                -(COOPERATION_COST as i32),
+                -(cooperation_sway as i32),
                 SwayReason::Cooperation,
             )?;
         }
         *self = candidate;
         Ok(())
     }
-    fn make_discussion(&self, p: &Production, id: ProgrammeId, smooth: bool) -> Programme {
+    fn make_discussion(
+        &self,
+        p: &Production,
+        id: ProgrammeId,
+        support: u32,
+    ) -> (Programme, ProductionOutcome) {
         let crew = [
             (&self.production.roster[&p.concept.host], 0.5),
             (&self.production.roster[&p.concept.guests[0]], 0.25),
@@ -641,25 +725,51 @@ impl Planner {
             .sum::<f64>();
         let resources = (((p.concept.budget.0 - p.fees.0) as f64 / 1000.0).clamp(0.0, 1.0)).sqrt();
         let cast = crew.iter().map(|(t, w)| t.recognition * w).sum::<f64>();
-        // Sway recovers half the tone-coordination shortfall, not craft or subject fit.
-        let tone_fit = if smooth {
-            tone_fit + 0.5 * (1.0 - tone_fit)
-        } else {
-            tone_fit
+        let base_execution =
+            (0.15 + 0.45 * craft + 0.25 * fit + 0.10 * tone_fit + 0.05 * resources).clamp(0.0, 1.0);
+        let people = [p.concept.host, p.concept.guests[0], p.concept.guests[1]];
+        let issues = self
+            .production
+            .issues
+            .iter()
+            .filter(|i| i.people.iter().all(|id| people.contains(id)))
+            .cloned()
+            .collect::<Vec<_>>();
+        let cooperation_penalty = issues
+            .iter()
+            .fold(0.0_f64, |total, issue| total + issue.penalty)
+            .min(0.25)
+            .min(base_execution);
+        let remaining_penalty = cooperation_penalty * 2.0 / (2.0 + f64::from(support));
+        let recovered_penalty = cooperation_penalty - remaining_penalty;
+        let execution = (base_execution - remaining_penalty).clamp(0.0, 1.0);
+        let outcome = ProductionOutcome {
+            craft,
+            subject_fit: fit,
+            tone_fit,
+            resources,
+            base_execution,
+            cooperation_penalty,
+            recovered_penalty,
+            remaining_penalty,
+            execution,
+            issues,
         };
-        let execution = 0.15 + 0.45 * craft + 0.25 * fit + 0.10 * tone_fit + 0.05 * resources;
-        Programme {
-            id,
-            kind: ProgrammeKind::Standalone,
-            name: p.concept.title.clone(),
-            genre: p.concept.subject.genre(),
-            tone: p.concept.tone.score(),
-            awareness: 0.55,
-            cast_appeal: cast,
-            execution: execution.clamp(0.0, 1.0),
-            broadcast_cost: Money(50),
-            duration_minutes: 45,
-        }
+        (
+            Programme {
+                id,
+                kind: ProgrammeKind::Standalone,
+                name: p.concept.title.clone(),
+                genre: p.concept.subject.genre(),
+                tone: p.concept.tone.score(),
+                awareness: 0.55,
+                cast_appeal: cast,
+                execution: execution.clamp(0.0, 1.0),
+                broadcast_cost: Money(50),
+                duration_minutes: 45,
+            },
+            outcome,
+        )
     }
     pub(super) fn start_recordings(&mut self, at: SimTick) -> Result<(), PlanError> {
         let starting = self
@@ -702,6 +812,10 @@ impl Planner {
             let output = self.production.projects[&id].output.clone().unwrap();
             self.engine.world.programmes.push(output.clone());
             self.engine.world.validate().map_err(engine_error)?;
+            self.libraries
+                .entry(self.player)
+                .or_default()
+                .insert(output.id);
             for audience in &self.engine.world.audiences {
                 self.engine
                     .state
@@ -713,26 +827,70 @@ impl Planner {
         self.fulfil_requests(at, true)?;
         Ok(())
     }
+    /// Accept a finite request independently of any production. No retroactive credit.
+    pub fn accept_request(&mut self, id: RequestId) -> Result<(), PlanError> {
+        let request = self
+            .production
+            .requests
+            .get(&id)
+            .ok_or_else(|| error("unknown_request", "Choose a listed opportunity."))?;
+        if request.acceptance.is_some() {
+            return Err(error(
+                "quest_already_accepted",
+                "This finite quest has already been accepted, completed or expired.",
+            ));
+        }
+        if self.now() >= self.end {
+            return Err(error(
+                "scenario_ended",
+                "No time remains to accept a quest.",
+            ));
+        }
+        let deadline = SimTick(
+            self.now()
+                .0
+                .saturating_add(request.time_limit_ticks)
+                .min(self.end.0),
+        );
+        let accepted_at = self.now();
+        self.bump()?;
+        self.production.requests.get_mut(&id).unwrap().acceptance = Some(QuestAcceptance {
+            accepted_at,
+            deadline,
+            production: None,
+            fulfilled_at: None,
+        });
+        Ok(())
+    }
     fn fulfil_requests(&mut self, at: SimTick, completed: bool) -> Result<(), PlanError> {
         let earned = self
             .production
             .requests
             .values()
             .filter_map(|r| {
-                let promise = r.promise.as_ref()?;
-                if promise.fulfilled_at.is_some() {
+                let acceptance = r.acceptance.as_ref()?;
+                if acceptance.fulfilled_at.is_some() || at > acceptance.deadline {
                     return None;
                 }
-                let p = &self.production.projects[&promise.production];
-                let achieved = match r.condition {
-                    RequestCondition::CoGuests { .. } => {
-                        !completed && p.recording_end == at && p.phase == Phase::PostProduction
-                    }
-                    RequestCondition::CalmEverydayDiscussion { .. } => {
-                        completed && p.ready_at == at && p.phase == Phase::Completed
-                    }
-                };
-                (achieved && r.condition.matches(&p.concept)).then_some((r.id, p.id, r.reward))
+                self.production
+                    .projects
+                    .values()
+                    .find(|p| {
+                        let achieved = match r.condition {
+                            RequestCondition::CoGuests { .. } => {
+                                !completed
+                                    && p.recording_end == at
+                                    && p.phase == Phase::PostProduction
+                            }
+                            RequestCondition::CalmEverydayDiscussion { .. } => {
+                                completed && p.ready_at == at && p.phase == Phase::Completed
+                            }
+                        };
+                        achieved
+                            && p.concept.record_at >= acceptance.accepted_at
+                            && r.condition.matches(&p.concept)
+                    })
+                    .map(|p| (r.id, p.id, r.reward))
             })
             .collect::<Vec<_>>();
         for (request, project, reward) in earned {
@@ -742,14 +900,16 @@ impl Planner {
                 reward as i32,
                 SwayReason::RequestReward(request),
             )?;
-            self.production
+            let acceptance = self
+                .production
                 .requests
                 .get_mut(&request)
                 .unwrap()
-                .promise
+                .acceptance
                 .as_mut()
-                .unwrap()
-                .fulfilled_at = Some(at);
+                .unwrap();
+            acceptance.fulfilled_at = Some(at);
+            acceptance.production = Some(project);
         }
         Ok(())
     }
@@ -777,7 +937,8 @@ pub fn demo_roster() -> (Vec<Talent>, Vec<ProductionRequest>) {
                 },
                 statement: "Record a discussion with me and Felix Reed as the two guests.".into(),
                 reward: 4,
-                promise: None,
+                time_limit_ticks: 192,
+                acceptance: None,
             },
             ProductionRequest {
                 id: RequestId(2),
@@ -786,8 +947,17 @@ pub fn demo_roster() -> (Vec<Talent>, Vec<ProductionRequest>) {
                 statement: "Complete a calm discussion about everyday life with me as a guest."
                     .into(),
                 reward: 3,
-                promise: None,
+                time_limit_ticks: 192,
+                acceptance: None,
             },
         ],
     )
+}
+
+/// Two disclosed fixture concerns; no dynamic relationship graph.
+pub fn demo_cooperation() -> Vec<CooperationIssue> {
+    vec![
+        CooperationIssue { people: [PersonId(2), PersonId(5)], penalty: 0.12, known_note: Some("Booking notes: Mina and Jules have previously disagreed over who leads the conversation.".into()) },
+        CooperationIssue { people: [PersonId(3), PersonId(6)], penalty: 0.08, known_note: Some("Booking notes: Nora and Rafi have found it difficult to share the floor.".into()) },
+    ]
 }

@@ -1,0 +1,4106 @@
+{
+  "comparisons": [
+    {
+      "case": "technical_science",
+      "report": {
+        "active_airing": null,
+        "advertisers": [
+          {
+            "id": 1,
+            "name": "Everyday Snacks"
+          },
+          {
+            "id": 2,
+            "name": "Precision Equipment"
+          }
+        ],
+        "booking_review": null,
+        "cash": "19419",
+        "catalogue": [
+          {
+            "awareness": 0.8,
+            "broadcast_cost": "150",
+            "cast_appeal": 0.75,
+            "duration_minutes": 30,
+            "episode": 1,
+            "genre": "Comedy",
+            "id": 1,
+            "kind": "episode",
+            "name": "Neighbourhood Laughs",
+            "production_id": null,
+            "series_name": "Demo series 1",
+            "tone": 0.8
+          },
+          {
+            "awareness": 0.5,
+            "broadcast_cost": "50",
+            "cast_appeal": 0.35,
+            "duration_minutes": 45,
+            "episode": 1,
+            "genre": "Science",
+            "id": 2,
+            "kind": "episode",
+            "name": "Workshop Science",
+            "production_id": null,
+            "series_name": "Demo series 2",
+            "tone": 0.15
+          },
+          {
+            "awareness": 1.0,
+            "broadcast_cost": "400",
+            "cast_appeal": 1.0,
+            "duration_minutes": 60,
+            "episode": 1,
+            "genre": "Comedy",
+            "id": 3,
+            "kind": "episode",
+            "name": "The Big Premiere",
+            "production_id": null,
+            "series_name": "Demo series 3",
+            "tone": 0.8
+          },
+          {
+            "awareness": 0.65,
+            "broadcast_cost": "100",
+            "cast_appeal": 0.6,
+            "duration_minutes": 60,
+            "episode": 1,
+            "genre": "Drama",
+            "id": 4,
+            "kind": "episode",
+            "name": "Evening Stories",
+            "production_id": null,
+            "series_name": "Demo series 4",
+            "tone": 0.45
+          },
+          {
+            "awareness": 0.65,
+            "broadcast_cost": "100",
+            "cast_appeal": 0.6,
+            "duration_minutes": 90,
+            "episode": null,
+            "genre": "Drama",
+            "id": 5,
+            "kind": "standalone",
+            "name": "The Long Weekend",
+            "production_id": null,
+            "series_name": null,
+            "tone": 0.45
+          },
+          {
+            "awareness": 0.8,
+            "broadcast_cost": "150",
+            "cast_appeal": 0.75,
+            "duration_minutes": 30,
+            "episode": 2,
+            "genre": "Comedy",
+            "id": 6,
+            "kind": "episode",
+            "name": "Neighbourhood Laughs: episode 2",
+            "production_id": null,
+            "series_name": "Demo series 1",
+            "tone": 0.8
+          },
+          {
+            "awareness": 0.8,
+            "broadcast_cost": "150",
+            "cast_appeal": 0.75,
+            "duration_minutes": 30,
+            "episode": 3,
+            "genre": "Comedy",
+            "id": 7,
+            "kind": "episode",
+            "name": "Neighbourhood Laughs: episode 3",
+            "production_id": null,
+            "series_name": "Demo series 1",
+            "tone": 0.8
+          },
+          {
+            "awareness": 0.55,
+            "broadcast_cost": "50",
+            "cast_appeal": 0.475,
+            "duration_minutes": 45,
+            "episode": null,
+            "genre": "Science",
+            "id": 12,
+            "kind": "standalone",
+            "name": "Workshop Conversations",
+            "production_id": 1,
+            "series_name": null,
+            "tone": 0.2
+          }
+        ],
+        "contracts": [
+          {
+            "advertiser": 1,
+            "airing_id": 57,
+            "contract_id": "1",
+            "deadline_tick": 75,
+            "maximum_payment": "469",
+            "settlement": {
+              "payment": "469",
+              "refund": "0",
+              "targets": [
+                {
+                  "allocated_payment": "140",
+                  "audience": "Young viewers",
+                  "credited_units": "491249049",
+                  "payment": "140",
+                  "promised_units": "491249049",
+                  "refund": "0"
+                },
+                {
+                  "allocated_payment": "328",
+                  "audience": "Households",
+                  "credited_units": "1144681943",
+                  "payment": "328",
+                  "promised_units": "1144681943",
+                  "refund": "0"
+                },
+                {
+                  "allocated_payment": "1",
+                  "audience": "Specialists",
+                  "credited_units": "6619619",
+                  "payment": "1",
+                  "promised_units": "6619619",
+                  "refund": "0"
+                }
+              ]
+            },
+            "targets": [
+              {
+                "allocated_payment": "140",
+                "audience": "Young viewers",
+                "forecast_relevant_delivery": 491.2490492243448,
+                "promised_units": "491249049"
+              },
+              {
+                "allocated_payment": "328",
+                "audience": "Households",
+                "forecast_relevant_delivery": 1144.6819431946572,
+                "promised_units": "1144681943"
+              },
+              {
+                "allocated_payment": "1",
+                "audience": "Specialists",
+                "forecast_relevant_delivery": 6.619619062247994,
+                "promised_units": "6619619"
+              }
+            ]
+          }
+        ],
+        "end_tick": 672,
+        "finances": {
+          "costs_paid": "50",
+          "ledger": [
+            {
+              "airing_id": null,
+              "amount": "1000",
+              "kind": "production_reserve",
+              "production_id": 1,
+              "tick": 0
+            },
+            {
+              "airing_id": null,
+              "amount": "1000",
+              "kind": "production_spend",
+              "production_id": 1,
+              "tick": 40
+            },
+            {
+              "airing_id": 57,
+              "amount": "50",
+              "kind": "broadcast_cost",
+              "production_id": null,
+              "tick": 73
+            },
+            {
+              "airing_id": 57,
+              "amount": "469",
+              "kind": "advertising_payment",
+              "production_id": null,
+              "tick": 75
+            }
+          ],
+          "opening_cash": "20000",
+          "production_committed": "1000",
+          "production_in_escrow": "0",
+          "production_spent": "1000",
+          "revenue": "469"
+        },
+        "gaps": [
+          {
+            "end_tick": 72,
+            "start_tick": 0
+          },
+          {
+            "end_tick": 672,
+            "start_tick": 75
+          }
+        ],
+        "next_airing": null,
+        "now_tick": 75,
+        "offer": null,
+        "production": {
+          "duration_minutes": 45,
+          "format": "standalone_interview_discussion",
+          "known_concerns": [
+            {
+              "note": "Booking notes: Mina and Jules have previously disagreed over who leads the conversation.",
+              "people": [
+                2,
+                5
+              ]
+            },
+            {
+              "note": "Booking notes: Nora and Rafi have found it difficult to share the floor.",
+              "people": [
+                3,
+                6
+              ]
+            }
+          ],
+          "participation_cost": 2,
+          "people": [
+            {
+              "commitments": [
+                {
+                  "end_tick": 44,
+                  "production_id": 1,
+                  "start_tick": 40,
+                  "title": "Workshop Conversations"
+                }
+              ],
+              "description": "A careful science presenter, strongest with calm explanations.",
+              "fee": "220",
+              "id": 1,
+              "name": "Elian North",
+              "negotiable_from_tick": null,
+              "normal_until_tick": 672,
+              "role": "host",
+              "station_id": 1
+            },
+            {
+              "commitments": [],
+              "description": "A familiar entertainment host with a lively conversational style.",
+              "fee": "120",
+              "id": 2,
+              "name": "Mina Sol",
+              "negotiable_from_tick": null,
+              "normal_until_tick": 672,
+              "role": "host",
+              "station_id": 1
+            },
+            {
+              "commitments": [
+                {
+                  "end_tick": 44,
+                  "production_id": 1,
+                  "start_tick": 40,
+                  "title": "Workshop Conversations"
+                }
+              ],
+              "description": "An inventor who enjoys explaining practical science. Available days 1–2; later by explicit Sway negotiation.",
+              "fee": "220",
+              "id": 3,
+              "name": "Nora Vale",
+              "negotiable_from_tick": 192,
+              "normal_until_tick": 192,
+              "role": "guest",
+              "station_id": null
+            },
+            {
+              "commitments": [
+                {
+                  "end_tick": 44,
+                  "production_id": 1,
+                  "start_tick": 40,
+                  "title": "Workshop Conversations"
+                }
+              ],
+              "description": "A hands-on engineer, comfortable with detailed technical discussion.",
+              "fee": "180",
+              "id": 4,
+              "name": "Felix Reed",
+              "negotiable_from_tick": null,
+              "normal_until_tick": 672,
+              "role": "guest",
+              "station_id": null
+            },
+            {
+              "commitments": [],
+              "description": "A well-known performer with show-business stories and a theatrical delivery. Available days 1–2; later by explicit Sway negotiation.",
+              "fee": "140",
+              "id": 5,
+              "name": "Jules Hart",
+              "negotiable_from_tick": 192,
+              "normal_until_tick": 192,
+              "role": "guest",
+              "station_id": null
+            },
+            {
+              "commitments": [],
+              "description": "A community storyteller who connects everyday life and popular culture.",
+              "fee": "160",
+              "id": 6,
+              "name": "Rafi Linden",
+              "negotiable_from_tick": null,
+              "normal_until_tick": 672,
+              "role": "guest",
+              "station_id": null
+            }
+          ],
+          "post_ticks": 8,
+          "projects": [
+            {
+              "booked_at": 0,
+              "budget": "1000",
+              "cooperation_sway": 0,
+              "exceptional_person": null,
+              "fees": "620",
+              "guests": [
+                3,
+                4
+              ],
+              "host": 1,
+              "id": 1,
+              "phase": "completed",
+              "programme": 12,
+              "quest_hints": [],
+              "ready_at": 52,
+              "record_at": 40,
+              "recording_end": 44,
+              "studio": 1,
+              "subject": "science",
+              "title": "Workshop Conversations",
+              "tone": "calm"
+            }
+          ],
+          "recording_ticks": 4,
+          "requests": [
+            {
+              "acceptance": null,
+              "achievement": "recording_completed",
+              "id": 1,
+              "proposer": 3,
+              "reward": 4,
+              "statement": "Record a discussion with me and Felix Reed as the two guests.",
+              "status": "available",
+              "time_limit_ticks": 192
+            },
+            {
+              "acceptance": null,
+              "achievement": "production_completed",
+              "id": 2,
+              "proposer": 6,
+              "reward": 3,
+              "statement": "Complete a calm discussion about everyday life with me as a guest.",
+              "status": "available",
+              "time_limit_ticks": 192
+            }
+          ],
+          "sway_balance": 0,
+          "sway_history": []
+        },
+        "reporting": "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. One ad exposure opportunity per airing; delivery units are millionths of a relevant impression.",
+        "results": [
+          {
+            "aired_advertiser": 1,
+            "aired_programme": 12,
+            "airing_id": 57,
+            "audiences": [
+              {
+                "audience": "Young viewers",
+                "not_watching": 2628.5516820567764,
+                "player_viewers": 664.6920819679144,
+                "population": 6000,
+                "rival_viewers": 2706.756235975309
+              },
+              {
+                "audience": "Households",
+                "not_watching": 3427.875062866996,
+                "player_viewers": 1521.5120737291074,
+                "population": 11000,
+                "rival_viewers": 6050.612863403897
+              },
+              {
+                "audience": "Specialists",
+                "not_watching": 1259.2066356898736,
+                "player_viewers": 661.9619062247993,
+                "population": 2500,
+                "rival_viewers": 578.831458085327
+              }
+            ],
+            "broadcast_cost": "50",
+            "cash_after": "19419",
+            "end_tick": 75,
+            "off_air": false,
+            "snapshot_tick": 72,
+            "start_tick": 72
+          }
+        ],
+        "schedule": [
+          {
+            "airing_id": 57,
+            "booked": true,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 75,
+            "genre": "Science",
+            "programme": 12,
+            "programme_name": "Workshop Conversations",
+            "proposed_advertiser": 1,
+            "start_tick": 72,
+            "station": 1,
+            "status": "completed"
+          },
+          {
+            "airing_id": 1,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 66,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 64,
+            "station": 2,
+            "status": "completed"
+          },
+          {
+            "airing_id": 2,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 69,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 66,
+            "station": 2,
+            "status": "completed"
+          },
+          {
+            "airing_id": 3,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 73,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 69,
+            "station": 2,
+            "status": "completed"
+          },
+          {
+            "airing_id": 4,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 79,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 73,
+            "station": 2,
+            "status": "on_air"
+          },
+          {
+            "airing_id": 5,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 83,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 79,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 6,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 87,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 83,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 7,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 90,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 87,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 8,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 96,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 90,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 9,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 162,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 160,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 10,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 165,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 162,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 11,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 169,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 165,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 12,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 175,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 169,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 13,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 179,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 175,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 14,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 183,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 179,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 15,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 186,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 183,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 16,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 192,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 186,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 17,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 258,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 256,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 18,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 261,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 258,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 19,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 265,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 261,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 20,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 271,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 265,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 21,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 275,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 271,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 22,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 279,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 275,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 23,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 282,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 279,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 24,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 288,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 282,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 25,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 354,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 352,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 26,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 357,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 354,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 27,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 361,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 357,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 28,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 367,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 361,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 29,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 371,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 367,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 30,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 375,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 371,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 31,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 378,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 375,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 32,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 384,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 378,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 33,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 450,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 448,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 34,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 453,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 450,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 35,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 457,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 453,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 36,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 463,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 457,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 37,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 467,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 463,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 38,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 471,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 467,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 39,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 474,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 471,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 40,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 480,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 474,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 41,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 546,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 544,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 42,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 549,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 546,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 43,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 553,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 549,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 44,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 559,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 553,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 45,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 563,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 559,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 46,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 567,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 563,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 47,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 570,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 567,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 48,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 576,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 570,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 49,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 642,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 640,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 50,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 645,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 642,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 51,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 649,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 645,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 52,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 655,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 649,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 53,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 659,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 655,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 54,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 663,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 659,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 55,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 666,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 663,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 56,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 672,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 666,
+            "station": 2,
+            "status": "planned"
+          }
+        ],
+        "stations": [
+          {
+            "id": 1,
+            "is_player": true,
+            "name": "Channel One",
+            "owned_studios": 1,
+            "staff": [
+              "Elian North",
+              "Mina Sol"
+            ]
+          },
+          {
+            "id": 2,
+            "is_player": false,
+            "name": "Channel Two",
+            "owned_studios": null,
+            "staff": [
+              "Vera Quinn"
+            ]
+          }
+        ],
+        "tick_minutes": 15
+      }
+    },
+    {
+      "case": "popular_culture",
+      "report": {
+        "active_airing": null,
+        "advertisers": [
+          {
+            "id": 1,
+            "name": "Everyday Snacks"
+          },
+          {
+            "id": 2,
+            "name": "Precision Equipment"
+          }
+        ],
+        "booking_review": null,
+        "cash": "20985",
+        "catalogue": [
+          {
+            "awareness": 0.8,
+            "broadcast_cost": "150",
+            "cast_appeal": 0.75,
+            "duration_minutes": 30,
+            "episode": 1,
+            "genre": "Comedy",
+            "id": 1,
+            "kind": "episode",
+            "name": "Neighbourhood Laughs",
+            "production_id": null,
+            "series_name": "Demo series 1",
+            "tone": 0.8
+          },
+          {
+            "awareness": 0.5,
+            "broadcast_cost": "50",
+            "cast_appeal": 0.35,
+            "duration_minutes": 45,
+            "episode": 1,
+            "genre": "Science",
+            "id": 2,
+            "kind": "episode",
+            "name": "Workshop Science",
+            "production_id": null,
+            "series_name": "Demo series 2",
+            "tone": 0.15
+          },
+          {
+            "awareness": 1.0,
+            "broadcast_cost": "400",
+            "cast_appeal": 1.0,
+            "duration_minutes": 60,
+            "episode": 1,
+            "genre": "Comedy",
+            "id": 3,
+            "kind": "episode",
+            "name": "The Big Premiere",
+            "production_id": null,
+            "series_name": "Demo series 3",
+            "tone": 0.8
+          },
+          {
+            "awareness": 0.65,
+            "broadcast_cost": "100",
+            "cast_appeal": 0.6,
+            "duration_minutes": 60,
+            "episode": 1,
+            "genre": "Drama",
+            "id": 4,
+            "kind": "episode",
+            "name": "Evening Stories",
+            "production_id": null,
+            "series_name": "Demo series 4",
+            "tone": 0.45
+          },
+          {
+            "awareness": 0.65,
+            "broadcast_cost": "100",
+            "cast_appeal": 0.6,
+            "duration_minutes": 90,
+            "episode": null,
+            "genre": "Drama",
+            "id": 5,
+            "kind": "standalone",
+            "name": "The Long Weekend",
+            "production_id": null,
+            "series_name": null,
+            "tone": 0.45
+          },
+          {
+            "awareness": 0.8,
+            "broadcast_cost": "150",
+            "cast_appeal": 0.75,
+            "duration_minutes": 30,
+            "episode": 2,
+            "genre": "Comedy",
+            "id": 6,
+            "kind": "episode",
+            "name": "Neighbourhood Laughs: episode 2",
+            "production_id": null,
+            "series_name": "Demo series 1",
+            "tone": 0.8
+          },
+          {
+            "awareness": 0.8,
+            "broadcast_cost": "150",
+            "cast_appeal": 0.75,
+            "duration_minutes": 30,
+            "episode": 3,
+            "genre": "Comedy",
+            "id": 7,
+            "kind": "episode",
+            "name": "Neighbourhood Laughs: episode 3",
+            "production_id": null,
+            "series_name": "Demo series 1",
+            "tone": 0.8
+          },
+          {
+            "awareness": 0.55,
+            "broadcast_cost": "50",
+            "cast_appeal": 0.8125,
+            "duration_minutes": 45,
+            "episode": null,
+            "genre": "Comedy",
+            "id": 12,
+            "kind": "standalone",
+            "name": "Culture at the Table",
+            "production_id": 1,
+            "series_name": null,
+            "tone": 0.8
+          }
+        ],
+        "contracts": [
+          {
+            "advertiser": 1,
+            "airing_id": 57,
+            "contract_id": "1",
+            "deadline_tick": 75,
+            "maximum_payment": "1635",
+            "settlement": {
+              "payment": "1635",
+              "refund": "0",
+              "targets": [
+                {
+                  "allocated_payment": "606",
+                  "audience": "Young viewers",
+                  "credited_units": "2113556487",
+                  "payment": "606",
+                  "promised_units": "2113556487",
+                  "refund": "0"
+                },
+                {
+                  "allocated_payment": "1028",
+                  "audience": "Households",
+                  "credited_units": "3587557124",
+                  "payment": "1028",
+                  "promised_units": "3587557124",
+                  "refund": "0"
+                },
+                {
+                  "allocated_payment": "1",
+                  "audience": "Specialists",
+                  "credited_units": "2862873",
+                  "payment": "1",
+                  "promised_units": "2862873",
+                  "refund": "0"
+                }
+              ]
+            },
+            "targets": [
+              {
+                "allocated_payment": "606",
+                "audience": "Young viewers",
+                "forecast_relevant_delivery": 2113.556487190554,
+                "promised_units": "2113556487"
+              },
+              {
+                "allocated_payment": "1028",
+                "audience": "Households",
+                "forecast_relevant_delivery": 3587.557124314483,
+                "promised_units": "3587557124"
+              },
+              {
+                "allocated_payment": "1",
+                "audience": "Specialists",
+                "forecast_relevant_delivery": 2.8628734699268836,
+                "promised_units": "2862873"
+              }
+            ]
+          }
+        ],
+        "end_tick": 672,
+        "finances": {
+          "costs_paid": "50",
+          "ledger": [
+            {
+              "airing_id": null,
+              "amount": "600",
+              "kind": "production_reserve",
+              "production_id": 1,
+              "tick": 0
+            },
+            {
+              "airing_id": null,
+              "amount": "600",
+              "kind": "production_spend",
+              "production_id": 1,
+              "tick": 40
+            },
+            {
+              "airing_id": 57,
+              "amount": "50",
+              "kind": "broadcast_cost",
+              "production_id": null,
+              "tick": 73
+            },
+            {
+              "airing_id": 57,
+              "amount": "1635",
+              "kind": "advertising_payment",
+              "production_id": null,
+              "tick": 75
+            }
+          ],
+          "opening_cash": "20000",
+          "production_committed": "600",
+          "production_in_escrow": "0",
+          "production_spent": "600",
+          "revenue": "1635"
+        },
+        "gaps": [
+          {
+            "end_tick": 72,
+            "start_tick": 0
+          },
+          {
+            "end_tick": 672,
+            "start_tick": 75
+          }
+        ],
+        "next_airing": null,
+        "now_tick": 75,
+        "offer": null,
+        "production": {
+          "duration_minutes": 45,
+          "format": "standalone_interview_discussion",
+          "known_concerns": [
+            {
+              "note": "Booking notes: Mina and Jules have previously disagreed over who leads the conversation.",
+              "people": [
+                2,
+                5
+              ]
+            },
+            {
+              "note": "Booking notes: Nora and Rafi have found it difficult to share the floor.",
+              "people": [
+                3,
+                6
+              ]
+            }
+          ],
+          "participation_cost": 2,
+          "people": [
+            {
+              "commitments": [],
+              "description": "A careful science presenter, strongest with calm explanations.",
+              "fee": "220",
+              "id": 1,
+              "name": "Elian North",
+              "negotiable_from_tick": null,
+              "normal_until_tick": 672,
+              "role": "host",
+              "station_id": 1
+            },
+            {
+              "commitments": [
+                {
+                  "end_tick": 44,
+                  "production_id": 1,
+                  "start_tick": 40,
+                  "title": "Culture at the Table"
+                }
+              ],
+              "description": "A familiar entertainment host with a lively conversational style.",
+              "fee": "120",
+              "id": 2,
+              "name": "Mina Sol",
+              "negotiable_from_tick": null,
+              "normal_until_tick": 672,
+              "role": "host",
+              "station_id": 1
+            },
+            {
+              "commitments": [],
+              "description": "An inventor who enjoys explaining practical science. Available days 1–2; later by explicit Sway negotiation.",
+              "fee": "220",
+              "id": 3,
+              "name": "Nora Vale",
+              "negotiable_from_tick": 192,
+              "normal_until_tick": 192,
+              "role": "guest",
+              "station_id": null
+            },
+            {
+              "commitments": [],
+              "description": "A hands-on engineer, comfortable with detailed technical discussion.",
+              "fee": "180",
+              "id": 4,
+              "name": "Felix Reed",
+              "negotiable_from_tick": null,
+              "normal_until_tick": 672,
+              "role": "guest",
+              "station_id": null
+            },
+            {
+              "commitments": [
+                {
+                  "end_tick": 44,
+                  "production_id": 1,
+                  "start_tick": 40,
+                  "title": "Culture at the Table"
+                }
+              ],
+              "description": "A well-known performer with show-business stories and a theatrical delivery. Available days 1–2; later by explicit Sway negotiation.",
+              "fee": "140",
+              "id": 5,
+              "name": "Jules Hart",
+              "negotiable_from_tick": 192,
+              "normal_until_tick": 192,
+              "role": "guest",
+              "station_id": null
+            },
+            {
+              "commitments": [
+                {
+                  "end_tick": 44,
+                  "production_id": 1,
+                  "start_tick": 40,
+                  "title": "Culture at the Table"
+                }
+              ],
+              "description": "A community storyteller who connects everyday life and popular culture.",
+              "fee": "160",
+              "id": 6,
+              "name": "Rafi Linden",
+              "negotiable_from_tick": null,
+              "normal_until_tick": 672,
+              "role": "guest",
+              "station_id": null
+            }
+          ],
+          "post_ticks": 8,
+          "projects": [
+            {
+              "booked_at": 0,
+              "budget": "600",
+              "cooperation_sway": 0,
+              "exceptional_person": null,
+              "fees": "420",
+              "guests": [
+                5,
+                6
+              ],
+              "host": 2,
+              "id": 1,
+              "phase": "completed",
+              "programme": 12,
+              "quest_hints": [],
+              "ready_at": 52,
+              "record_at": 40,
+              "recording_end": 44,
+              "studio": 1,
+              "subject": "entertainment",
+              "title": "Culture at the Table",
+              "tone": "lively"
+            }
+          ],
+          "recording_ticks": 4,
+          "requests": [
+            {
+              "acceptance": null,
+              "achievement": "recording_completed",
+              "id": 1,
+              "proposer": 3,
+              "reward": 4,
+              "statement": "Record a discussion with me and Felix Reed as the two guests.",
+              "status": "available",
+              "time_limit_ticks": 192
+            },
+            {
+              "acceptance": null,
+              "achievement": "production_completed",
+              "id": 2,
+              "proposer": 6,
+              "reward": 3,
+              "statement": "Complete a calm discussion about everyday life with me as a guest.",
+              "status": "available",
+              "time_limit_ticks": 192
+            }
+          ],
+          "sway_balance": 0,
+          "sway_history": []
+        },
+        "reporting": "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. One ad exposure opportunity per airing; delivery units are millionths of a relevant impression.",
+        "results": [
+          {
+            "aired_advertiser": 1,
+            "aired_programme": 12,
+            "airing_id": 57,
+            "audiences": [
+              {
+                "audience": "Young viewers",
+                "not_watching": 1934.983245954828,
+                "player_viewers": 2672.4031655320077,
+                "population": 6000,
+                "rival_viewers": 1392.6135885131646
+              },
+              {
+                "audience": "Households",
+                "not_watching": 2578.6930660124,
+                "player_viewers": 4577.887916808165,
+                "population": 11000,
+                "rival_viewers": 3843.419017179435
+              },
+              {
+                "audience": "Specialists",
+                "not_watching": 1375.4034283370495,
+                "player_viewers": 286.28734699268836,
+                "population": 2500,
+                "rival_viewers": 838.3092246702621
+              }
+            ],
+            "broadcast_cost": "50",
+            "cash_after": "20985",
+            "end_tick": 75,
+            "off_air": false,
+            "snapshot_tick": 72,
+            "start_tick": 72
+          }
+        ],
+        "schedule": [
+          {
+            "airing_id": 57,
+            "booked": true,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 75,
+            "genre": "Comedy",
+            "programme": 12,
+            "programme_name": "Culture at the Table",
+            "proposed_advertiser": 1,
+            "start_tick": 72,
+            "station": 1,
+            "status": "completed"
+          },
+          {
+            "airing_id": 1,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 66,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 64,
+            "station": 2,
+            "status": "completed"
+          },
+          {
+            "airing_id": 2,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 69,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 66,
+            "station": 2,
+            "status": "completed"
+          },
+          {
+            "airing_id": 3,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 73,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 69,
+            "station": 2,
+            "status": "completed"
+          },
+          {
+            "airing_id": 4,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 79,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 73,
+            "station": 2,
+            "status": "on_air"
+          },
+          {
+            "airing_id": 5,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 83,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 79,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 6,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 87,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 83,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 7,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 90,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 87,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 8,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 96,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 90,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 9,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 162,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 160,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 10,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 165,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 162,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 11,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 169,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 165,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 12,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 175,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 169,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 13,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 179,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 175,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 14,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 183,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 179,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 15,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 186,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 183,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 16,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 192,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 186,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 17,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 258,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 256,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 18,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 261,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 258,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 19,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 265,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 261,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 20,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 271,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 265,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 21,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 275,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 271,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 22,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 279,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 275,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 23,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 282,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 279,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 24,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 288,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 282,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 25,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 354,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 352,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 26,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 357,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 354,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 27,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 361,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 357,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 28,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 367,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 361,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 29,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 371,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 367,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 30,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 375,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 371,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 31,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 378,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 375,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 32,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 384,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 378,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 33,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 450,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 448,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 34,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 453,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 450,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 35,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 457,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 453,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 36,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 463,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 457,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 37,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 467,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 463,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 38,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 471,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 467,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 39,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 474,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 471,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 40,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 480,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 474,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 41,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 546,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 544,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 42,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 549,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 546,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 43,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 553,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 549,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 44,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 559,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 553,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 45,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 563,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 559,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 46,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 567,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 563,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 47,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 570,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 567,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 48,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 576,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 570,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 49,
+            "booked": false,
+            "duration_minutes": 30,
+            "editable": false,
+            "end_tick": 642,
+            "genre": "Comedy",
+            "programme": 8,
+            "programme_name": "After Hours",
+            "proposed_advertiser": null,
+            "start_tick": 640,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 50,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 645,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 642,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 51,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 649,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 645,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 52,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 655,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 649,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 53,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 659,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 655,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 54,
+            "booked": false,
+            "duration_minutes": 60,
+            "editable": false,
+            "end_tick": 663,
+            "genre": "Drama",
+            "programme": 10,
+            "programme_name": "City Stories",
+            "proposed_advertiser": null,
+            "start_tick": 659,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 55,
+            "booked": false,
+            "duration_minutes": 45,
+            "editable": false,
+            "end_tick": 666,
+            "genre": "Science",
+            "programme": 9,
+            "programme_name": "Tomorrow's Workshop",
+            "proposed_advertiser": null,
+            "start_tick": 663,
+            "station": 2,
+            "status": "planned"
+          },
+          {
+            "airing_id": 56,
+            "booked": false,
+            "duration_minutes": 90,
+            "editable": false,
+            "end_tick": 672,
+            "genre": "Drama",
+            "programme": 11,
+            "programme_name": "The Last Tram",
+            "proposed_advertiser": null,
+            "start_tick": 666,
+            "station": 2,
+            "status": "planned"
+          }
+        ],
+        "stations": [
+          {
+            "id": 1,
+            "is_player": true,
+            "name": "Channel One",
+            "owned_studios": 1,
+            "staff": [
+              "Elian North",
+              "Mina Sol"
+            ]
+          },
+          {
+            "id": 2,
+            "is_player": false,
+            "name": "Channel Two",
+            "owned_studios": null,
+            "staff": [
+              "Vera Quinn"
+            ]
+          }
+        ],
+        "tick_minutes": 15
+      }
+    }
+  ],
+  "experiment": "pooled_sway_v1",
+  "rejected_without_sway": {
+    "code": "exceptional_participation_required",
+    "message": "Select paid Sway negotiation for this participant's exceptional availability."
+  },
+  "sway_chain": {
+    "active_airing": null,
+    "advertisers": [
+      {
+        "id": 1,
+        "name": "Everyday Snacks"
+      },
+      {
+        "id": 2,
+        "name": "Precision Equipment"
+      }
+    ],
+    "booking_review": null,
+    "cash": "19478",
+    "catalogue": [
+      {
+        "awareness": 0.8,
+        "broadcast_cost": "150",
+        "cast_appeal": 0.75,
+        "duration_minutes": 30,
+        "episode": 1,
+        "genre": "Comedy",
+        "id": 1,
+        "kind": "episode",
+        "name": "Neighbourhood Laughs",
+        "production_id": null,
+        "series_name": "Demo series 1",
+        "tone": 0.8
+      },
+      {
+        "awareness": 0.5,
+        "broadcast_cost": "50",
+        "cast_appeal": 0.35,
+        "duration_minutes": 45,
+        "episode": 1,
+        "genre": "Science",
+        "id": 2,
+        "kind": "episode",
+        "name": "Workshop Science",
+        "production_id": null,
+        "series_name": "Demo series 2",
+        "tone": 0.15
+      },
+      {
+        "awareness": 1.0,
+        "broadcast_cost": "400",
+        "cast_appeal": 1.0,
+        "duration_minutes": 60,
+        "episode": 1,
+        "genre": "Comedy",
+        "id": 3,
+        "kind": "episode",
+        "name": "The Big Premiere",
+        "production_id": null,
+        "series_name": "Demo series 3",
+        "tone": 0.8
+      },
+      {
+        "awareness": 0.65,
+        "broadcast_cost": "100",
+        "cast_appeal": 0.6,
+        "duration_minutes": 60,
+        "episode": 1,
+        "genre": "Drama",
+        "id": 4,
+        "kind": "episode",
+        "name": "Evening Stories",
+        "production_id": null,
+        "series_name": "Demo series 4",
+        "tone": 0.45
+      },
+      {
+        "awareness": 0.65,
+        "broadcast_cost": "100",
+        "cast_appeal": 0.6,
+        "duration_minutes": 90,
+        "episode": null,
+        "genre": "Drama",
+        "id": 5,
+        "kind": "standalone",
+        "name": "The Long Weekend",
+        "production_id": null,
+        "series_name": null,
+        "tone": 0.45
+      },
+      {
+        "awareness": 0.8,
+        "broadcast_cost": "150",
+        "cast_appeal": 0.75,
+        "duration_minutes": 30,
+        "episode": 2,
+        "genre": "Comedy",
+        "id": 6,
+        "kind": "episode",
+        "name": "Neighbourhood Laughs: episode 2",
+        "production_id": null,
+        "series_name": "Demo series 1",
+        "tone": 0.8
+      },
+      {
+        "awareness": 0.8,
+        "broadcast_cost": "150",
+        "cast_appeal": 0.75,
+        "duration_minutes": 30,
+        "episode": 3,
+        "genre": "Comedy",
+        "id": 7,
+        "kind": "episode",
+        "name": "Neighbourhood Laughs: episode 3",
+        "production_id": null,
+        "series_name": "Demo series 1",
+        "tone": 0.8
+      },
+      {
+        "awareness": 0.55,
+        "broadcast_cost": "50",
+        "cast_appeal": 0.475,
+        "duration_minutes": 45,
+        "episode": null,
+        "genre": "Science",
+        "id": 12,
+        "kind": "standalone",
+        "name": "Workshop Conversations",
+        "production_id": 1,
+        "series_name": null,
+        "tone": 0.2
+      },
+      {
+        "awareness": 0.55,
+        "broadcast_cost": "50",
+        "cast_appeal": 0.8125,
+        "duration_minutes": 45,
+        "episode": null,
+        "genre": "Drama",
+        "id": 13,
+        "kind": "standalone",
+        "name": "Neighbourhood Conversations",
+        "production_id": 2,
+        "series_name": null,
+        "tone": 0.5
+      },
+      {
+        "awareness": 0.55,
+        "broadcast_cost": "50",
+        "cast_appeal": 0.5125000000000001,
+        "duration_minutes": 45,
+        "episode": null,
+        "genre": "Drama",
+        "id": 14,
+        "kind": "standalone",
+        "name": "Everyday workshop",
+        "production_id": 3,
+        "series_name": null,
+        "tone": 0.2
+      }
+    ],
+    "contracts": [
+      {
+        "advertiser": 2,
+        "airing_id": 57,
+        "contract_id": "1",
+        "deadline_tick": 75,
+        "maximum_payment": "804",
+        "settlement": {
+          "payment": "804",
+          "refund": "0",
+          "targets": [
+            {
+              "allocated_payment": "0",
+              "audience": "Young viewers",
+              "credited_units": "664692",
+              "payment": "0",
+              "promised_units": "664692",
+              "refund": "0"
+            },
+            {
+              "allocated_payment": "0",
+              "audience": "Households",
+              "credited_units": "3651628",
+              "payment": "0",
+              "promised_units": "3651628",
+              "refund": "0"
+            },
+            {
+              "allocated_payment": "804",
+              "audience": "Specialists",
+              "credited_units": "562667620",
+              "payment": "804",
+              "promised_units": "562667620",
+              "refund": "0"
+            }
+          ]
+        },
+        "targets": [
+          {
+            "allocated_payment": "0",
+            "audience": "Young viewers",
+            "forecast_relevant_delivery": 0.6646920819679147,
+            "promised_units": "664692"
+          },
+          {
+            "allocated_payment": "0",
+            "audience": "Households",
+            "forecast_relevant_delivery": 3.651628976949858,
+            "promised_units": "3651628"
+          },
+          {
+            "allocated_payment": "804",
+            "audience": "Specialists",
+            "forecast_relevant_delivery": 562.6676202910794,
+            "promised_units": "562667620"
+          }
+        ]
+      },
+      {
+        "advertiser": 1,
+        "airing_id": 58,
+        "contract_id": "2",
+        "deadline_tick": 267,
+        "maximum_payment": "1774",
+        "settlement": {
+          "payment": "1774",
+          "refund": "0",
+          "targets": [
+            {
+              "allocated_payment": "525",
+              "audience": "Young viewers",
+              "credited_units": "1731573557",
+              "payment": "525",
+              "promised_units": "1731573557",
+              "refund": "0"
+            },
+            {
+              "allocated_payment": "1248",
+              "audience": "Households",
+              "credited_units": "4114625571",
+              "payment": "1248",
+              "promised_units": "4114625571",
+              "refund": "0"
+            },
+            {
+              "allocated_payment": "1",
+              "audience": "Specialists",
+              "credited_units": "7370655",
+              "payment": "1",
+              "promised_units": "7370655",
+              "refund": "0"
+            }
+          ]
+        },
+        "targets": [
+          {
+            "allocated_payment": "525",
+            "audience": "Young viewers",
+            "forecast_relevant_delivery": 1731.573557136382,
+            "promised_units": "1731573557"
+          },
+          {
+            "allocated_payment": "1248",
+            "audience": "Households",
+            "forecast_relevant_delivery": 4114.62557183831,
+            "promised_units": "4114625571"
+          },
+          {
+            "allocated_payment": "1",
+            "audience": "Specialists",
+            "forecast_relevant_delivery": 7.370655887185904,
+            "promised_units": "7370655"
+          }
+        ]
+      }
+    ],
+    "end_tick": 672,
+    "finances": {
+      "costs_paid": "100",
+      "ledger": [
+        {
+          "airing_id": null,
+          "amount": "1000",
+          "kind": "production_reserve",
+          "production_id": 1,
+          "tick": 0
+        },
+        {
+          "airing_id": null,
+          "amount": "1000",
+          "kind": "production_spend",
+          "production_id": 1,
+          "tick": 40
+        },
+        {
+          "airing_id": 57,
+          "amount": "50",
+          "kind": "broadcast_cost",
+          "production_id": null,
+          "tick": 73
+        },
+        {
+          "airing_id": 57,
+          "amount": "804",
+          "kind": "advertising_payment",
+          "production_id": null,
+          "tick": 75
+        },
+        {
+          "airing_id": null,
+          "amount": "1000",
+          "kind": "production_reserve",
+          "production_id": 2,
+          "tick": 75
+        },
+        {
+          "airing_id": null,
+          "amount": "1000",
+          "kind": "production_spend",
+          "production_id": 2,
+          "tick": 232
+        },
+        {
+          "airing_id": 58,
+          "amount": "50",
+          "kind": "broadcast_cost",
+          "production_id": null,
+          "tick": 265
+        },
+        {
+          "airing_id": 58,
+          "amount": "1774",
+          "kind": "advertising_payment",
+          "production_id": null,
+          "tick": 267
+        },
+        {
+          "airing_id": null,
+          "amount": "1000",
+          "kind": "production_reserve",
+          "production_id": 3,
+          "tick": 267
+        },
+        {
+          "airing_id": null,
+          "amount": "1000",
+          "kind": "production_spend",
+          "production_id": 3,
+          "tick": 280
+        }
+      ],
+      "opening_cash": "20000",
+      "production_committed": "3000",
+      "production_in_escrow": "0",
+      "production_spent": "3000",
+      "revenue": "2578"
+    },
+    "gaps": [
+      {
+        "end_tick": 72,
+        "start_tick": 0
+      },
+      {
+        "end_tick": 264,
+        "start_tick": 75
+      },
+      {
+        "end_tick": 672,
+        "start_tick": 267
+      }
+    ],
+    "next_airing": null,
+    "now_tick": 292,
+    "offer": null,
+    "production": {
+      "duration_minutes": 45,
+      "format": "standalone_interview_discussion",
+      "known_concerns": [
+        {
+          "note": "Booking notes: Mina and Jules have previously disagreed over who leads the conversation.",
+          "people": [
+            2,
+            5
+          ]
+        },
+        {
+          "note": "Booking notes: Nora and Rafi have found it difficult to share the floor.",
+          "people": [
+            3,
+            6
+          ]
+        }
+      ],
+      "participation_cost": 2,
+      "people": [
+        {
+          "commitments": [
+            {
+              "end_tick": 44,
+              "production_id": 1,
+              "start_tick": 40,
+              "title": "Workshop Conversations"
+            },
+            {
+              "end_tick": 284,
+              "production_id": 3,
+              "start_tick": 280,
+              "title": "Everyday workshop"
+            }
+          ],
+          "description": "A careful science presenter, strongest with calm explanations.",
+          "fee": "220",
+          "id": 1,
+          "name": "Elian North",
+          "negotiable_from_tick": null,
+          "normal_until_tick": 672,
+          "role": "host",
+          "station_id": 1
+        },
+        {
+          "commitments": [
+            {
+              "end_tick": 236,
+              "production_id": 2,
+              "start_tick": 232,
+              "title": "Neighbourhood Conversations"
+            }
+          ],
+          "description": "A familiar entertainment host with a lively conversational style.",
+          "fee": "120",
+          "id": 2,
+          "name": "Mina Sol",
+          "negotiable_from_tick": null,
+          "normal_until_tick": 672,
+          "role": "host",
+          "station_id": 1
+        },
+        {
+          "commitments": [
+            {
+              "end_tick": 44,
+              "production_id": 1,
+              "start_tick": 40,
+              "title": "Workshop Conversations"
+            }
+          ],
+          "description": "An inventor who enjoys explaining practical science. Available days 1–2; later by explicit Sway negotiation.",
+          "fee": "220",
+          "id": 3,
+          "name": "Nora Vale",
+          "negotiable_from_tick": 192,
+          "normal_until_tick": 192,
+          "role": "guest",
+          "station_id": null
+        },
+        {
+          "commitments": [
+            {
+              "end_tick": 44,
+              "production_id": 1,
+              "start_tick": 40,
+              "title": "Workshop Conversations"
+            },
+            {
+              "end_tick": 284,
+              "production_id": 3,
+              "start_tick": 280,
+              "title": "Everyday workshop"
+            }
+          ],
+          "description": "A hands-on engineer, comfortable with detailed technical discussion.",
+          "fee": "180",
+          "id": 4,
+          "name": "Felix Reed",
+          "negotiable_from_tick": null,
+          "normal_until_tick": 672,
+          "role": "guest",
+          "station_id": null
+        },
+        {
+          "commitments": [
+            {
+              "end_tick": 236,
+              "production_id": 2,
+              "start_tick": 232,
+              "title": "Neighbourhood Conversations"
+            }
+          ],
+          "description": "A well-known performer with show-business stories and a theatrical delivery. Available days 1–2; later by explicit Sway negotiation.",
+          "fee": "140",
+          "id": 5,
+          "name": "Jules Hart",
+          "negotiable_from_tick": 192,
+          "normal_until_tick": 192,
+          "role": "guest",
+          "station_id": null
+        },
+        {
+          "commitments": [
+            {
+              "end_tick": 236,
+              "production_id": 2,
+              "start_tick": 232,
+              "title": "Neighbourhood Conversations"
+            },
+            {
+              "end_tick": 284,
+              "production_id": 3,
+              "start_tick": 280,
+              "title": "Everyday workshop"
+            }
+          ],
+          "description": "A community storyteller who connects everyday life and popular culture.",
+          "fee": "160",
+          "id": 6,
+          "name": "Rafi Linden",
+          "negotiable_from_tick": null,
+          "normal_until_tick": 672,
+          "role": "guest",
+          "station_id": null
+        }
+      ],
+      "post_ticks": 8,
+      "projects": [
+        {
+          "booked_at": 0,
+          "budget": "1000",
+          "cooperation_sway": 0,
+          "exceptional_person": null,
+          "fees": "620",
+          "guests": [
+            3,
+            4
+          ],
+          "host": 1,
+          "id": 1,
+          "phase": "completed",
+          "programme": 12,
+          "quest_hints": [],
+          "ready_at": 52,
+          "record_at": 40,
+          "recording_end": 44,
+          "studio": 1,
+          "subject": "science",
+          "title": "Workshop Conversations",
+          "tone": "calm"
+        },
+        {
+          "booked_at": 75,
+          "budget": "1000",
+          "cooperation_sway": 2,
+          "exceptional_person": 5,
+          "fees": "420",
+          "guests": [
+            5,
+            6
+          ],
+          "host": 2,
+          "id": 2,
+          "phase": "completed",
+          "programme": 13,
+          "quest_hints": [],
+          "ready_at": 244,
+          "record_at": 232,
+          "recording_end": 236,
+          "studio": 1,
+          "subject": "everyday_life",
+          "title": "Neighbourhood Conversations",
+          "tone": "conversational"
+        },
+        {
+          "booked_at": 267,
+          "budget": "1000",
+          "cooperation_sway": 0,
+          "exceptional_person": null,
+          "fees": "560",
+          "guests": [
+            4,
+            6
+          ],
+          "host": 1,
+          "id": 3,
+          "phase": "completed",
+          "programme": 14,
+          "quest_hints": [],
+          "ready_at": 292,
+          "record_at": 280,
+          "recording_end": 284,
+          "studio": 1,
+          "subject": "everyday_life",
+          "title": "Everyday workshop",
+          "tone": "calm"
+        }
+      ],
+      "recording_ticks": 4,
+      "requests": [
+        {
+          "acceptance": {
+            "accepted_at": 0,
+            "deadline_tick": 192,
+            "fulfilled_at": 44,
+            "production_id": 1
+          },
+          "achievement": "recording_completed",
+          "id": 1,
+          "proposer": 3,
+          "reward": 4,
+          "statement": "Record a discussion with me and Felix Reed as the two guests.",
+          "status": "completed",
+          "time_limit_ticks": 192
+        },
+        {
+          "acceptance": {
+            "accepted_at": 267,
+            "deadline_tick": 459,
+            "fulfilled_at": 292,
+            "production_id": 3
+          },
+          "achievement": "production_completed",
+          "id": 2,
+          "proposer": 6,
+          "reward": 3,
+          "statement": "Complete a calm discussion about everyday life with me as a guest.",
+          "status": "completed",
+          "time_limit_ticks": 192
+        }
+      ],
+      "sway_balance": 3,
+      "sway_history": [
+        {
+          "balance": 4,
+          "change": 4,
+          "kind": "request_reward",
+          "person_id": null,
+          "production_id": 1,
+          "request_id": 1,
+          "tick": 44
+        },
+        {
+          "balance": 2,
+          "change": -2,
+          "kind": "exceptional_participation",
+          "person_id": 5,
+          "production_id": 2,
+          "request_id": null,
+          "tick": 75
+        },
+        {
+          "balance": 0,
+          "change": -2,
+          "kind": "cooperation",
+          "person_id": null,
+          "production_id": 2,
+          "request_id": null,
+          "tick": 75
+        },
+        {
+          "balance": 3,
+          "change": 3,
+          "kind": "request_reward",
+          "person_id": null,
+          "production_id": 3,
+          "request_id": 2,
+          "tick": 292
+        }
+      ]
+    },
+    "reporting": "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. One ad exposure opportunity per airing; delivery units are millionths of a relevant impression.",
+    "results": [
+      {
+        "aired_advertiser": 2,
+        "aired_programme": 12,
+        "airing_id": 57,
+        "audiences": [
+          {
+            "audience": "Young viewers",
+            "not_watching": 2628.5516820567764,
+            "player_viewers": 664.6920819679144,
+            "population": 6000,
+            "rival_viewers": 2706.756235975309
+          },
+          {
+            "audience": "Households",
+            "not_watching": 3427.875062866996,
+            "player_viewers": 1521.5120737291074,
+            "population": 11000,
+            "rival_viewers": 6050.612863403897
+          },
+          {
+            "audience": "Specialists",
+            "not_watching": 1259.2066356898736,
+            "player_viewers": 661.9619062247993,
+            "population": 2500,
+            "rival_viewers": 578.831458085327
+          }
+        ],
+        "broadcast_cost": "50",
+        "cash_after": "19754",
+        "end_tick": 75,
+        "off_air": false,
+        "snapshot_tick": 72,
+        "start_tick": 72
+      },
+      {
+        "aired_advertiser": 1,
+        "aired_programme": 13,
+        "airing_id": 58,
+        "audiences": [
+          {
+            "audience": "Young viewers",
+            "not_watching": 2317.6477287755833,
+            "player_viewers": 2283.989195890002,
+            "population": 6000,
+            "rival_viewers": 1398.3630753344144
+          },
+          {
+            "audience": "Households",
+            "not_watching": 2802.205838470247,
+            "player_viewers": 5269.861419494809,
+            "population": 11000,
+            "rival_viewers": 2927.932742034945
+          },
+          {
+            "audience": "Specialists",
+            "not_watching": 1305.9617119955128,
+            "player_viewers": 737.0655887185902,
+            "population": 2500,
+            "rival_viewers": 456.9726992858971
+          }
+        ],
+        "broadcast_cost": "50",
+        "cash_after": "20478",
+        "end_tick": 267,
+        "off_air": false,
+        "snapshot_tick": 264,
+        "start_tick": 264
+      }
+    ],
+    "schedule": [
+      {
+        "airing_id": 57,
+        "booked": true,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 75,
+        "genre": "Science",
+        "programme": 12,
+        "programme_name": "Workshop Conversations",
+        "proposed_advertiser": 2,
+        "start_tick": 72,
+        "station": 1,
+        "status": "completed"
+      },
+      {
+        "airing_id": 58,
+        "booked": true,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 267,
+        "genre": "Drama",
+        "programme": 13,
+        "programme_name": "Neighbourhood Conversations",
+        "proposed_advertiser": 1,
+        "start_tick": 264,
+        "station": 1,
+        "status": "completed"
+      },
+      {
+        "airing_id": 1,
+        "booked": false,
+        "duration_minutes": 30,
+        "editable": false,
+        "end_tick": 66,
+        "genre": "Comedy",
+        "programme": 8,
+        "programme_name": "After Hours",
+        "proposed_advertiser": null,
+        "start_tick": 64,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 2,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 69,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 66,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 3,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 73,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 69,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 4,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 79,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 73,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 5,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 83,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 79,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 6,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 87,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 83,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 7,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 90,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 87,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 8,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 96,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 90,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 9,
+        "booked": false,
+        "duration_minutes": 30,
+        "editable": false,
+        "end_tick": 162,
+        "genre": "Comedy",
+        "programme": 8,
+        "programme_name": "After Hours",
+        "proposed_advertiser": null,
+        "start_tick": 160,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 10,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 165,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 162,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 11,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 169,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 165,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 12,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 175,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 169,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 13,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 179,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 175,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 14,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 183,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 179,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 15,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 186,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 183,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 16,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 192,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 186,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 17,
+        "booked": false,
+        "duration_minutes": 30,
+        "editable": false,
+        "end_tick": 258,
+        "genre": "Comedy",
+        "programme": 8,
+        "programme_name": "After Hours",
+        "proposed_advertiser": null,
+        "start_tick": 256,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 18,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 261,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 258,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 19,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 265,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 261,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 20,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 271,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 265,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 21,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 275,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 271,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 22,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 279,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 275,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 23,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 282,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 279,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 24,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 288,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 282,
+        "station": 2,
+        "status": "completed"
+      },
+      {
+        "airing_id": 25,
+        "booked": false,
+        "duration_minutes": 30,
+        "editable": false,
+        "end_tick": 354,
+        "genre": "Comedy",
+        "programme": 8,
+        "programme_name": "After Hours",
+        "proposed_advertiser": null,
+        "start_tick": 352,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 26,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 357,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 354,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 27,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 361,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 357,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 28,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 367,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 361,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 29,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 371,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 367,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 30,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 375,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 371,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 31,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 378,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 375,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 32,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 384,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 378,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 33,
+        "booked": false,
+        "duration_minutes": 30,
+        "editable": false,
+        "end_tick": 450,
+        "genre": "Comedy",
+        "programme": 8,
+        "programme_name": "After Hours",
+        "proposed_advertiser": null,
+        "start_tick": 448,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 34,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 453,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 450,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 35,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 457,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 453,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 36,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 463,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 457,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 37,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 467,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 463,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 38,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 471,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 467,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 39,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 474,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 471,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 40,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 480,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 474,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 41,
+        "booked": false,
+        "duration_minutes": 30,
+        "editable": false,
+        "end_tick": 546,
+        "genre": "Comedy",
+        "programme": 8,
+        "programme_name": "After Hours",
+        "proposed_advertiser": null,
+        "start_tick": 544,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 42,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 549,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 546,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 43,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 553,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 549,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 44,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 559,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 553,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 45,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 563,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 559,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 46,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 567,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 563,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 47,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 570,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 567,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 48,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 576,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 570,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 49,
+        "booked": false,
+        "duration_minutes": 30,
+        "editable": false,
+        "end_tick": 642,
+        "genre": "Comedy",
+        "programme": 8,
+        "programme_name": "After Hours",
+        "proposed_advertiser": null,
+        "start_tick": 640,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 50,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 645,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 642,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 51,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 649,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 645,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 52,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 655,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 649,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 53,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 659,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 655,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 54,
+        "booked": false,
+        "duration_minutes": 60,
+        "editable": false,
+        "end_tick": 663,
+        "genre": "Drama",
+        "programme": 10,
+        "programme_name": "City Stories",
+        "proposed_advertiser": null,
+        "start_tick": 659,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 55,
+        "booked": false,
+        "duration_minutes": 45,
+        "editable": false,
+        "end_tick": 666,
+        "genre": "Science",
+        "programme": 9,
+        "programme_name": "Tomorrow's Workshop",
+        "proposed_advertiser": null,
+        "start_tick": 663,
+        "station": 2,
+        "status": "planned"
+      },
+      {
+        "airing_id": 56,
+        "booked": false,
+        "duration_minutes": 90,
+        "editable": false,
+        "end_tick": 672,
+        "genre": "Drama",
+        "programme": 11,
+        "programme_name": "The Last Tram",
+        "proposed_advertiser": null,
+        "start_tick": 666,
+        "station": 2,
+        "status": "planned"
+      }
+    ],
+    "stations": [
+      {
+        "id": 1,
+        "is_player": true,
+        "name": "Channel One",
+        "owned_studios": 1,
+        "staff": [
+          "Elian North",
+          "Mina Sol"
+        ]
+      },
+      {
+        "id": 2,
+        "is_player": false,
+        "name": "Channel Two",
+        "owned_studios": null,
+        "staff": [
+          "Vera Quinn"
+        ]
+      }
+    ],
+    "tick_minutes": 15
+  }
+}

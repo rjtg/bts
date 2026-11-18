@@ -1,5 +1,9 @@
 # Pooled Sway evidence
 
+Historical protocol-v4 milestone snapshot: the cooperation checkbox and
+production-specific promises shown here have been superseded by the
+[casting desk and timed quests](../casting-desk/README.md).
+
 Verified locally 2026-11-18. This replaces the personal-favour implementation;
 [the previous evidence](../original-production/README.md) remains a historical
 protocol-v3 snapshot. Current player protocol is v4.

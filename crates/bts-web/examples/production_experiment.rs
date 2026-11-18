@@ -7,7 +7,19 @@ fn dispatch(
     requests: &mut Vec<Value>,
     responses: &mut Vec<Value>,
 ) -> Value {
-    let request = json!({"api_version":4,"command":command});
+    if command["type"] == "book_production" {
+        let mut review = command.clone();
+        review["type"] = json!("review_production");
+        let mut candidate = s.clone();
+        let result: Value = serde_json::from_str(
+            &candidate.dispatch_json(&json!({"api_version":5,"command":review}).to_string()),
+        )
+        .unwrap();
+        if result["status"] == "ok" {
+            dispatch(s, review, requests, responses);
+        }
+    }
+    let request = json!({"api_version":5,"command":command});
     let response: Value = serde_json::from_str(&s.dispatch_json(&request.to_string())).unwrap();
     requests.push(request);
     responses.push(response.clone());
@@ -52,10 +64,10 @@ fn comparison(entertainment: bool) -> Value {
     let mut send = |command| dispatch(&mut s, command, &mut requests, &mut responses);
     send(json!({"type":"create_production","concept":c}));
     send(
-        json!({"type":"book_production","production_id":1,"promise_request":null,"exceptional_person":null,"smooth_cooperation":false}),
+        json!({"type":"book_production","production_id":1,"exceptional_person":null,"cooperation_sway":0}),
     );
     send(json!({"type":"advance","to_tick":52}));
-    send(json!({"type":"place","start_tick":72,"programme":8,"advertiser":1}));
+    send(json!({"type":"place","start_tick":72,"programme":12,"advertiser":1}));
     let quote = send(json!({"type":"request_offer","airing_id":57}));
     let token = quote["report"]["offer"]["offer_id"].clone();
     send(json!({"type":"accept_offer","airing_id":57,"offer_id":token}));
@@ -70,16 +82,17 @@ fn main() {
     let mut responses = vec![];
     let mut send = |command| dispatch(&mut s, command, &mut requests, &mut responses);
     send(json!({"type":"inspect"}));
+    send(json!({"type":"accept_request","request_id":1}));
     send(
         json!({"type":"create_production","concept":concept("Workshop Conversations",1,[3,4],"science","calm","1000",40)}),
     );
     send(
-        json!({"type":"book_production","production_id":1,"promise_request":1,"exceptional_person":null,"smooth_cooperation":false}),
+        json!({"type":"book_production","production_id":1,"exceptional_person":null,"cooperation_sway":0}),
     );
-    let early = send(json!({"type":"place","start_tick":72,"programme":8,"advertiser":null}));
+    let early = send(json!({"type":"place","start_tick":72,"programme":12,"advertiser":null}));
     assert_eq!(early["error"]["code"], "production_not_ready");
     send(json!({"type":"advance","to_tick":52}));
-    send(json!({"type":"place","start_tick":72,"programme":8,"advertiser":2}));
+    send(json!({"type":"place","start_tick":72,"programme":12,"advertiser":2}));
     let quote = send(json!({"type":"request_offer","airing_id":57}));
     let token = quote["report"]["offer"]["offer_id"].clone();
     send(json!({"type":"accept_offer","airing_id":57,"offer_id":token}));
@@ -88,26 +101,27 @@ fn main() {
         json!({"type":"create_production","concept":concept("Neighbourhood Conversations",2,[5,6],"everyday_life","conversational","1000",232)}),
     );
     let without = send(
-        json!({"type":"book_production","production_id":2,"promise_request":null,"exceptional_person":null,"smooth_cooperation":false}),
+        json!({"type":"book_production","production_id":2,"exceptional_person":null,"cooperation_sway":0}),
     );
     assert_eq!(
         without["error"]["code"],
         "exceptional_participation_required"
     );
     send(
-        json!({"type":"book_production","production_id":2,"promise_request":null,"exceptional_person":5,"smooth_cooperation":true}),
+        json!({"type":"book_production","production_id":2,"exceptional_person":5,"cooperation_sway":2}),
     );
     send(json!({"type":"advance","to_tick":244}));
-    send(json!({"type":"place","start_tick":264,"programme":9,"advertiser":1}));
+    send(json!({"type":"place","start_tick":264,"programme":13,"advertiser":1}));
     let quote = send(json!({"type":"request_offer","airing_id":58}));
     let token = quote["report"]["offer"]["offer_id"].clone();
     send(json!({"type":"accept_offer","airing_id":58,"offer_id":token}));
     send(json!({"type":"advance","to_tick":267}));
+    send(json!({"type":"accept_request","request_id":2}));
     send(
         json!({"type":"create_production","concept":concept("Everyday workshop",1,[4,6],"everyday_life","calm","1000",280)}),
     );
     send(
-        json!({"type":"book_production","production_id":3,"promise_request":2,"exceptional_person":null,"smooth_cooperation":false}),
+        json!({"type":"book_production","production_id":3,"exceptional_person":null,"cooperation_sway":0}),
     );
     let final_report = send(json!({"type":"advance","to_tick":292}));
     assert_eq!(final_report["status"], "ok");

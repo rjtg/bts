@@ -299,10 +299,10 @@ fn malformed_commands_preserve_the_pending_quote_and_useful_errors() {
     for invalid in [
         "{}",
         "not json",
-        r#"{"api_version":4,"command":{"type":"advance","to_tick":80,"extra":true}}"#,
-        r#"{"api_version":4,"command":{"type":"place","start_tick":-1,"programme":1}}"#,
-        r#"{"api_version":4,"command":{"type":"place","start_tick":1.5,"programme":1}}"#,
-        r#"{"api_version":4,"command":{"type":"remove","airing_id":4294967296}}"#,
+        r#"{"api_version":5,"command":{"type":"advance","to_tick":80,"extra":true}}"#,
+        r#"{"api_version":5,"command":{"type":"place","start_tick":-1,"programme":1}}"#,
+        r#"{"api_version":5,"command":{"type":"place","start_tick":1.5,"programme":1}}"#,
+        r#"{"api_version":5,"command":{"type":"remove","airing_id":4294967296}}"#,
     ] {
         let before = s.report();
         let response: Value = serde_json::from_str(&s.dispatch_json(invalid)).unwrap();
@@ -328,6 +328,12 @@ fn audit(value: &Value) {
                 assert!(
                     ![
                         "execution",
+                        "outcome",
+                        "cooperation_penalty",
+                        "recovered_penalty",
+                        "remaining_penalty",
+                        "base_execution",
+                        "penalty",
                         "craft",
                         "subject_fit",
                         "preferred_tone",
@@ -423,8 +429,7 @@ fn serialized_player_phases_hide_internal_state_and_preserve_money_strings() {
     for p in &mut w.programmes {
         p.execution = 0.123456789;
     }
-    hidden.planner =
-        Planner::new(w, bts_sim::Parameters::default(), PLAYER, SimTick(672), &[]).unwrap();
+    hidden.planner = scenario::planner_from_world(w).unwrap();
     // Catalogue observation is independent of hidden execution.
     assert_eq!(
         hidden.report().catalogue,
@@ -495,6 +500,7 @@ fn production_concept() -> ProductionConceptInput {
 #[test]
 fn production_reports_remain_whitelisted_and_money_is_not_charged_twice() {
     let mut s = Session::new().unwrap();
+    s.execute(Command::AcceptRequest { request_id: 1 }).unwrap();
     let report = s
         .execute(Command::CreateProduction {
             concept: production_concept(),
@@ -505,9 +511,8 @@ fn production_reports_remain_whitelisted_and_money_is_not_charged_twice() {
     let booked = s
         .execute(Command::BookProduction {
             production_id: id,
-            promise_request: Some(1),
             exceptional_person: None,
-            smooth_cooperation: false,
+            cooperation_sway: 0,
         })
         .unwrap();
     let work = booked.production.projects[0].programme.unwrap();
@@ -560,6 +565,7 @@ fn production_reports_remain_whitelisted_and_money_is_not_charged_twice() {
 #[test]
 fn production_invalid_commands_reset_ids_and_pooled_sway_isolation() {
     let mut a = Session::new().unwrap();
+    a.execute(Command::AcceptRequest { request_id: 1 }).unwrap();
     let mut b = Session::new().unwrap();
     let id = a
         .execute(Command::CreateProduction {
@@ -571,9 +577,8 @@ fn production_invalid_commands_reset_ids_and_pooled_sway_isolation() {
         .id;
     a.execute(Command::BookProduction {
         production_id: id,
-        promise_request: Some(1),
         exceptional_person: None,
-        smooth_cooperation: false,
+        cooperation_sway: 0,
     })
     .unwrap();
     a.execute(Command::Advance { to_tick: 52 }).unwrap();
@@ -583,9 +588,8 @@ fn production_invalid_commands_reset_ids_and_pooled_sway_isolation() {
         &mut b,
         Command::BookProduction {
             production_id: id,
-            promise_request: None,
             exceptional_person: Some(5),
-            smooth_cooperation: false,
+            cooperation_sway: 0,
         },
         "unknown_production",
     );
@@ -606,15 +610,14 @@ fn production_invalid_commands_reset_ids_and_pooled_sway_isolation() {
         &mut a,
         Command::BookProduction {
             production_id: id,
-            promise_request: Some(1),
             exceptional_person: None,
-            smooth_cooperation: false,
+            cooperation_sway: 0,
         },
         "unknown_production",
     );
     for json in [
-        r#"{"api_version":4,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":9007199254740993,"record_at":40}}}"#,
-        r#"{"api_version":4,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"unknown","tone":"calm","budget":"1000","record_at":40}}}"#,
+        r#"{"api_version":5,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":9007199254740993,"record_at":40}}}"#,
+        r#"{"api_version":5,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"unknown","tone":"calm","budget":"1000","record_at":40}}}"#,
     ] {
         let before = a.report();
         let response: Value = serde_json::from_str(&a.dispatch_json(json)).unwrap();
@@ -647,14 +650,13 @@ fn old_redemption_fields_are_rejected_and_failed_sway_spending_preserves_quotes(
         &mut s,
         Command::BookProduction {
             production_id: project,
-            promise_request: Some(1),
             exceptional_person: None,
-            smooth_cooperation: true,
+            cooperation_sway: 2,
         },
         "insufficient_sway",
     );
     let before = s.report();
-    let result: Value = serde_json::from_str(&s.dispatch_json(r#"{"api_version":4,"command":{"type":"book_production","production_id":1,"promise_request":1,"call_favour":1,"smooth_cooperation":false}}"#)).unwrap();
+    let result: Value = serde_json::from_str(&s.dispatch_json(r#"{"api_version":5,"command":{"type":"book_production","production_id":1,"promise_request":1,"call_favour":1,"cooperation_sway":0}}"#)).unwrap();
     assert_eq!(result["error"]["code"], "malformed_command");
     assert_eq!(before, s.report());
     let result: Value =
@@ -666,4 +668,199 @@ fn old_redemption_fields_are_rejected_and_failed_sway_spending_preserves_quotes(
         offer_id: token,
     })
     .unwrap();
+}
+
+#[test]
+fn booking_review_is_read_only_and_invalidated_by_world_changes() {
+    let mut s = Session::new().unwrap();
+    let id = s
+        .execute(Command::CreateProduction {
+            concept: production_concept(),
+        })
+        .unwrap()
+        .production
+        .projects[0]
+        .id;
+    let before = format!("{:?}", s.planner);
+    let report = s
+        .execute(Command::ReviewProduction {
+            production_id: id,
+            exceptional_person: None,
+            cooperation_sway: 0,
+        })
+        .unwrap();
+    assert_eq!(before, format!("{:?}", s.planner));
+    let review = report.booking_review.unwrap();
+    assert_eq!(review.cash_remaining, "19000");
+    assert_eq!(review.sway_remaining, 0);
+    reject(
+        &mut s,
+        Command::ReviewProduction {
+            production_id: id,
+            exceptional_person: None,
+            cooperation_sway: 1,
+        },
+        "insufficient_sway",
+    );
+    s.execute(Command::Advance { to_tick: 1 }).unwrap();
+    assert!(s.report().booking_review.is_none());
+    s.execute(Command::BookProduction {
+        production_id: id,
+        exceptional_person: None,
+        cooperation_sway: 0,
+    })
+    .unwrap();
+    let report = s.report();
+    assert_eq!(
+        report
+            .production
+            .people
+            .iter()
+            .find(|p| p.id == 3)
+            .unwrap()
+            .commitments
+            .len(),
+        1
+    );
+    for invalid in [
+        r#"{"api_version":5,"command":{"type":"book_production","production_id":1,"promise_request":1,"cooperation_sway":0}}"#,
+        r#"{"api_version":5,"command":{"type":"book_production","production_id":1,"smooth_cooperation":true}}"#,
+        r#"{"api_version":5,"command":{"type":"book_production","production_id":1,"cooperation_sway":-1}}"#,
+        r#"{"api_version":5,"command":{"type":"book_production","production_id":1,"cooperation_sway":1.5}}"#,
+    ] {
+        let before = s.report();
+        let r: Value = serde_json::from_str(&s.dispatch_json(invalid)).unwrap();
+        assert_eq!(r["error"]["code"], "malformed_command");
+        assert_eq!(before, s.report());
+    }
+}
+
+#[test]
+fn exact_cooperation_and_skill_changes_do_not_leak_through_booking_observations() {
+    let mut a = Session::new().unwrap();
+    let mut b = a.clone();
+    let (mut roster, requests) = scenario::production_roster();
+    for person in &mut roster {
+        person.craft = 0.012345;
+        person.subject_fit = [0.023456; 3];
+    }
+    b.planner.configure_production(roster, requests).unwrap();
+    let mut issues = bts_sim::planning::production::demo_cooperation();
+    issues[0].penalty = 0.234567;
+    b.planner.configure_cooperation(issues).unwrap();
+    for s in [&mut a, &mut b] {
+        let mut c = production_concept();
+        c.host = 2;
+        c.guests = [5, 6];
+        s.execute(Command::CreateProduction { concept: c }).unwrap();
+        let r = s
+            .execute(Command::ReviewProduction {
+                production_id: 1,
+                exceptional_person: None,
+                cooperation_sway: 0,
+            })
+            .unwrap();
+        audit(&serde_json::to_value(r).unwrap());
+        s.execute(Command::BookProduction {
+            production_id: 1,
+            exceptional_person: None,
+            cooperation_sway: 0,
+        })
+        .unwrap();
+    }
+    assert_eq!(a.report(), b.report());
+    assert_ne!(
+        a.planner
+            .production()
+            .project(bts_sim::planning::production::ProductionId(1))
+            .unwrap()
+            .outcome,
+        b.planner
+            .production()
+            .project(bts_sim::planning::production::ProductionId(1))
+            .unwrap()
+            .outcome
+    );
+}
+
+#[test]
+fn open_quests_deadlines_and_production_hints_are_player_observations() {
+    let mut s = Session::new().unwrap();
+    let r = s.execute(Command::AcceptRequest { request_id: 1 }).unwrap();
+    assert_eq!(r.production.requests[0].status, "open");
+    assert_eq!(
+        r.production.requests[0]
+            .acceptance
+            .as_ref()
+            .unwrap()
+            .deadline_tick,
+        192
+    );
+    reject(
+        &mut s,
+        Command::AcceptRequest { request_id: 1 },
+        "quest_already_accepted",
+    );
+    s.execute(Command::CreateProduction {
+        concept: production_concept(),
+    })
+    .unwrap();
+    assert!(s.report().production.projects[0].quest_hints[0].matches_requirements);
+    assert!(s.report().production.projects[0].quest_hints[0].can_finish_in_time);
+    s.execute(Command::Advance { to_tick: 192 }).unwrap();
+    assert_eq!(s.report().production.requests[0].status, "expired");
+    assert!(s.report().production.projects[0].quest_hints.is_empty());
+    s.execute(Command::Reset {}).unwrap();
+    assert_eq!(s.report().production.requests[0].status, "available");
+}
+
+#[test]
+fn browser_station_libraries_and_staff_are_distinct_and_enforced_by_rust() {
+    let mut s = Session::new().unwrap();
+    let report = s.report();
+    let owned = report
+        .catalogue
+        .iter()
+        .map(|p| p.id)
+        .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(owned.len(), 7);
+    assert!(report
+        .schedule
+        .iter()
+        .filter(|a| a.station != scenario::PLAYER.0)
+        .all(|a| !owned.contains(&a.programme)));
+    assert_eq!(report.stations[0].staff, vec!["Elian North", "Mina Sol"]);
+    assert_eq!(report.stations[1].staff, vec!["Vera Quinn"]);
+    assert!(report.production.people.iter().all(|p| p.id != 7));
+    assert!(report.stations[1].owned_studios.is_none());
+    reject(
+        &mut s,
+        Command::Place {
+            programme: 8,
+            start_tick: 72,
+            advertiser: None,
+        },
+        "programme_not_owned",
+    );
+    let mut concept = production_concept();
+    concept.host = 7;
+    reject(
+        &mut s,
+        Command::CreateProduction { concept },
+        "foreign_staff",
+    );
+    s.execute(Command::CreateProduction {
+        concept: production_concept(),
+    })
+    .unwrap();
+    s.execute(Command::BookProduction {
+        production_id: 1,
+        exceptional_person: None,
+        cooperation_sway: 0,
+    })
+    .unwrap();
+    s.execute(Command::Advance { to_tick: 52 }).unwrap();
+    let work = s.report().production.projects[0].programme.unwrap();
+    assert_eq!(work, 12);
+    assert!(s.report().catalogue.iter().any(|p| p.id == work));
 }

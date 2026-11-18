@@ -652,3 +652,49 @@ pub fn advertiser_value_report(
         total_money: case.final_state.economy().total_money(),
     }
 }
+
+/// Exact production causes. Never included in browser player observations.
+#[derive(Clone, Debug, Serialize)]
+pub struct ProductionReport {
+    pub craft: f64,
+    pub subject_fit: f64,
+    pub tone_fit: f64,
+    pub resources: f64,
+    pub base_execution: f64,
+    pub cooperation_penalty: f64,
+    pub recovered_penalty: f64,
+    pub remaining_penalty: f64,
+    pub execution: f64,
+    pub cooperation_sway: u32,
+    pub issues: Vec<CooperationReport>,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct CooperationReport {
+    pub people: [u16; 2],
+    pub penalty: f64,
+}
+impl ProductionReport {
+    pub fn from_production(p: &planning::production::Production) -> Option<Self> {
+        let o = p.outcome.as_ref()?;
+        Some(Self {
+            craft: o.craft,
+            subject_fit: o.subject_fit,
+            tone_fit: o.tone_fit,
+            resources: o.resources,
+            base_execution: o.base_execution,
+            cooperation_penalty: o.cooperation_penalty,
+            recovered_penalty: o.recovered_penalty,
+            remaining_penalty: o.remaining_penalty,
+            execution: o.execution,
+            cooperation_sway: p.cooperation_sway,
+            issues: o
+                .issues
+                .iter()
+                .map(|i| CooperationReport {
+                    people: i.people.map(|p| p.0),
+                    penalty: i.penalty,
+                })
+                .collect(),
+        })
+    }
+}

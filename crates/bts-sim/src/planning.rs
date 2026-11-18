@@ -4,6 +4,7 @@ pub mod production;
 
 use crate::economy::{ContractId, Offer};
 use crate::*;
+use std::collections::BTreeSet;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub struct AiringId(pub u32);
@@ -70,6 +71,15 @@ pub struct CompetitorAiring {
     pub start: SimTick,
 }
 
+/// Explicit station rights and roster assignment. Guest freelancers may remain unassigned.
+#[derive(Clone, Debug, PartialEq)]
+pub struct StationResources {
+    pub station: StationId,
+    pub programmes: BTreeSet<ProgrammeId>,
+    pub staff: BTreeSet<production::PersonId>,
+    pub studios: u16,
+}
+
 /// Owns the schedule, active reception samples and the shared numerical/accounting engine.
 #[derive(Clone, Debug)]
 pub struct Planner {
@@ -80,6 +90,9 @@ pub struct Planner {
     next_id: u32,
     revision: u64,
     production: production::ProductionState,
+    libraries: BTreeMap<StationId, BTreeSet<ProgrammeId>>,
+    staff: BTreeMap<StationId, BTreeSet<production::PersonId>>,
+    studio_counts: BTreeMap<StationId, u16>,
 }
 impl Planner {
     pub fn new(
@@ -98,6 +111,18 @@ impl Planner {
         if !world.stations.iter().any(|s| s.id == player) {
             return Err(error("unknown_station", "The player station must exist."));
         }
+        // Legacy callers may intentionally license a shared catalogue. The browser
+        // supplies explicit disjoint inventories before play begins.
+        let libraries = world
+            .stations
+            .iter()
+            .map(|station| (station.id, world.programmes.iter().map(|p| p.id).collect()))
+            .collect();
+        let studio_counts = world
+            .stations
+            .iter()
+            .map(|station| (station.id, 1))
+            .collect();
         let mut planner = Self {
             engine: Engine::new(world, parameters).map_err(engine_error)?,
             player,
@@ -106,6 +131,9 @@ impl Planner {
             next_id: 1,
             revision: 0,
             production: production::ProductionState::default(),
+            libraries,
+            staff: BTreeMap::new(),
+            studio_counts,
         };
         for c in competitors {
             if c.station == player
@@ -124,6 +152,93 @@ impl Planner {
             planner.insert(c.station, c.programme, c.start, None)?;
         }
         Ok(planner)
+    }
+    pub fn studio_count(&self, station: StationId) -> u16 {
+        self.studio_counts.get(&station).copied().unwrap_or(0)
+    }
+    pub fn owns_programme(&self, station: StationId, programme: ProgrammeId) -> bool {
+        self.libraries
+            .get(&station)
+            .is_some_and(|library| library.contains(&programme))
+    }
+    pub fn library(&self, station: StationId) -> impl Iterator<Item = ProgrammeId> + '_ {
+        self.libraries
+            .get(&station)
+            .into_iter()
+            .flat_map(|library| library.iter().copied())
+    }
+    pub fn station_staff(
+        &self,
+        station: StationId,
+    ) -> impl Iterator<Item = production::PersonId> + '_ {
+        self.staff
+            .get(&station)
+            .into_iter()
+            .flat_map(|staff| staff.iter().copied())
+    }
+    pub fn staff_owner(&self, person: production::PersonId) -> Option<StationId> {
+        self.staff
+            .iter()
+            .find_map(|(station, staff)| staff.contains(&person).then_some(*station))
+    }
+    pub fn configure_station_resources(
+        &mut self,
+        resources: Vec<StationResources>,
+    ) -> Result<(), PlanError> {
+        if self.now().0 != 0
+            || self.airings.values().any(|a| a.station == self.player)
+            || self.production.projects().next().is_some()
+            || self.production.requests().any(|r| r.acceptance.is_some())
+        {
+            return Err(error(
+                "station_resources_locked",
+                "Set station libraries and staff before play starts.",
+            ));
+        }
+        let mut libraries = BTreeMap::new();
+        let mut studios = BTreeMap::new();
+        let mut staff = BTreeMap::new();
+        let mut assigned = BTreeSet::new();
+        for resource in resources {
+            if !self
+                .world()
+                .stations
+                .iter()
+                .any(|s| s.id == resource.station)
+                || libraries.contains_key(&resource.station)
+                || resource
+                    .programmes
+                    .iter()
+                    .any(|id| !self.world().programmes.iter().any(|p| p.id == *id))
+                || resource.staff.iter().any(|id| {
+                    !self.production.roster().any(|p| p.id == *id) || !assigned.insert(*id)
+                })
+            {
+                return Err(error(
+                    "invalid_station_resources",
+                    "Use existing stations, works and people; staff cannot belong to two stations.",
+                ));
+            }
+            studios.insert(resource.station, resource.studios);
+            libraries.insert(resource.station, resource.programmes);
+            staff.insert(resource.station, resource.staff);
+        }
+        if libraries.len() != self.world().stations.len()
+            || self.airings.values().any(|a| {
+                !libraries
+                    .get(&a.station)
+                    .is_some_and(|l| l.contains(&a.programme))
+            })
+        {
+            return Err(error(
+                "invalid_station_resources",
+                "Configure every station and retain rights for all fixed rival broadcasts.",
+            ));
+        }
+        self.studio_counts = studios;
+        self.libraries = libraries;
+        self.staff = staff;
+        Ok(())
     }
     pub fn world(&self) -> &World {
         self.engine.world()
@@ -185,6 +300,12 @@ impl Planner {
                     "Choose a programme from the catalogue.",
                 )
             })?;
+        if !self.owns_programme(station, programme.id) {
+            return Err(error(
+                "programme_not_owned",
+                "This station does not have this programme in its library.",
+            ));
+        }
         let end = SimTick(
             start
                 .0

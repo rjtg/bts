@@ -36,3 +36,8 @@ on all interfaces. All changes remain in memory until reset/reload.
 The **Production** desk supports free drafts, participant booking, explicit
 requests and pooled Sway, timed completion and handoff to the programme library. See
 [original production](../docs/original-production.md) for the bounded rules.
+
+The [casting desk](../docs/casting-desk.md) replaces talent/creative dropdowns
+with portrait seats, subject tiles and sliders, and provides a Rust-calculated
+booking review. Accept [timed quests](../docs/quest-opportunities.md) independently
+and use production hints to plan their fulfilment.

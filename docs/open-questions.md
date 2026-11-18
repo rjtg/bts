@@ -24,6 +24,9 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
 - [Player-facing interactions](screens.md#player-facing-interaction-direction): direct
   schedule manipulation, focused panels, casting cards, selective sliders/stars
   and readable recaps; preserve accessible alternatives and hidden information.
+- [Playful feedback](screens.md#playful-feedback-and-visible-passage-of-time): milestone
+  notifications, a dashed current-time line, simulated daylight and later
+  resource-sensitive office visuals; thresholds and interruption policies remain open.
 - Advance publication, airing-specific anticipation and recurring-slot habits:
   choose buildup, delays, rescheduling consequences and readable evidence.
 - Ad blocks: define minutes, shares, annoyance, departures and exposure units.

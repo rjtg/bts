@@ -11,8 +11,9 @@ not a full production, careers or relationship system.
 1. Open **Production**, choose the title, host, two guests, subject, tone, budget
    and recording time. **Review concept** creates a free draft. Edit or discard
    drafts without charge; the server revalidates dates when booking.
-2. **Book production #ID** commits the cast and full budget. Optionally promise
-   a listed request and select pooled Sway uses for this booking. Errors preserve the entire session and pending quote.
+2. Accept any desired quest separately from the opportunity board. On a draft,
+   choose Sway support/participation, **Review booking**, then **Confirm booking**
+   to commit cast and budget. Rejected commands preserve the session and pending quote.
 3. Advance normally or **Run through production #ID**. This advances the whole
    world, including existing broadcasts, decay and deadlines; it is not a private
    production clock. States are draft → booked → recording → post-production → completed.
@@ -118,16 +119,16 @@ fuzzy models. It adds no randomness, files, wall clock or browser dependency.
 
 The personal-favour prototype has been removed. [Pooled Sway](pooled-sway.md)
 now belongs to the station, independently of request proposers. Two finite,
-explicit requests earn once at their required achievement: Nora's co-guest
+separately accepted timed quests earn once at their required achievement: Nora's co-guest
 recording (4 Sway), and Rafi's completed calm everyday-life discussion (3 Sway).
 Booking alone earns nothing. The balance/history are inspectable. At booking,
-2 Sway can secure one explicitly negotiable participant and 2 can smooth
-cooperation; either, both or neither may be selected. Fees, conflicts and
+2 Sway can secure one explicitly negotiable participant; any whole available
+amount can mitigate separate cooperation losses with diminishing returns. Fees, conflicts and
 creative limitations still apply. Amounts/effects are provisional.
 
 ## Protocol and information boundary
 
-Current player API/schema version is **4**; v1/v2/v3 are rejected. Existing planning
+Current player API/schema version is **5**; v1/v2/v3/v4 are rejected. Existing planning
 commands retain their meanings. New strict typed commands are:
 
 | Command | Fields |
@@ -135,14 +136,15 @@ commands retain their meanings. New strict typed commands are:
 | `create_production` | `concept` |
 | `revise_production` | `production_id`, `concept` |
 | `discard_production` | `production_id` |
-| `book_production` | `production_id`, optional `promise_request`, optional `exceptional_person`, `smooth_cooperation` boolean |
+| `accept_request` | `request_id` |
+| `review_production` / `book_production` | `production_id`, optional `exceptional_person`, integer `cooperation_sway` |
 
 A concept contains `title`, `host` ID, `guests` (two IDs), `subject` (`science`,
 `everyday_life`, `entertainment`), `tone` (`calm`, `conversational`, `lively`),
 `budget` (decimal string) and `record_at` (tick number). E.g.:
 
 ```json
-{"api_version":4,"command":{"type":"create_production","concept":{"title":"Workshop Conversations","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":"1000","record_at":40}}}
+{"api_version":5,"command":{"type":"create_production","concept":{"title":"Workshop Conversations","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":"1000","record_at":40}}}
 ```
 
 Rust owns all decisions and exact accounts. Player observations whitelist public
@@ -150,15 +152,15 @@ roster/fees/windows, own choices, progress, budget/escrow/spend, programme prove
 and explicit request/Sway records. They exclude precise craft/fit/preferred-tone,
 hidden execution, exact audience tastes, hype/repetition and fuzzy evidence.
 Money crosses JavaScript as decimal strings; small project/person/request IDs and
-ticks are safe JSON integers. Project/work IDs are not reused after reset; reset
-clears commitments/promises/credits. Sessions remain isolated. Client-side filtering
+ticks are safe JSON integers. Project/work IDs are not reused within a session. Reset creates a fresh session
+and may reuse fixture IDs; it clears commitments, accepted quests and Sway. Sessions remain isolated. Client-side filtering
 is not a security guarantee. Counts/quotes remain labelled provisional expected
 counts, not measured ratings; research and measurement-based settlement are deferred.
 
 ## Controlled evidence
 
-Run `cargo run -p bts-web --example production_experiment`. Both comparison cases
-start from identical finances, audiences, rival plan and time, record at tick 40,
+Run `cargo run -p bts-web --example production_experiment`. Historical pre-cooperation comparison cases
+started from identical finances, audiences, rival plan and time, record at tick 40,
 finish at 52 and air at 72 (day 1, 18:00) with the same snack advertiser:
 
 | Choice | Production budget | Young viewers | Households | Specialists | Ad receipts | Final cash |
@@ -166,7 +168,9 @@ finish at 52 and air at 72 (day 1, 18:00) with the same snack advertiser:
 | Calm science: Elian / Nora / Felix | 1,000 | 664.69 | 1,521.51 | 661.96 | 469 | 19,419 |
 | Lively culture: Mina / Jules / Rafi | 600 | 2,672.40 | 4,577.89 | 286.29 | 1,664 | 21,014 |
 
-Both pay a separate 50-credit broadcast cost. Science attracts more specialists;
+These original-milestone values predate authored cooperation penalties. Current
+controls are in [casting comparisons](casting-desk.md#controlled-comparisons). Both
+historical cases paid a separate 50-credit broadcast cost. Science attracts more specialists;
 culture reaches more young viewers/households and earns more from this advertiser.
 Several creative choices vary together here; this is a package comparison, not an
 isolated estimate of each coefficient or a balance claim. A focused Rust test
@@ -178,7 +182,7 @@ Jules's day-3 participation and cooperation smoothing, then Rafi's different
 request earning at completed-production tick 292. See [current Sway evidence](../contrib/pooled-sway/README.md).
 The [original comparison evidence](../contrib/original-production/README.md)
 is retained as a historical protocol-v3 snapshot. `--sequence` now supplies
-protocol-v4 native commands for Wasm parity testing, not a save format.
+protocol-v5 native commands for Wasm parity testing, not a save format.
 
 ## Verification and remaining limits
 

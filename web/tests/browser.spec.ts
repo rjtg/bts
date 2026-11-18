@@ -7,7 +7,7 @@ const root = resolve(import.meta.dirname, '../..');
 test('plan a varied evening, move/remove broadcasts, book a selected future airing, run and review', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   const failures: string[] = []; page.on('pageerror', error => failures.push(error.message));
-  await page.goto('/'); await expect(page.getByRole('status')).toContainText('WASM READY');
+  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
   await expect(page.locator('#cash')).toHaveText('20,000');
   await expect(page.locator('#timeline [data-station]')).toHaveCount(2);
   await expect(page.locator('.timeline-cell')).toHaveCount(96);
@@ -73,7 +73,7 @@ test('plan a varied evening, move/remove broadcasts, book a selected future airi
 
 test('day navigation, gap placement, on-air progression and mobile controls', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/'); await expect(page.getByRole('status')).toContainText('WASM READY');
+  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
   await page.locator('#day').selectOption('1'); await page.locator('#jump-evening').click();
   await page.getByRole('button', { name: 'Choose placement Day 2 · 18:00', exact: true }).click();
   await expect(page.locator('#place-day')).toHaveValue('1'); await expect(page.locator('#place-time')).toHaveValue('72');
@@ -93,12 +93,12 @@ test('actual Wasm protocol matches native planning, booking, tick accounting and
   await page.route('**/__test__/bts_web_bg.wasm', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web_bg.wasm'), contentType: 'application/wasm' }));
   const wasmAsset = readdirSync(resolve(root, 'web/dist/assets')).find(file => file.endsWith('.wasm'))!;
   expect(readFileSync(resolve(root, `web/dist/assets/${wasmAsset}`))).toEqual(readFileSync(resolve(root, 'web/pkg/bts_web_bg.wasm')));
-  await page.goto('/'); await expect(page.getByRole('status')).toContainText('WASM READY');
+  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
   const result = await page.evaluate(async () => {
     // @ts-expect-error test-only routes serve generated bindings, not a product inspector
     const { default: init, WebSession } = await import('/__test__/bts_web.js'); await init();
     const a = new WebSession(); const b = new WebSession();
-    const send = (s: { dispatch: (s: string) => string }, command: object) => JSON.parse(s.dispatch(JSON.stringify({ api_version: 4, command })));
+    const send = (s: { dispatch: (s: string) => string }, command: object) => JSON.parse(s.dispatch(JSON.stringify({ api_version: 5, command })));
     const reports = [send(a, { type: 'inspect' }), send(a, { type: 'place', start_tick: 72, programme: 1, advertiser: 1 })];
     const id = reports[1].report.schedule.find((a: { station: number }) => a.station === 1).airing_id;
     reports.push(send(a, { type: 'request_offer', airing_id: id })); const token = reports[2].report.offer.offer_id;
@@ -106,7 +106,7 @@ test('actual Wasm protocol matches native planning, booking, tick accounting and
     const invalid = send(a, { type: 'place', start_tick: 73, programme: 1, advertiser: null });
     const afterInvalid = send(a, { type: 'inspect' });
     const malformed = JSON.parse(a.dispatch('{bad'));
-    const wide = JSON.parse(a.dispatch('{"api_version":4,"command":{"type":"remove","airing_id":4294967296}}'));
+    const wide = JSON.parse(a.dispatch('{"api_version":5,"command":{"type":"remove","airing_id":4294967296}}'));
     reports.push(send(a, { type: 'accept_offer', airing_id: id, offer_id: token }));
     reports.push(send(a, { type: 'advance', to_tick: 74 }));
     const beforeLocked = send(a, { type: 'inspect' });
@@ -146,5 +146,5 @@ test('actual Wasm protocol matches native planning, booking, tick accounting and
 
 test('initialization failure is visible and planning controls stay unavailable', async ({ page }) => {
   await page.route('**/*.wasm', route => route.abort()); await page.goto('/');
-  await expect(page.getByRole('status')).toContainText('initialization failed'); await expect(page.getByRole('alert')).toContainText('Reload to retry'); await expect(page.locator('#controls')).toBeHidden();
+  await expect(page.locator('#status')).toContainText('initialization failed'); await expect(page.getByRole('alert')).toContainText('Reload to retry'); await expect(page.locator('#controls')).toBeHidden();
 });

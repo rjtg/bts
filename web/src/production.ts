@@ -1,112 +1,173 @@
-// Production controls only. All scheduling, fees, willingness, rewards and scoring live in Rust.
+// Player controls and presentation only. Rust owns bookings, money and support effects.
+import { element, select, node, option, action } from './ui/dom';
+import { personPortrait } from './ui/portraits';
+import { renderChoices } from './ui/choices';
+import { amountControl } from './ui/amount';
+import { modalPicker } from './ui/modal-picker';
 import type { Command, ProductionConcept, ProductionInfo, ProductionTone, Report, Subject } from './protocol';
 interface Callbacks { report: () => Report; send: (command: Command) => void; showProgramme: (id: number) => void; stamp: (tick: number) => string; money: (text: string) => string }
-const element = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id)! as T;
-const select = (id: string) => element<HTMLSelectElement>(id);
-function node<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', className = ''): HTMLElementTagNameMap[K] { const result = document.createElement(tag); result.textContent = text; result.className = className; return result; }
-function option(id: number, text: string): HTMLOptionElement { const result = node('option', text); result.value = String(id); return result; }
-// Fixed scenario artwork only; identity and simulation attributes remain in Rust.
-const portraitFiles: Record<number, string> = { 1: 'elian-north', 2: 'mina-sol', 3: 'nora-vale', 4: 'felix-reed', 5: 'jules-hart', 6: 'rafi-linden' };
+const tones: ProductionTone[] = ['calm', 'conversational', 'lively'];
+const subjects: Record<Subject, string> = { science: 'Science & invention', everyday_life: 'Everyday life', entertainment: 'Entertainment & culture' };
+type Seat = 0 | 1 | 2;
+interface Choices { exceptional: number | null; support: number }
 export function initialiseProduction(ui: Callbacks) {
   let editing: number | null = null;
+  let cast: [number, number, number] = [1, 3, 4];
+  let subject: Subject = 'science';
+  let activeSeat: Seat = 0;
   let initialized = false;
-  const personName = (id: number) => ui.report().production.people.find(p => p.id === id)?.name ?? String(id);
-  const action = (label: string, callback: () => void, className = 'quiet') => { const b = node('button', label, className); b.type = 'button'; b.addEventListener('click', callback); return b; };
+  const choices = new Map<number, Choices>();
+  const person = (id: number) => ui.report().production.people.find(p => p.id === id)!;
+  const personName = (id: number) => person(id)?.name ?? String(id);
+  const portrait = (id:number) => personPortrait(id,personName(id));
   function readConcept(): ProductionConcept {
-    return { title: element<HTMLInputElement>('production-name').value, host: Number(select('production-host').value), guests: [Number(select('production-guest-one').value), Number(select('production-guest-two').value)], subject: select('production-subject').value as Subject, tone: select('production-tone').value as ProductionTone, budget: select('production-budget').value, record_at: Number(select('production-day').value) * 96 + Number(select('production-time').value) };
+    return { title: element<HTMLInputElement>('production-name').value, host: cast[0], guests: [cast[1], cast[2]], subject, tone: tones[Number(element<HTMLInputElement>('production-tone').value)], budget: (document.querySelector('input[name="production-budget"]:checked') as HTMLInputElement).value, record_at: Number(select('production-day').value) * 96 + Number(select('production-time').value) };
   }
-  function rosterPreview(): void {
-    const report = ui.report(); const preview = element('production-roster'); preview.replaceChildren();
-    const ids = [select('production-host').value, select('production-guest-one').value, select('production-guest-two').value].map(Number);
-    for (const id of ids) {
-      const p = report.production.people.find(p => p.id === id); if (!p) continue;
-      const row = node('div', '', 'talent-preview');
-      const artwork = portraitFiles[id];
-      if (artwork) {
-        const portrait = node('img', '', 'talent-portrait'); portrait.src = `${import.meta.env.BASE_URL}portraits/${artwork}.png`;
-        portrait.alt = `Portrait of ${p.name}`; portrait.width = 96; portrait.height = 96; row.append(portrait);
-      }
-      const details = node('section'); details.append(node('strong', `${p.name} · ${ui.money(p.fee)} credits`), node('p', p.description)); row.append(details); preview.append(row);
+  function concerns(ids: number[], container: HTMLElement): void {
+    const notes = ui.report().production.known_concerns.filter(c => c.people.every(id => ids.includes(id)));
+    container.replaceChildren(...notes.map(c => node('p', c.note, 'working-concern')));
+    if (!notes.length) container.append(node('p', 'No working concerns are recorded for this combination. That is not a quality forecast.', 'muted small'));
+  }
+  function availability(id: number): { label: string; blocked: boolean } {
+    const p = person(id); const start = readConcept().record_at; const end = start + 4;
+    if (start < ui.report().now_tick) return { label: 'Choose a future recording time', blocked: true };
+    const commitment = p.commitments.find(c => start < c.end_tick && end > c.start_tick);
+    if (commitment) return { label: `Already recording ${commitment.title} · ${ui.stamp(commitment.start_tick)}–${ui.stamp(commitment.end_tick)}`, blocked: true };
+    if (end <= p.normal_until_tick) return { label: 'Available for this recording', blocked: false };
+    if (p.negotiable_from_tick !== null && start >= p.negotiable_from_tick) return { label: `Negotiation needed · ${ui.report().production.participation_cost} Sway, plus normal fees`, blocked: false };
+    return { label: 'Unavailable for these recording dates', blocked: true };
+  }
+  function renderSeats(): void {
+    const seats = element('casting-seats'); seats.replaceChildren();
+    for (const [index, label] of ['Host', 'First guest', 'Second guest'].entries()) {
+      const id = cast[index]; const p = person(id); if (!p) continue;
+      const seat = action(``, () => openPicker(index as Seat), 'cast-seat'); seat.id = `seat-${index}`; seat.setAttribute('aria-label', `Choose ${label.toLowerCase()}: ${p.name}`);
+      const img = portrait(id); if (img) seat.append(img);
+      seat.append(node('span', label, 'overline'), node('strong', p.name), node('span', `${ui.money(p.fee)} credits`), node('small', availability(id).label)); seats.append(seat);
     }
+    concerns(cast, element('cast-concerns'));
+    renderChoices<Subject>(element('production-subjects'),Object.entries(subjects).map(([value,label])=>({value:value as Subject,label})),subject,value=>{subject=value;renderSeats();});
+    element('tone-label').textContent = tones[Number(element<HTMLInputElement>('production-tone').value)].replace(/^./, c => c.toUpperCase());
   }
-  function edit(p: ProductionInfo): void {
-    editing = p.id;
-    element<HTMLInputElement>('production-name').value = p.title;
-    select('production-host').value = String(p.host); select('production-guest-one').value = String(p.guests[0]); select('production-guest-two').value = String(p.guests[1]);
-    select('production-subject').value = p.subject; select('production-tone').value = p.tone; select('production-budget').value = p.budget;
-    select('production-day').value = String(Math.floor(p.record_at / 96)); select('production-time').value = String(p.record_at % 96);
-    element('production-editor-title').textContent = `Edit draft #${p.id}`; element('create-production').textContent = `Update draft #${p.id}`; rosterPreview(); element('production-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const picker = modalPicker<Report['production']['people'][number]>({ dialog:element<HTMLDialogElement>('talent-picker'), title:element('talent-picker-title'), list:element('talent-cards'), closeButton:element('close-talent-picker'), restoreFocus:()=>element(`seat-${activeSeat}`).focus(), renderItem:p=>{
+      const card = node('article', '', 'talent-card'); const img = portrait(p.id); if (img) card.append(img);
+      card.append(node('h4', p.name), node('p', p.station_id===null?'Freelance guest':'Your station’s staff', 'overline'), node('p', p.description), node('strong', `${ui.money(p.fee)} credits`));
+      const commitments=node('ul','','personal-schedule');
+      for(const booking of p.commitments.filter(c=>c.end_tick>ui.report().now_tick))commitments.append(node('li',`${booking.title}: ${ui.stamp(booking.start_tick)}–${ui.stamp(booking.end_tick)}`));
+      if(commitments.childElementCount)card.append(node('small','Upcoming recording commitments'),commitments);
+      const occupied = cast.some((id, index) => index !== activeSeat && id === p.id); const available = availability(p.id);
+      card.append(node('p', occupied ? 'Already in another seat' : available.label, 'small'));
+      card.append(node('p', `Normal bookings through ${ui.stamp(p.normal_until_tick)}${p.negotiable_from_tick === null ? '' : `; negotiable from ${ui.stamp(p.negotiable_from_tick)}`}.`, 'small muted'));
+      const choose = action(`Choose ${p.name}`, () => { cast[activeSeat] = p.id; picker.close(); renderSeats(); element(`seat-${activeSeat}`).focus(); }, ''); choose.disabled = occupied || available.blocked; card.append(choose); return card;
+  } });
+  function openPicker(seat:Seat):void {
+    activeSeat=seat;picker.open(seat===0?'Choose your host':'Choose your guest',ui.report().production.people.filter(p=>p.role===(seat===0?'host':'guest')));
   }
   function newDraft(): void {
     editing = null; element('production-editor-title').textContent = 'New concept'; element('create-production').textContent = 'Review concept';
     const now = ui.report().now_tick;
     if (Number(select('production-day').value) * 96 + Number(select('production-time').value) < now) { select('production-day').value = String(Math.min(6, Math.floor(now / 96))); select('production-time').value = String(now % 96); }
   }
-  element('production-form').addEventListener('submit', event => { event.preventDefault(); const concept = readConcept(); ui.send(editing === null ? { type: 'create_production', concept } : { type: 'revise_production', production_id: editing, concept }); });
-  element('production-new').addEventListener('click', newDraft);
-  for (const id of ['production-host', 'production-guest-one', 'production-guest-two']) select(id).addEventListener('change', rosterPreview);
+  function edit(p: ProductionInfo): void {
+    editing = p.id; cast = [p.host, ...p.guests]; subject = p.subject;
+    element<HTMLInputElement>('production-name').value = p.title;
+    element<HTMLInputElement>('production-tone').value = String(tones.indexOf(p.tone));
+    const budget = document.querySelector<HTMLInputElement>(`input[name="production-budget"][value="${p.budget}"]`);
+    if (budget) budget.checked = true;
+    else { const label = node('label', `Custom · ${ui.money(p.budget)} credits`); const input = node('input'); input.type = 'radio'; input.name = 'production-budget'; input.value = p.budget; input.checked = true; label.prepend(input); element('production-form').querySelector('.budget-presets')!.append(label); }
+    select('production-day').value = String(Math.floor(p.record_at / 96)); select('production-time').value = String(p.record_at % 96);
+    element('production-editor-title').textContent = `Revise ${p.title}`; element('create-production').textContent = 'Update concept'; renderSeats(); element('production-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  element('production-form').addEventListener('submit', e => { e.preventDefault(); const concept = readConcept(); ui.send(editing === null ? { type: 'create_production', concept } : { type: 'revise_production', production_id: editing, concept }); });
+  element('production-new').addEventListener('click', () => { newDraft(); renderSeats(); });
+  element('production-tone').addEventListener('input', renderSeats);
+  for (const id of ['production-day', 'production-time']) select(id).addEventListener('change', renderSeats);
+
+  function bookingControls(p: ProductionInfo, card: HTMLElement): void {
+    const report = ui.report(); const c = choices.get(p.id) ?? { exceptional: null, support: 0 }; choices.set(p.id, c);
+    const participation = node('fieldset'); participation.append(node('legend','Bring someone in outside normal availability'));
+    const group=node('div');group.id=`participation-${p.id}`;participation.append(group);
+    const participationChoices:{value:number|null;label:string}[]=[{value:null,label:'Normal availability'},...report.production.people.filter(t=>[p.host,...p.guests].includes(t.id)&&p.recording_end>t.normal_until_tick&&t.negotiable_from_tick!==null&&p.record_at>=t.negotiable_from_tick).map(t=>({value:t.id,label:`Bring ${t.name} in · ${report.production.participation_cost} Sway`}))];
+    renderChoices<number|null>(group,participationChoices,c.exceptional,id=>{c.exceptional=id;c.support=Math.min(c.support,supportMaximum());render(ui.report());});card.append(participation);
+    const supportMaximum = () => Math.max(0, report.production.sway_balance - (c.exceptional === null ? 0 : report.production.participation_cost));
+    const support = node('fieldset'); support.append(node('legend', 'Help the team work together'));
+    support.append(node('p', 'Ease working friction, with smaller gains from each extra point. Support cannot supply missing skills or guarantee a successful show.', 'small muted'));
+    const remaining=node('p','','support-remaining');const reviewArea=node('section','','booking-review');reviewArea.id=`booking-review-${p.id}`;
+    const review=action('Review booking',()=>ui.send({type:'review_production',production_id:p.id,exceptional_person:c.exceptional,cooperation_sway:c.support}));review.id=`review-${p.id}`;
+    const update=(valid:boolean)=>{review.disabled=!valid;remaining.textContent=valid?`${c.support} Sway for team support · ${c.exceptional===null?0:report.production.participation_cost} for participation · ${supportMaximum()-c.support} left after booking`:`Choose a whole amount from 0 to ${supportMaximum()} Sway.`;};
+    const amount=amountControl({id:`support-${p.id}`,exactId:`support-exact-${p.id}`,label:`Team support for ${p.title}`,maximum:supportMaximum(),value:c.support,onChange:(value,valid)=>{c.support=value;reviewArea.replaceChildren();update(valid);}});
+    update(amount.valid());support.append(amount.element,remaining);card.append(support,review,reviewArea);
+    const r = report.booking_review;
+    if (r && r.production_id === p.id && r.exceptional_person === c.exceptional && r.cooperation_sway === c.support) {
+      reviewArea.append(node('h4', 'Ready to book?'), node('p', `${personName(p.host)} with ${p.guests.map(personName).join(' and ')}. ${subjects[p.subject]} · ${p.tone}.`), node('p', `Record ${ui.stamp(p.record_at)}–${ui.stamp(p.recording_end)}. Ready ${ui.stamp(p.ready_at)}.`));
+      reviewArea.append(node('p', `Commit ${ui.money(r.budget)} credits, including ${ui.money(p.fees)} in fees. Cash remaining: ${ui.money(r.cash_remaining)}.`), node('p', `Spend ${r.total_sway} Sway (${r.cooperation_sway} support). Sway remaining: ${r.sway_remaining}.`));
+      reviewArea.append(node('p', `This reserves Studio ${r.studio} and the cast’s recording time. Booked productions cannot be changed or cancelled.`, 'small'));
+      const confirm = action('Confirm booking', () => ui.send({ type: 'book_production', production_id: p.id, exceptional_person: r.exceptional_person, cooperation_sway: r.cooperation_sway }), ''); confirm.id = `confirm-${p.id}`; reviewArea.append(confirm);
+    }
+  }
   function render(report: Report): void {
     if (!initialized) {
-      const tickTime = (tick: number) => `${String(Math.floor(tick / 4)).padStart(2, '0')}:${String(tick % 4 * 15).padStart(2, '0')}`;
+      const time = (t: number) => `${String(Math.floor(t / 4)).padStart(2, '0')}:${String(t % 4 * 15).padStart(2, '0')}`;
       select('production-day').replaceChildren(...Array.from({ length: report.end_tick / 96 }, (_, i) => option(i, `Day ${i + 1}`)));
-      select('production-time').replaceChildren(...Array.from({ length: 96 }, (_, i) => option(i, tickTime(i)))); select('production-time').value = '40';
-      initialized = true;
+      select('production-time').replaceChildren(...Array.from({ length: 96 }, (_, i) => option(i, time(i)))); select('production-time').value = '40'; initialized = true;
     }
-    for (const [id, role, fallback] of [['production-host', 'host', 1], ['production-guest-one', 'guest', 3], ['production-guest-two', 'guest', 4]] as const) {
-      const previous = select(id).value;
-      select(id).replaceChildren(...report.production.people.filter(p => p.role === role).map(p => option(p.id, `${p.name} · ${ui.money(p.fee)} cr`)));
-      select(id).value = report.production.people.some(p => String(p.id) === previous && p.role === role) ? previous : String(fallback);
-    }
-    rosterPreview();
-    element<HTMLButtonElement>('create-production').disabled = report.now_tick >= report.end_tick;
-    const swayPanel = element('sway-panel'); swayPanel.replaceChildren(node('h3', `Pooled Sway · ${report.production.sway_balance}`));
-    swayPanel.append(node('p', 'Station-wide social capital. Earn from explicit completed requests; spend on anyone’s negotiable participation or on cooperation. Amounts and effects are provisional.', 'small muted'));
-    for (const request of report.production.requests) {
-      const card = node('article', '', 'sway-request'); card.id = `request-${request.id}`;
-      card.append(node('strong', `${personName(request.proposer)} · request #${request.id} · reward ${request.reward} Sway`), node('p', request.statement));
-      card.append(node('p', `Achievement required: ${request.achievement.replaceAll('_', ' ')}. Booking alone earns nothing.`, 'small'));
-      if (!request.promise) card.append(node('p', 'Available: explicitly promise this request when booking a matching concept.', 'muted small'));
-      else card.append(node('p', request.promise.fulfilled_at === null ? `Promised for production #${request.promise.production_id}; not fulfilled yet.` : `Fulfilled at ${ui.stamp(request.promise.fulfilled_at)} for production #${request.promise.production_id}. Reward earned once.`));
-      swayPanel.append(card);
-    }
+    const teams=element('station-teams');teams.replaceChildren(...report.stations.map(station=>{
+      const card=node('section','','station-team');card.append(node('strong',station.is_player?'Your station':station.name),node('p',`Staff: ${station.staff.join(', ')||'None assigned'}.`, 'small'));
+      if(station.is_player)card.append(node('p',`${report.catalogue.length} programmes in your library · ${station.owned_studios} owned studio(s).`,'small'));
+      else card.append(node('p','Rival programmes are separate rights, not yours to schedule.','small muted'));
+      return card;
+    }));
+    renderSeats(); element<HTMLButtonElement>('create-production').disabled = report.now_tick >= report.end_tick;
+    const pool = element('sway-panel'); pool.replaceChildren(node('h3', `Sway · ${report.production.sway_balance}`), node('p', 'Earn cooperation by fulfilling requests. Spend it wherever it helps your station.', 'small'));
+    const renderQuest = (r: Report['production']['requests'][number], target: HTMLElement) => {
+      const request = node('article', '', 'sway-request'); request.id = `request-${r.id}`;
+      request.append(node('strong', `${personName(r.proposer)} · ${r.reward} Sway`), node('p', r.statement), node('p', `Required: ${r.achievement.replaceAll('_', ' ')}. Matching a concept is not completion.`, 'small'));
+      if (r.status === 'available') {
+        request.append(node('p', `Time limit after accepting: ${r.time_limit_ticks / 4} hours, or scenario end if earlier. Recordings must start no earlier than acceptance.`, 'small'));
+        const accept = action(`Accept ${personName(r.proposer)}’s quest`, () => ui.send({ type: 'accept_request', request_id:r.id }), ''); accept.disabled = report.now_tick >= report.end_tick; accept.id = `accept-request-${r.id}`; request.append(accept);
+      } else if (r.status === 'open') request.append(node('p', `Open · due ${ui.stamp(r.acceptance!.deadline_tick)} · ${Math.floor(Math.max(0,r.acceptance!.deadline_tick-report.now_tick)/4)}h ${Math.max(0,r.acceptance!.deadline_tick-report.now_tick)%4*15}m left.`, 'quest-open'));
+      else request.append(node('p', r.status === 'completed' ? `Completed at ${ui.stamp(r.acceptance!.fulfilled_at!)}. Reward earned once.` : `Expired at ${ui.stamp(r.acceptance!.deadline_tick)}. No reward; it cannot be accepted again.`));
+      target.append(request);
+    };
+    pool.append(node('h4', 'Open quests')); const open = report.production.requests.filter(r => r.status === 'open');
+    if (!open.length) pool.append(node('p', 'No open quests. Accept an opportunity before starting a matching recording.', 'small muted'));
+    for (const r of open) renderQuest(r,pool);
+    const available = report.production.requests.filter(r => r.status === 'available');
+    if (available.length) { pool.append(node('h4', 'Available opportunities')); for (const r of available) renderQuest(r,pool); }
+    const ended = report.production.requests.filter(r => r.status === 'completed' || r.status === 'expired');
+    if (ended.length) { const history = node('details'); history.append(node('summary', 'Completed & expired quests')); for (const r of ended) renderQuest(r,history); pool.append(history); }
     if (report.production.sway_history.length) {
       const history = node('ul'); history.id = 'sway-history';
-      for (const entry of report.production.sway_history) history.append(node('li', `${ui.stamp(entry.tick)} · production #${entry.production_id} · ${entry.kind.replaceAll('_', ' ')}${entry.person_id === null ? '' : `: ${personName(entry.person_id)}`}${entry.request_id === null ? '' : ` #${entry.request_id}`} · ${entry.change > 0 ? '+' : ''}${entry.change} Sway · balance ${entry.balance}`));
-      swayPanel.append(node('h4', 'Sway history'), history);
+      for (const e of report.production.sway_history) history.append(node('li', `${ui.stamp(e.tick)} · ${e.kind.replaceAll('_', ' ')}${e.person_id === null ? '' : `: ${personName(e.person_id)}`} · ${e.change > 0 ? '+' : ''}${e.change} Sway · balance ${e.balance}`)); pool.append(history);
     }
     const projects = element('production-projects'); projects.replaceChildren();
-    if (!report.production.projects.length) projects.append(node('p', 'No production concepts yet. Review a concept to see its dates and fees before booking.', 'muted'));
+    if (!report.production.projects.length) projects.append(node('p', 'Choose your cast and review a concept to get started.', 'muted'));
     for (const p of report.production.projects) {
-      const card = node('article', '', 'production-card'); card.id = `production-${p.id}`; card.dataset.production = String(p.id);
-      const heading = node('div', '', 'panel-heading'); heading.append(node('h3', `${p.title} · #${p.id}`), node('span', p.phase.replace('_', ' ').toUpperCase(), 'tag')); card.append(heading);
-      card.append(node('p', `${personName(p.host)} with ${p.guests.map(personName).join(' and ')}.`));
-      card.append(node('p', `${p.subject.replace('_', ' ')} · ${p.tone} · budget ${ui.money(p.budget)} credits, including ${ui.money(p.fees)} in fees.`));
-      card.append(node('p', `Record ${ui.stamp(p.record_at)}–${ui.stamp(p.recording_end)}. Library ready ${ui.stamp(p.ready_at)}.`, 'small muted'));
-      if (p.exceptional_person !== null) card.append(node('p', `Exceptional participation secured: ${personName(p.exceptional_person)}. Fees paid from the production budget.`, 'small'));
-      if (p.smooth_cooperation) card.append(node('p', 'Cooperation smoothing applied: tone-coordination shortfall halved. Craft and topic limitations remain; execution is unknown.', 'small'));
-      const buttons = node('div', '', 'form-row');
-      if (p.phase === 'draft') {
-        const promise = node('select'); promise.id = `request-choice-${p.id}`;
-        const none = node('option', 'No request promised'); none.value = ''; promise.append(none);
-        promise.append(...report.production.requests.filter(r => !r.promise).map(r => option(r.id, `Request #${r.id} · ${personName(r.proposer)} · ${r.reward} Sway`)));
-        const promiseLabel = node('label', 'Explicit request for this production'); promiseLabel.append(promise); card.append(promiseLabel);
-        const exceptional = node('select'); exceptional.id = `exceptional-${p.id}`;
-        const normal = node('option', 'Use normal availability'); normal.value = ''; exceptional.append(normal);
-        exceptional.append(...report.production.people.filter(t => [p.host, ...p.guests].includes(t.id) && t.negotiable_from_tick !== null && p.record_at >= t.negotiable_from_tick && p.recording_end > t.normal_until_tick).map(t => option(t.id, `Negotiate ${t.name} · ${report.production.participation_cost} Sway`)));
-        const exceptionalLabel = node('label', 'Exceptional participation · fees and conflicts still apply'); exceptionalLabel.append(exceptional); card.append(exceptionalLabel);
-        const smooth = node('input'); smooth.type = 'checkbox'; smooth.id = `smooth-${p.id}`;
-        const smoothLabel = node('label', '', 'check-label'); smoothLabel.append(smooth, node('span', `Smooth cooperation · ${report.production.cooperation_cost} Sway · halve tone-coordination shortfall; no guarantee of creative success`)); card.append(smoothLabel);
-        buttons.append(action(`Book production #${p.id}`, () => ui.send({ type: 'book_production', production_id: p.id, promise_request: promise.value === '' ? null : Number(promise.value), exceptional_person: exceptional.value === '' ? null : Number(exceptional.value), smooth_cooperation: smooth.checked }), ''));
-        buttons.append(action('Edit draft', () => edit(p)), action('Discard draft', () => ui.send({ type: 'discard_production', production_id: p.id })));
-      } else if (p.phase === 'completed') {
-        card.append(node('p', `Completed programme #${p.programme} is in your library. Recording budget was spent once; each broadcast has its own airing cost.`, 'muted small'));
-        buttons.append(action('Show in programme library', () => { if (p.programme !== null) ui.showProgramme(p.programme); }, ''));
-      } else {
-        card.append(node('p', 'Participants and budget are committed. Advancing time also processes intervening broadcasts and obligations.', 'muted small'));
-        const advance = action(`Run through production #${p.id} · to ${ui.stamp(p.ready_at)}`, () => ui.send({ type: 'advance', to_tick: p.ready_at }), ''); advance.disabled = p.ready_at <= report.now_tick; buttons.append(advance);
+      const card = node('article', '', 'production-card'); card.id = `production-${p.id}`;
+      const heading = node('div', '', 'panel-heading'); heading.append(node('h3', p.title), node('span', p.phase.replace('_', ' ').toUpperCase(), 'tag')); card.append(heading);
+      card.append(node('p', `${personName(p.host)} with ${p.guests.map(personName).join(' and ')}.`), node('p', `${subjects[p.subject]} · ${p.tone} · ${ui.money(p.budget)} credits, including ${ui.money(p.fees)} in fees.`), node('p', `Record ${ui.stamp(p.record_at)}–${ui.stamp(p.recording_end)}. Ready ${ui.stamp(p.ready_at)}.`, 'small muted'));
+      for (const hint of p.quest_hints) {
+        const quest = report.production.requests.find(r => r.id === hint.request_id)!;
+        card.append(node('p', `${personName(quest.proposer)}’s open quest: ${hint.matches_requirements ? hint.can_finish_in_time ? `matches production requirements; could fulfil at ${ui.stamp(hint.achievement_tick)} if completed as planned.` : 'matches the concept, but cannot meet the accepted timing requirements.' : 'this concept does not match the requirements.'} Actual achievement is still required.`, 'quest-hint'));
       }
+      const notes = node('div'); concerns([p.host, ...p.guests], notes); card.append(notes);
+      if(p.studio!==null)card.append(node('p',`Studio ${p.studio} reserved for this recording.`,'small'));
+      if (p.exceptional_person !== null) card.append(node('p', `Participation secured: ${personName(p.exceptional_person)}. Normal fees still apply.`, 'small'));
+      if (p.cooperation_sway > 0) card.append(node('p', `Team support: ${p.cooperation_sway} Sway committed to easing cooperation problems. It does not change anyone’s skills.`, 'small'));
+      const buttons = node('div', '', 'form-row');
+      if (p.phase === 'draft') { bookingControls(p, card); buttons.append(action('Edit concept', () => edit(p)), action('Discard concept', () => ui.send({ type: 'discard_production', production_id: p.id }))); }
+      else if (p.phase === 'completed') { card.append(node('p', 'Completed and ready for your schedule. Each broadcast has its own airing cost.', 'small muted')); buttons.append(action('Show in programme library', () => { if (p.programme !== null) ui.showProgramme(p.programme); }, '')); }
+      else { card.append(node('p', 'Cast and budget committed. Running to completion also processes all other broadcasts and obligations.', 'small muted')); buttons.append(action(`Finish ${p.title} · ${ui.stamp(p.ready_at)}`, () => ui.send({ type: 'advance', to_tick: p.ready_at }), '')); }
       card.append(buttons); projects.append(card);
     }
   }
-  return { render, commandSucceeded(command: Command) { if (command.type === 'create_production' || command.type === 'revise_production' || command.type === 'discard_production' || command.type === 'reset') newDraft(); }, showProject(id: number) { element(`production-${id}`).scrollIntoView({ behavior: 'smooth', block: 'center' }); } };
+  return { render, commandSucceeded(command: Command) {
+    if (command.type === 'reset') {
+      choices.clear();cast=[1,3,4];subject='science';editing=null;
+      element<HTMLInputElement>('production-tone').value='0';select('production-day').value='0';select('production-time').value='40';element<HTMLInputElement>('production-name').value='Workshop Conversations';
+      const budget=document.querySelector<HTMLInputElement>('input[name="production-budget"][value="1000"]');if(budget)budget.checked=true;
+      element('production-editor-title').textContent='New concept';element('create-production').textContent='Review concept';return;
+    }
+    if (command.type === 'create_production' || command.type === 'revise_production' || command.type === 'discard_production') newDraft();
+  }, showProject(id: number) { element(`production-${id}`).scrollIntoView({ behavior: 'smooth', block: 'center' }); } };
 }

@@ -1,0 +1,387 @@
+{
+  "cases": [
+    {
+      "audiences": [
+        {
+          "audience": 1,
+          "satisfaction": 0.7765029734840919,
+          "viewers": 2672.4031655320077
+        },
+        {
+          "audience": 2,
+          "satisfaction": 0.7476568196379381,
+          "viewers": 4577.887916808165
+        },
+        {
+          "audience": 3,
+          "satisfaction": 0.4650905429773259,
+          "viewers": 286.28734699268836
+        }
+      ],
+      "case": "working_friction",
+      "cash": "17950",
+      "production": {
+        "base_execution": 0.8444538655293196,
+        "cooperation_penalty": 0.12,
+        "cooperation_sway": 0,
+        "craft": 0.7224999999999999,
+        "execution": 0.7244538655293196,
+        "issues": [
+          {
+            "penalty": 0.12,
+            "people": [
+              2,
+              5
+            ]
+          }
+        ],
+        "recovered_penalty": 0.0,
+        "remaining_penalty": 0.12,
+        "resources": 0.7615773105863908,
+        "subject_fit": 0.95,
+        "tone_fit": 0.9375
+      },
+      "support": 0,
+      "sway_remaining": 4,
+      "total_money": "80000"
+    },
+    {
+      "audiences": [
+        {
+          "audience": 1,
+          "satisfaction": 0.8072722042533227,
+          "viewers": 2672.4031655320077
+        },
+        {
+          "audience": 2,
+          "satisfaction": 0.778426050407169,
+          "viewers": 4577.887916808165
+        },
+        {
+          "audience": 3,
+          "satisfaction": 0.48662900451578744,
+          "viewers": 286.28734699268836
+        }
+      ],
+      "case": "working_friction",
+      "cash": "17950",
+      "production": {
+        "base_execution": 0.8444538655293196,
+        "cooperation_penalty": 0.12,
+        "cooperation_sway": 1,
+        "craft": 0.7224999999999999,
+        "execution": 0.7644538655293196,
+        "issues": [
+          {
+            "penalty": 0.12,
+            "people": [
+              2,
+              5
+            ]
+          }
+        ],
+        "recovered_penalty": 0.039999999999999994,
+        "remaining_penalty": 0.08,
+        "resources": 0.7615773105863908,
+        "subject_fit": 0.95,
+        "tone_fit": 0.9375
+      },
+      "support": 1,
+      "sway_remaining": 3,
+      "total_money": "80000"
+    },
+    {
+      "audiences": [
+        {
+          "audience": 1,
+          "satisfaction": 0.8380414350225536,
+          "viewers": 2672.4031655320077
+        },
+        {
+          "audience": 2,
+          "satisfaction": 0.8081674660542489,
+          "viewers": 4577.887916808165
+        },
+        {
+          "audience": 3,
+          "satisfaction": 0.508167466054249,
+          "viewers": 286.28734699268836
+        }
+      ],
+      "case": "working_friction",
+      "cash": "17950",
+      "production": {
+        "base_execution": 0.8444538655293196,
+        "cooperation_penalty": 0.12,
+        "cooperation_sway": 4,
+        "craft": 0.7224999999999999,
+        "execution": 0.8044538655293195,
+        "issues": [
+          {
+            "penalty": 0.12,
+            "people": [
+              2,
+              5
+            ]
+          }
+        ],
+        "recovered_penalty": 0.07999999999999999,
+        "remaining_penalty": 0.04,
+        "resources": 0.7615773105863908,
+        "subject_fit": 0.95,
+        "tone_fit": 0.9375
+      },
+      "support": 4,
+      "sway_remaining": 0,
+      "total_money": "80000"
+    },
+    {
+      "audiences": [
+        {
+          "audience": 1,
+          "satisfaction": 0.3706375888687074,
+          "viewers": 2672.4031655320077
+        },
+        {
+          "audience": 2,
+          "satisfaction": 0.34179143502255355,
+          "viewers": 4577.887916808165
+        },
+        {
+          "audience": 3,
+          "satisfaction": 0.18098477374655667,
+          "viewers": 286.28734699268836
+        }
+      ],
+      "case": "weak_skills",
+      "cash": "17950",
+      "production": {
+        "base_execution": 0.31682886552931955,
+        "cooperation_penalty": 0.12,
+        "cooperation_sway": 0,
+        "craft": 0.05,
+        "execution": 0.19682886552931955,
+        "issues": [
+          {
+            "penalty": 0.12,
+            "people": [
+              2,
+              5
+            ]
+          }
+        ],
+        "recovered_penalty": 0.0,
+        "remaining_penalty": 0.12,
+        "resources": 0.7615773105863908,
+        "subject_fit": 0.05,
+        "tone_fit": 0.9375
+      },
+      "support": 0,
+      "sway_remaining": 4,
+      "total_money": "80000"
+    },
+    {
+      "audiences": [
+        {
+          "audience": 1,
+          "satisfaction": 0.4014068196379381,
+          "viewers": 2672.4031655320077
+        },
+        {
+          "audience": 2,
+          "satisfaction": 0.3725606657917843,
+          "viewers": 4577.887916808165
+        },
+        {
+          "audience": 3,
+          "satisfaction": 0.20252323528501823,
+          "viewers": 286.28734699268836
+        }
+      ],
+      "case": "weak_skills",
+      "cash": "17950",
+      "production": {
+        "base_execution": 0.31682886552931955,
+        "cooperation_penalty": 0.12,
+        "cooperation_sway": 1,
+        "craft": 0.05,
+        "execution": 0.23682886552931953,
+        "issues": [
+          {
+            "penalty": 0.12,
+            "people": [
+              2,
+              5
+            ]
+          }
+        ],
+        "recovered_penalty": 0.039999999999999994,
+        "remaining_penalty": 0.08,
+        "resources": 0.7615773105863908,
+        "subject_fit": 0.05,
+        "tone_fit": 0.9375
+      },
+      "support": 1,
+      "sway_remaining": 3,
+      "total_money": "80000"
+    },
+    {
+      "audiences": [
+        {
+          "audience": 1,
+          "satisfaction": 0.43217605040716894,
+          "viewers": 2672.4031655320077
+        },
+        {
+          "audience": 2,
+          "satisfaction": 0.4033298965610151,
+          "viewers": 4577.887916808165
+        },
+        {
+          "audience": 3,
+          "satisfaction": 0.2240616968234798,
+          "viewers": 286.28734699268836
+        }
+      ],
+      "case": "weak_skills",
+      "cash": "17950",
+      "production": {
+        "base_execution": 0.31682886552931955,
+        "cooperation_penalty": 0.12,
+        "cooperation_sway": 4,
+        "craft": 0.05,
+        "execution": 0.27682886552931957,
+        "issues": [
+          {
+            "penalty": 0.12,
+            "people": [
+              2,
+              5
+            ]
+          }
+        ],
+        "recovered_penalty": 0.07999999999999999,
+        "remaining_penalty": 0.04,
+        "resources": 0.7615773105863908,
+        "subject_fit": 0.05,
+        "tone_fit": 0.9375
+      },
+      "support": 4,
+      "sway_remaining": 0,
+      "total_money": "80000"
+    },
+    {
+      "audiences": [
+        {
+          "audience": 1,
+          "satisfaction": 0.7436131307806497,
+          "viewers": 2235.6744165063797
+        },
+        {
+          "audience": 2,
+          "satisfaction": 0.714766976934496,
+          "viewers": 3641.7554925003815
+        },
+        {
+          "audience": 3,
+          "satisfaction": 0.4420676530849164,
+          "viewers": 204.393965254948
+        }
+      ],
+      "case": "no_cooperation_deficiency",
+      "cash": "17950",
+      "production": {
+        "base_execution": 0.6816970700148448,
+        "cooperation_penalty": 0.0,
+        "cooperation_sway": 0,
+        "craft": 0.8825,
+        "execution": 0.6816970700148448,
+        "issues": [],
+        "recovered_penalty": 0.0,
+        "remaining_penalty": 0.0,
+        "resources": 0.6164414002968976,
+        "subject_fit": 0.25,
+        "tone_fit": 0.4124999999999999
+      },
+      "support": 0,
+      "sway_remaining": 4,
+      "total_money": "80000"
+    },
+    {
+      "audiences": [
+        {
+          "audience": 1,
+          "satisfaction": 0.7436131307806497,
+          "viewers": 2235.6744165063797
+        },
+        {
+          "audience": 2,
+          "satisfaction": 0.714766976934496,
+          "viewers": 3641.7554925003815
+        },
+        {
+          "audience": 3,
+          "satisfaction": 0.4420676530849164,
+          "viewers": 204.393965254948
+        }
+      ],
+      "case": "no_cooperation_deficiency",
+      "cash": "17950",
+      "production": {
+        "base_execution": 0.6816970700148448,
+        "cooperation_penalty": 0.0,
+        "cooperation_sway": 1,
+        "craft": 0.8825,
+        "execution": 0.6816970700148448,
+        "issues": [],
+        "recovered_penalty": 0.0,
+        "remaining_penalty": 0.0,
+        "resources": 0.6164414002968976,
+        "subject_fit": 0.25,
+        "tone_fit": 0.4124999999999999
+      },
+      "support": 1,
+      "sway_remaining": 3,
+      "total_money": "80000"
+    },
+    {
+      "audiences": [
+        {
+          "audience": 1,
+          "satisfaction": 0.7436131307806497,
+          "viewers": 2235.6744165063797
+        },
+        {
+          "audience": 2,
+          "satisfaction": 0.714766976934496,
+          "viewers": 3641.7554925003815
+        },
+        {
+          "audience": 3,
+          "satisfaction": 0.4420676530849164,
+          "viewers": 204.393965254948
+        }
+      ],
+      "case": "no_cooperation_deficiency",
+      "cash": "17950",
+      "production": {
+        "base_execution": 0.6816970700148448,
+        "cooperation_penalty": 0.0,
+        "cooperation_sway": 4,
+        "craft": 0.8825,
+        "execution": 0.6816970700148448,
+        "issues": [],
+        "recovered_penalty": 0.0,
+        "remaining_penalty": 0.0,
+        "resources": 0.6164414002968976,
+        "subject_fit": 0.25,
+        "tone_fit": 0.4124999999999999
+      },
+      "support": 4,
+      "sway_remaining": 0,
+      "total_money": "80000"
+    }
+  ],
+  "developer_only": true,
+  "experiment": "casting_cooperation_v1"
+}

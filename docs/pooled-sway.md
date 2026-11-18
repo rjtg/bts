@@ -1,147 +1,77 @@
 # Bounded pooled Sway
 
-Status: implemented, November 2026. Replaces personal-favour redemption. Sway is
-station-wide social capital, following [resource direction](resource-economies-idea.md).
-All amounts/effects are provisional. This is two finite discussion-production
-requests and two booking uses, not a general quest or relationship framework.
+Status: implemented, November 2026. Sway is station-wide social capital; personal
+favours and production-specific quest promises have been removed. Amounts, deadlines
+and effects are provisional. This is two finite quests and two production uses,
+not a general quest, career or relationship framework.
 
-## Requests and fulfilment
+## Earning and quests
 
-The station starts with **0 Sway**. Requests are visible from the Production desk.
-Explicitly select a request when booking a matching concept. One request may be
-promised per production; each finite request may be promised and rewarded once
-per session. Merely booking, paying fees or casting the requested pair without
-a promise earns nothing. Promises survive as inspectable records.
+Start with 0 Sway. Accept a quest from the station's opportunity board, not while
+booking a production. Open quests have a 48-hour limit from acceptance, clipped to
+scenario end. Nora's co-guest recording earns 4; completing Rafi's calm everyday-life
+discussion earns 3. Booking or an apparent production match alone earns nothing.
+Only recordings starting at/after acceptance and achieving the condition by the
+deadline qualify. Each quest rewards once; completed/expired quests cannot be
+reaccepted. See [quest semantics](quest-opportunities.md) for deadline boundaries,
+production hints, no retroactive credit and future outcome-gated/graded proposals.
 
-| Request | Visible condition | Required achievement | Reward |
-| --- | --- | --- | ---: |
-| Nora: record with Felix | Nora and Felix must be the two guests | Finish their recording | 4 Sway |
-| Rafi: calm everyday-life discussion | Rafi as guest, everyday-life subject, calm tone | Complete the production into the library | 3 Sway |
+The fixture permits at most 7 earned Sway. No decay, automatic regeneration,
+exchange rate or debt is added. The pool belongs to the planner's player station,
+independent of the quest proposer. Nora's reward can fund Jules or a different team.
 
-For recording start `r`, the first request fulfils at `r+4`; the second at `r+12`.
-Booking awards zero. At fulfilment Rust rechecks the frozen concept, phase and
-achievement boundary, marks the promise fulfilled, adds the reward and appends
-one history entry. Later ticks, repeated airings or further matching productions
-cannot reward it again. The two requests permit at most **7 earned Sway** in this
-scenario. Neither requires commercial success or audience approval.
+## Spending and exact history
 
-Normal production semantics remain: one-hour recording, two-hour post-production,
-immutable paid bookings, 45-minute standalone output, exact cash reservation
-then one recording expense. See [production rules](original-production.md).
-Recording requests resolve after recording finishes; library requests after
-output insertion, within the same atomic tick advance. A reward earned at an
-interval's end can fund the next command, never an earlier booking in that interval.
+At production booking, choose:
 
-## Spending at booking
+| Use | Cost | Effect |
+| --- | ---: | --- |
+| Exceptional participation | 2 Sway | Secure one explicitly negotiable participant outside normal availability |
+| Team support | Any whole amount from 0 to the available balance after participation cost | Reduce a separate cooperation penalty with diminishing returns |
 
-The player chooses either use, both, or neither. Rust validates the whole command
-before atomically committing money, participant reservations, the promise and
-Sway spending. Each use is bought once for this production; repeated booking is
-rejected. A combined purchase requires the full combined balance up front.
+Nora and Jules normally record through tick 192, and are explicitly negotiable
+for starts at/after 192. Hard unavailability remains unavailable. One exceptional
+person per production is supported; Sway does not pay fees, bypass conflicts,
+remove preparation/recording time or guarantee creative success.
 
-| Use | Cost | Concrete effect | Constraints |
-| --- | ---: | --- | --- |
-| Exceptional participation | 2 | Secure one selected participant outside normal availability | Person must be in the cast, date explicitly negotiable, full fee covered, no commitment conflict |
-| Smooth cooperation | 2 | Recover half the tone-coordination shortfall in this production | Does not change talent craft, subject fit, public recognition, fees or runtime |
+The old cooperation checkbox and tone-fit bonus have been replaced by adjustable
+support. [The casting specification](casting-desk.md) documents authored pair
+issues, skill-independent loss mitigation and the exact equation. In brief, if `B`
+is the unaltered skill/resource baseline and `D=min(sum of cooperation penalties,
+0.25,B)`, support `s` leaves loss `D×2/(2+s)`. Execution never exceeds `B`. No matching
+deficiency means no quality bonus. Fees, skill inputs, subject fit, tone suitability,
+recognition and runtime are unchanged by support.
 
-Nora and Jules are normally available through tick 192 (end of day 2), and
-explicitly negotiable for recording starts at/after 192 until scenario end.
-Others are normally available throughout. The API supports one exceptional person
-per booking; a project needing two cannot be booked in this slice. A recording
-straddling the normal-window boundary starts too early for negotiation and is
-rejected. Hard unavailability with no negotiable window stays unavailable.
-Normally available participation cannot waste Sway through this option.
+`new balance = old balance + earned rewards − participation cost − team support`
 
-Any earned Sway can secure any eligible person. Nora's request can fund Jules;
-Rafi's reward can smooth a production without Rafi. No creditor, personal credit,
-favour identifier or redemption restriction remains. Normal fees are still paid
-in cash, and Sway cannot override overlaps or insufficient cash. Spending is final
-at booking; booked projects cannot be cancelled in this milestone.
+Rust validates total spend and the whole booking atomically. Failed commands consume
+nothing. Successful booking debits once; completion, time ticks and repeat airings
+do not charge again. Zero support emits no debit. Separate history records time,
+production ID, signed change, resulting balance and reason; earnings identify a
+quest and negotiation identifies a person. Summing history reproduces the balance.
+Sway is separate from the financial ledger and does not create/consume money.
 
-## Intended replacement for cooperation spending
+## Browser protocol and information
 
-The fixed checkbox/cost below is the current experiment. The revised
-[design direction](resource-economies-idea.md#adjustable-production-support)
-calls for a freely adjustable Sway allocation with diminishing returns, reducing
-cooperation penalties such as bad chemistry. It must leave skill deficiencies
-untouched and cannot add quality beyond the recovered cooperation loss. That
-slider/dial and a broader deficiency model are not implemented by this milestone.
+Player protocol v5 replaces v4. `accept_request` accepts an opportunity separately.
+`review_production` validates a clone and calculates remaining cash/Sway;
+`book_production` revalidates and commits. Both booking commands take production ID,
+optional `exceptional_person` and required integer `cooperation_sway`. Old versions,
+`promise_request` and `smooth_cooperation` are rejected. A preview is not a reservation.
 
-## Cooperation equation and limits
+Normal observations show public roster/commitments, known working notes, open quests,
+production hints, chosen support, exact balance/history and financial terms. They
+exclude exact skills, chemistry penalties, recovered losses, execution, audience
+tastes, hype/repetition and fuzzy traces. Money remains decimal strings; bounded Sway
+integers are exactly representable in JSON. No developer inspector is exported;
+client-side observation filtering is not a security guarantee.
 
-The existing production model computes weighted tone fit:
+[Current controlled experiments and browser evidence](../contrib/casting-desk/README.md)
+replace the [historical protocol-v4 evidence](../contrib/pooled-sway/README.md).
+The original production example now uses v5 and includes quest acceptance and booking
+reviews; `casting_comparison` separately exports developer-only loss/skill controls.
+Standalone fuzzy, native/Wasm, accounting, reproducibility and privacy checks remain.
 
-`T = Σ w × (1 − |preferred_tone − chosen_tone|)`, with `w=(0.5, 0.25, 0.25)`.
-
-Without smoothing, the execution contribution is `0.10 × T`. With smoothing:
-
-`T_effective = T + 0.5 × (1 − T)`
-
-`contribution = 0.10 × T_effective`
-
-Execution therefore improves by `0.05 × (1 − T)`, bounded between 0 and 0.05.
-This models easier coordination across presentation styles. It recovers only a
-specific shortfall; weak craft or unsuitable subject skills remain. Final
-execution retains existing finite unit bounds. Neither participation nor smoothing
-guarantees creative success, audience reach, satisfaction or advertising revenue.
-The browser reports the selected and applied cooperation treatment; exact talent
-scores and resulting execution remain hidden. No arbitrary review noise is added.
-
-## Balance, history and protocol
-
-The pool belongs to the planner's player station, independent of who proposed a
-request. It is private Rust state, separate from the money ledger. Exact integer
-Sway has no decay, exchange rate, debt or automatic regeneration in this slice.
-
-`new balance = old balance + reward − participation cost − cooperation cost`
-
-Checked arithmetic and finite reward configuration prevent overflow/negative
-balances. History records time, production ID, signed integer change, resulting
-balance and reason, plus request ID for earnings or participant ID for negotiation.
-Summing its entries reproduces the current balance. Sway does not create or
-consume money; existing production escrow and financial conservation remain intact.
-
-Player protocol **v4** replaces v3 (old versions/`call_favour` fields rejected).
-`book_production` fields:
-
-```json
-{"api_version":4,"command":{"type":"book_production","production_id":2,"promise_request":null,"exceptional_person":5,"smooth_cooperation":true}}
-```
-
-`exceptional_person` and `promise_request` are optional IDs; `smooth_cooperation`
-is a required boolean. Existing strict DTO validation rejects unknown fields,
-malformed numbers/types and obsolete commands. Rejections preserve Sway, cash,
-commitments, IDs, history and pending advertising offers. Successful production
-commands invalidate pending quotes as before. Reset clears the pool/history and
-requests; independent sessions cannot spend one another's Sway. Production/work
-IDs retain their existing non-reuse guarantee across reset.
-
-Normal reports whitelist request conditions/rewards, promises, balance, costs,
-transactions and own selected/applied spending. No exact craft, preferred tone,
-subject-fit coefficients, audience tastes, hype/repetition or fuzzy traces are
-exported. Sway values fit u32/i32 and are exactly representable JSON integers;
-money remains decimal strings. Client-side filtering is not a security guarantee.
-
-## Controlled evidence and validation
-
-Run `cargo run -p bts-web --example production_experiment`. Its two baseline
-programme comparisons retain their original outcomes without Sway. Its separate
-chain records Nora's request at 40–44, earns 4, then spends 2 on Jules and 2 on
-cooperation for a day-3 production. Rafi's later request earns 3 at ready tick 292.
-[Public JSON and actual browser screenshot](../contrib/pooled-sway/README.md)
-record the outcome. `--sequence` is the real native reference for Wasm parity.
-
-Tests isolate cooperation at otherwise identical inputs: execution rises within
-0.05, recognition and financial state stay identical, and weak topic fit remains.
-Other tests cover both fulfilment boundaries, no implicit/duplicate rewards,
-finite reward validation, cross-person spending, overspending, repeated bookings,
-non-negotiable windows, overlaps, fees, pending-quote preservation, reset/isolation,
-serialized hidden-state exclusion and batch-versus-tick reproducibility including
-spending. Real browser tests exercise both quests, both uses, cross-person booking,
-advertising and completed broadcasts. Existing standalone fuzzy checks remain.
-
-Staged writing, come-back careers, prodigies, ambitious novel adaptations, fringe
-reporting and excluded-person narratives are future quest examples. No awards,
-Glamour, Credibility, Backing, general content loader, quest parser, reputation
-network or broader world simulation is added. Fixed fixtures and these prices do
-not establish a balanced social-capital economy.
+Staged writing, recurring editions, talent contracts, drag-and-drop scheduling,
+awards, Glamour, Credibility and broader relationship systems remain deferred.
+Fixed fixtures and provisional prices do not establish economic balance.

@@ -24,7 +24,10 @@ Sway is pooled, abstract social capital. Grant requests such as pairing particul
 talk-show guests, casting an actor, realising a screenplay or accommodating an
 anchor's requested tone. Fulfilling these earns Sway that can be spent elsewhere,
 including smoothing cooperation within productions. No individual creditor
-restricts redemption. Requests should create meaningful costs or constraints;
+restricts redemption. Accept timed opportunities independently of production
+bookings; track open quests and show production matches without promising success.
+See [quests](quest-opportunities.md) for implemented deadlines and the proposed
+outcome-gated/graded reward direction. Requests should create meaningful costs or constraints;
 ordinary paid work earns no Sway automatically. Future requests can support
 comebacks, opportunities for prodigies, excluded guests, neglected topics and
 ambitious adaptations of supposedly unfilmable novels. Those require their own
@@ -40,9 +43,9 @@ Broader request types, rates and uses remain open.
 
 Updated direction: production cooperation spending should use a free slider or
 dial, not a fixed yes/no purchase. The player can allocate any available amount
-of Sway, including zero, with diminishing marginal returns. The current checkbox
-and fixed 2-Sway treatment are an implemented prototype, not this intended interaction.
-Exact spending granularity and the response curve remain to be chosen.
+of Sway, including zero, with diminishing marginal returns. The [casting milestone](casting-desk.md) now implements whole-point allocation
+with a bounded diminishing-return curve. Coefficients remain provisional; the
+previous checkbox/tone-fit boost has been removed.
 
 Its production function is mitigation of identifiable cooperation deficiencies:
 bad cast chemistry, friction between an actor and director, or similar difficulties

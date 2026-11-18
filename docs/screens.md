@@ -148,7 +148,7 @@ should use a slider/dial allocating any available amount of Sway, including zero
 rather than a fixed checkbox. Show the allocated amount and remaining balance.
 Diminishing returns mitigate cooperation deficiencies, not skill shortages; do
 not imply guaranteed creative success or reveal hidden chemistry coefficients.
-The current fixed-cost checkbox remains a prototype; see [resource direction](resource-economies-idea.md#adjustable-production-support).
+The fixed-cost checkbox has now been replaced by the bounded casting desk; see [resource direction](resource-economies-idea.md#adjustable-production-support).
 
 ### Results and language
 
@@ -172,3 +172,59 @@ moving, rejected overlaps, protected bookings, time advancement and review throu
 both direct manipulation and a non-drag route. Follow with the casting-desk and
 talent-contract views as their mechanics become available. This is a proposed
 sequence; it does not implement new simulation systems or choose a UI framework.
+
+
+## Implemented casting subset
+
+The [casting desk](casting-desk.md) now implements three portrait seats, a modal
+eligible-person picker with commitment guidance, subject tiles, a three-position
+tone slider, exact budget presets, adjustable Sway range/number inputs and a
+Rust-calculated booking review before confirmation. Accepted timed quests have
+an open list and production hints; there is no promise selector on a production.
+Other screen directions above, including drag-and-drop scheduling and talent-market
+contracts, remain proposals. This does not claim the full game interface is complete.
+
+## Playful feedback and visible passage of time
+
+Presentation direction: make station life feel active through meaningful
+notifications and ambient changes. The dashed current-time marker is implemented;
+notifications and ambient scenery remain future work.
+
+- Celebrate completed productions with a characterful notification and a direct
+  action such as **View programme** or **Schedule it**. Later systems can announce
+  a finished script or a new prodigy arriving on the talent market. Those systems
+  are not implemented yet; do not generate fictional progress notifications for them.
+- Distinguish celebrations, useful opportunities and urgent obligations. Keep a
+  readable notification history and avoid one popup per simulation tick. Events
+  should refer to the relevant project/person/contract and announce each achievement
+  once, using actual Rust events or state transitions rather than UI timers.
+- Mark current simulated time on the schedule with a dashed vertical line crossing
+  the station and competitor lanes. Include a readable time label and an accessible
+  equivalent. When viewing another day, make that distinction clear rather than
+  drawing today's clock time as if it were current on that day.
+- Let background lighting reflect the simulated day: sunrise, daylight, sunset and
+  night can give a playful sense of elapsed time. Follow the game's explicit clock,
+  not the user's wall clock; pausing must not silently advance world time. Prefer
+  restrained changes that retain text contrast, with reduced-motion support.
+- Over time, the station office could look more luxurious or better connected as
+  cash, Sway or Glamour grow. This is an ambient presentation proposal, not a new
+  conversion rate, common resource bonus or guarantee of success. Different resources
+  may need different visual cues; their gameplay meanings remain distinct.
+
+Office changes must use legitimate player-known information. Decide whether cash
+presentation follows spendable cash, longer-term prosperity or another explicit
+measure; commitments must remain understandable. Glamour-driven changes wait for
+an implemented Glamour system. Decoration must not conceal exact financial or
+contractual information. Consider stable visual tiers so one small transaction
+does not repeatedly rebuild the room, but thresholds and art direction remain open.
+
+Open: notification placement and dismissal/history controls, whether important
+milestones interrupt a long advance, animation/audio preferences, dawn/dusk art,
+resource-to-office cues and the timing of visual upgrades. Avoid a general effects
+framework or a separate decoration economy solely for these presentation ideas.
+
+Implemented follow-up: browser Play/Pause/×2 now drive explicit ticks, a dashed
+NOW marker crosses the schedule, and a shared icon/tooltip HUD groups station
+resources. Future stocks remain visibly unavailable. Daylight, playful milestone
+notifications and richer office appearance above are still proposals. See
+[casting/pacing](casting-desk.md#browser-pacing-resource-hud-and-reusable-components).

@@ -7,7 +7,8 @@ This document does not claim implementation or expand the current milestone.
 
 The existing discussion experiment books one host and two guests for a single
 recording, reserves a fixed budget and supports exceptional participation through
-[pooled Sway](pooled-sway.md). It does not implement employment, multi-edition
+[pooled Sway](pooled-sway.md). The browser fixture now has explicit station-assigned hosts and separate freelance
+guests, with person and studio reservations. It does not implement negotiated employment, multi-edition
 contracts, character casting, script rewrites or a dynamic talent market.
 
 ## Three distinct layers
@@ -127,3 +128,6 @@ Open: minimum-work interpretation; reservation versus confirmed dates; payment
 and cancellation timing; breach/release remedies; option pricing; exclusivity;
 renewal; reassignment; recasting consequences; player evidence about fit; and the
 scope of an initial negotiation UI. Define these visibly before implementing them.
+
+[Production logistics](production-logistics.md) records current staff/library/studio
+ownership and the following slice’s setup/cleanup and reusable-prop direction.

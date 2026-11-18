@@ -1,10 +1,12 @@
-// Player protocol v4. Rust DTOs are authoritative; no developer-export types are imported.
+// Player protocol v5. Rust DTOs are authoritative; no developer-export types are imported.
 export type Command =
   | { type: 'inspect' | 'reset' }
+  | { type: 'accept_request'; request_id: number }
   | { type: 'create_production'; concept: ProductionConcept }
   | { type: 'revise_production'; production_id: number; concept: ProductionConcept }
   | { type: 'discard_production'; production_id: number }
-  | { type: 'book_production'; production_id: number; promise_request: number | null; exceptional_person: number | null; smooth_cooperation: boolean }
+  | { type: 'review_production'; production_id: number; exceptional_person: number | null; cooperation_sway: number }
+  | { type: 'book_production'; production_id: number; exceptional_person: number | null; cooperation_sway: number }
   | { type: 'place'; start_tick: number; programme: number; advertiser: number | null }
   | { type: 'move'; airing_id: number; start_tick: number }
   | { type: 'remove'; airing_id: number }
@@ -18,7 +20,7 @@ export interface Programme {
   broadcast_cost: string; duration_minutes: number;
 }
 export interface Airing {
-  airing_id: number; station: number; programme: number; start_tick: number; end_tick: number;
+  airing_id: number; station: number; programme: number; programme_name: string; genre:string; duration_minutes:number; start_tick: number; end_tick: number;
   proposed_advertiser: number | null; booked: boolean; status: 'planned' | 'on_air' | 'completed' | 'off_air'; editable: boolean;
 }
 export interface Commitment {
@@ -39,15 +41,16 @@ export interface BroadcastResult {
 }
 export interface Report {
   production: ProductionView;
+  booking_review: { production_id: number; exceptional_person: number | null; cooperation_sway: number; studio:number; total_sway: number; sway_remaining: number; budget: string; cash_remaining: string } | null;
   reporting: string; now_tick: number; end_tick: number; tick_minutes: number; next_airing: number | null; active_airing: number | null; cash: string;
-  stations: { id: number; name: string; is_player: boolean }[];
+  stations: { id: number; name: string; is_player: boolean; staff:string[]; owned_studios:number|null }[];
   gaps: { start_tick: number; end_tick: number }[];
   finances: { opening_cash: string; costs_paid: string; revenue: string; production_committed: string; production_in_escrow: string; production_spent: string; ledger: { production_id: number | null; tick: number; airing_id: number | null; kind: string; amount: string }[] };
   catalogue: Programme[]; advertisers: { id: number; name: string }[]; schedule: Airing[];
   offer: { offer_id: string; airing_id: number; start_tick: number; end_tick: number; advertiser: number; deadline_tick: number; maximum_payment: string; targets: Commitment[] } | null;
   contracts: Booking[]; results: BroadcastResult[];
 }
-export type Response = { status: 'ok'; api_version: 4; report: Report } | { status: 'error'; api_version: 4; error: { code: string; message: string } };
+export type Response = { status: 'ok'; api_version: 5; report: Report } | { status: 'error'; api_version: 5; error: { code: string; message: string } };
 
 export type Subject = 'science' | 'everyday_life' | 'entertainment';
 export type ProductionTone = 'calm' | 'conversational' | 'lively';
@@ -57,13 +60,13 @@ export interface ProductionConcept {
 export interface ProductionInfo extends ProductionConcept {
   id: number; fees: string; recording_end: number; ready_at: number;
   phase: 'draft' | 'booked' | 'recording' | 'post_production' | 'completed';
-  programme: number | null; booked_at: number | null; promised_request: number | null; exceptional_person: number | null; smooth_cooperation: boolean;
+  programme: number | null; booked_at: number | null; studio:number|null; quest_hints: { request_id: number; matches_requirements: boolean; can_finish_in_time: boolean; achievement_tick: number }[]; exceptional_person: number | null; cooperation_sway: number;
 }
 export interface ProductionView {
   format: string; duration_minutes: number; recording_ticks: number; post_ticks: number;
-  people: { id: number; name: string; role: 'host' | 'guest'; fee: string; description: string; normal_until_tick: number; negotiable_from_tick: number | null }[];
+  people: { id: number; name: string; role: 'host' | 'guest'; fee: string; description: string; normal_until_tick: number; negotiable_from_tick: number | null; station_id:number|null; commitments: { production_id: number; title: string; start_tick: number; end_tick: number }[] }[];
   projects: ProductionInfo[];
-  requests: { id: number; proposer: number; reward: number; achievement: 'recording_completed' | 'production_completed'; statement: string; promise: { production_id: number; promised_at: number; fulfilled_at: number | null } | null }[];
-  sway_balance: number; participation_cost: number; cooperation_cost: number;
+  requests: { id: number; proposer: number; reward: number; achievement: 'recording_completed' | 'production_completed'; statement: string; time_limit_ticks: number; status: 'available' | 'open' | 'completed' | 'expired'; acceptance: { production_id: number | null; accepted_at: number; deadline_tick: number; fulfilled_at: number | null } | null }[];
+  sway_balance: number; participation_cost: number; known_concerns: { people: [number, number]; note: string }[];
   sway_history: { tick: number; production_id: number; change: number; balance: number; kind: string; request_id: number | null; person_id: number | null }[];
 }

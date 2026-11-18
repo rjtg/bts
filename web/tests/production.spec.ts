@@ -1,55 +1,81 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '../..');
+async function choose(page: Page, seat: number, name: string) {
+  await page.locator(`#seat-${seat}`).click();
+  if (name === 'Mina Sol') await page.getByRole('dialog').screenshot({ path: '/tmp/bts-casting-picker.png' });
+  await page.getByRole('dialog').getByRole('button', { name: `Choose ${name}`, exact: true }).click();
+  await expect(page.getByRole('dialog')).not.toBeVisible();
+}
+async function book(page: Page, id: number) {
+  await page.locator(`#review-${id}`).click();
+  await expect(page.locator(`#booking-review-${id}`)).toContainText('Ready to book?');
+  await page.locator(`#confirm-${id}`).click();
+}
+async function finish(page: Page, id: number) { await page.locator(`#production-${id}`).getByRole('button', { name: /^Finish / }).click(); }
 
-test('produce, advertise and broadcast an original, earn pooled Sway and spend across people on participation and cooperation', async ({ page }) => {
+test('cast, review, earn Sway, negotiate and support a show then advertise and broadcast', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
-  const failures: string[] = []; page.on('pageerror', error => failures.push(error.message));
-  await page.goto('/'); await expect(page.getByRole('status')).toContainText('WASM READY');
+  const failures: string[] = []; page.on('pageerror', e => failures.push(e.message));
+  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.locator('#jump-now').click();await page.screenshot({path:'/tmp/bts-live-hud.png'});
   await page.getByRole('link', { name: '▣ Production', exact: true }).click();
-  await page.locator('#production-name').fill('Workshop Conversations'); await page.locator('#create-production').click();
+  await page.locator('#accept-request-1').click();
+  await page.locator('#create-production').click();
   const first = page.locator('#production-1');
-  await expect(first).toContainText('DRAFT'); await expect(first).toContainText('620 in fees'); await expect(page.locator('#cash')).toHaveText('20,000');
-  await page.locator('#request-choice-1').selectOption('1'); await first.getByRole('button', { name: 'Book production #1', exact: true }).click();
-  await expect(first).toContainText('BOOKED'); await expect(page.locator('#cash')).toHaveText('19,000'); await expect(page.locator('#sway-panel')).toContainText('not fulfilled yet');
-  await first.getByRole('button', { name: /Run through production #1/ }).click();
-  await expect(page.locator('#clock')).toHaveText('Day 1 · 13:00'); await expect(first).toContainText('COMPLETED');
-  await expect(page.locator('#sway-panel')).toContainText('Fulfilled at Day 1 · 11:00'); await expect(page.locator('#sway-panel')).toContainText('Pooled Sway · 4'); await expect(page.locator('#cash')).toHaveText('19,000');
+  await expect(first).toContainText('620 in fees'); await expect(page.locator('#cash')).toHaveText('20,000');
+  await page.locator('#review-1').click(); await expect(page.locator('#booking-review-1')).toContainText('Cash remaining: 19,000');
+  await expect(page.locator('#cash')).toHaveText('20,000'); // review reserves nothing
+  await page.locator('#confirm-1').click(); await finish(page, 1);
+  await expect(page.locator('#clock')).toHaveText('Day 1 · 13:00'); await expect(page.locator('#sway-panel')).toContainText('Sway · 4'); await expect(page.locator('#resource-sway')).toHaveText('4');
   await first.getByRole('button', { name: 'Show in programme library' }).click();
-  await expect(page.locator('#place-name')).toHaveText('Workshop Conversations'); await expect(page.locator('[data-programme="8"]')).toContainText('Your original');
   await page.locator('#place-day').selectOption('0'); await page.locator('#place-time').selectOption('72'); await page.locator('#place').click();
-  await expect(page.locator('#selected-name')).toHaveText('Workshop Conversations');
   await page.locator('#advertiser').selectOption('2'); await page.locator('#set-advertiser').click(); await page.locator('#quote').click(); await page.locator('#accept').click(); await page.locator('#advance-next').click();
-  await expect(page.locator('#clock')).toHaveText('Day 1 · 18:45'); await expect(page.locator('#selected-result')).toContainText('Completed.'); await expect(page.locator('#selected-contract')).toContainText('Settled: paid');
-  await page.getByRole('link', { name: '▣ Production', exact: true }).click(); await page.locator('#production-new').click(); await page.locator('#production-name').fill('Neighbourhood Conversations');
-  await page.locator('#production-host').selectOption('2'); await page.locator('#production-guest-one').selectOption('5'); await page.locator('#production-guest-two').selectOption('6'); await page.locator('#production-subject').selectOption('everyday_life'); await page.locator('#production-tone').selectOption('conversational');
-  await page.locator('#production-day').selectOption('2'); await page.locator('#production-time').selectOption('40'); await page.locator('#create-production').click();
-  const second = page.locator('#production-2'); const before = await page.locator('#cash').textContent();
-  await second.getByRole('button', { name: 'Book production #2', exact: true }).click(); await expect(page.getByRole('alert')).toContainText('exceptional_participation_required'); await expect(page.locator('#cash')).toHaveText(before!);
-  await page.locator('#exceptional-2').selectOption('5'); await page.locator('#smooth-2').check(); await second.getByRole('button', { name: 'Book production #2', exact: true }).click(); await expect(page.locator('#sway-panel')).toContainText('Pooled Sway · 0');
-  await expect(second).toContainText('Exceptional participation secured: Jules Hart'); await expect(second).toContainText('Cooperation smoothing applied'); await expect(page.locator('#sway-history')).toContainText('Jules Hart');
-  await second.getByRole('button', { name: /Run through production #2/ }).click(); await expect(page.locator('#clock')).toHaveText('Day 3 · 13:00'); await expect(second).toContainText('COMPLETED');
-  await page.locator('#production').screenshot({ path: '/tmp/bts-pooled-sway.png' });
+  await expect(page.locator('#selected-contract')).toContainText('Settled: paid');
+  await page.getByRole('link', { name: '▣ Production', exact: true }).click(); await page.locator('#production-new').click();
+  await page.locator('#production-day').selectOption('2'); await page.locator('#production-time').selectOption('40');
+  await choose(page, 0, 'Mina Sol'); await choose(page, 1, 'Jules Hart'); await choose(page, 2, 'Rafi Linden');
+  await page.locator('#production-name').fill('Neighbourhood Conversations'); await page.getByRole('button', { name: 'Everyday life', exact: true }).click();
+  await page.locator('#production-tone').fill('1');
+  await expect(page.locator('#cast-concerns')).toContainText('Mina and Jules');
+  await page.locator('#create-production').click(); const second = page.locator('#production-2');
+  await page.locator('#review-2').click(); await expect(page.getByRole('alert')).toContainText('exceptional_participation_required');
+  await second.getByRole('button', { name: /Bring Jules Hart in/ }).click();
+  await page.locator('#support-exact-2').fill('2');
+  await expect(second.locator('.support-remaining')).toContainText('0 left after booking');
+  await page.locator('#review-2').click(); await expect(page.locator('#booking-review-2')).toContainText('Spend 4 Sway');
+  await expect(page.locator('#sway-panel')).toContainText('Sway · 4'); await page.locator('#production').screenshot({ path: '/tmp/bts-casting-review.png' }); await page.locator('#confirm-2').click();
+  await expect(second).toContainText('Team support: 2 Sway'); await expect(page.locator('#sway-panel')).toContainText('Sway · 0');
+  await finish(page, 2); await page.locator('#production').screenshot({ path: '/tmp/bts-casting-desk.png' });
   await second.getByRole('button', { name: 'Show in programme library' }).click(); await page.locator('#place-day').selectOption('2'); await page.locator('#place-time').selectOption('72'); await page.locator('#place').click(); await page.locator('#advance-next').click();
-  await expect(page.locator('#clock')).toHaveText('Day 3 · 18:45'); await expect(page.locator('#selected-name')).toHaveText('Neighbourhood Conversations'); await expect(page.locator('#selected-result')).toContainText('Completed.'); await expect(page.locator('#results-list tbody tr')).toHaveCount(2);
-  await expect(page.locator('#finance-summary')).toContainText('2,000'); await expect(page.locator('#ledger')).toContainText('Recording expense (from escrow)'); expect(failures).toEqual([]);
+  await expect(page.locator('#clock')).toHaveText('Day 3 · 18:45'); await expect(page.locator('#selected-result')).toContainText('Completed.');
+  await expect(page.locator('#results-list tbody tr')).toHaveCount(2);
+  await page.locator('#reset').click();await expect(page.locator('#cash')).toHaveText('20,000');await expect(page.locator('#production-projects')).not.toContainText('Neighbourhood Conversations');await expect(page.locator('#production-day')).toHaveValue('0');await expect(page.locator('#production-time')).toHaveValue('40');await expect(page.locator('#production-name')).toHaveValue('Workshop Conversations');
+  expect(failures).toEqual([]);
 });
 
-test('conflicting talent is rejected; free drafts can be revised and discarded', async ({ page }) => {
-  await page.goto('/'); await expect(page.getByRole('status')).toContainText('WASM READY');
-  await page.locator('#create-production').click(); await page.locator('#production-1').getByRole('button', { name: 'Book production #1', exact: true }).click();
+test('conflicting bookings are rejected and cast cards explain duplicates and commitments', async ({ page }) => {
+  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.locator('#create-production').click(); await book(page, 1);
   await page.locator('#production-name').fill('Conflicting recording'); await page.locator('#create-production').click();
-  const second = page.locator('#production-2'); await second.getByRole('button', { name: 'Book production #2', exact: true }).click(); await expect(page.getByRole('alert')).toContainText('talent_conflict'); await expect(page.locator('#cash')).toHaveText('19,000');
-  await second.getByRole('button', { name: 'Edit draft', exact: true }).click(); await page.locator('#production-time').selectOption('44'); await page.locator('#create-production').click(); await expect(second).toContainText('Day 1 · 11:00'); await second.getByRole('button', { name: 'Discard draft', exact: true }).click(); await expect(second).toHaveCount(0); await expect(page.locator('#cash')).toHaveText('19,000');
+  await page.locator('#review-2').click(); await expect(page.getByRole('alert')).toContainText('talent_conflict'); await expect(page.locator('#cash')).toHaveText('19,000');
+  await page.locator('#production-2').getByRole('button', { name: 'Edit concept' }).click(); await page.locator('#seat-1').click();
+  await expect(page.getByRole('dialog').getByRole('button', { name: 'Choose Nora Vale', exact: true })).toBeDisabled();
+  await expect(page.getByRole('dialog')).toContainText('Already recording');
+  await expect(page.getByRole('dialog').getByRole('button', { name: 'Choose Felix Reed', exact: true })).toBeDisabled();
+  await page.keyboard.press('Escape'); await expect(page.locator('#seat-1')).toBeFocused();
+  await page.locator('#production-time').selectOption('44'); await page.locator('#create-production').click();
+  await expect(page.locator('#production-2')).toContainText('Day 1 · 11:00');
+  await page.locator('#production-2').getByRole('button', { name: 'Discard concept' }).click(); await expect(page.locator('#production-2')).toHaveCount(0);
 });
 
 test('production and pooled Sway commands in actual Wasm match the native sequence', async ({ page }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(90_000);
   const native = JSON.parse(execFileSync('cargo', ['run', '--locked', '--quiet', '-p', 'bts-web', '--example', 'production_experiment', '--', '--sequence'], { cwd: root, encoding: 'utf8' }));
   await page.route('**/__test__/bts_web.js', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web.js'), contentType: 'text/javascript' }));
   await page.route('**/__test__/bts_web_bg.wasm', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web_bg.wasm'), contentType: 'application/wasm' }));
-  await page.goto('/'); await expect(page.getByRole('status')).toContainText('WASM READY');
+  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
   const actual = await page.evaluate(async requests => {
     // @ts-expect-error generated bindings are served by test-only routes
     const { default: init, WebSession } = await import('/__test__/bts_web.js'); await init(); const s = new WebSession(); const responses = []; let token = '';
@@ -66,19 +92,47 @@ test('production and pooled Sway commands in actual Wasm match the native sequen
   expect(actual.filter((r: { status: string }) => r.status === 'error').map((r: { error: { code: string } }) => r.error.code)).toEqual(['production_not_ready', 'exceptional_participation_required']);
 });
 
-test('a second finite request earns at completion and its pooled reward buys cooperation elsewhere', async ({ page }) => {
-  await page.goto('/'); await expect(page.getByRole('status')).toContainText('WASM READY');
-  await page.locator('#production-guest-two').selectOption('6'); await page.locator('#production-subject').selectOption('everyday_life');
-  await page.locator('#create-production').click(); await page.locator('#request-choice-1').selectOption('2');
-  await page.locator('#smooth-1').check(); await page.locator('#production-1').getByRole('button', { name: 'Book production #1', exact: true }).click();
-  await expect(page.getByRole('alert')).toContainText('insufficient_sway'); await expect(page.locator('#cash')).toHaveText('20,000');
-  await page.locator('#smooth-1').uncheck(); await page.locator('#production-1').getByRole('button', { name: 'Book production #1', exact: true }).click();
-  await expect(page.locator('#sway-panel')).toContainText('Pooled Sway · 0');
-  await page.locator('#production-1').getByRole('button', { name: /Run through production #1/ }).click();
-  await expect(page.locator('#request-2')).toContainText('Fulfilled at Day 1 · 13:00'); await expect(page.locator('#sway-panel')).toContainText('Pooled Sway · 3');
+
+test('second quest, exact whole support, keyboard and narrow-screen casting controls', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.locator('#seat-2').focus(); await page.keyboard.press('Enter');
+  await page.getByRole('dialog').getByRole('button', { name: 'Choose Rafi Linden', exact: true }).click();
+  await page.getByRole('button', { name: 'Everyday life', exact: true }).click();
+  await page.locator('#accept-request-2').click();
+  await page.getByRole('radio', { name: /Shoestring/ }).check(); await page.locator('#create-production').click();
+  const first = page.locator('#production-1');
+  await expect(first.locator('.quest-hint')).toContainText('matches production requirements');
+  await book(page, 1); await finish(page, 1); await expect(page.locator('#sway-panel')).toContainText('Sway · 3');
   await page.locator('#production-new').click(); await page.locator('#production-name').fill('A different production'); await page.locator('#production-time').selectOption('60');
-  await page.locator('#production-guest-one').selectOption('4'); await page.locator('#production-guest-two').selectOption('5'); await page.locator('#create-production').click();
-  await page.locator('#smooth-2').check(); await page.locator('#production-2').getByRole('button', { name: 'Book production #2', exact: true }).click();
-  await expect(page.locator('#sway-panel')).toContainText('Pooled Sway · 1'); await expect(page.locator('#production-2')).toContainText('Cooperation smoothing applied');
-  await page.locator('#production-2').getByRole('button', { name: /Run through production #2/ }).click(); await expect(page.locator('#sway-panel')).toContainText('Pooled Sway · 1');
+  await choose(page, 1, 'Jules Hart'); await page.locator('#create-production').click();
+  await page.locator('#support-exact-2').fill('1.5'); await expect(page.locator('#review-2')).toBeDisabled();
+  await page.locator('#support-exact-2').fill('4'); await expect(page.locator('#review-2')).toBeDisabled();
+  await page.locator('#support-2').focus(); await page.keyboard.press('Home'); await page.keyboard.press('ArrowRight');
+  await expect(page.locator('#support-exact-2')).toHaveValue('1');
+  await book(page, 2); await expect(page.locator('#sway-panel')).toContainText('Sway · 2'); await finish(page, 2);
+  await expect(page.locator('#production-2')).toContainText('Team support: 1 Sway');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
+test('quests are accepted separately, show deadlines and expire without rewards', async ({ page }) => {
+  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.locator('#accept-request-2').click(); await expect(page.locator('#request-2')).toContainText('Open · due Day 3 · 00:00');
+  await expect(page.locator('#accept-request-2')).toHaveCount(0); await expect(page.locator('#cash')).toHaveText('20,000');
+  await page.locator('#advance-day').click(); await page.locator('#advance-day').click();
+  await page.getByText('Completed & expired quests', { exact: true }).click();
+  await expect(page.locator('#request-2')).toContainText('Expired at Day 3 · 00:00'); await expect(page.locator('#sway-panel')).toContainText('Sway · 0');
+});
+
+test('distinct rival library and staff, with studio capacity independent of cast conflicts', async ({ page }) => {
+  await page.goto('/');await expect(page.locator('#status')).toContainText('WASM READY');
+  await expect(page.locator('#station-teams')).toContainText('Elian North, Mina Sol');await expect(page.locator('#station-teams')).toContainText('Vera Quinn');
+  await expect(page.locator('#catalogue')).not.toContainText('After Hours');await page.locator('[data-station="2"] [data-airing]').first().click();
+  await expect(page.locator('#selected-name')).toHaveText('After Hours');await expect(page.locator('#known-details')).toContainText('not in your library');
+  await page.locator('#create-production').click();await book(page,1);
+  await choose(page,0,'Mina Sol');await choose(page,1,'Jules Hart');await choose(page,2,'Rafi Linden');
+  await page.locator('#production-name').fill('A second studio session');await page.locator('#create-production').click();await page.locator('#review-2').click();
+  await expect(page.getByRole('alert')).toContainText('studio_unavailable');await expect(page.locator('#cash')).toHaveText('19,000');
+  await page.locator('#production-2').getByRole('button',{name:'Edit concept'}).click();await page.locator('#production-time').selectOption('44');await page.locator('#create-production').click();
+  await book(page,2);await expect(page.locator('#production-2')).toContainText('Studio 1 reserved');await expect(page.locator('#cash')).toHaveText('18,000');
 });

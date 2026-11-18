@@ -25,6 +25,7 @@ jobs:
       - run: cargo run -p bts-fuzzy --example ventilation
       - run: cargo run -p bts-web --example planning_evening > "$RUNNER_TEMP/bts-planning-evening.json"
       - run: cargo run -p bts-web --example production_experiment > "$RUNNER_TEMP/bts-original-production.json"
+      - run: cargo run -p bts-web --example casting_comparison > "$RUNNER_TEMP/bts-casting-comparison.json"
       - run: cargo run -p bts-sim --example sugeno_semantics
       - run: cargo run -p bts-cli -- demo --json "$RUNNER_TEMP/bts-demo-results.json"
       - run: cargo run -p bts-cli -- economy --json "$RUNNER_TEMP/bts-economy-results.json"
@@ -61,6 +62,7 @@ jobs:
         working-directory: web
       - run: npm run build
         working-directory: web
+      - run: cargo build --locked -p bts-web --examples
       - run: npx playwright install --with-deps chromium
         working-directory: web
       - run: npm run test:e2e

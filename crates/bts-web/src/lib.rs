@@ -5,8 +5,7 @@ pub mod scenario;
 
 use bts_sim::economy::{Account, AudienceCommitment, Contract, ContractStatus, LedgerReason};
 use bts_sim::planning::production::{
-    Concept, PersonId, ProductionId, RequestId, Role, SwayReason, COOPERATION_COST,
-    PARTICIPATION_COST,
+    Concept, PersonId, ProductionId, RequestId, Role, SwayReason, PARTICIPATION_COST,
 };
 use bts_sim::planning::{AiringId, PlanError, Planner, PlanningOffer};
 use bts_sim::{BrandId, ProgrammeId, SimTick};
@@ -28,6 +27,7 @@ pub struct Session {
     namespace: u32,
     next_offer: u64,
     pending: Option<Pending>,
+    booking_review: Option<ProductionBookingReview>,
 }
 impl Session {
     pub fn new() -> Result<Self, PlayerError> {
@@ -52,6 +52,7 @@ impl Session {
             namespace,
             next_offer: 1,
             pending: None,
+            booking_review: None,
         })
     }
     pub fn execute(&mut self, command: Command) -> Result<PlayerReport, PlayerError> {
@@ -72,7 +73,7 @@ impl Session {
             )),
             Ok(request) if request.api_version != API_VERSION => Err(PlayerError::new(
                 "unsupported_version",
-                "This adapter supports api_version 4.",
+                "This adapter supports api_version 5.",
             )),
             Ok(request) => self.execute(request.command),
         };
@@ -91,6 +92,10 @@ impl Session {
     fn apply(&mut self, command: Command) -> Result<(), PlayerError> {
         match command {
             Command::Inspect {} => return Ok(()),
+            Command::AcceptRequest { request_id } => self
+                .planner
+                .accept_request(RequestId(request_id))
+                .map_err(player_error)?,
             Command::CreateProduction { concept } => {
                 self.planner
                     .create_production(concept_input(concept)?)
@@ -107,18 +112,60 @@ impl Session {
                 .planner
                 .discard_production(ProductionId(production_id))
                 .map_err(player_error)?,
+            Command::ReviewProduction {
+                production_id,
+                exceptional_person,
+                cooperation_sway,
+            } => {
+                let mut preview = self.planner.clone();
+                preview
+                    .book_production(
+                        ProductionId(production_id),
+                        exceptional_person.map(PersonId),
+                        cooperation_sway,
+                    )
+                    .map_err(player_error)?;
+                self.booking_review = Some(ProductionBookingReview {
+                    production_id,
+                    exceptional_person,
+                    cooperation_sway,
+                    studio: preview
+                        .production()
+                        .project(ProductionId(production_id))
+                        .map_err(player_error)?
+                        .studio
+                        .unwrap()
+                        .0,
+                    total_sway: self.planner.production().sway() - preview.production().sway(),
+                    sway_remaining: preview.production().sway(),
+                    budget: preview
+                        .production()
+                        .project(ProductionId(production_id))
+                        .map_err(player_error)?
+                        .concept
+                        .budget
+                        .0
+                        .to_string(),
+                    cash_remaining: preview
+                        .state()
+                        .economy()
+                        .cash(PLAYER)
+                        .unwrap()
+                        .0
+                        .to_string(),
+                });
+                return Ok(());
+            }
             Command::BookProduction {
                 production_id,
-                promise_request,
                 exceptional_person,
-                smooth_cooperation,
+                cooperation_sway,
             } => self
                 .planner
                 .book_production(
                     ProductionId(production_id),
-                    promise_request.map(RequestId),
                     exceptional_person.map(PersonId),
-                    smooth_cooperation,
+                    cooperation_sway,
                 )
                 .map_err(player_error)?,
             Command::Reset {} => {
@@ -207,6 +254,7 @@ impl Session {
             }
         }
         self.pending = None;
+        self.booking_review = None;
         Ok(())
     }
     fn audience_name(&self, id: bts_sim::AudienceId) -> String {
@@ -273,6 +321,11 @@ impl Session {
             post_ticks: 8,
             people: state
                 .roster()
+                .filter(|person| {
+                    self.planner
+                        .staff_owner(person.id)
+                        .is_none_or(|station| station == PLAYER)
+                })
                 .map(|p| PersonInfo {
                     id: p.id.0,
                     name: p.name.clone(),
@@ -284,6 +337,25 @@ impl Session {
                     description: p.description.clone(),
                     normal_until_tick: p.normal_until.0,
                     negotiable_from_tick: p.negotiable_from.map(|t| t.0),
+                    station_id: self.planner.staff_owner(p.id).map(|s| s.0),
+                    commitments: state
+                        .projects()
+                        .filter(|project| {
+                            project.booked_at.is_some()
+                                && [
+                                    project.concept.host,
+                                    project.concept.guests[0],
+                                    project.concept.guests[1],
+                                ]
+                                .contains(&p.id)
+                        })
+                        .map(|project| TalentCommitment {
+                            production_id: project.id.0,
+                            title: project.concept.title.clone(),
+                            start_tick: project.concept.record_at.0,
+                            end_tick: project.recording_end.0,
+                        })
+                        .collect(),
                 })
                 .collect(),
             projects: state
@@ -303,9 +375,33 @@ impl Session {
                     phase: p.phase.label(),
                     programme: p.programme.map(|id| id.0),
                     booked_at: p.booked_at.map(|t| t.0),
-                    promised_request: p.promised_request.map(|id| id.0),
+                    studio: p.studio.map(|s| s.0),
+                    quest_hints: state
+                        .requests()
+                        .filter_map(|r| {
+                            let a = r.acceptance.as_ref()?;
+                            if a.fulfilled_at.is_some() || self.planner.now() >= a.deadline {
+                                return None;
+                            }
+                            let at = match r.condition {
+                                bts_sim::planning::production::RequestCondition::CoGuests {
+                                    ..
+                                } => p.recording_end,
+                                _ => p.ready_at,
+                            };
+                            Some(QuestHint {
+                                request_id: r.id.0,
+                                matches_requirements: r.condition.matches(&p.concept),
+                                can_finish_in_time: p.concept.record_at >= a.accepted_at
+                                    && (p.phase != bts_sim::planning::production::Phase::Draft
+                                        || p.concept.record_at >= self.planner.now())
+                                    && at <= a.deadline,
+                                achievement_tick: at.0,
+                            })
+                        })
+                        .collect(),
                     exceptional_person: p.exceptional_person.map(|id| id.0),
-                    smooth_cooperation: p.smooth_cooperation,
+                    cooperation_sway: p.cooperation_sway,
                 })
                 .collect(),
             requests: state
@@ -316,16 +412,33 @@ impl Session {
                     reward: r.reward,
                     achievement: r.condition.achievement(),
                     statement: r.statement.clone(),
-                    promise: r.promise.as_ref().map(|p| PromiseInfo {
-                        production_id: p.production.0,
-                        promised_at: p.promised_at.0,
-                        fulfilled_at: p.fulfilled_at.map(|t| t.0),
+                    time_limit_ticks: r.time_limit_ticks,
+                    status: match &r.acceptance {
+                        None => "available",
+                        Some(a) if a.fulfilled_at.is_some() => "completed",
+                        Some(a) if self.planner.now() >= a.deadline => "expired",
+                        Some(_) => "open",
+                    },
+                    acceptance: r.acceptance.as_ref().map(|a| QuestAcceptanceInfo {
+                        production_id: a.production.map(|p| p.0),
+                        accepted_at: a.accepted_at.0,
+                        deadline_tick: a.deadline.0,
+                        fulfilled_at: a.fulfilled_at.map(|t| t.0),
                     }),
                 })
                 .collect(),
             sway_balance: state.sway(),
             participation_cost: PARTICIPATION_COST,
-            cooperation_cost: COOPERATION_COST,
+            known_concerns: state
+                .cooperation_issues()
+                .iter()
+                .filter_map(|issue| {
+                    issue.known_note.as_ref().map(|note| KnownConcern {
+                        people: issue.people.map(|p| p.0),
+                        note: note.clone(),
+                    })
+                })
+                .collect(),
             sway_history: state
                 .sway_history()
                 .iter()
@@ -361,6 +474,28 @@ impl Session {
                 airing_id: a.id.0,
                 station: a.station.0,
                 programme: a.programme.0,
+                programme_name: world
+                    .programmes
+                    .iter()
+                    .find(|p| p.id == a.programme)
+                    .unwrap()
+                    .name
+                    .clone(),
+                genre: format!(
+                    "{:?}",
+                    world
+                        .programmes
+                        .iter()
+                        .find(|p| p.id == a.programme)
+                        .unwrap()
+                        .genre
+                ),
+                duration_minutes: world
+                    .programmes
+                    .iter()
+                    .find(|p| p.id == a.programme)
+                    .unwrap()
+                    .duration_minutes,
                 start_tick: a.start.0,
                 end_tick: a.end.0,
                 proposed_advertiser: a.advertiser.map(|id| id.0),
@@ -518,6 +653,7 @@ impl Session {
             active_airing,
             cash: economy.cash(PLAYER).unwrap().0.to_string(),
             production: self.production_view(),
+            booking_review: self.booking_review.clone(),
             finances: Finances {
                 opening_cash: world
                     .stations
@@ -550,12 +686,25 @@ impl Session {
                     id: s.id.0,
                     name: s.name.clone(),
                     is_player: s.id == PLAYER,
+                    staff: self
+                        .planner
+                        .station_staff(s.id)
+                        .filter_map(|id| {
+                            self.planner
+                                .production()
+                                .roster()
+                                .find(|p| p.id == id)
+                                .map(|p| p.name.clone())
+                        })
+                        .collect(),
+                    owned_studios: (s.id == PLAYER).then(|| self.planner.studio_count(s.id)),
                 })
                 .collect(),
             gaps,
             catalogue: world
                 .programmes
                 .iter()
+                .filter(|p| self.planner.owns_programme(PLAYER, p.id))
                 .map(|p| CatalogueEntry {
                     production_id: self
                         .planner

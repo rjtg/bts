@@ -8,7 +8,7 @@ Publication is disabled and licensing is unchanged.
 
 - Native: `Session::new()`, `execute(Command)`, `dispatch_json(&str)`, `report()`.
 - Wasm: `new WebSession()`, `session.dispatch(json)`, `session.free()`, `api_version()`.
-- Protocol v4: strict typed commands, structured errors, whitelisted reports.
+- Protocol v5: strict typed commands, structured errors, whitelisted reports.
 - Monetary values, contract IDs and integer delivery units are decimal strings.
 - Rejected commands are atomic; accepted bookings lock the airing, and all commands identify it explicitly.
 

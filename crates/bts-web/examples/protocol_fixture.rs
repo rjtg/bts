@@ -3,7 +3,7 @@ use bts_web::Session;
 use serde_json::{json, Value};
 fn send(session: &mut Session, command: Value, reports: &mut Vec<Value>) {
     let response = serde_json::from_str(
-        &session.dispatch_json(&json!({"api_version":4,"command":command}).to_string()),
+        &session.dispatch_json(&json!({"api_version":5,"command":command}).to_string()),
     )
     .unwrap();
     reports.push(response);

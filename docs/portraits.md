@@ -3,7 +3,7 @@
 Initial art set, November 2026: three male and three female fictional adults,
 with varied ages, appearances, hairstyles and presentation. These are reusable
 portraits for the talent/guest roster, not photographs of real people or actors.
-The existing discussion roster uses them in its selected-participant cards.
+The existing discussion roster uses them in its portrait casting desk.
 They can later support the talent market and scripted casting UI.
 
 | Person | Authored gender | Approximate visual age | Current fixture job | Portrait |

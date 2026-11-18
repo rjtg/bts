@@ -13,6 +13,7 @@ fn planner() -> Planner {
     .unwrap();
     let (roster, request) = demo_roster();
     p.configure_production(roster, request).unwrap();
+    p.configure_cooperation(demo_cooperation()).unwrap();
     p
 }
 fn concept() -> Concept {
@@ -39,7 +40,7 @@ fn complete_pipeline_reserves_spends_once_releases_work_then_broadcasts() {
     let id = p.create_production(concept()).unwrap();
     assert_eq!(p.state().economy().cash(MAIN), Some(Money(20000)));
     assert!(p.state().economy().ledger().is_empty());
-    p.book_production(id, None, None, false).unwrap();
+    p.book_production(id, None, 0).unwrap();
     let work = p.production().project(id).unwrap().programme.unwrap();
     assert_eq!(p.state().economy().cash(MAIN), Some(Money(19000)));
     assert_eq!(p.state().economy().production_escrow(), 1000);
@@ -123,12 +124,8 @@ fn conflicting_talent_bookings_and_immutable_booked_projects_are_atomic() {
             ..concept()
         })
         .unwrap();
-    p.book_production(a, None, None, false).unwrap();
-    unchanged(
-        &mut p,
-        |p| p.book_production(b, None, None, false),
-        "talent_conflict",
-    );
+    p.book_production(a, None, 0).unwrap();
+    unchanged(&mut p, |p| p.book_production(b, None, 0), "talent_conflict");
     unchanged(
         &mut p,
         |p| p.revise_production(a, concept()),
@@ -137,7 +134,7 @@ fn conflicting_talent_bookings_and_immutable_booked_projects_are_atomic() {
     unchanged(&mut p, |p| p.discard_production(a), "production_locked");
     unchanged(
         &mut p,
-        |p| p.book_production(a, None, None, false),
+        |p| p.book_production(a, None, 0),
         "production_locked",
     );
     p.revise_production(
@@ -148,7 +145,7 @@ fn conflicting_talent_bookings_and_immutable_booked_projects_are_atomic() {
         },
     )
     .unwrap();
-    p.book_production(b, None, None, false).unwrap();
+    p.book_production(b, None, 0).unwrap();
     assert_eq!(p.state().economy().cash(MAIN), Some(Money(18000)));
 }
 
@@ -217,21 +214,21 @@ fn budgets_roles_dates_and_missing_people_are_validated_without_mutation() {
         .unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(id, None, None, false),
+        |p| p.book_production(id, None, 0),
         "insufficient_production_funds",
     );
     p.advance_to(SimTick(41)).unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(id, None, None, false),
+        |p| p.book_production(id, None, 0),
         "invalid_recording_time",
     );
 }
 
 fn earn(p: &mut Planner) {
+    p.accept_request(RequestId(1)).unwrap();
     let id = p.create_production(concept()).unwrap();
-    p.book_production(id, Some(RequestId(1)), None, false)
-        .unwrap();
+    p.book_production(id, None, 0).unwrap();
     p.advance_to(SimTick(52)).unwrap();
     assert_eq!(p.production().sway(), 4);
 }
@@ -249,9 +246,9 @@ fn later() -> Concept {
 fn recording_quest_earns_once_and_pool_secures_a_different_person_with_cooperation() {
     let mut p = planner();
     let total = p.state().economy().total_money();
+    p.accept_request(RequestId(1)).unwrap();
     let first = p.create_production(concept()).unwrap();
-    p.book_production(first, Some(RequestId(1)), None, false)
-        .unwrap();
+    p.book_production(first, None, 0).unwrap();
     assert_eq!(p.production().sway(), 0);
     p.advance_to(SimTick(43)).unwrap();
     assert_eq!(p.production().sway(), 0);
@@ -262,7 +259,7 @@ fn recording_quest_earns_once_and_pool_secures_a_different_person_with_cooperati
             .requests()
             .next()
             .unwrap()
-            .promise
+            .acceptance
             .as_ref()
             .unwrap()
             .fulfilled_at,
@@ -273,11 +270,10 @@ fn recording_quest_earns_once_and_pool_secures_a_different_person_with_cooperati
     let second = p.create_production(later()).unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(second, None, None, false),
+        |p| p.book_production(second, None, 0),
         "exceptional_participation_required",
     );
-    p.book_production(second, None, Some(PersonId(5)), true)
-        .unwrap();
+    p.book_production(second, Some(PersonId(5)), 2).unwrap();
     assert_eq!(p.production().sway(), 0);
     assert_eq!(p.production().sway_history().len(), 3);
     assert_eq!(p.state().economy().cash(MAIN), Some(Money(18000)));
@@ -287,7 +283,7 @@ fn recording_quest_earns_once_and_pool_secures_a_different_person_with_cooperati
     ));
     unchanged(
         &mut p,
-        |p| p.book_production(second, None, Some(PersonId(5)), true),
+        |p| p.book_production(second, Some(PersonId(5)), 2),
         "production_locked",
     );
     p.advance_to(SimTick(244)).unwrap();
@@ -301,85 +297,116 @@ fn recording_quest_earns_once_and_pool_secures_a_different_person_with_cooperati
     }
 }
 #[test]
-fn second_quest_requires_completed_calm_everyday_work_and_both_requests_are_finite() {
+fn second_quest_requires_matching_completed_work_and_accepted_requests_are_finite() {
     let mut p = planner();
-    let wrong = p.create_production(later()).unwrap();
+    p.accept_request(RequestId(2)).unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(wrong, Some(RequestId(2)), Some(PersonId(5)), false),
-        "promise_mismatch",
+        |p| p.accept_request(RequestId(2)),
+        "quest_already_accepted",
     );
-    p.discard_production(wrong).unwrap();
+    let wrong = p
+        .create_production(Concept {
+            guests: [PersonId(4), PersonId(6)],
+            ..concept()
+        })
+        .unwrap();
+    p.book_production(wrong, None, 0).unwrap();
+    p.advance_to(SimTick(52)).unwrap();
+    assert_eq!(p.production().sway(), 0);
     let id = p
         .create_production(Concept {
             guests: [PersonId(4), PersonId(6)],
             subject: Subject::EverydayLife,
+            record_at: SimTick(60),
             ..concept()
         })
         .unwrap();
-    p.book_production(id, Some(RequestId(2)), None, false)
-        .unwrap();
-    p.advance_to(SimTick(44)).unwrap();
+    p.book_production(id, None, 0).unwrap();
+    p.advance_to(SimTick(64)).unwrap();
     assert_eq!(p.production().sway(), 0);
-    p.advance_to(SimTick(51)).unwrap();
-    assert_eq!(p.production().sway(), 0);
-    p.advance_to(SimTick(52)).unwrap();
+    p.advance_to(SimTick(72)).unwrap();
     assert_eq!(p.production().sway(), 3);
     let repeat = p
         .create_production(Concept {
-            record_at: SimTick(60),
             guests: [PersonId(4), PersonId(6)],
             subject: Subject::EverydayLife,
-            ..concept()
-        })
-        .unwrap();
-    unchanged(
-        &mut p,
-        |p| p.book_production(repeat, Some(RequestId(2)), None, false),
-        "request_already_promised",
-    );
-    p.book_production(repeat, None, None, false).unwrap();
-    p.advance_to(SimTick(80)).unwrap();
-    assert_eq!(p.production().sway(), 3);
-    assert_eq!(p.production().sway_history().len(), 1);
-}
-#[test]
-fn ordinary_casting_does_not_reward_and_mismatched_or_repeated_promises_fail() {
-    let mut p = planner();
-    let id = p.create_production(concept()).unwrap();
-    p.book_production(id, None, None, false).unwrap();
-    p.advance_to(SimTick(52)).unwrap();
-    assert_eq!(p.production().sway(), 0);
-    let promised = p
-        .create_production(Concept {
-            record_at: SimTick(60),
-            ..concept()
-        })
-        .unwrap();
-    p.book_production(promised, Some(RequestId(1)), None, false)
-        .unwrap();
-    let repeat = p
-        .create_production(Concept {
             record_at: SimTick(80),
             ..concept()
         })
         .unwrap();
-    unchanged(
-        &mut p,
-        |p| p.book_production(repeat, Some(RequestId(1)), None, false),
-        "request_already_promised",
-    );
+    p.book_production(repeat, None, 0).unwrap();
     p.advance_to(SimTick(96)).unwrap();
-    assert_eq!(p.production().sway(), 4);
+    assert_eq!(p.production().sway(), 3);
     assert_eq!(p.production().sway_history().len(), 1);
 }
+#[test]
+fn unaccepted_work_and_work_started_before_acceptance_cannot_reward_retroactively() {
+    let mut p = planner();
+    let id = p.create_production(concept()).unwrap();
+    p.book_production(id, None, 0).unwrap();
+    p.advance_to(SimTick(41)).unwrap();
+    p.accept_request(RequestId(1)).unwrap();
+    p.advance_to(SimTick(52)).unwrap();
+    assert_eq!(p.production().sway(), 0);
+    let id = p
+        .create_production(Concept {
+            record_at: SimTick(60),
+            ..concept()
+        })
+        .unwrap();
+    p.book_production(id, None, 0).unwrap();
+    p.advance_to(SimTick(72)).unwrap();
+    assert_eq!(p.production().sway(), 4);
+    let mut ordinary = planner();
+    let id = ordinary.create_production(concept()).unwrap();
+    ordinary.book_production(id, None, 0).unwrap();
+    ordinary.advance_to(SimTick(52)).unwrap();
+    assert_eq!(ordinary.production().sway(), 0);
+    ordinary.accept_request(RequestId(1)).unwrap();
+    ordinary.advance_to(SimTick(53)).unwrap();
+    assert_eq!(ordinary.production().sway(), 0);
+}
+#[test]
+fn quest_deadline_includes_achievement_boundary_but_late_work_earns_nothing() {
+    for (start, reward) in [(180, 3), (181, 0)] {
+        let mut p = planner();
+        p.accept_request(RequestId(2)).unwrap();
+        let acceptance = p
+            .production()
+            .requests()
+            .nth(1)
+            .unwrap()
+            .acceptance
+            .as_ref()
+            .unwrap();
+        assert_eq!(acceptance.deadline, SimTick(192));
+        let id = p
+            .create_production(Concept {
+                guests: [PersonId(4), PersonId(6)],
+                subject: Subject::EverydayLife,
+                record_at: SimTick(start),
+                ..concept()
+            })
+            .unwrap();
+        p.book_production(id, None, 0).unwrap();
+        p.advance_to(SimTick(200)).unwrap();
+        assert_eq!(p.production().sway(), reward);
+        unchanged(
+            &mut p,
+            |p| p.accept_request(RequestId(2)),
+            "quest_already_accepted",
+        );
+    }
+}
+
 #[test]
 fn sway_cannot_bypass_fees_conflicts_or_nonnegotiable_dates_and_failures_are_atomic() {
     let mut p = planner();
     let id = p.create_production(later()).unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(id, None, Some(PersonId(5)), true),
+        |p| p.book_production(id, Some(PersonId(5)), 2),
         "insufficient_sway",
     );
     p.discard_production(id).unwrap();
@@ -387,15 +414,14 @@ fn sway_cannot_bypass_fees_conflicts_or_nonnegotiable_dates_and_failures_are_ato
     let id = p.create_production(later()).unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(id, None, Some(PersonId(3)), false),
+        |p| p.book_production(id, Some(PersonId(3)), 0),
         "participation_mismatch",
     );
-    p.book_production(id, None, Some(PersonId(5)), false)
-        .unwrap();
+    p.book_production(id, Some(PersonId(5)), 0).unwrap();
     let conflict = p.create_production(later()).unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(conflict, None, Some(PersonId(5)), true),
+        |p| p.book_production(conflict, Some(PersonId(5)), 2),
         "talent_conflict",
     );
     let expensive = p
@@ -407,7 +433,7 @@ fn sway_cannot_bypass_fees_conflicts_or_nonnegotiable_dates_and_failures_are_ato
         .unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(expensive, None, Some(PersonId(5)), false),
+        |p| p.book_production(expensive, Some(PersonId(5)), 0),
         "insufficient_production_funds",
     );
     let next = p
@@ -418,7 +444,7 @@ fn sway_cannot_bypass_fees_conflicts_or_nonnegotiable_dates_and_failures_are_ato
         .unwrap();
     unchanged(
         &mut p,
-        |p| p.book_production(next, None, Some(PersonId(5)), true),
+        |p| p.book_production(next, Some(PersonId(5)), 2),
         "insufficient_sway",
     );
     // A listed person can still have a hard, non-negotiable unavailable window.
@@ -434,7 +460,7 @@ fn sway_cannot_bypass_fees_conflicts_or_nonnegotiable_dates_and_failures_are_ato
     let id = hard.create_production(later()).unwrap();
     unchanged(
         &mut hard,
-        |p| p.book_production(id, None, Some(PersonId(5)), false),
+        |p| p.book_production(id, Some(PersonId(5)), 0),
         "participation_not_negotiable",
     );
     let ordinary = hard
@@ -445,7 +471,7 @@ fn sway_cannot_bypass_fees_conflicts_or_nonnegotiable_dates_and_failures_are_ato
         .unwrap();
     unchanged(
         &mut hard,
-        |p| p.book_production(ordinary, None, Some(PersonId(3)), false),
+        |p| p.book_production(ordinary, Some(PersonId(3)), 0),
         "participation_not_needed",
     );
 }
@@ -463,15 +489,15 @@ fn cooperation_has_a_bounded_concrete_effect_without_changing_fees_or_guaranteei
     };
     let x = a.create_production(c.clone()).unwrap();
     let y = b.create_production(c).unwrap();
-    a.book_production(x, None, None, false).unwrap();
-    b.book_production(y, None, None, true).unwrap();
+    a.book_production(x, None, 0).unwrap();
+    b.book_production(y, None, 2).unwrap();
     a.advance_to(SimTick(72)).unwrap();
     b.advance_to(SimTick(72)).unwrap();
     let work = |p: &Planner| p.world().programmes.last().unwrap().clone();
     let plain = work(&a);
     let smooth = work(&b);
     assert!(smooth.execution > plain.execution);
-    assert!(smooth.execution - plain.execution <= 0.05);
+    assert!(smooth.execution - plain.execution <= 0.12);
     assert!(smooth.execution < 0.85); // weak topic fit is not rescued by cooperation
     assert_eq!(plain.cast_appeal, smooth.cast_appeal);
     assert_eq!(a.state().economy(), b.state().economy());
@@ -483,8 +509,8 @@ fn cooperation_has_a_bounded_concrete_effect_without_changing_fees_or_guaranteei
 fn ticking_in_batches_or_individually_reproduces_production_money_and_sway() {
     let mut a = planner();
     let id = a.create_production(concept()).unwrap();
-    a.book_production(id, Some(RequestId(1)), None, false)
-        .unwrap();
+    a.accept_request(RequestId(1)).unwrap();
+    a.book_production(id, None, 0).unwrap();
     let total = a.state().economy().total_money();
     let mut b = a.clone();
     a.advance_to(SimTick(96)).unwrap();
@@ -497,8 +523,8 @@ fn ticking_in_batches_or_individually_reproduces_production_money_and_sway() {
     assert_eq!(a.world(), b.world());
     let x = a.create_production(later()).unwrap();
     let y = b.create_production(later()).unwrap();
-    a.book_production(x, None, Some(PersonId(5)), true).unwrap();
-    b.book_production(y, None, Some(PersonId(5)), true).unwrap();
+    a.book_production(x, Some(PersonId(5)), 2).unwrap();
+    b.book_production(y, Some(PersonId(5)), 2).unwrap();
     a.advance_to(SimTick(244)).unwrap();
     for tick in 97..=244 {
         b.advance_to(SimTick(tick)).unwrap();
@@ -521,7 +547,7 @@ fn production_reserves_cash_before_broadcast_funding_and_ad_refunds_still_conser
     let payment = quote.offer.payment;
     let contract = p.accept(&quote).unwrap();
     let project = p.create_production(concept()).unwrap();
-    p.book_production(project, None, None, false).unwrap();
+    p.book_production(project, None, 0).unwrap();
     assert_eq!(p.state().economy().cash(MAIN), Some(Money(0)));
     p.advance_to(SimTick(96)).unwrap();
     assert!(p.airing(airing).unwrap().result.as_ref().unwrap().off_air);
@@ -548,7 +574,7 @@ fn production_reserves_cash_before_broadcast_funding_and_ad_refunds_still_conser
 fn produce_and_air(c: Concept) -> (Planner, ProductionId) {
     let mut p = planner();
     let id = p.create_production(c).unwrap();
-    p.book_production(id, None, None, false).unwrap();
+    p.book_production(id, None, 0).unwrap();
     p.advance_to(SimTick(52)).unwrap();
     let work = p.production().project(id).unwrap().programme.unwrap();
     p.place(work, SimTick(72), None).unwrap();
@@ -589,7 +615,7 @@ fn creative_and_talent_choices_change_audiences_costs_and_experienced_satisfacti
     mismatch.configure_production(roster, request).unwrap();
     let run = |p: &mut Planner| {
         let id = p.create_production(concept()).unwrap();
-        p.book_production(id, None, None, false).unwrap();
+        p.book_production(id, None, 0).unwrap();
         p.advance_to(SimTick(52)).unwrap();
         let work = p.production().project(id).unwrap().programme.unwrap();
         p.place(work, SimTick(72), None).unwrap();
@@ -643,5 +669,374 @@ fn invalid_request_configuration_cannot_create_infinite_or_duplicate_rewards() {
         &mut p,
         |p| p.configure_production(roster, huge),
         "invalid_request",
+    );
+}
+
+#[test]
+fn support_recovers_only_cooperation_losses_with_diminishing_returns_for_every_integer() {
+    let mut seed = planner();
+    earn(&mut seed);
+    let mut outcomes = Vec::new();
+    let mut financial = None;
+    for support in 0..=4 {
+        let mut p = seed.clone();
+        let id = p
+            .create_production(Concept {
+                record_at: SimTick(60),
+                ..later()
+            })
+            .unwrap();
+        p.book_production(id, None, support).unwrap();
+        let o = p.production().project(id).unwrap().outcome.clone().unwrap();
+        assert!((o.cooperation_penalty - 0.12).abs() < 1e-12);
+        assert!((o.remaining_penalty - 0.24 / (2.0 + f64::from(support))).abs() < 1e-12);
+        assert!(o.execution <= o.base_execution && o.execution >= 0.0);
+        assert!(o.recovered_penalty >= 0.0 && o.recovered_penalty <= o.cooperation_penalty);
+        assert_eq!(p.production().sway(), 4 - support);
+        if let Some(ref economy) = financial {
+            assert_eq!(p.state().economy(), economy);
+        } else {
+            financial = Some(p.state().economy().clone());
+        }
+        outcomes.push(o);
+    }
+    for o in &outcomes {
+        assert_eq!(o.craft, outcomes[0].craft);
+        assert_eq!(o.subject_fit, outcomes[0].subject_fit);
+        assert_eq!(o.tone_fit, outcomes[0].tone_fit);
+        assert_eq!(o.base_execution, outcomes[0].base_execution);
+    }
+    let gains = outcomes
+        .windows(2)
+        .map(|p| p[1].execution - p[0].execution)
+        .collect::<Vec<_>>();
+    assert!(gains.iter().all(|g| *g > 0.0));
+    assert!(gains.windows(2).all(|p| p[1] < p[0]));
+    let mut p = seed;
+    let id = p
+        .create_production(Concept {
+            record_at: SimTick(60),
+            ..concept()
+        })
+        .unwrap();
+    unchanged(
+        &mut p,
+        |p| p.book_production(id, None, u32::MAX),
+        "insufficient_sway",
+    );
+    unchanged(
+        &mut p,
+        |p| p.book_production(id, None, 5),
+        "insufficient_sway",
+    );
+}
+#[test]
+fn no_deficiency_means_no_bonus_and_support_cannot_replace_ability() {
+    let mut seed = planner();
+    earn(&mut seed);
+    let run = |mut p: Planner, support, c: Concept| {
+        let id = p.create_production(c).unwrap();
+        p.book_production(id, None, support).unwrap();
+        p.production().project(id).unwrap().outcome.clone().unwrap()
+    };
+    let c = Concept {
+        record_at: SimTick(60),
+        ..concept()
+    };
+    let plain = run(seed.clone(), 0, c.clone());
+    let supported = run(seed, 4, c);
+    assert_eq!(plain, supported);
+    assert_eq!(supported.cooperation_penalty, 0.0);
+    let mut weak = planner();
+    let (mut roster, requests) = demo_roster();
+    for t in &mut roster {
+        t.craft = 0.05;
+        t.subject_fit = [0.05; 3];
+    }
+    weak.configure_production(roster, requests).unwrap();
+    weak.configure_cooperation(demo_cooperation()).unwrap();
+    earn(&mut weak);
+    let c = Concept {
+        record_at: SimTick(60),
+        ..later()
+    };
+    let unsupported = run(weak.clone(), 0, c.clone());
+    let supported = run(weak, 4, c);
+    assert!(supported.execution > unsupported.execution);
+    assert!(supported.execution < 0.35);
+    assert_eq!(supported.craft, unsupported.craft);
+    assert_eq!(supported.subject_fit, unsupported.subject_fit);
+}
+#[test]
+fn cooperation_configuration_rejects_invalid_parameters_without_mutating_state() {
+    let mut p = planner();
+    for penalty in [f64::NAN, f64::INFINITY, -0.1, 0.0, 0.26] {
+        unchanged(
+            &mut p,
+            |p| {
+                p.configure_cooperation(vec![CooperationIssue {
+                    people: [PersonId(2), PersonId(5)],
+                    penalty,
+                    known_note: None,
+                }])
+            },
+            "invalid_cooperation",
+        );
+    }
+    let mut duplicate = demo_cooperation();
+    duplicate.push(CooperationIssue {
+        people: [PersonId(5), PersonId(2)],
+        penalty: 0.1,
+        known_note: None,
+    });
+    unchanged(
+        &mut p,
+        |p| p.configure_cooperation(duplicate),
+        "invalid_cooperation",
+    );
+    unchanged(
+        &mut p,
+        |p| {
+            p.configure_cooperation(vec![CooperationIssue {
+                people: [PersonId(2), PersonId(999)],
+                penalty: 0.1,
+                known_note: None,
+            }])
+        },
+        "invalid_cooperation",
+    );
+}
+
+#[test]
+fn stacked_deficiencies_cannot_exceed_skill_baseline_or_create_threshold_returns() {
+    let mut seed = planner();
+    let (mut roster, requests) = demo_roster();
+    for t in &mut roster {
+        t.craft = 0.0;
+        t.subject_fit = [0.0; 3];
+    }
+    seed.configure_production(roster, requests).unwrap();
+    seed.configure_cooperation(vec![
+        CooperationIssue {
+            people: [PersonId(2), PersonId(5)],
+            penalty: 0.25,
+            known_note: None,
+        },
+        CooperationIssue {
+            people: [PersonId(5), PersonId(6)],
+            penalty: 0.25,
+            known_note: None,
+        },
+    ])
+    .unwrap();
+    earn(&mut seed);
+    let mut last_gain = f64::INFINITY;
+    let mut last = 0.0;
+    for support in 0..=4 {
+        let mut p = seed.clone();
+        let id = p
+            .create_production(Concept {
+                record_at: SimTick(60),
+                ..later()
+            })
+            .unwrap();
+        p.book_production(id, None, support).unwrap();
+        let o = p
+            .production()
+            .project(id)
+            .unwrap()
+            .outcome
+            .as_ref()
+            .unwrap();
+        assert!(o.cooperation_penalty <= o.base_execution);
+        assert!(o.execution <= o.base_execution);
+        if support > 0 {
+            let gain = o.execution - last;
+            assert!(gain > 0.0 && gain < last_gain);
+            last_gain = gain;
+        }
+        last = o.execution;
+    }
+}
+
+#[test]
+fn accepting_a_quest_locks_configuration_and_deadlines_are_clipped_to_scenario_end() {
+    let mut p = planner();
+    p.accept_request(RequestId(1)).unwrap();
+    let (roster, requests) = demo_roster();
+    unchanged(
+        &mut p,
+        |p| p.configure_production(roster, requests),
+        "production_config_locked",
+    );
+    unchanged(
+        &mut p,
+        |p| p.configure_cooperation(vec![]),
+        "production_config_locked",
+    );
+    p.advance_to(SimTick(650)).unwrap();
+    p.accept_request(RequestId(2)).unwrap();
+    assert_eq!(
+        p.production()
+            .requests()
+            .nth(1)
+            .unwrap()
+            .acceptance
+            .as_ref()
+            .unwrap()
+            .deadline,
+        SimTick(672)
+    );
+    let mut ended = planner();
+    ended.advance_to(SimTick(672)).unwrap();
+    unchanged(
+        &mut ended,
+        |p| p.accept_request(RequestId(2)),
+        "scenario_ended",
+    );
+}
+
+fn station_resources(studios: u16) -> Vec<bts_sim::planning::StationResources> {
+    use bts_sim::planning::StationResources;
+    vec![
+        StationResources {
+            station: MAIN,
+            programmes: [ProgrammeId(1), ProgrammeId(2)].into_iter().collect(),
+            staff: [PersonId(1), PersonId(2)].into_iter().collect(),
+            studios,
+        },
+        StationResources {
+            station: RIVAL,
+            programmes: [ProgrammeId(3), ProgrammeId(4)].into_iter().collect(),
+            staff: Default::default(),
+            studios: 1,
+        },
+    ]
+}
+#[test]
+fn studios_and_people_are_independent_half_open_reservations() {
+    for capacity in [1, 2] {
+        let mut p = planner();
+        p.configure_station_resources(station_resources(capacity))
+            .unwrap();
+        let first = p.create_production(concept()).unwrap();
+        p.book_production(first, None, 0).unwrap();
+        let second = p
+            .create_production(Concept {
+                record_at: SimTick(40),
+                ..later()
+            })
+            .unwrap();
+        if capacity == 1 {
+            unchanged(
+                &mut p,
+                |p| p.book_production(second, None, 0),
+                "studio_unavailable",
+            );
+            p.revise_production(
+                second,
+                Concept {
+                    record_at: SimTick(44),
+                    ..later()
+                },
+            )
+            .unwrap();
+        }
+        p.book_production(second, None, 0).unwrap();
+        assert_eq!(
+            p.production().project(first).unwrap().studio,
+            Some(StudioId(1))
+        );
+        assert_eq!(
+            p.production().project(second).unwrap().studio,
+            Some(StudioId(if capacity == 1 { 1 } else { 2 }))
+        );
+        let conflict = p
+            .create_production(Concept {
+                record_at: SimTick(42),
+                ..concept()
+            })
+            .unwrap();
+        unchanged(
+            &mut p,
+            |p| p.book_production(conflict, None, 0),
+            "talent_conflict",
+        );
+        assert_eq!(p.state().economy().cash(MAIN), Some(Money(18000)));
+    }
+    let mut p = planner();
+    p.configure_station_resources(station_resources(0)).unwrap();
+    let id = p.create_production(concept()).unwrap();
+    unchanged(
+        &mut p,
+        |p| p.book_production(id, None, 0),
+        "studio_unavailable",
+    );
+}
+#[test]
+fn station_rights_staff_and_completed_originals_do_not_cross_ownership() {
+    let mut p = planner();
+    let mut resources = station_resources(1);
+    resources[0].staff.remove(&PersonId(2));
+    resources[1].staff.insert(PersonId(2));
+    p.configure_station_resources(resources).unwrap();
+    unchanged(
+        &mut p,
+        |p| p.place(ProgrammeId(3), SimTick(72), None).map(|_| ()),
+        "programme_not_owned",
+    );
+    unchanged(
+        &mut p,
+        |p| {
+            p.create_production(Concept {
+                host: PersonId(2),
+                ..concept()
+            })
+            .map(|_| ())
+        },
+        "foreign_staff",
+    );
+    let id = p.create_production(concept()).unwrap();
+    p.book_production(id, None, 0).unwrap();
+    p.advance_to(SimTick(52)).unwrap();
+    let work = p.production().project(id).unwrap().programme.unwrap();
+    assert!(p.owns_programme(MAIN, work));
+    assert!(!p.owns_programme(RIVAL, work));
+    p.place(work, SimTick(72), None).unwrap();
+}
+#[test]
+fn station_resource_configuration_is_validated_and_cannot_override_live_commitments() {
+    let mut p = planner();
+    let mut bad = station_resources(1);
+    bad[1].staff.insert(PersonId(1));
+    unchanged(
+        &mut p,
+        |p| p.configure_station_resources(bad),
+        "invalid_station_resources",
+    );
+    let mut bad = station_resources(1);
+    bad[0].programmes.insert(ProgrammeId(999));
+    unchanged(
+        &mut p,
+        |p| p.configure_station_resources(bad),
+        "invalid_station_resources",
+    );
+    let mut empty = station_resources(0);
+    for r in &mut empty {
+        r.programmes.clear();
+        r.staff.clear();
+    }
+    p.configure_station_resources(empty).unwrap();
+    unchanged(
+        &mut p,
+        |p| p.place(ProgrammeId(1), SimTick(72), None).map(|_| ()),
+        "programme_not_owned",
+    );
+    p = planner();
+    p.accept_request(RequestId(1)).unwrap();
+    unchanged(
+        &mut p,
+        |p| p.configure_station_resources(station_resources(1)),
+        "station_resources_locked",
     );
 }

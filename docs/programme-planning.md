@@ -163,12 +163,12 @@ session namespaces/counters across reset, preventing accidental stale reuse.
 ## Browser protocol and observation boundary
 
 The planning revision replaced slot indices with airing IDs and explicit tick
-boundaries. Current protocol **v4** includes production commands and pooled Sway; old versions are rejected. Authoritative
+boundaries. Current protocol **v5** includes production commands and pooled Sway; old versions are rejected. Authoritative
 Rust DTOs live in [`protocol.rs`](../crates/bts-web/src/protocol.rs); TypeScript
 mirrors only that player contract. There is no developer-export or save schema reuse.
 
 ```json
-{"api_version":4,"command":{"type":"place","programme":1,"start_tick":72,"advertiser":null}}
+{"api_version":5,"command":{"type":"place","programme":1,"start_tick":72,"advertiser":null}}
 ```
 
 | Command | Fields | Target |
@@ -261,7 +261,7 @@ this is not a balanced commercial-load model. Repetition-blind advertiser pricin
 ordered payment-rounding bias and fixed fixture parameters remain provisional.
 
 Publication/listings promises, promotion, campaign shares/ad breaks,
-research, broader society, save/load and continuous running time are deferred.
+research, broader society, save/load and a wall-clock-continuous simulation are deferred; browser Play/×2 now drives explicit ticks.
 There is a day view with seven-day navigation, not a separate weekly overview or
 a general schedule framework. History is in memory; advancement copies bounded
 state for atomicity. Chromium desktop/narrow-screen smoke tests are not full

@@ -1,8 +1,8 @@
-//! Player protocol v4. These whitelisted DTOs deliberately do not serialize engine evidence.
+//! Player protocol v5. These whitelisted DTOs deliberately do not serialize engine evidence.
 use bts_sim::planning::production::{Subject, Tone};
 use serde::{Deserialize, Serialize};
 
-pub const API_VERSION: u32 = 4;
+pub const API_VERSION: u32 = 5;
 pub const REPORTING: &str = "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. One ad exposure opportunity per airing; delivery units are millionths of a relevant impression.";
 
 #[derive(Clone, Debug, Deserialize)]
@@ -16,6 +16,9 @@ pub struct Request {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Command {
     Inspect {},
+    AcceptRequest {
+        request_id: u16,
+    },
     CreateProduction {
         concept: ProductionConceptInput,
     },
@@ -26,11 +29,15 @@ pub enum Command {
     DiscardProduction {
         production_id: u32,
     },
+    ReviewProduction {
+        production_id: u32,
+        exceptional_person: Option<u16>,
+        cooperation_sway: u32,
+    },
     BookProduction {
         production_id: u32,
-        promise_request: Option<u16>,
         exceptional_person: Option<u16>,
-        smooth_cooperation: bool,
+        cooperation_sway: u32,
     },
     Place {
         start_tick: u32,
@@ -100,6 +107,7 @@ pub struct PlayerReport {
     pub finances: Finances,
     pub cash: String,
     pub production: ProductionView,
+    pub booking_review: Option<ProductionBookingReview>,
     pub catalogue: Vec<CatalogueEntry>,
     pub advertisers: Vec<Advertiser>,
     pub schedule: Vec<ScheduleEntry>,
@@ -132,6 +140,9 @@ pub struct ScheduleEntry {
     pub airing_id: u32,
     pub station: u16,
     pub programme: u16,
+    pub programme_name: String,
+    pub genre: String,
+    pub duration_minutes: u16,
     pub start_tick: u32,
     pub end_tick: u32,
     pub proposed_advertiser: Option<u16>,
@@ -144,6 +155,8 @@ pub struct StationInfo {
     pub id: u16,
     pub name: String,
     pub is_player: bool,
+    pub staff: Vec<String>,
+    pub owned_studios: Option<u16>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Gap {
@@ -255,7 +268,7 @@ pub struct ProductionView {
     pub requests: Vec<RequestInfo>,
     pub sway_balance: u32,
     pub participation_cost: u32,
-    pub cooperation_cost: u32,
+    pub known_concerns: Vec<KnownConcern>,
     pub sway_history: Vec<SwayHistoryInfo>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
@@ -267,6 +280,8 @@ pub struct PersonInfo {
     pub description: String,
     pub normal_until_tick: u32,
     pub negotiable_from_tick: Option<u32>,
+    pub station_id: Option<u16>,
+    pub commitments: Vec<TalentCommitment>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct ProductionInfo {
@@ -284,9 +299,10 @@ pub struct ProductionInfo {
     pub phase: &'static str,
     pub programme: Option<u16>,
     pub booked_at: Option<u32>,
-    pub promised_request: Option<u16>,
+    pub studio: Option<u16>,
+    pub quest_hints: Vec<QuestHint>,
     pub exceptional_person: Option<u16>,
-    pub smooth_cooperation: bool,
+    pub cooperation_sway: u32,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct RequestInfo {
@@ -295,12 +311,15 @@ pub struct RequestInfo {
     pub reward: u32,
     pub achievement: &'static str,
     pub statement: String,
-    pub promise: Option<PromiseInfo>,
+    pub time_limit_ticks: u32,
+    pub status: &'static str,
+    pub acceptance: Option<QuestAcceptanceInfo>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
-pub struct PromiseInfo {
-    pub production_id: u32,
-    pub promised_at: u32,
+pub struct QuestAcceptanceInfo {
+    pub production_id: Option<u32>,
+    pub accepted_at: u32,
+    pub deadline_tick: u32,
     pub fulfilled_at: Option<u32>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
@@ -312,4 +331,36 @@ pub struct SwayHistoryInfo {
     pub kind: &'static str,
     pub request_id: Option<u16>,
     pub person_id: Option<u16>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct KnownConcern {
+    pub people: [u16; 2],
+    pub note: String,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct TalentCommitment {
+    pub production_id: u32,
+    pub title: String,
+    pub start_tick: u32,
+    pub end_tick: u32,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct ProductionBookingReview {
+    pub production_id: u32,
+    pub exceptional_person: Option<u16>,
+    pub cooperation_sway: u32,
+    pub studio: u16,
+    pub total_sway: u32,
+    pub sway_remaining: u32,
+    pub budget: String,
+    pub cash_remaining: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct QuestHint {
+    pub request_id: u16,
+    pub matches_requirements: bool,
+    pub can_finish_in_time: bool,
+    pub achievement_tick: u32,
 }
