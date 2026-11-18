@@ -1,58 +1,83 @@
-# Resource economies — idea draft
+# Resource economies — design direction
 
-Status: discussion draft, November 2026. Not an implementation specification or a change to the current milestone. See [game design](design.md) and [first playable](first-playable.md).
+Updated November 2026. The directions below are agreed; formulas, costs and
+unresolved mechanisms remain proposals. This is not an implementation specification
+or an expansion of the current milestone. See [game design](design.md#station-resources-and-editorial-capital)
+and [simulation](simulation.md#resource-generation-and-editorial-outcomes).
 
-## Intent
+## Distinct economies
 
-Give the player resources beyond money, each arising from a different activity and operating on a different rhythm. Avoid making every resource a second cash balance earned from successful broadcasts and spent on better broadcasts. No generic conversion rate, shared regeneration rule or automatic decay is agreed.
-
-| Resource | Source system | Rhythm | Possible uses |
+| Resource | Generated through | Holding it | Spending or developing it |
 | --- | --- | --- | --- |
-| Cash | Sell advertising and place it effectively to fulfil commitments | Broadcasts and contract deadlines | Fees, rights, facilities and production budgets |
-| Sway | Grant favours requested by people | Negotiations and projects | Call in cooperation, negotiate exceptions, help a team work together |
-| Glamour | Win awards with station productions | Award and festival cycles | Attract prestigious talent and collaborations; commit glamour to productions |
-| Credibility | Maintain an editorial record with low bias or balanced coverage | Repeated editorial choices over time | Sensitive access, sources and editorial backing; exact spending mechanism remains open |
-| Bias / backing (working names) | Support particular interests through unbalanced coverage | Ongoing editorial and organisational relationships | Access, guests, exclusives or assistance from those interests; remains exploratory |
+| Cash | Selling and effectively placing advertising | Funds obligations | Fees, rights and production budgets |
+| Sway | Fulfilling people's requests | Available cooperation capacity | Smooth negotiations, collaboration and production chemistry |
+| Glamour | Winning awards with productions | Better conditions with glamour-seeking talent; naturally decays | Significant boosts to specific airings |
+| Credibility | Consistently truthful, neutral reporting to the best of available knowledge | Strengthens news effectiveness; low reserves weaken it | Amplify opinion pieces to gain backing |
+| Backing | Impactful opinion that wins support for an editorial position | Support distinct from habitual viewing | Slowly develop audience loyalty |
 
-## Sway: a favour economy
+There is no agreed universal conversion rate, common regeneration system or
+shared decay rule. Glamour's natural decay is explicitly intended.
 
-People bring concrete requests connected to television work. Examples:
+## Sway
 
-- A talk-show guest asks to appear alongside a particular other guest.
-- A director wants a particular actor cast or a screenplay realised.
-- A news anchor asks for a change in editorial tone.
+Sway is pooled, abstract social capital. Grant requests such as pairing particular
+talk-show guests, casting an actor, realising a screenplay or accommodating an
+anchor's requested tone. Fulfilling these earns Sway that can be spent elsewhere,
+including smoothing cooperation within productions. No individual creditor
+restricts redemption. Requests should create meaningful costs or constraints;
+ordinary paid work is not automatically a favour.
 
-Granting a favour earns sway. These requests create tradeoffs: fulfilling one may cost money, constrain a production, upset another collaborator or change editorial direction. Merely completing ordinary paid work should not automatically generate sway.
+Open: amounts, fulfilment conditions, effective uses and repeat-reward safeguards.
+The [implemented production experiment](original-production.md) currently awards
+one named guest's personal favour. That behaviour remains documented as an
+implementation limit; pooled Sway is the intended direction.
 
-Sway can then be committed to securing cooperation or improving the conditions for chemistry within a production. Its effect should involve people and their willingness to cooperate, rather than provide an unexplained quality bonus.
+## Glamour
 
-Open: is sway owed by specific people, shared across an industry network, or partly pooled? When is a favour fulfilled, how are promises recorded, and what happens if they are broken? How do requests stay meaningful rather than becoming repeatable farming tasks?
+Award wins generate Glamour on an award-cycle timescale. Retained Glamour
+improves conditions with talent interested in prestige. It naturally decays,
+but can also be spent on significant performance boosts to individual airings.
+Keeping prestige versus committing it to a particular broadcast is the decision.
 
-## Glamour: an awards economy
+Open: award eligibility/judging, decay rates, talent conditions, spending costs,
+and whether an airing boost affects attraction, reach or another dimension.
+Do not silently equate it with improved truthfulness, craft or enjoyment.
 
-Productions compete for awards. Winning generates spendable glamour, giving this resource a much slower and more episodic rhythm than advertising revenue or favours. High ratings alone do not automatically grant glamour.
+## Credibility → opinion → backing → loyalty
 
-Award eligibility, categories, judging and competitors should make different kinds of productions viable. Spending glamour could help secure stars or prestigious collaborations; exact uses and amounts are proposals, not settled mechanics.
+Credibility is difficult to earn: news must remain consistently truthful and
+neutral to the best of available knowledge. This requires competent staff,
+verification, good sources, preparation and editorial judgement. Story selection
+and framing matter. A slider cannot guarantee neutrality or credibility.
+More broadly, all production settings express intentions whose achievement
+depends on people, resources and execution.
 
-Open: nominations versus wins, award prestige, entry requirements, and what spending represents. Prevent a permanent winner-takes-all advantage while preserving the value of an award.
+Stored credibility strengthens news effectiveness. Spend it to lend authority
+to an opinion piece, increasing its impact and potential backing. With little
+credibility left in stock, subsequent news has less effect. Rebuilding authority
+requires sustained reporting rather than a quick setting change.
 
-## Credibility and editorial alignment
+Backing represents support for the position advanced. The preferred use is
+slowly transforming it into audience loyalty through sustained service and
+coverage. Supporters do not instantly become habitual viewers. Converting
+Backing into Sway was considered; loyalty is the preferred direction.
 
-Explore earning credibility through low bias or balanced reporting. Biased coverage could instead generate a different resource associated with the interests being supported. This creates an editorial choice with different opportunities, rather than one universally best reporting style.
+Credibility and Backing require consistency and can pull against one another:
+serving supporters may compromise neutrality, while neutral reporting may
+disappoint those supporters. They are not necessarily mutually exclusive.
+Labelled opinion is not automatically dishonest; factual failures and concealed
+advocacy may have additional consequences.
 
-“Backing” is a suggested name for support received from aligned organisations; “bias” describes the editorial stance itself. Naming and mechanics are unresolved. Backing may need to be specific to a faction or organisation rather than a universal pool.
+Open: how backing is attached to audiences or causes; how it becomes loyalty;
+measurement of neutrality and reasonable knowledge; evaluation windows and
+generation rates; rebuilding from zero credibility; consequences of corrections,
+misinformation and changes in editorial direction. Balance does not mean
+assigning equal weight to unsupported and well-evidenced claims.
 
-Accuracy, balance and independence are distinct dimensions. Whether and how each contributes to credibility still needs design; balanced coverage must not simply mean giving every claim equal weight. These are exploratory questions, not an agreed credibility formula.
+## Implementation boundaries
 
-Open: how credibility is generated and spent, who recognises it, how corrections or scandals affect it, and whether credibility and partisan backing can coexist. Calling on credibility should have a concrete consequence rather than arbitrarily making viewers trust the station less.
-
-## Interactions to explore
-
-An anchor's requested tone change could earn sway while changing credibility or partisan backing. A director could request an expensive passion project that later competes for an award. The systems meet through production decisions while retaining distinct sources and timing.
-
-Next design step: work through one favour chain, one award cycle and one editorial tradeoff before choosing formulas, caps or UI counters. Do not implement all resources as interchangeable currencies by default.
-
-Implementation note: the [original-production experiment](original-production.md)
-records one named guest’s co-guest promise and one later personal favour call.
-It has no pooled Sway, fee discount or quality bonus and does not settle the broader
-resource design proposed here.
+No generic money exchange or interchangeable resource bonuses. Work through
+a favour/Sway example, an award/Glamour cycle and a reporting/opinion/loyalty
+sequence before choosing formulas. Preserve the distinction between actual
+world state, editorial knowledge, public perception and player evidence.
+These resource systems remain unimplemented.

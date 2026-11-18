@@ -21,6 +21,7 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Game design](docs/design.md): scope, entities, relationships, formats, and scenarios.
 - [Screens and interaction design](docs/screens.md): proposed workspaces, shared production and mockup brief.
 - [UI concept mockups](docs/mockups/README.md): station overview, programme planning and production editorial profile.
+- [Resource economies](docs/resource-economies-idea.md): pooled Sway, award-driven Glamour and the Credibility–Backing–loyalty loop.
 - [Simulation](docs/simulation.md): causal mechanisms, hidden information, and verification principles.
 - [First playable](docs/first-playable.md): a bounded proposal and acceptance criteria.
 - [Open questions](docs/open-questions.md): unresolved decisions and experiments.

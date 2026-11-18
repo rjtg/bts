@@ -130,9 +130,11 @@ normally available. Booking failure preserves the unused credit. There is no
 cancellation after a successful call. Promise, fulfilment, creditor, source and
 call remain inspectable in the production report.
 
-This person-specific experiment does not decide the pooled-versus-personal Sway
-proposal in [resource ideas](resource-economies-idea.md). There is no numerical
-relationship score or exchange market.
+This person-specific experiment predates the agreed pooled Sway direction in
+[resource economies](resource-economies-idea.md). The intended system earns abstract
+Sway from granting requests and spends it across people and productions. The
+implemented personal credit is a prototype limitation, not that intended design.
+There is no numerical relationship score or exchange market.
 
 ## Protocol and information boundary
 

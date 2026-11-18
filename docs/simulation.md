@@ -95,6 +95,37 @@ presentation and depth; it can change interest and trust over repeated editions.
 
 Evidence: estimates, staff reports, milestones, pilots, and later audience response.
 
+## Resource generation and editorial outcomes
+
+Agreed causal direction, unimplemented: see [station resources](design.md#station-resources-and-editorial-capital)
+and [resource economies](resource-economies-idea.md).
+
+Resolve fulfilled requests into pooled Sway once; spending is not restricted to
+the requester. Awards generate Glamour on their own cycle; its retained stock
+affects glamour-seeking talent terms and decays with simulated time. An explicit
+spend targets an airing; the performance effect is still to design.
+
+Credibility generation requires a sustained reporting record. Model intended
+editorial choices separately from achieved truthfulness and neutrality. Verification,
+sources, staff, preparation and framing must have causal effects; setting a
+neutral profile cannot guarantee credible output. Preserve actual facts,
+reasonably available editorial knowledge and player observations separately.
+
+Stored credibility affects news effectiveness. Opinion pieces can consume it
+to increase influence and generate backing among receptive audiences.
+Backing can gradually develop into loyalty, with timing, audience attribution,
+conditions and rates still open. Support, viewing, enjoyment and habitual loyalty
+are distinct; no immediate viewer transfer or guaranteed persuasion is implied.
+Consistent reporting and consistent advocacy create tension without requiring
+a hard either/or switch.
+
+Open before implementation: evaluation windows, generation/spending units,
+zero-stock bootstrapping, Glamour's specific airing effects, backing-to-loyalty
+conversion and safeguards against repeating the same item to farm resources.
+Do not introduce a universal cash conversion, shared decay rule or a generic
+quality multiplier for every resource. Production controls express intent, not
+automatic success.
+
 ## Cultural change and relationships
 
 Purpose: create discoveries, changing opportunities, and lasting consequences.

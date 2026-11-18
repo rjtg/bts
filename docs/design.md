@@ -100,6 +100,51 @@ and satirical late-night programmes can all treat news subjects. Talent fit
 depends on how material is presented. Repeated choices affect who watches,
 station trust/reputation and audience attention or beliefs.
 
+## Station resources and editorial capital
+
+Agreed direction, not implemented: resources have distinct sources, uses and
+timescales. See [resource economies](resource-economies-idea.md) for details
+and open mechanics.
+
+- **Sway** is an abstract pooled resource earned by granting people's requests:
+  guest pairings, casting, realising a screenplay or changing editorial tone.
+  Spend it across negotiations and productions to smooth cooperation and help
+  chemistry. It is not a favour redeemable only from the person who earned it.
+- **Glamour** comes from winning awards and naturally decays. Holding it improves
+  conditions with talent who value glamour; spending it grants significant
+  performance boosts to specific airings. The affected performance dimensions,
+  costs and decay rate remain open.
+- **Credibility** is hard to earn through consistently truthful, neutral news
+  reporting to the best of available knowledge. Stored credibility strengthens
+  news effectiveness; depleted reserves weaken it. Spend credibility on clearly
+  labelled opinion pieces to amplify their impact and build backing.
+- **Backing** is support for an editorial position. The preferred direction is
+  to turn it slowly into audience loyalty through sustained service and coverage.
+  It does not instantly create viewers or convert automatically into Sway.
+  Alignment with particular audiences or causes and conversion rules remain open.
+
+Intended editorial loop: truthful, neutral reporting → credibility → influential
+opinion → backing → gradual audience loyalty. Neutral reporting and serving
+committed supporters can pull in different directions; maintaining both stocks
+should be difficult, not mechanically impossible.
+
+Truthfulness and neutrality are achieved through reporting work, not a slider:
+staff judgement, source quality, verification, time, resources, story selection
+and framing matter. This principle applies to all production choices: settings
+express intent, while people, constraints and execution determine the outcome.
+News editions can still draw automatically from events; this does not require
+routine story-by-story assembly.
+
+Labelled opinion spends accumulated authority without automatically constituting
+dishonesty. False claims or concealed advocacy may cause separate credibility
+losses; exact rules remain proposals. Truth, staff knowledge and player evidence
+stay distinct: reporting is assessed against what could reasonably be known,
+rather than requiring omniscience.
+
+These systems do not expand the current implementation milestone. The existing
+person-specific favour experiment is a prototype, not the intended pooled Sway
+design. Awards, resource stocks and this editorial loop remain unimplemented.
+
 ## Screens and scheduling direction
 
 See [screens and interaction design](screens.md) for the proposed navigation.
