@@ -106,8 +106,7 @@ parallel lane, library and contextual detail structure. Selection is independent
 of the Rust-calculated next airing. Stable airing IDs bind moves/removal,
 quotes, protected bookings, results and ledger entries. Empty airtime is explicit;
 advancement processes all ticks with a documented provisional start-snapshot cadence.
-All plans remain internal drafts; publication, promotion, non-exclusive ad-minute
-offers and a separate weekly view are deferred; the bounded production desk is now implemented. The mockup's values
+All plans remain internal drafts. See the [ad-minute market](ad-minute-market.md) for selling time from the selected airing. Publication, promotion and a separate weekly view are deferred; the bounded production desk is now implemented. The mockup's values
 and inconsistent runtimes are not imported as simulation rules.
 
 ## Player-facing interaction direction

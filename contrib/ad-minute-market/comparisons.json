@@ -1,0 +1,467 @@
+[
+  {
+    "actual_expected_viewers": 12104.041666108964,
+    "case": "broad",
+    "money_total": 80000,
+    "occupied_ticks": 5,
+    "offered": 15,
+    "quotes": [
+      {
+        "airing": 1,
+        "brand": 1,
+        "demand_pressure": 0.33809523809523806,
+        "forecast_relevant": 8950.381265177708,
+        "forecast_target_viewers": 12104.041666108964,
+        "listed_minutes": 15,
+        "minutes": 3,
+        "open_minutes": 15,
+        "payment": 751,
+        "quoted_at": 0,
+        "revision": 2,
+        "station": 1,
+        "uncapped_inventory_value": 751.3396318172036
+      },
+      {
+        "airing": 1,
+        "brand": 2,
+        "demand_pressure": 0.38461538461538464,
+        "forecast_relevant": 651.0152924851118,
+        "forecast_target_viewers": 12104.041666108964,
+        "listed_minutes": 15,
+        "minutes": 3,
+        "open_minutes": 15,
+        "payment": 264,
+        "quoted_at": 0,
+        "revision": 2,
+        "station": 1,
+        "uncapped_inventory_value": 264.29292132951934
+      }
+    ],
+    "sales": [
+      {
+        "accepted_at": 0,
+        "id": 1,
+        "offer": {
+          "airing": 1,
+          "brand": 1,
+          "demand_pressure": 0.33809523809523806,
+          "forecast_relevant": 8950.381265177708,
+          "forecast_target_viewers": 12104.041666108964,
+          "listed_minutes": 15,
+          "minutes": 3,
+          "open_minutes": 15,
+          "payment": 751,
+          "quoted_at": 0,
+          "revision": 2,
+          "station": 1,
+          "uncapped_inventory_value": 751.3396318172036
+        },
+        "settlement": {
+          "aired_minutes": 3,
+          "at": 173,
+          "payment": 751,
+          "refund": 0,
+          "viewer_minutes": 36312.12499832689
+        }
+      },
+      {
+        "accepted_at": 0,
+        "id": 2,
+        "offer": {
+          "airing": 1,
+          "brand": 2,
+          "demand_pressure": 0.38461538461538464,
+          "forecast_relevant": 651.0152924851118,
+          "forecast_target_viewers": 12104.041666108964,
+          "listed_minutes": 15,
+          "minutes": 3,
+          "open_minutes": 12,
+          "payment": 264,
+          "quoted_at": 0,
+          "revision": 3,
+          "station": 1,
+          "uncapped_inventory_value": 264.29292132951934
+        },
+        "settlement": {
+          "aired_minutes": 3,
+          "at": 173,
+          "payment": 264,
+          "refund": 0,
+          "viewer_minutes": 36312.12499832689
+        }
+      }
+    ]
+  },
+  {
+    "actual_expected_viewers": 11063.431717362124,
+    "case": "broad_after_repeats",
+    "money_total": 80000,
+    "occupied_ticks": 5,
+    "offered": 15,
+    "quotes": [
+      {
+        "airing": 1,
+        "brand": 1,
+        "demand_pressure": 0.33809523809523806,
+        "forecast_relevant": 8950.381265177708,
+        "forecast_target_viewers": 12104.041666108964,
+        "listed_minutes": 15,
+        "minutes": 3,
+        "open_minutes": 15,
+        "payment": 751,
+        "quoted_at": 0,
+        "revision": 2,
+        "station": 1,
+        "uncapped_inventory_value": 751.3396318172036
+      },
+      {
+        "airing": 1,
+        "brand": 2,
+        "demand_pressure": 0.38461538461538464,
+        "forecast_relevant": 651.0152924851118,
+        "forecast_target_viewers": 12104.041666108964,
+        "listed_minutes": 15,
+        "minutes": 3,
+        "open_minutes": 15,
+        "payment": 264,
+        "quoted_at": 0,
+        "revision": 2,
+        "station": 1,
+        "uncapped_inventory_value": 264.29292132951934
+      }
+    ],
+    "sales": [
+      {
+        "accepted_at": 0,
+        "id": 1,
+        "offer": {
+          "airing": 1,
+          "brand": 1,
+          "demand_pressure": 0.33809523809523806,
+          "forecast_relevant": 8950.381265177708,
+          "forecast_target_viewers": 12104.041666108964,
+          "listed_minutes": 15,
+          "minutes": 3,
+          "open_minutes": 15,
+          "payment": 751,
+          "quoted_at": 0,
+          "revision": 2,
+          "station": 1,
+          "uncapped_inventory_value": 751.3396318172036
+        },
+        "settlement": {
+          "aired_minutes": 3,
+          "at": 173,
+          "payment": 751,
+          "refund": 0,
+          "viewer_minutes": 33190.29515208637
+        }
+      },
+      {
+        "accepted_at": 0,
+        "id": 2,
+        "offer": {
+          "airing": 1,
+          "brand": 2,
+          "demand_pressure": 0.38461538461538464,
+          "forecast_relevant": 651.0152924851118,
+          "forecast_target_viewers": 12104.041666108964,
+          "listed_minutes": 15,
+          "minutes": 3,
+          "open_minutes": 12,
+          "payment": 264,
+          "quoted_at": 0,
+          "revision": 3,
+          "station": 1,
+          "uncapped_inventory_value": 264.29292132951934
+        },
+        "settlement": {
+          "aired_minutes": 3,
+          "at": 173,
+          "payment": 264,
+          "refund": 0,
+          "viewer_minutes": 33190.29515208637
+        }
+      }
+    ]
+  },
+  {
+    "actual_expected_viewers": 6705.776754133481,
+    "case": "specialist",
+    "money_total": 80000,
+    "occupied_ticks": 5,
+    "offered": 15,
+    "quotes": [
+      {
+        "airing": 1,
+        "brand": 1,
+        "demand_pressure": 0.33809523809523806,
+        "forecast_relevant": 4286.001893659811,
+        "forecast_target_viewers": 6705.776754133481,
+        "listed_minutes": 15,
+        "minutes": 3,
+        "open_minutes": 15,
+        "payment": 359,
+        "quoted_at": 0,
+        "revision": 2,
+        "station": 1,
+        "uncapped_inventory_value": 359.41118954226454
+      },
+      {
+        "airing": 1,
+        "brand": 2,
+        "demand_pressure": 0.38461538461538464,
+        "forecast_relevant": 879.9090896089548,
+        "forecast_target_viewers": 6705.776754133481,
+        "listed_minutes": 15,
+        "minutes": 3,
+        "open_minutes": 15,
+        "payment": 364,
+        "quoted_at": 0,
+        "revision": 2,
+        "station": 1,
+        "uncapped_inventory_value": 364.7168674698795
+      }
+    ],
+    "sales": [
+      {
+        "accepted_at": 0,
+        "id": 1,
+        "offer": {
+          "airing": 1,
+          "brand": 1,
+          "demand_pressure": 0.33809523809523806,
+          "forecast_relevant": 4286.001893659811,
+          "forecast_target_viewers": 6705.776754133481,
+          "listed_minutes": 15,
+          "minutes": 3,
+          "open_minutes": 15,
+          "payment": 359,
+          "quoted_at": 0,
+          "revision": 2,
+          "station": 1,
+          "uncapped_inventory_value": 359.41118954226454
+        },
+        "settlement": {
+          "aired_minutes": 3,
+          "at": 173,
+          "payment": 359,
+          "refund": 0,
+          "viewer_minutes": 20117.330262400443
+        }
+      },
+      {
+        "accepted_at": 0,
+        "id": 2,
+        "offer": {
+          "airing": 1,
+          "brand": 2,
+          "demand_pressure": 0.38461538461538464,
+          "forecast_relevant": 879.9090896089548,
+          "forecast_target_viewers": 6705.776754133481,
+          "listed_minutes": 15,
+          "minutes": 3,
+          "open_minutes": 12,
+          "payment": 364,
+          "quoted_at": 0,
+          "revision": 3,
+          "station": 1,
+          "uncapped_inventory_value": 364.7168674698795
+        },
+        "settlement": {
+          "aired_minutes": 3,
+          "at": 173,
+          "payment": 364,
+          "refund": 0,
+          "viewer_minutes": 20117.330262400443
+        }
+      }
+    ]
+  },
+  {
+    "actual_expected_viewers": 12104.041666108964,
+    "case": "broad_small_block",
+    "money_total": 80000,
+    "occupied_ticks": 5,
+    "offered": 5,
+    "quotes": [
+      {
+        "airing": 1,
+        "brand": 1,
+        "demand_pressure": 0.33809523809523806,
+        "forecast_relevant": 8950.381265177708,
+        "forecast_target_viewers": 12104.041666108964,
+        "listed_minutes": 5,
+        "minutes": 3,
+        "open_minutes": 5,
+        "payment": 1127,
+        "quoted_at": 0,
+        "revision": 2,
+        "station": 1,
+        "uncapped_inventory_value": 1127.0094477258053
+      },
+      {
+        "airing": 1,
+        "brand": 2,
+        "demand_pressure": 0.38461538461538464,
+        "forecast_relevant": 651.0152924851118,
+        "forecast_target_viewers": 12104.041666108964,
+        "listed_minutes": 5,
+        "minutes": 3,
+        "open_minutes": 5,
+        "payment": 396,
+        "quoted_at": 0,
+        "revision": 2,
+        "station": 1,
+        "uncapped_inventory_value": 396.439381994279
+      }
+    ],
+    "sales": [
+      {
+        "accepted_at": 0,
+        "id": 1,
+        "offer": {
+          "airing": 1,
+          "brand": 1,
+          "demand_pressure": 0.33809523809523806,
+          "forecast_relevant": 8950.381265177708,
+          "forecast_target_viewers": 12104.041666108964,
+          "listed_minutes": 5,
+          "minutes": 3,
+          "open_minutes": 5,
+          "payment": 1127,
+          "quoted_at": 0,
+          "revision": 2,
+          "station": 1,
+          "uncapped_inventory_value": 1127.0094477258053
+        },
+        "settlement": {
+          "aired_minutes": 3,
+          "at": 173,
+          "payment": 1127,
+          "refund": 0,
+          "viewer_minutes": 36312.12499832689
+        }
+      },
+      {
+        "accepted_at": 0,
+        "id": 2,
+        "offer": {
+          "airing": 1,
+          "brand": 2,
+          "demand_pressure": 0.38461538461538464,
+          "forecast_relevant": 651.0152924851118,
+          "forecast_target_viewers": 12104.041666108964,
+          "listed_minutes": 5,
+          "minutes": 2,
+          "open_minutes": 2,
+          "payment": 264,
+          "quoted_at": 0,
+          "revision": 3,
+          "station": 1,
+          "uncapped_inventory_value": 264.29292132951934
+        },
+        "settlement": {
+          "aired_minutes": 2,
+          "at": 173,
+          "payment": 264,
+          "refund": 0,
+          "viewer_minutes": 24208.083332217928
+        }
+      }
+    ]
+  },
+  {
+    "actual_expected_viewers": 288.679837811265,
+    "case": "broad_poor_turnout",
+    "money_total": 80000,
+    "occupied_ticks": 5,
+    "offered": 15,
+    "quotes": [
+      {
+        "airing": 1,
+        "brand": 1,
+        "demand_pressure": 0.33809523809523806,
+        "forecast_relevant": 207.4547201961723,
+        "forecast_target_viewers": 288.679837811265,
+        "listed_minutes": 15,
+        "minutes": 3,
+        "open_minutes": 15,
+        "payment": 17,
+        "quoted_at": 0,
+        "revision": 2,
+        "station": 1,
+        "uncapped_inventory_value": 17.409783347887675
+      },
+      {
+        "airing": 1,
+        "brand": 2,
+        "demand_pressure": 0.38461538461538464,
+        "forecast_relevant": 21.46946544355399,
+        "forecast_target_viewers": 288.679837811265,
+        "listed_minutes": 15,
+        "minutes": 3,
+        "open_minutes": 15,
+        "payment": 8,
+        "quoted_at": 0,
+        "revision": 2,
+        "station": 1,
+        "uncapped_inventory_value": 8.809764044317312
+      }
+    ],
+    "sales": [
+      {
+        "accepted_at": 0,
+        "id": 1,
+        "offer": {
+          "airing": 1,
+          "brand": 1,
+          "demand_pressure": 0.33809523809523806,
+          "forecast_relevant": 207.4547201961723,
+          "forecast_target_viewers": 288.679837811265,
+          "listed_minutes": 15,
+          "minutes": 3,
+          "open_minutes": 15,
+          "payment": 17,
+          "quoted_at": 0,
+          "revision": 2,
+          "station": 1,
+          "uncapped_inventory_value": 17.409783347887675
+        },
+        "settlement": {
+          "aired_minutes": 3,
+          "at": 173,
+          "payment": 17,
+          "refund": 0,
+          "viewer_minutes": 866.0395134337949
+        }
+      },
+      {
+        "accepted_at": 0,
+        "id": 2,
+        "offer": {
+          "airing": 1,
+          "brand": 2,
+          "demand_pressure": 0.38461538461538464,
+          "forecast_relevant": 21.46946544355399,
+          "forecast_target_viewers": 288.679837811265,
+          "listed_minutes": 15,
+          "minutes": 3,
+          "open_minutes": 12,
+          "payment": 8,
+          "quoted_at": 0,
+          "revision": 3,
+          "station": 1,
+          "uncapped_inventory_value": 8.809764044317312
+        },
+        "settlement": {
+          "aired_minutes": 3,
+          "at": 173,
+          "payment": 8,
+          "refund": 0,
+          "viewer_minutes": 866.0395134337949
+        }
+      }
+    ]
+  }
+]

@@ -7,6 +7,10 @@ This planning milestone added a playable scheduling workflow. The subsequent
 [original-production milestone](original-production.md) adds one studio format;
 a complete season game remains deferred.
 
+For minute sales, the planner reserves the programme plus listed ad time rounded
+up to full ticks. See [ad-minute market](ad-minute-market.md) for schedule edits,
+inventory and settlement. Legacy contracts follow the rules below.
+
 ## Workspace and actions
 
 The browser has a full-day horizontal timeline with 96 quarter-hour cells,

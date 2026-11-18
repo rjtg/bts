@@ -15,6 +15,18 @@ pub struct Request {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Command {
+    ResizeAdBlock {
+        airing_id: u32,
+        minutes: u8,
+    },
+    RequestMinuteOffers {
+        airing_id: u32,
+    },
+    AcceptMinuteOffer {
+        airing_id: u32,
+        advertiser: u16,
+        token: String,
+    },
     PitchFilm {
         title: String,
         subject: Subject,
@@ -143,6 +155,8 @@ pub struct PlayerReport {
     pub advertisers: Vec<Advertiser>,
     pub schedule: Vec<ScheduleEntry>,
     pub offer: Option<Quote>,
+    pub minute_offers: Option<MinuteOffers>,
+    pub minute_sales: Vec<MinuteBooking>,
     pub contracts: Vec<Booking>,
     pub results: Vec<BroadcastReport>,
 }
@@ -183,6 +197,8 @@ pub struct ScheduleEntry {
     pub start_tick: u32,
     pub end_tick: u32,
     pub proposed_advertiser: Option<u16>,
+    pub ad_minutes: u8,
+    pub sold_minutes: u8,
     pub booked: bool,
     pub status: &'static str,
     pub editable: bool,
@@ -479,4 +495,33 @@ pub struct FilmStudio {
     pub fee: String,
     pub summary: &'static str,
     pub commitments: Vec<(String, u32, u32)>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct MinuteOffers {
+    pub airing_id: u32,
+    pub token: String,
+    pub offers: Vec<MinuteOfferView>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct MinuteOfferView {
+    pub advertiser: u16,
+    pub minutes: u8,
+    pub price: String,
+    pub expected_target_viewers: f64,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct MinuteBooking {
+    pub airing_id: u32,
+    pub advertiser: u16,
+    pub minutes: u8,
+    pub price: String,
+    pub settlement: Option<MinuteSettlementView>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct MinuteSettlementView {
+    pub aired_minutes: u8,
+    pub payment: String,
+    pub refund: String,
+    pub viewer_minutes: f64,
 }

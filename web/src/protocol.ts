@@ -1,6 +1,9 @@
 // Player protocol v8. Rust DTOs are authoritative; no developer-export types are imported.
 export type Command =
   | { type: 'inspect' | 'reset' }
+  | { type: 'resize_ad_block'; airing_id: number; minutes: number }
+  | { type: 'request_minute_offers'; airing_id: number }
+  | { type: 'accept_minute_offer'; airing_id: number; advertiser: number; token: string }
   | { type: 'pitch_film'; title: string; subject: Subject; ambition: number[] }
   | { type: 'write_film'; film_id: number; writer: number; focus: number | null }
   | { type: 'accept_script'; film_id: number }
@@ -27,7 +30,7 @@ export interface Programme {
 }
 export interface Airing {
   airing_id: number; station: number; programme: number; programme_name: string; genre:string; duration_minutes:number; start_tick: number; end_tick: number;
-  proposed_advertiser: number | null; booked: boolean; status: 'planned' | 'on_air' | 'completed' | 'off_air'; editable: boolean;
+  ad_minutes: number; sold_minutes: number; proposed_advertiser: number | null; booked: boolean; status: 'planned' | 'on_air' | 'completed' | 'off_air'; editable: boolean;
 }
 export interface Commitment {
   audience: string; forecast_relevant_delivery: number; promised_units: string; allocated_payment: string;
@@ -71,6 +74,10 @@ export interface Report {
   finances: { opening_cash: string; costs_paid: string; revenue: string; production_committed: string; production_in_escrow: string; production_spent: string; ledger: { production_id: number | null; tick: number; airing_id: number | null; kind: string; amount: string }[] };
   catalogue: Programme[]; advertisers: { id: number; name: string }[]; schedule: Airing[];
   offer: { offer_id: string; airing_id: number; start_tick: number; end_tick: number; advertiser: number; deadline_tick: number; maximum_payment: string; targets: Commitment[] } | null;
+  minute_offers: { airing_id: number; token: string; offers: {
+    advertiser: number; minutes: number; price: string; expected_target_viewers: number;
+  }[] } | null;
+  minute_sales: MinuteBooking[];
   contracts: Booking[]; results: BroadcastResult[];
 }
 export type Quality = { name: string; level: string };
@@ -115,4 +122,9 @@ export type FilmDesk = {
   projects: FilmCard[]; people: FilmPerson[];
   studios: { id: number; name: string; fee: string; summary: string; commitments: [string, number, number][] }[];
   roles: [string, string]; writing_ticks: number; revision_ticks: number;
+};
+
+export type MinuteBooking = {
+  airing_id: number; advertiser: number; minutes: number; price: string;
+  settlement: { aired_minutes: number; payment: string; refund: string; viewer_minutes: number } | null;
 };

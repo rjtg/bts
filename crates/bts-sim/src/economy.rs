@@ -12,7 +12,9 @@
 //!                  ContractStatus::Settled(_)));
 //! # Ok::<(), bts_sim::Error>(())
 //! ```
+use crate::planning::ad_market::{MinuteOffer, MinuteSale, MinuteSaleId, MinuteSettlement};
 use crate::planning::production::ProductionId;
+use crate::planning::AiringId;
 use crate::*;
 
 /// Nonnegative integer credits. Configuration amounts are capped at 10^12.
@@ -198,6 +200,7 @@ pub struct Contract<T: Clock = SimHour> {
 pub enum Account {
     Brand(BrandId),
     Escrow(ContractId),
+    MinuteEscrow(MinuteSaleId),
     Station(StationId),
     BroadcastCosts,
     ResearchCosts,
@@ -207,6 +210,9 @@ pub enum Account {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 pub enum LedgerReason {
     Reserve,
+    MinuteReserve,
+    MinutePayment,
+    MinuteRelease,
     DeliveryPayment,
     UnderdeliveryRefund,
     BroadcastCost,
@@ -227,6 +233,7 @@ pub struct FinancialEvent<T: Clock = SimHour> {
     pub ledger: Vec<LedgerEntry<T>>,
     pub deliveries: Vec<(ContractId, ActualDelivery)>,
     pub settlements: Vec<Settlement<T>>,
+    pub minute_sales: Vec<MinuteSale>,
 }
 impl<T: Clock> Default for FinancialEvent<T> {
     fn default() -> Self {
@@ -234,6 +241,7 @@ impl<T: Clock> Default for FinancialEvent<T> {
             ledger: vec![],
             deliveries: vec![],
             settlements: vec![],
+            minute_sales: vec![],
         }
     }
 }
@@ -251,6 +259,7 @@ pub struct EconomyState<T: Clock = SimHour> {
     ledger: Vec<LedgerEntry<T>>,
     revision: u64,
     next_contract: u64,
+    minute_sales: BTreeMap<MinuteSaleId, MinuteSale>,
 }
 impl<T: Clock> EconomyState<T> {
     pub(crate) fn new(world: &World) -> Self {
@@ -274,6 +283,7 @@ impl<T: Clock> EconomyState<T> {
             ledger: vec![],
             revision: 0,
             next_contract: 1,
+            minute_sales: BTreeMap::new(),
         }
     }
     pub fn budget(&self, brand: BrandId) -> Option<Money> {
@@ -308,7 +318,13 @@ impl<T: Clock> EconomyState<T> {
             .values()
             .filter(|c| matches!(c.status, ContractStatus::Reserved))
             .map(|c| u128::from(c.offer.payment.0))
-            .sum()
+            .sum::<u128>()
+            + self
+                .minute_sales
+                .values()
+                .filter(|sale| sale.settlement.is_none())
+                .map(|sale| u128::from(sale.offer.payment.0))
+                .sum::<u128>()
     }
     /// Available budgets + station cash + ad/production escrow + broadcast/production sinks.
     pub fn total_money(&self) -> u128 {
@@ -421,6 +437,99 @@ impl<T: Clock> EconomyState<T> {
         }
     }
 }
+impl EconomyState<SimTick> {
+    pub fn minute_sales(&self) -> impl Iterator<Item = &MinuteSale> {
+        self.minute_sales.values()
+    }
+
+    pub(crate) fn reserve_minutes(
+        &mut self,
+        at: SimTick,
+        offer: MinuteOffer,
+    ) -> Result<MinuteSaleId, Error> {
+        let id = MinuteSaleId(self.next_contract);
+        let next = self
+            .next_contract
+            .checked_add(1)
+            .ok_or_else(|| Error::Invalid("contract identifiers exhausted".into()))?;
+        let budget = self.budgets[&offer.brand].subtract(offer.payment)?;
+        self.advance_revision()?;
+        self.next_contract = next;
+        self.budgets.insert(offer.brand, budget);
+        self.transfer(
+            at,
+            Account::Brand(offer.brand),
+            Account::MinuteEscrow(id),
+            offer.payment,
+            LedgerReason::MinuteReserve,
+        );
+        self.minute_sales.insert(
+            id,
+            MinuteSale {
+                id,
+                offer,
+                accepted_at: at,
+                settlement: None,
+            },
+        );
+        Ok(id)
+    }
+
+    pub(crate) fn settle_minutes(
+        &mut self,
+        at: SimTick,
+        airing: AiringId,
+        aired: bool,
+        viewers: f64,
+    ) -> Result<Vec<MinuteSale>, Error> {
+        let ids: Vec<_> = self
+            .minute_sales
+            .values()
+            .filter(|s| s.offer.airing == airing && s.settlement.is_none())
+            .map(|s| s.id)
+            .collect();
+        let mut settled = Vec::new();
+        for id in ids {
+            let offer = &self.minute_sales[&id].offer;
+            let (destination, reason, settlement) = if aired {
+                let cash = self.cash[&offer.station].add(offer.payment)?;
+                self.cash.insert(offer.station, cash);
+                (
+                    Account::Station(offer.station),
+                    LedgerReason::MinutePayment,
+                    MinuteSettlement {
+                        at,
+                        aired_minutes: offer.minutes,
+                        viewer_minutes: viewers * f64::from(offer.minutes),
+                        payment: offer.payment,
+                        refund: Money(0),
+                    },
+                )
+            } else {
+                let budget = self.budgets[&offer.brand].add(offer.payment)?;
+                self.budgets.insert(offer.brand, budget);
+                (
+                    Account::Brand(offer.brand),
+                    LedgerReason::MinuteRelease,
+                    MinuteSettlement {
+                        at,
+                        aired_minutes: 0,
+                        viewer_minutes: 0.0,
+                        payment: Money(0),
+                        refund: offer.payment,
+                    },
+                )
+            };
+            let amount = offer.payment;
+            self.transfer(at, Account::MinuteEscrow(id), destination, amount, reason);
+            let sale = self.minute_sales.get_mut(&id).unwrap();
+            sale.settlement = Some(settlement);
+            settled.push(sale.clone());
+        }
+        Ok(settled)
+    }
+}
+
 fn whole_delivery(value: f64) -> Result<u64, Error> {
     if !value.is_finite() || value < 0.0 || value >= u64::MAX as f64 {
         return Err(Error::Invalid(
@@ -863,5 +972,6 @@ pub(crate) fn apply_slot<T: Clock>(
         ledger: book.ledger[start..].to_vec(),
         deliveries,
         settlements,
+        minute_sales: vec![],
     })
 }

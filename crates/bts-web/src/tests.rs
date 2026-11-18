@@ -1011,3 +1011,58 @@ fn film_reports_keep_delivery_evidence_private_and_invalid_commands_atomic() {
         assert!(!serialized.contains(&format!("\"{field}\"")));
     }
 }
+
+#[test]
+fn market_reports_hide_pricing_inputs_and_reject_reused_or_foreign_tokens() {
+    use serde_json::json;
+    let mut session = Session::new().unwrap();
+    let mut other = Session::new().unwrap();
+    let send = |s: &mut Session, command: Value| -> Value {
+        serde_json::from_str(
+            &s.dispatch_json(&json!({"api_version":API_VERSION,"command":command}).to_string()),
+        )
+        .unwrap()
+    };
+    let setup = |s: &mut Session| {
+        let placed = send(
+            s,
+            json!({"type":"place","programme":1,"start_tick":72,"advertiser":null}),
+        );
+        let id = placed["report"]["next_airing"].clone();
+        assert_eq!(
+            send(
+                s,
+                json!({"type":"resize_ad_block","airing_id":id,"minutes":1})
+            )["status"],
+            "ok"
+        );
+        send(s, json!({"type":"request_minute_offers","airing_id":id}))
+    };
+    let quote = setup(&mut session);
+    let foreign_before = setup(&mut other);
+    let batch = &quote["report"]["minute_offers"];
+    let id = &batch["airing_id"];
+    let token = &batch["token"];
+    let offers = batch["offers"].as_array().unwrap();
+    assert_eq!(offers.len(), 2);
+    for offer in offers {
+        assert_eq!(offer.as_object().unwrap().len(), 4);
+        assert!(offer["price"].is_string());
+    }
+    let command = json!({"type":"accept_minute_offer","airing_id":id,"advertiser":offers[0]["advertiser"],"token":token});
+    assert_eq!(
+        send(&mut other, command.clone())["error"]["code"],
+        "stale_minute_offer"
+    );
+    assert_eq!(send(&mut other, json!({"type":"inspect"})), foreign_before);
+    let booked = send(&mut session, command.clone());
+    assert_eq!(
+        booked["report"]["minute_sales"].as_array().unwrap().len(),
+        1
+    );
+    assert_eq!(
+        send(&mut session, command)["error"]["code"],
+        "stale_minute_offer"
+    );
+    assert_eq!(send(&mut session, json!({"type":"inspect"})), booked);
+}

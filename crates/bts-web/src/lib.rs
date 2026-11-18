@@ -27,6 +27,11 @@ pub struct Session {
     namespace: u32,
     next_offer: u64,
     pending: Option<Pending>,
+    minute_pending: Option<(
+        AiringId,
+        String,
+        Vec<bts_sim::planning::ad_market::MinuteOffer>,
+    )>,
     booking_review: Option<ProductionBookingReview>,
     film_review: Option<FilmReview>,
 }
@@ -53,6 +58,7 @@ impl Session {
             namespace,
             next_offer: 1,
             pending: None,
+            minute_pending: None,
             booking_review: None,
             film_review: None,
         })
@@ -93,6 +99,33 @@ impl Session {
     }
     fn apply(&mut self, command: Command) -> Result<(), PlayerError> {
         match command {
+            Command::ResizeAdBlock { airing_id, minutes } => {
+                self.planner
+                    .resize_ad_block(AiringId(airing_id), minutes)
+                    .map_err(player_error)?;
+            }
+            Command::RequestMinuteOffers { airing_id } => {
+                return self.issue_minute_offers(AiringId(airing_id));
+            }
+            Command::AcceptMinuteOffer {
+                airing_id,
+                advertiser,
+                token,
+            } => {
+                let id = AiringId(airing_id);
+                let quote = self
+                    .minute_pending
+                    .as_ref()
+                    .filter(|(airing, issued, _)| *airing == id && *issued == token)
+                    .and_then(|(_, _, offers)| offers.iter().find(|q| q.brand.0 == advertiser))
+                    .ok_or_else(|| {
+                        PlayerError::new("stale_minute_offer", "Refresh offers for this airing.")
+                    })?;
+                self.planner.accept_minutes(quote).map_err(player_error)?;
+                self.pending = None;
+                return self.issue_minute_offers(id);
+            }
+
             Command::PitchFilm {
                 title,
                 subject,
@@ -300,10 +333,22 @@ impl Session {
             }
         }
         self.pending = None;
+        self.minute_pending = None;
         self.booking_review = None;
         self.film_review = None;
         Ok(())
     }
+    fn issue_minute_offers(&mut self, id: AiringId) -> Result<(), PlayerError> {
+        let offers = self.planner.minute_offers(id).map_err(player_error)?;
+        let token = format!("{}:{}", self.namespace, self.next_offer);
+        self.next_offer = self
+            .next_offer
+            .checked_add(1)
+            .ok_or_else(|| PlayerError::new("capacity", "Offer capacity exhausted."))?;
+        self.minute_pending = Some((id, token, offers));
+        Ok(())
+    }
+
     fn audience_name(&self, id: bts_sim::AudienceId) -> String {
         self.planner
             .world()
@@ -543,7 +588,9 @@ impl Session {
                 start_tick: a.start.0,
                 end_tick: a.end.0,
                 proposed_advertiser: a.advertiser.map(|id| id.0),
-                booked: a.contract.is_some(),
+                ad_minutes: a.ad_minutes,
+                sold_minutes: self.planner.sold_minutes(a.id),
+                booked: a.contract.is_some() || self.planner.sold_minutes(a.id) > 0,
                 status: if a.cancelled() {
                     "off_air"
                 } else if a.result.is_some() {
@@ -553,7 +600,10 @@ impl Session {
                 } else {
                     "planned"
                 },
-                editable: a.station == PLAYER && !a.started() && a.contract.is_none(),
+                editable: a.station == PLAYER
+                    && !a.started()
+                    && a.contract.is_none()
+                    && self.planner.sold_minutes(a.id) == 0,
             })
             .collect::<Vec<_>>();
         schedule.sort_by_key(|a| (a.station, a.start_tick, a.airing_id));
@@ -606,6 +656,10 @@ impl Session {
                         Account::Escrow(id) => {
                             self.planner.airings().find(|a| a.contract == Some(id))
                         }
+                        Account::MinuteEscrow(id) => economy
+                            .minute_sales()
+                            .find(|sale| sale.id == id)
+                            .and_then(|sale| self.planner.airing(sale.offer.airing).ok()),
                         _ => None,
                     },
                 };
@@ -706,6 +760,38 @@ impl Session {
             .collect::<Vec<_>>();
         results.sort_by_key(|r| (r.end_tick, r.airing_id));
         PlayerReport {
+            minute_offers: self
+                .minute_pending
+                .as_ref()
+                .map(|(id, token, offers)| MinuteOffers {
+                    airing_id: id.0,
+                    token: token.clone(),
+                    offers: offers
+                        .iter()
+                        .map(|q| MinuteOfferView {
+                            advertiser: q.brand.0,
+                            minutes: q.minutes,
+                            price: q.payment.0.to_string(),
+                            expected_target_viewers: q.forecast_target_viewers,
+                        })
+                        .collect(),
+                }),
+            minute_sales: economy
+                .minute_sales()
+                .map(|sale| MinuteBooking {
+                    airing_id: sale.offer.airing.0,
+                    advertiser: sale.offer.brand.0,
+                    minutes: sale.offer.minutes,
+                    price: sale.offer.payment.0.to_string(),
+                    settlement: sale.settlement.as_ref().map(|s| MinuteSettlementView {
+                        aired_minutes: s.aired_minutes,
+                        payment: s.payment.0.to_string(),
+                        refund: s.refund.0.to_string(),
+                        viewer_minutes: s.viewer_minutes,
+                    }),
+                })
+                .collect(),
+
             reporting: REPORTING,
             now_tick: now,
             end_tick: self.planner.end().0,

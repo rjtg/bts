@@ -1,5 +1,6 @@
 import init, { WebSession, api_version } from '../pkg/bts_web.js';
 import type { Airing, Booking, BroadcastResult, Command, Programme, Report, Response } from './protocol';
+import { renderAdMarket, salesFor, minuteRevenue } from './ad-market';
 import { renderAudience } from './audience';
 import { initialiseFilmDesk } from './film';
 import { initialiseProduction } from './production';
@@ -132,10 +133,19 @@ function resultPanel(result: BroadcastResult): HTMLElement {
   const panel = node('div', '', 'contract-panel'); panel.append(node('h4', `Broadcast result · airing #${result.airing_id}`));
   panel.append(node('p', `${result.off_air ? 'OFF AIR — programme could not be funded. No programme or ad exposure.' : 'Completed.'} Cost ${money(result.broadcast_cost)} · cash after completion ${money(result.cash_after)} credits.`));
   panel.append(table(`Provisional expected counts sampled at ${stamp(result.snapshot_tick)} · not measured ratings`, ['Audience', 'Your channel', 'Rival', 'Not watching'], result.audiences.map(a => [a.audience, count(a.player_viewers), count(a.rival_viewers), count(a.not_watching)])));
+  const minuteSales = salesFor(report, result.airing_id);
+  if (minuteSales.length) {
+    const sold = minuteSales.reduce((total, sale) => total + sale.minutes, 0);
+    const aired = minuteSales.reduce((total, sale) => total + (sale.settlement?.aired_minutes ?? 0), 0);
+    panel.append(node('p', `Ad minutes · ${sold} sold · ${aired} aired · ${money(String(minuteRevenue(minuteSales)))} credits paid.`));
+    panel.append(table('Minute sale settlement', ['Advertiser', 'Minutes aired', 'Paid', 'Returned'], minuteSales.map(sale => [
+      advertiserName(sale.advertiser), String(sale.settlement?.aired_minutes ?? 0), money(sale.settlement?.payment ?? '0'), money(sale.settlement?.refund ?? '0'),
+    ])));
+  }
   const scheduled = report.schedule.find(airing => airing.airing_id === result.airing_id);
   const film = report.film_desk.projects.find(project => project.programme === scheduled?.programme);
   if (film) {
-    const earned = report.contracts.find(booking => booking.airing_id === result.airing_id)?.settlement?.payment ?? '0';
+    const earned = String(minuteRevenue(minuteSales) + BigInt(report.contracts.find(booking => booking.airing_id === result.airing_id)?.settlement?.payment ?? '0'));
     panel.append(node('p', `Film investment: ${money(film.committed)} credits · This airing’s ad revenue: ${money(earned)} credits.`));
     const reception = result.audiences.filter(row => row.film_reception);
     if (reception.length) panel.append(table('Provisional audience reception', ['Audience', 'Reception'], reception.map(row => [row.audience, row.film_reception!])));
@@ -156,13 +166,19 @@ function renderDetails(): void {
   if(owned && owned.production_id!==null)element('known-details').append(document.createTextNode(` Your original interview/discussion, production #${owned.production_id}.`));
   element<HTMLFieldSetElement>('edit-controls').disabled = !a.editable;
   select('move-day').value = String(Math.floor(a.start_tick / 96)); select('move-time').value = String(a.start_tick % 96);
-  element('lock-note').textContent = !own ? 'The competitor schedule is read-only.' : a.booked ? 'Booking protected: programme, start, duration and advertiser are locked.' : !a.editable ? 'This airing has already started. Past and on-air broadcasts cannot be edited.' : 'Moving keeps this airing ID. Removal leaves an explicit off-air gap.';
+  element('lock-note').textContent = !own ? 'The competitor schedule is read-only.' : a.sold_minutes > 0 ? 'Sold minutes protect this programme and start time. Adjust the ad block below.' : a.booked ? 'Booking protected: programme, start, duration and advertiser are locked.' : !a.editable ? 'This airing has already started. Past and on-air broadcasts cannot be edited.' : 'Moving keeps this airing ID. Removal leaves an explicit off-air gap.';
   select('advertiser').replaceChildren(option('', 'No advertisement'), ...report.advertisers.map(b => option(b.id, b.name)));
   select('advertiser').value = a.proposed_advertiser === null ? '' : String(a.proposed_advertiser);
   select('advertiser').disabled = !a.editable; button('set-advertiser').disabled = !a.editable;
   button('quote').disabled = !a.editable || a.proposed_advertiser === null;
   button('quote').textContent = `Request offer for #${a.airing_id}`;
   button('move').textContent = `Move #${a.airing_id}`; button('remove').textContent = `Remove #${a.airing_id}`;
+  renderAdMarket(a, report, send, advertiserName, money);
+  element('legacy-ad-heading').hidden = a.ad_minutes > 0 || !own;
+  const legacyControls = element('advertiser').closest<HTMLElement>('.ad-controls')!;
+  legacyControls.hidden = a.ad_minutes > 0 || !own;
+  const legacyHelp = legacyControls.nextElementSibling as HTMLElement;
+  legacyHelp.hidden = legacyControls.hidden;
   const offer = element('offer'); offer.replaceChildren();
   if (report.offer?.airing_id === a.airing_id) {
     const q = report.offer;

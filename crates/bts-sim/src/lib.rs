@@ -401,6 +401,7 @@ pub struct Allocation {
 pub struct AdExposure {
     pub station: StationId,
     pub viewers: f64,
+    pub opportunities_per_viewer: f64,
     pub effectiveness: ModelEvaluation,
 }
 #[derive(Clone, Debug, PartialEq)]
@@ -513,6 +514,16 @@ impl<T: Clock> Engine<T> {
         action: &Slot<T>,
         starts: Option<&BTreeSet<StationId>>,
         period: usize,
+    ) -> Result<(State<T>, SlotEvent<T>), Error> {
+        self.evaluate_with_minute_campaigns(action, starts, period, &BTreeMap::new())
+    }
+
+    fn evaluate_with_minute_campaigns(
+        &self,
+        action: &Slot<T>,
+        starts: Option<&BTreeSet<StationId>>,
+        period: usize,
+        campaigns: &BTreeMap<(StationId, BrandId), u8>,
     ) -> Result<(State<T>, SlotEvent<T>), Error> {
         if action.at <= self.state.now {
             return Err(Error::Invalid("slot time must strictly increase".into()));
@@ -686,11 +697,16 @@ impl<T: Clock> Engine<T> {
                         .iter()
                         .find(|b| b.station == v.station)
                         .unwrap();
-                    if broadcast.advertisement != Some(brand.id)
-                        || starts.is_some_and(|set| !set.contains(&v.station))
-                    {
+                    if starts.is_some_and(|set| !set.contains(&v.station)) {
                         continue;
                     }
+                    let exposure_scale = if broadcast.advertisement == Some(brand.id) {
+                        1.0
+                    } else if let Some(minutes) = campaigns.get(&(v.station, brand.id)) {
+                        f64::from(*minutes) / 5.0
+                    } else {
+                        continue;
+                    };
                     let interest = audience.product_interests[brand.product.index()];
                     let affordability =
                         (audience.purchasing_power / brand.required_purchasing_power).min(1.0);
@@ -703,14 +719,19 @@ impl<T: Clock> Engine<T> {
                     advertisements.push(AdExposure {
                         station: v.station,
                         viewers: v.viewers,
+                        opportunities_per_viewer: exposure_scale,
                         effectiveness,
                     });
                 }
-                let exposures = advertisements.iter().map(|a| a.viewers).sum::<f64>();
+                let exposures = advertisements
+                    .iter()
+                    .map(|a| a.viewers * a.opportunities_per_viewer)
+                    .sum::<f64>();
                 let relevant_exposure_per_person = advertisements
                     .iter()
                     .map(|a| {
-                        a.viewers / f64::from(audience.population) * a.effectiveness.trace.output
+                        a.viewers * a.opportunities_per_viewer / f64::from(audience.population)
+                            * a.effectiveness.trace.output
                     })
                     .sum::<f64>();
                 let dose = self.parameters.campaign_gain * relevant_exposure_per_person

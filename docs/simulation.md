@@ -220,7 +220,9 @@ Purchasing power is one targeting dimension. Affordable mass products and niche 
 
 Implemented provisional contract experiment: a fixed maximum payment for weighted relevant target delivery in a booked station/hour, with an inclusive deadline and proportional underdelivery refund. Money is integer credits; offers reserve finite budget in escrow. Per-audience hype deficits value each audience's forecast delivery; brand-wide pressure is diagnostic. Accepted prices are not retrospectively changed by hype. Unfunded programmes go off air independently before allocation, and missed delivery refunds at the deadline. See [economy equations](advertising-economy.md). More detailed contracts, bonuses, renewal negotiations and campaign studies remain open; this experiment is not a permanent commercial design.
 
-### Proposed ad-minute market
+### Ad-minute market
+
+The [browser ad-minute experiment](ad-minute-market.md) implements partial offers, schedule occupancy and payment for aired inventory. The wider direction below includes deferred features.
 
 The intended player action is to offer a chosen number of advertising minutes for
 a specific airing and surrounding programme context. Advertisers independently
@@ -237,9 +239,8 @@ and trailers, which are self-promotion rather than advertiser revenue. Campaign
 delivery thresholds, measurement and refund clauses are deferred for this market
 design; they must not be smuggled into offers as implicit promises.
 
-This replaces the current one-advertiser-per-airing fixed delivery-contract model
-as the intended future market direction. The existing implementation remains the
-provisional experiment described above, including its explicit refunds. Pricing
+The browser can use minute sales or the legacy one-advertiser delivery contract
+on an airing. Legacy contracts retain their explicit refunds. Pricing
 must eventually account for audience fit, expected performance, finite advertiser
 budgets, offered supply and non-exclusive competing demand without treating
 expected counts as measured truth.
@@ -326,7 +327,7 @@ particular airing. That time extends the show's schedule occupancy; it does not
 consume an interval inside its programme runtime. Detailed break placement and
 individual arrival/departure simulation are out of scope. The station offers that
 inventory to the market, accepts non-exclusive offers for some of it, and may
-leave minutes unsold or use station teasers. See [ad-minute market](#proposed-ad-minute-market).
+leave minutes unsold or use station teasers. See [ad-minute market](#ad-minute-market).
 
 Commercial load may affect viewer annoyance, departures and longer-term station
 expectations, with different audience tolerances. Its effect should depend on total

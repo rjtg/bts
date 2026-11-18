@@ -1,5 +1,6 @@
 //! Bounded duration-aware planning. See docs/programme-planning.md for provisional cadence.
 //! No presentation, player observations, filesystem or wall clock.
+pub mod ad_market;
 pub mod film;
 pub mod production;
 pub mod research;
@@ -48,6 +49,7 @@ pub struct Airing {
     pub start: SimTick,
     pub end: SimTick,
     pub advertiser: Option<BrandId>,
+    pub ad_minutes: u8,
     pub contract: Option<ContractId>,
     pub result: Option<AiringResult>,
     snapshot: Option<AiringResult>,
@@ -290,6 +292,7 @@ impl Planner {
         programme: ProgrammeId,
         start: SimTick,
         except: Option<AiringId>,
+        ad_minutes: u8,
     ) -> Result<SimTick, PlanError> {
         if self.production.unfinished_programme(programme) {
             return Err(error("production_not_ready", "This original programme is not complete. Advance through post-production before scheduling it."));
@@ -315,7 +318,9 @@ impl Planner {
         let end = SimTick(
             start
                 .0
-                .checked_add(u32::from(programme.duration_minutes) / 15)
+                .checked_add(
+                    (u32::from(programme.duration_minutes) + u32::from(ad_minutes)).div_ceil(15),
+                )
                 .ok_or_else(|| error("invalid_time", "The broadcast time exceeds the scenario."))?,
         );
         if start < self.now() || end > self.end {
@@ -349,7 +354,7 @@ impl Planner {
         start: SimTick,
         advertiser: Option<BrandId>,
     ) -> Result<AiringId, PlanError> {
-        let end = self.validate_placement(station, programme, start, None)?;
+        let end = self.validate_placement(station, programme, start, None, 0)?;
         self.validate_advertiser(advertiser)?;
         let id = AiringId(self.next_id);
         let next_id = self
@@ -366,6 +371,7 @@ impl Planner {
                 start,
                 end,
                 advertiser,
+                ad_minutes: 0,
                 contract: None,
                 result: None,
                 snapshot: None,
@@ -382,7 +388,7 @@ impl Planner {
     ) -> Result<AiringId, PlanError> {
         self.insert(self.player, programme, start, advertiser)
     }
-    fn editable(&self, id: AiringId) -> Result<&Airing, PlanError> {
+    fn upcoming(&self, id: AiringId) -> Result<&Airing, PlanError> {
         let airing = self.airing(id)?;
         if airing.station != self.player {
             return Err(error(
@@ -396,14 +402,24 @@ impl Planner {
                 "An airing that has started or finished cannot be edited.",
             ));
         }
-        if airing.contract.is_some() {
+        Ok(airing)
+    }
+    fn editable(&self, id: AiringId) -> Result<&Airing, PlanError> {
+        let airing = self.upcoming(id)?;
+        if airing.contract.is_some() || self.sold_minutes(id) > 0 {
             return Err(error("booking_locked", "An accepted commitment locks this airing's programme, start, duration and advertiser."));
         }
         Ok(airing)
     }
     pub fn move_airing(&mut self, id: AiringId, start: SimTick) -> Result<(), PlanError> {
         let airing = self.editable(id)?;
-        let end = self.validate_placement(self.player, airing.programme, start, Some(id))?;
+        let end = self.validate_placement(
+            self.player,
+            airing.programme,
+            start,
+            Some(id),
+            airing.ad_minutes,
+        )?;
         self.bump()?;
         let airing = self.airings.get_mut(&id).unwrap();
         airing.start = start;
@@ -421,7 +437,12 @@ impl Planner {
         id: AiringId,
         advertiser: Option<BrandId>,
     ) -> Result<(), PlanError> {
-        self.editable(id)?;
+        if self.editable(id)?.ad_minutes > 0 && advertiser.is_some() {
+            return Err(error(
+                "minute_inventory",
+                "Close the ad-minute block first.",
+            ));
+        }
         self.validate_advertiser(advertiser)?;
         self.bump()?;
         self.airings.get_mut(&id).unwrap().advertiser = advertiser;
@@ -543,7 +564,12 @@ impl Planner {
         let (action, starts) = self.interval_action(start, None);
         let (mut next, mut event) = self
             .engine
-            .evaluate_cadence(&action, Some(&starts), start.availability_index())
+            .evaluate_with_minute_campaigns(
+                &action,
+                Some(&starts),
+                start.availability_index(),
+                &self.minute_campaigns(start),
+            )
             .map_err(engine_error)?;
         event.financial = economy::apply_slot(&self.engine.world, &mut next.economy, &event)
             .map_err(engine_error)?;
@@ -628,9 +654,28 @@ impl Planner {
                         programme: airing.programme,
                     });
             }
+            let sampled_viewers = airing.snapshot.as_ref().map_or(0.0, |snapshot| {
+                snapshot
+                    .allocations
+                    .iter()
+                    .flat_map(|a| &a.viewing)
+                    .filter(|v| v.station == airing.station)
+                    .map(|v| v.viewers)
+                    .sum()
+            });
+            let before = completed_state.economy.ledger().len();
+            let sales = completed_state
+                .economy
+                .settle_minutes(action.at, airing.id, !airing.cancelled(), sampled_viewers)
+                .map_err(engine_error)?;
+            event.financial.minute_sales.extend(sales);
+            event
+                .financial
+                .ledger
+                .extend_from_slice(&completed_state.economy.ledger()[before..]);
             let mut result = airing.snapshot;
             if let Some(r) = &mut result {
-                r.cash_after = self.engine.state.economy.cash(airing.station).unwrap();
+                r.cash_after = completed_state.economy.cash(airing.station).unwrap();
             }
             self.airings.get_mut(&airing.id).unwrap().result = result;
         }

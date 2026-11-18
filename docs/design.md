@@ -289,12 +289,10 @@ Brands have product categories, positioning, target audiences, desired hype, cur
 Hype deficits create demand for advertising; budgets and expected effectiveness constrain willingness to pay. Brands can launch, grow, decline, be acquired, or disappear. Hype alone does not determine survival.
 
 Awareness as a slower-moving state alongside hype is a proposal. Audience-specific
-delivery commitments are implemented experimentally. Intended direction is a
-station-offered ad-minute market: advertisers make non-exclusive offers for part of
-the offered block, the player fills or shortens the break, and unsold time may carry
-station teasers. Ad minutes extend programme airtime; exact placement, thresholds,
-measurement and refunds remain open. The current fixed delivery contract is a
-provisional experiment, not this final market. See [advertising mechanics](simulation.md#proposed-ad-minute-market).
+delivery commitments are implemented experimentally. The browser [ad-minute market](ad-minute-market.md) offers partial slots to
+multiple brands. Listed minutes add to the airing runtime. Unsold minutes can
+be left empty or removed. The legacy fixed delivery contract remains available.
+Station teasers, measured delivery and audience guarantees remain future work.
 
 ## Public world
 

@@ -3,6 +3,8 @@
 Status: current schema-4 provisional implementation specification. This is a small experiment,
 not a market framework, calibrated economy, or finished player interface.
 
+For the browser minute sales experiment, see [ad-minute market](ad-minute-market.md). This document describes the legacy delivery contracts.
+
 ## Review corrections
 
 All audience/station/programme/brand collection sizes are allowed, including

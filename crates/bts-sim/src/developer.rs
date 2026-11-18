@@ -219,7 +219,7 @@ impl From<&SlotEvent> for SlotReport {
                         .iter()
                         .map(|a| AdvertisingReport {
                             station: a.station,
-                            expected_exposures: a.viewers,
+                            expected_exposures: a.viewers * a.opportunities_per_viewer,
                             effectiveness: (&a.effectiveness).into(),
                         })
                         .collect(),

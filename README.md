@@ -38,6 +38,7 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Production logistics](docs/production-logistics.md): implemented station ownership/capacity and future setup/prop economies.
 - [Audience research](docs/audience-research.md) covers dated polls, Insight spending and ad forecasts.
 - [Programme feature profiles](docs/feature-profiles.md) covers ambition, achieved qualities, audience fit and catalogue labels.
+- [Ad-minute market](docs/ad-minute-market.md) covers the sell-by-the-minute workflow, booking and settlement.
 - [Original films](docs/original-film.md) covers script commissions, revisions, casting, studio bookings and airing results.
 - [Casting desk](docs/casting-desk.md): portrait casting, booking reviews and adjustable cooperation support.
 - [Sway quests](docs/quest-opportunities.md): separate acceptance, deadlines and production hints.

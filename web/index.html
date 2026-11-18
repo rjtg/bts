@@ -18,9 +18,9 @@
       </section>
       <section id="details" class="details panel" aria-labelledby="details-title"><div class="panel-heading"><h2 id="details-title">Broadcast details</h2><span class="tag">SELECTED AIRING</span></div><div id="selection-empty" class="empty-state"><span class="screen-icon" aria-hidden="true">▣</span><h3>Your schedule starts here.</h3><p>Choose a programme from the library, pick a time, and place it on your channel. Select any broadcast to move it, arrange advertising or review its result.</p><p class="muted">Selecting an airing does not change which one airs next.</p></div><div id="selection-content" hidden>
           <div class="selected-header"><span id="selected-genre" class="genre-tile" aria-hidden="true"></span><div><span id="selected-id" class="overline"></span><h3 id="selected-name"></h3><p id="selected-window"></p><span id="selected-status" class="tag"></span></div></div>
-          <p id="known-details" class="muted"></p><div class="forecast-note">Audience forecast unavailable · research is not implemented. Advertising quotes below contain provisional contractual forecasts.</div>
+          <p id="known-details" class="muted"></p>
           <fieldset id="edit-controls"><legend>Move or remove this airing</legend><div class="form-row"><label>Day<select id="move-day"></select></label><label>Start time<select id="move-time"></select></label><button id="move">Move airing</button><button id="remove" class="danger">Remove</button></div></fieldset><p id="lock-note" class="muted"></p>
-          <div class="ad-controls"><label>Prospective advertiser<select id="advertiser"></select></label><button id="set-advertiser" class="quiet">Set advertiser</button><button id="quote">Request offer</button></div><p class="muted small">An ad airs only after acceptance. A booking locks the airing's programme, start, duration and advertiser.</p>
+          <div id="ad-minute-market"></div><h4 id="legacy-ad-heading">Legacy delivery contract</h4><div class="ad-controls"><label>Prospective advertiser<select id="advertiser"></select></label><button id="set-advertiser" class="quiet">Set advertiser</button><button id="quote">Request offer</button></div><p class="muted small">An ad airs only after acceptance. A booking locks the airing's programme, start, duration and advertiser.</p>
           <div id="offer"></div><div id="selected-contract"></div><div id="selected-result"></div><button id="advance-selected" class="quiet">Run through selected airing</button>
         </div></section>
     </div>
@@ -48,7 +48,7 @@
     <section id="film-desk" class="panel lower-panel"><div class="panel-heading"><h2>Film desk</h2></div><div id="film-notices" aria-live="polite"></div><div id="film-pitch"></div><div id="film-projects" class="production-projects"></div></section>
     <section id="results" class="panel lower-panel"><div class="panel-heading"><h2>Broadcast results</h2><span class="tag">PROVISIONAL REPORTING</span></div><div id="results-list"></div></section>
     <section id="finances" class="panel lower-panel"><div class="panel-heading"><h2>Station finances</h2><span class="tag">INTEGER CREDITS</span></div><div id="finance-summary" class="finance-summary"></div><div id="ledger"></div></section>
-    <footer><p id="reporting"></p><p>Publication, promotion, ad-break shares and save/load are deferred. No developer inspector. Client-side observation filtering is not a security guarantee.</p></footer>
+    <footer><p id="reporting"></p><p>Publication, promotion and save/load are deferred. No developer inspector. Client-side observation filtering is not a security guarantee.</p></footer>
   </main>
 </div>
 <script type="module" src="/src/main.ts"></script></body></html>

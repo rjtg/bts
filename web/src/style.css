@@ -729,3 +729,17 @@ input[type=range] { width:100%; min-height:44px; accent-color:#ffc451; padding:0
   background: #204751 url('/portraits/film-roster.webp') var(--portrait-x) var(--portrait-y) / 400% 200%;
 }
 .film-notice { border-left: .22rem solid #ffc86e; padding: .3rem .7rem; color: #ffdc91; }
+
+.ad-controls[hidden] { display: none; }
+.minute-market { margin-top: .8rem; }
+.minute-market h4, .minute-market h5 { margin: 0; }
+.minute-strip { display: flex; flex-wrap: wrap; gap: .2rem; padding: 0; list-style: none; }
+.minute-strip li { flex-basis: 0; min-width: max-content; padding: .35rem .55rem; border: 1px solid #718576; }
+.minute-sold { background: #2d4c42; }
+.minute-free { background: repeating-linear-gradient(120deg,#142630,#142630 5px,#213842 5px,#213842 10px); }
+.minute-settings { display: flex; flex-wrap: wrap; gap: .5rem; align-items: end; }
+.minute-settings input { max-width: 7rem; }
+.minute-offers { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,12rem),1fr)); gap: .5rem; margin-top: .65rem; }
+.minute-offer { border: 1px solid #718576; background: #17343d; padding: .65rem; }
+.minute-brand-mark { display: inline-block; color: #ffcd74; border: 1px solid currentColor; margin-inline-end: .5em; padding: .2em; }
+.minute-offer summary { cursor: pointer; color: #ffdc91; }
