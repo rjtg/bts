@@ -70,6 +70,16 @@ of the brief, with stricter limits making the writing task harder.
 Exactly how to author these constraints, whether difficulty is explicit or
 derived, and how demands transfer between stages remain open.
 
+## Roles, casting and contractual consequences
+
+Scripts should carry required roles and their episode appearances separately from
+the actors eventually cast. Recurring characters imply casting continuity across
+specified episodes. Rewriting can adapt those requirements, but takes paid work
+and does not automatically release actors from, or cancel, existing contracts.
+See [talent and contracts](talent-and-contracts.md) for the distinct market,
+contract and assignment layers and open continuity/release rules. This remains
+future work; the first writing experiment need not implement a full casting pipeline.
+
 ## News and topical programmes
 
 Truthful, neutral reporting is a high ambition, especially for less-skilled

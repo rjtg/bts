@@ -47,3 +47,9 @@ planning concept's layout and colour direction. The reference still includes
 future controls (publication, campaign shares and other workspaces) that are not
 implemented. Actual local browser evidence is kept in
 [contrib/programme-planning](../../contrib/programme-planning/README.md).
+
+The [player-facing interaction direction](../screens.md#player-facing-interaction-direction)
+now calls for direct schedule manipulation, focused contextual panels, casting
+cards and fewer technical forms. The existing mockups establish visual references;
+they do not prove those interactions are implemented or resolve the proposed
+[talent-contract workflow](../talent-and-contracts.md).

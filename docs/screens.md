@@ -93,3 +93,77 @@ advancement processes all ticks with a documented provisional start-snapshot cad
 All plans remain internal drafts; publication, promotion, campaign shares,
 research and a separate weekly view are deferred; the bounded production desk is now implemented. The mockup's values
 and inconsistent runtimes are not imported as simulation rules.
+
+## Player-facing interaction direction
+
+Agreed direction: the browser should feel like running a television station,
+with direct manipulation and readable decisions. Changing colours alone does
+not turn a simulation inspector into a game interface. The current harness still
+uses forms, selects and diagnostic tables; the interactions below are proposed,
+not implemented. Preserve Rust-owned validation, accounting and player observations.
+
+### Planning and time
+
+Make the schedule the main workspace. Programme cards show artwork, title and
+runtime. Drag a card onto the timeline to place it; drag an existing broadcast
+to move it. Snap to 15-minute boundaries, preview occupied airtime and show
+conflicts before commitment. Rust remains authoritative: a preview is not a
+successful booking. Protected advertising commitments still constrain edits.
+
+Provide click-to-place and accessible keyboard/touch alternatives; precision
+mouse dragging must not be the only way to plan. Invalid moves should leave the
+broadcast in its previous position and explain what prevents the change.
+
+Clicking a broadcast opens a compact contextual side panel, retaining the
+schedule. Move contracts, production and financial review into focused views
+rather than one long page of forms. A persistent **On air / Up next** strip shows
+the clock, current programme and a prominent **Run until…** action. Selection
+must remain distinct from the next broadcast that will air. Preview the time
+advance destination and relevant obligations; do not accidentally skip a decision.
+
+### Production and people
+
+Use a casting desk: host and guest portraits occupy visible seats; clicking an
+empty seat opens a roster of person cards. Display specialties, fees and known
+availability directly. For scripted work, use named roles rather than generic
+seats, following [talent and contracts](talent-and-contracts.md).
+
+Prefer subject tiles, buttons or chips for discrete choices. Sliders suit gradual
+choices such as restrained-to-lively tone. Budget presets such as **Shoestring /
+Standard / Lavish** can reduce form filling, while always displaying the exact
+price and what it commits. Preset names and effects need testing; they are not
+new balance rules. Avoid replacing every dropdown with a slider indiscriminately.
+
+Star-style ratings can represent public reputation or an explicitly labelled
+staff assessment. Show unknowns and the source of an assessment. Do not convert
+hidden craft/fit into exact stars, or imply that stars guarantee future results.
+Keep exact money and contractual terms readable wherever a decision needs them.
+
+Present Sway requests as opportunities: person portrait, short request, visible
+conditions/reward and progress such as **Promised → Recorded → Completed** where
+applicable. Use each request's actual fulfilment milestone; not every recording
+earns a reward. Spending should be a clear choice during booking, with the cost
+and consequence visible before confirmation.
+
+### Results and language
+
+Lead a broadcast recap with viewers, earnings and contract outcome. Put detailed
+tables behind **Details**, with causal explanations limited to legitimate player
+evidence. Current expected counts remain labelled provisional, not measured ratings.
+Do not invent research, staff knowledge or precise satisfaction reports to fill a panel.
+
+Use ordinary station language: **Bring Jules in — 2 Sway**, **Help the team work
+together**, **Budget committed**. Remove protocol status, internal IDs, delivery
+micro-units and repeated model explanations from the main player flow. Keep
+stable IDs internally and retain accessible exact contract details where needed.
+A separately enabled developer view may expose technical diagnostics; player
+usability must not depend on reading them.
+
+### Suggested UI slice
+
+A drag-and-drop evening planner, compact broadcast panel and readable recap would
+remove frequent friction while retaining existing Rust mechanics. Test placing,
+moving, rejected overlaps, protected bookings, time advancement and review through
+both direct manipulation and a non-drag route. Follow with the casting-desk and
+talent-contract views as their mechanics become available. This is a proposed
+sequence; it does not implement new simulation systems or choose a UI framework.

@@ -7,7 +7,7 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
 | Question | Proposed starting point | How to decide |
 | --- | --- | --- |
 | Player control | Combined broadcaster and commissioning studio, with selected creative decisions | Test whether production and scheduling form one manageable loop |
-| Tick processing | 15-minute tick agreed; current code still resolves isolated broadcasts | Specify duration, exposure units, completion effects, costs and deterministic phase ordering before migration |
+| Tick processing | Duration-aware 15-minute planner implemented with provisional start-snapshot viewing | Validate cadence and exposure incentives; see [planning semantics](programme-planning.md) |
 | World setting | Fictional world with an 80s identity | Choose before writing substantial political or historical content |
 | Format depth | Shared production; news is subject matter across formats, with editorial-profile controls | Choose the first producible formats; avoid separate newsroom mechanics |
 | Advertising payment | Provisional delivery contracts implemented with deadline, escrow, capped offers and proportional underdelivery refunds; hype affects demand | Compare clarity, incentives, costs and exploit risks; see [economy experiment](advertising-economy.md). Permanent contract design remains open |
@@ -21,6 +21,9 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
 
 - [Screen organisation](screens.md): eight proposed workspaces and contextual
   details; compare mockups before building the full UI.
+- [Player-facing interactions](screens.md#player-facing-interaction-direction): direct
+  schedule manipulation, focused panels, casting cards, selective sliders/stars
+  and readable recaps; preserve accessible alternatives and hidden information.
 - Advance publication, airing-specific anticipation and recurring-slot habits:
   choose buildup, delays, rescheduling consequences and readable evidence.
 - Ad blocks: define minutes, shares, annoyance, departures and exposure units.
@@ -42,6 +45,17 @@ Experiment: run multi-year headless worlds and inspect population conservation, 
 How much household detail is necessary for parental control, co-viewing, and purchasing? How do aspiration and rejection coexist without oscillation?
 
 Experiment: model one parent–child connection and one teen–younger-viewer connection before adding a larger network.
+
+### Talent contracts and recurring roles
+
+See [talent and contracts](talent-and-contracts.md). Which minimum-work guarantee,
+payment schedule and reservation rules make a first multi-edition host agreement
+meaningful? How should options, exclusivity, cancellation and release work? How
+can scripts change role requirements while preserving existing obligations?
+What are the consequences of recasting, and what can the player legitimately know?
+
+Suggested experiment: one short host agreement before a full series-casting or
+labour-market system. This is not an implementation commitment.
 
 ### Talent and relationships
 

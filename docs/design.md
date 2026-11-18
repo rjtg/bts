@@ -66,6 +66,21 @@ Separate craft skill, task specialisation, genre experience, creative style, wor
 
 Skills usually change slowly; public attention can change quickly. Shared work develops familiarity and relationships. New entrants, role changes, discovery, rising fees, breaks, and retirement support a changing talent market.
 
+### Finding, signing and assigning people
+
+A talent market and explicit contracts should connect hiring decisions to ongoing
+obligations. Keep market availability, the contract and individual production
+assignments separate. Hosts/anchors may seek guaranteed runs, while actors may
+prefer a film role or specified series episodes; these are negotiated preferences,
+not fixed profession rules. See [talent and contracts](talent-and-contracts.md) for
+proposed terms, workflows and unresolved mechanics.
+
+Scripted roles have identities separate from their performers. Scripts require
+roles in particular episodes; recurring casting should preserve continuity.
+Rewriting may change those requirements through paid work, but does not silently
+cancel talent contracts. Multi-episode contracts, role continuity, rewriting and
+the talent-market UI remain unimplemented.
+
 ## Programme formats and subject matter
 
 Agreed direction: programmes combine format, subject matter, tone, editorial

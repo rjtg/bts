@@ -56,6 +56,11 @@ Exit evidence: obligations resolve correctly; production tradeoffs matter; at le
 
 Expose only legitimate player information through a browser interface, building on the minimal Rust/Wasm harness. Provide scheduling, production, research, advertiser, and results views. Include save/load and a clear time-advance action.
 
+Proposed usability follow-up: [direct schedule manipulation and focused panels](screens.md#player-facing-interaction-direction),
+then a casting desk as talent-contract mechanics become available. A possible
+bounded [host-contract experiment](talent-and-contracts.md) precedes full
+multi-episode scripted casting. These are sequencing proposals, not implemented features.
+
 Exit evidence: someone can play the scenario without developer tools, understand obligations, and explain a reasonable next decision from the reports.
 
 ## Scope exclusions

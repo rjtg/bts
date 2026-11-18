@@ -126,6 +126,22 @@ Do not introduce a universal cash conversion, shared decay rule or a generic
 quality multiplier for every resource. Production controls express intent, not
 automatic success.
 
+## Talent obligations and script requirements
+
+Design direction, not implemented: distinguish a person's market availability,
+contractual obligations and assignments to specific productions. Contracts can
+span editions or episode appearances, with explicit money and time commitments.
+A signed person is not automatically available for every task. See
+[talent and contracts](talent-and-contracts.md) for proposed terms and open questions.
+
+Script requirements name dramatic roles and episode appearances independently of
+actors. Casting and contracts must satisfy those requirements and continuity.
+Rewrites consume work/time and can change creative requirements; they must not
+retroactively erase guaranteed pay, reserved commitments or other obligations.
+Recasting/release consequences need explicit design before implementation.
+Preserve exact accounting, conflict checks, atomic rejection and reproducibility.
+The existing one-off discussion booking remains the implemented baseline.
+
 ## Cultural change and relationships
 
 Purpose: create discoveries, changing opportunities, and lasting consequences.

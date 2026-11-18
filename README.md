@@ -32,6 +32,7 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Commitments and episodes](docs/episodes-and-commitments.md): audience-specific settlement, standalone works, familiarity and continuity.
 - [Browser foundation](docs/browser-foundation.md): Wasm sessions, player protocol and local build.
 - [Programme planning](docs/programme-planning.md): playable timeline, airing identities, cadence, controls and evidence.
+- [Talent and contracts](docs/talent-and-contracts.md): proposed hiring market, obligations, recurring roles and rewriting boundaries.
 - [Production ambition draft](docs/production-ambition-draft.md): staged work, creative ambition, delivery shortfalls and downstream demands.
 - [Pooled Sway](docs/pooled-sway.md): finite requests, station-wide social capital and bounded production uses.
 - [Original production](docs/original-production.md): bounded discussion shows, talent commitments, budgets and pooled Sway requests.
