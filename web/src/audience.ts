@@ -74,6 +74,7 @@ export function renderAudience(report: Report, stamp: (tick: number) => string, 
       node('p', `Estimated size: about ${size.toLocaleString()} · Typical age: about ${age}`),
       node('p', `${stamp(snapshot.tick)} · ${ageHours}h old · Familiarity at poll: ${snapshot.familiarity_level} · Uncertainty: ${snapshot.uncertainty >= .22 ? 'High' : snapshot.uncertainty >= .12 ? 'Moderate' : 'Low'}`),
     );
+    if (snapshot.watch_time_note) dossier.append(node('p', snapshot.watch_time_note, 'watch-time-note'));
     header.append(dossier);
     card.append(header);
     const tastes = node('ul', '', 'audience-tastes');

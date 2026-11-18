@@ -70,7 +70,7 @@ future work.
 
 Groups are evolving cohorts, not fixed demographic slots. Multiple teenage groups can coexist and grow into different adult groups while retaining some tastes, memories, and associations.
 
-Track population and age distribution; income and price sensitivity; interests and spending relevance; viewing availability and preferred viewing times; preferences for audience-facing programme qualities; quality expectations; advertising tolerance; social cohesion; and station, series, talent, or organisation attachments. Audience preference should attach to concrete qualities of work rather than genre labels. The implemented experiment uses preferences for programme qualities. Preferred viewing times remain separate from viewing availability and are planned.
+Track population and age distribution; income and price sensitivity; interests and spending relevance; viewing availability and preferred viewing times; preferences for audience-facing programme qualities; quality expectations; advertising tolerance; social cohesion; and station, series, talent, or organisation attachments. Audience preference should attach to concrete qualities of work rather than genre labels. The implemented experiment uses preferences for programme qualities. The Control Desk experiment uses weekday and weekend time preferences independently from viewing availability.
 
 Preferences vary within a group. Cohesion describes social transmission, not complete agreement. Age influences circumstances but does not fully determine taste.
 
@@ -258,8 +258,7 @@ still to design; this is not implemented by the browser harness.
 Internal plans, published listings and promotion are distinct. Publishing in
 advance and promotion can build awareness/anticipation for an airing; regular
 slots can build habit. Schedule changes can lose anticipation or trust.
-These systems are agreed direction with uncalibrated mechanics, not implemented
-features. Do not force all long-term processes to update every tick.
+Recurring bookings and weekday preferences now have a bounded implementation. Publication, promotion and habits remain proposals. Do not force all long-term processes to update every tick. See [weekly scheduling and audience flow](weekly-scheduling.md) for recurring appointments, optional ad autosell, weekday viewing preferences, habit and lead-in carryover.
 
 Advertising load is a station choice. In the proposed market the player sells
 minutes attached to a particular airing. Those minutes extend its runtime on

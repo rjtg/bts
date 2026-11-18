@@ -140,7 +140,7 @@ export function initialiseFilmDesk(ui: {
         const room = desk.studios.find(room => room.id === draft.studio)!;
         studio.addEventListener('change', () => { draft.studio = Number(studio.value); render(report); });
         const day = node('select'), time = node('select');
-        for (let i = 0; i < 7; i++) day.append(option(i, `Day ${i + 1}`));
+        for (let i = 0; i < Math.ceil(report.end_tick / 96); i++) day.append(option(i, `Day ${i + 1}`));
         for (let i = 0; i < 96; i++) time.append(option(i, ui.stamp(i).split(' · ')[1]));
         day.value = String(Math.floor(draft.start / 96));
         time.value = String(draft.start % 96);

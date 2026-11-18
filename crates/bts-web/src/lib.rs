@@ -20,12 +20,18 @@ struct Pending {
     quote: PlanningOffer,
     targets: Vec<Commitment>,
 }
+#[derive(Clone)]
+enum WeeklyDraft {
+    Create(bts_sim::planning::weekly::WeeklyPlan),
+    Edit(AiringId, u8),
+}
 /// Each game session exclusively owns its simulation. Rejections are atomic.
 #[derive(Clone)]
 pub struct Session {
     planner: Planner,
     namespace: u32,
     rights_epoch: u64,
+    weekly_pending: Option<(WeeklyDraft, WeeklyReview)>,
     next_offer: u64,
     pending: Option<Pending>,
     minute_pending: Option<(
@@ -57,6 +63,7 @@ impl Session {
         Ok(Self {
             planner: scenario::planner().map_err(player_error)?,
             rights_epoch: 0,
+            weekly_pending: None,
             namespace,
             next_offer: 1,
             pending: None,
@@ -101,6 +108,70 @@ impl Session {
     }
     fn apply(&mut self, command: Command) -> Result<(), PlayerError> {
         match command {
+            Command::PreviewWeekly { plan } => {
+                let weekday = bts_sim::planning::weekly::Weekday::new(plan.weekday)
+                    .ok_or_else(|| PlayerError::new("weekly_plan", "Choose a weekday."))?;
+                let plan = bts_sim::planning::weekly::WeeklyPlan {
+                    programme: ProgrammeId(plan.programme),
+                    weekday,
+                    time: plan.time,
+                    count: plan.count,
+                    ad_minutes: plan.ad_minutes,
+                    exceptions: plan.exceptions,
+                };
+                let rows = self.planner.preview_weekly(&plan).map_err(player_error)?;
+                self.weekly_pending = Some((
+                    WeeklyDraft::Create(plan),
+                    WeeklyReview {
+                        edition: false,
+                        rows,
+                    },
+                ));
+                return Ok(());
+            }
+            Command::PreviewWeeklyEdit { airing_id, time } => {
+                let id = AiringId(airing_id);
+                let rows = self
+                    .planner
+                    .preview_weekly_edit(id, time)
+                    .map_err(player_error)?;
+                self.weekly_pending = Some((
+                    WeeklyDraft::Edit(id, time),
+                    WeeklyReview {
+                        edition: true,
+                        rows,
+                    },
+                ));
+                return Ok(());
+            }
+            Command::ConfirmWeekly {} => {
+                let (draft, review) = self.weekly_pending.as_ref().ok_or_else(|| {
+                    PlayerError::new(
+                        "weekly_review_required",
+                        "Preview the dates again before confirming.",
+                    )
+                })?;
+                let current = match draft {
+                    WeeklyDraft::Create(plan) => self.planner.preview_weekly(plan),
+                    WeeklyDraft::Edit(id, time) => self.planner.preview_weekly_edit(*id, *time),
+                }
+                .map_err(player_error)?;
+                if current != review.rows {
+                    return Err(PlayerError::new(
+                        "weekly_review_required",
+                        "The dates changed. Preview them again.",
+                    ));
+                }
+                match draft {
+                    WeeklyDraft::Create(plan) => {
+                        self.planner.place_weekly(plan).map_err(player_error)?;
+                    }
+                    WeeklyDraft::Edit(id, time) => {
+                        self.planner.edit_weekly(*id, *time).map_err(player_error)?
+                    }
+                }
+            }
+
             Command::BuyRights { programme, token } => {
                 let token = self.rights_token(&token)?;
                 self.planner
@@ -148,6 +219,7 @@ impl Session {
                     })?;
                 self.planner.accept_minutes(quote).map_err(player_error)?;
                 self.pending = None;
+                self.weekly_pending = None;
                 return self.issue_minute_offers(id);
             }
 
@@ -362,6 +434,7 @@ impl Session {
             }
         }
         self.pending = None;
+        self.weekly_pending = None;
         self.minute_pending = None;
         self.booking_review = None;
         self.film_review = None;
@@ -619,6 +692,7 @@ impl Session {
                 proposed_advertiser: a.advertiser.map(|id| id.0),
                 ad_minutes: a.ad_minutes,
                 sold_minutes: self.planner.sold_minutes(a.id),
+                weekly_id: a.weekly.map(|id| id.0),
                 booked: a.contract.is_some() || self.planner.sold_minutes(a.id) > 0,
                 status: if a.cancelled() {
                     "off_air"
@@ -827,6 +901,11 @@ impl Session {
             reporting: REPORTING,
             now_tick: now,
             end_tick: self.planner.end().0,
+            first_weekday: self.planner.first_weekday().number(),
+            weekly_review: self
+                .weekly_pending
+                .as_ref()
+                .map(|(_, review)| review.clone()),
             tick_minutes: 15,
             next_airing,
             active_airing,

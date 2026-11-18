@@ -15,6 +15,14 @@ pub struct Request {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Command {
+    PreviewWeekly {
+        plan: WeeklyInput,
+    },
+    PreviewWeeklyEdit {
+        airing_id: u32,
+        time: u8,
+    },
+    ConfirmWeekly {},
     BuyRights {
         programme: u16,
         token: String,
@@ -154,6 +162,8 @@ pub struct PlayerReport {
     pub reporting: &'static str,
     pub now_tick: u32,
     pub end_tick: u32,
+    pub first_weekday: u8,
+    pub weekly_review: Option<WeeklyReview>,
     pub tick_minutes: u16,
     pub next_airing: Option<u32>,
     pub active_airing: Option<u32>,
@@ -215,6 +225,7 @@ pub struct ScheduleEntry {
     pub proposed_advertiser: Option<u16>,
     pub ad_minutes: u8,
     pub sold_minutes: u8,
+    pub weekly_id: Option<u32>,
     pub booked: bool,
     pub status: &'static str,
     pub editable: bool,
@@ -596,4 +607,20 @@ pub struct MarketSpend {
     pub tick: u32,
     pub amount: u32,
     pub balance: u32,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WeeklyInput {
+    pub programme: u16,
+    pub weekday: u8,
+    pub time: u8,
+    pub count: u8,
+    pub ad_minutes: u8,
+    pub exceptions: Vec<bts_sim::planning::weekly::Exception>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct WeeklyReview {
+    pub edition: bool,
+    pub rows: Vec<bts_sim::planning::weekly::Placement>,
 }

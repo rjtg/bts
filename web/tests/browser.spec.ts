@@ -52,12 +52,12 @@ test('plan a varied evening, move/remove broadcasts, book a selected future airi
   await page.locator('#accept').click(); await expect(page.locator('#selected-contract')).toContainText('Reserved in advertiser escrow');
   await expect(page.locator('#move')).toBeDisabled(); await expect(page.locator('#remove')).toBeDisabled(); await expect(page.locator('#advertiser')).toBeDisabled();
   // Global advancement runs the next airing, not the selected movie.
-  await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toHaveText('Day 1 · 18:30');
+  await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toContainText('Day 1 · 18:30');
   await expect(page.locator('#selected-id')).toContainText(`#${movieId}`);
   await expect(page.locator('#next-airing')).toContainText(`#${replacementId}`);
   await expect(page.locator('#selected-contract')).not.toContainText('Settled:');
-  await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toHaveText('Day 1 · 19:15');
-  await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toHaveText('Day 1 · 21:30');
+  await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toContainText('Day 1 · 19:15');
+  await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toContainText('Day 1 · 21:30');
   await expect(page.locator('#selected-contract')).toContainText('Settled: paid');
   await expect(page.locator('#selected-result')).toContainText(`Broadcast result · airing #${movieId}`);
   await expect(page.locator('#selected-result')).toContainText('Provisional expected counts sampled at Day 1 · 20:00');
@@ -66,9 +66,9 @@ test('plan a varied evening, move/remove broadcasts, book a selected future airi
   await page.locator('#results-list').getByRole('button', { name: `#${firstId} · Neighbourhood Laughs`, exact: true }).click();
   await expect(page.locator('#selected-result')).toContainText(`Broadcast result · airing #${firstId}`);
   await expect(page.locator('#selected-result')).toContainText('Cost 150');
-  await page.locator('#advance-day').click(); await expect(page.locator('#clock')).toHaveText('Day 2 · 00:00');
+  await page.locator('#advance-day').click(); await expect(page.locator('#clock')).toContainText('Day 2 · 00:00');
   await expect(page.locator('#finance-summary')).toContainText('300');
-  await page.locator('#reset').click(); await expect(page.locator('#cash')).toHaveText('20,000'); await expect(page.locator('#clock')).toHaveText('Day 1 · 00:00');
+  await page.locator('#reset').click(); await expect(page.locator('#cash')).toHaveText('20,000'); await expect(page.locator('#clock')).toContainText('Day 1 · 00:00');
   await expect(page.locator('#results-list')).toContainText('No completed broadcasts'); await expect(page.locator('#selection-empty')).toBeVisible();
   expect(failures).toEqual([]);
 });
@@ -81,16 +81,16 @@ test('day navigation, gap placement, on-air progression and mobile controls', as
   await expect(page.locator('#place-day')).toHaveValue('1'); await expect(page.locator('#place-time')).toHaveValue('72');
   await page.locator('#place').click(); await expect(page.locator('#selected-window')).toContainText('Day 2 · 18:00–18:30');
   await page.locator('#place-day').selectOption('0'); await page.locator('#place-time').selectOption('0'); await page.locator('#place').click();
-  await page.locator('#advance-tick').click(); await expect(page.locator('#clock')).toHaveText('Day 1 · 00:15');
+  await page.locator('#advance-tick').click(); await expect(page.locator('#clock')).toContainText('Day 1 · 00:15');
   await expect(page.locator('#selected-status')).toContainText('ON AIR'); await expect(page.locator('#selected-result')).toContainText('available at scheduled completion');
   await expect(page.locator('#move')).toBeDisabled();
-  await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toHaveText('Day 1 · 00:30');
+  await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toContainText('Day 1 · 00:30');
   await expect(page.locator('#selected-result')).toContainText('Completed.');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
 test('actual Wasm protocol matches native planning, booking, tick accounting and results', async ({ page }) => {
-  const native = JSON.parse(execFileSync('cargo', ['run', '--locked', '--quiet', '-p', 'bts-web', '--example', 'protocol_fixture'], { cwd: root, encoding: 'utf8' }));
+  const native = JSON.parse(execFileSync('cargo', ['run', '--locked', '--quiet', '-p', 'bts-web', '--example', 'protocol_fixture'], { cwd: root, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 }));
   await page.route('**/__test__/bts_web.js', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web.js'), contentType: 'text/javascript' }));
   await page.route('**/__test__/bts_web_bg.wasm', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web_bg.wasm'), contentType: 'application/wasm' }));
   const wasmAsset = readdirSync(resolve(root, 'web/dist/assets')).find(file => file.endsWith('.wasm'))!;
@@ -127,16 +127,29 @@ test('actual Wasm protocol matches native planning, booking, tick accounting and
     a.free(); b.free();
     return { reports, invalid, beforeInvalid, afterInvalid, malformed, wide, locked, beforeLocked, afterLocked, crossSession, bState, reset, newid, id, stale, staleBefore, staleAfter, old, version };
   });
-  function compare(actual: unknown, expected: unknown): void {
-    if (typeof expected === 'number') { expect(actual).toBeCloseTo(expected, 8); return; }
-    if (Array.isArray(expected)) { expect(Array.isArray(actual)).toBe(true); expect((actual as unknown[]).length).toBe(expected.length); expected.forEach((value, i) => compare((actual as unknown[])[i], value)); return; }
-    if (expected !== null && typeof expected === 'object') {
-      expect(Object.keys(actual as object).sort()).toEqual(Object.keys(expected).sort());
-      for (const [key, value] of Object.entries(expected)) { if (key === 'offer_id' || key === 'token') { expect(typeof (actual as Record<string, unknown>)[key]).toBe('string'); continue; } compare((actual as Record<string, unknown>)[key], value); } return;
+  function difference(a: unknown, b: unknown, path = 'response'): string | undefined {
+    if (typeof b === 'number') return typeof a === 'number' && Math.abs(a - b) < 5e-9 ? undefined : path;
+    if (Array.isArray(b)) {
+      if (!Array.isArray(a) || a.length !== b.length) return path;
+      for (let i = 0; i < b.length; i++) {
+        const mismatch = difference(a[i], b[i], `${path}[${i}]`);
+        if (mismatch) return mismatch;
+      }
+      return undefined;
     }
-    expect(actual).toEqual(expected);
+    if (b !== null && typeof b === 'object') {
+      if (a === null || typeof a !== 'object' || Array.isArray(a)) return path;
+      if (Object.keys(a).sort().join(',') !== Object.keys(b).sort().join(',')) return path;
+      for (const [key, value] of Object.entries(b)) {
+        if (key === 'offer_id' || key === 'token') continue;
+        const mismatch = difference((a as Record<string, unknown>)[key], value, `${path}.${key}`);
+        if (mismatch) return mismatch;
+      }
+      return undefined;
+    }
+    return a === b ? undefined : path;
   }
-  compare(result.reports, native);
+  expect(difference(result.reports, native), 'first native/Wasm mismatch').toBeUndefined();
   expect(result.invalid.error.code).toBe('overlap'); expect(result.afterInvalid).toEqual(result.beforeInvalid);
   expect(result.malformed.error.code).toBe('malformed_command'); expect(result.wide.error.code).toBe('malformed_command');
   expect(result.locked.error.code).toBe('already_started'); expect(result.beforeLocked).toEqual(result.afterLocked);

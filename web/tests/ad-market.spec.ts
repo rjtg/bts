@@ -35,7 +35,7 @@ test('sell one block to two brands, trim it and settle on air', async ({ page })
 });
 
 test('minute offers and settlements match the native protocol', async ({ page }) => {
-  const native = JSON.parse(execFileSync('cargo', ['run', '--locked', '--quiet', '-p', 'bts-web', '--example', 'ad_minute_market', '--', '--replay'], { cwd: root, encoding: 'utf8' }));
+  const native = JSON.parse(execFileSync('cargo', ['run', '--locked', '--quiet', '-p', 'bts-web', '--example', 'ad_minute_market', '--', '--replay'], { cwd: root, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 }));
   await page.route('**/__test__/bts_web.js', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web.js'), contentType: 'text/javascript' }));
   await page.route('**/__test__/bts_web_bg.wasm', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web_bg.wasm'), contentType: 'application/wasm' }));
   await page.goto('/');

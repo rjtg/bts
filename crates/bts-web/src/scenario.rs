@@ -2,7 +2,7 @@
 use bts_sim::planning::{CompetitorAiring, PlanError, Planner, StationResources};
 use bts_sim::{demo, Parameters, ProgrammeId, ProgrammeKind, SimTick, World};
 
-pub const DAYS: u32 = 7;
+pub const DAYS: u32 = bts_sim::planning::weekly::MAX_DAYS;
 pub const END_TICK: u32 = DAYS * 96;
 pub const PLAYER: bts_sim::StationId = demo::MAIN;
 pub const RIVAL: bts_sim::StationId = demo::RIVAL;
@@ -144,6 +144,25 @@ pub(crate) fn planner_from_world(world: World) -> Result<Planner, PlanError> {
             )
         })
         .collect();
+    planner.configure_viewing_calendar(
+        bts_sim::planning::weekly::Weekday::SATURDAY,
+        [
+            (
+                bts_sim::demo::YOUNG,
+                [[0.27, 0.41, 0.52], [0.36, 0.63, 0.94]],
+            ),
+            (
+                bts_sim::demo::HOUSEHOLDS,
+                [[0.31, 0.52, 0.87], [0.49, 0.58, 0.67]],
+            ),
+            (
+                bts_sim::demo::SPECIALISTS,
+                [[0.35, 0.47, 0.57], [0.50, 0.93, 0.43]],
+            ),
+        ]
+        .into_iter()
+        .collect(),
+    )?;
     planner.configure_research(719, 12, ages)?;
     planner.configure_rights(RIVAL, rights_titles(planner.world()))?;
     Ok(planner)
@@ -156,6 +175,11 @@ pub fn production_roster() -> (
 ) {
     use bts_sim::planning::production::*;
     let (mut people, requests) = demo_roster();
+    for person in &mut people {
+        if person.normal_until == SimTick(672) {
+            person.normal_until = SimTick(END_TICK);
+        }
+    }
     let mut rival = people[1].clone();
     rival.id = PersonId(7);
     rival.name = "Vera Quinn".into();

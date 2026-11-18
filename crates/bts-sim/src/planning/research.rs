@@ -32,6 +32,9 @@ pub struct AudienceEstimate {
     pub tick: u32,
     pub familiarity_level: &'static str,
     pub uncertainty: f64,
+    pub watch_time_note: Option<String>,
+    #[serde(skip)]
+    watch_pattern: Option<super::weekly::WatchPattern>,
 }
 
 #[derive(Clone, Debug, Serialize, PartialEq, Eq)]
@@ -132,7 +135,49 @@ fn estimate(
             "Low"
         },
         uncertainty,
+        watch_time_note: None,
+        watch_pattern: None,
         audience,
+    }
+}
+
+impl AudienceEstimate {
+    fn with_watch_pattern(
+        mut self,
+        seed: u64,
+        actual: Option<&super::weekly::WatchPattern>,
+    ) -> Self {
+        let Some(actual) = actual else {
+            return self;
+        };
+        let mut pattern = *actual;
+        let mut highest = (0, 0, -1.0_f64);
+        let mut lowest = 1.0_f64;
+        for (day, bands) in pattern.iter_mut().enumerate() {
+            for (band, value) in bands.iter_mut().enumerate() {
+                let key = noise_key(seed, self.audience.id, 101 + (day * 3 + band) as u64);
+                let mut bias = noise(key);
+                for day in 1..=self.tick / 96 {
+                    bias = 0.98 * bias + 0.02 * noise(key.wrapping_add(u64::from(day)));
+                }
+                *value = (*value + self.uncertainty * bias).clamp(0.0, 1.0);
+                if *value > highest.2 {
+                    highest = (day, band, *value);
+                }
+                lowest = lowest.min(*value);
+            }
+        }
+        self.watch_time_note = Some(if highest.2 - lowest < 0.15 {
+            "No strong watch-time preference in this survey.".into()
+        } else {
+            format!(
+                "{} {} look promising.",
+                ["Weekday", "Weekend"][highest.0],
+                ["mornings", "afternoons", "evenings"][highest.1]
+            )
+        });
+        self.watch_pattern = Some(pattern);
+        self
     }
 }
 
@@ -176,7 +221,8 @@ impl Planner {
                     GroupKnowledge {
                         age,
                         familiarity: 0.25,
-                        estimate: estimate(seed, a, age, 0.25, SimTick(0)),
+                        estimate: estimate(seed, a, age, 0.25, SimTick(0))
+                            .with_watch_pattern(seed, self.engine.calendar.preferences.get(&a.id)),
                     },
                 )
             })
@@ -294,7 +340,8 @@ impl Planner {
                 .iter()
                 .find(|a| a.id == id)
                 .unwrap();
-            group.estimate = estimate(r.seed, truth, group.age, group.familiarity, at);
+            group.estimate = estimate(r.seed, truth, group.age, group.familiarity, at)
+                .with_watch_pattern(r.seed, self.engine.calendar.preferences.get(&id));
         }
         Ok(())
     }
@@ -303,7 +350,11 @@ impl Planner {
         let r = self.research.as_ref()?;
         let mut engine = self.engine.clone();
         for audience in &mut engine.world.audiences {
-            *audience = r.groups[&audience.id].estimate.audience.clone();
+            let published = &r.groups[&audience.id].estimate;
+            if let Some(pattern) = published.watch_pattern {
+                engine.calendar.preferences.insert(audience.id, pattern);
+            }
+            *audience = published.audience.clone();
         }
         Some(engine)
     }
@@ -325,6 +376,47 @@ fn serialize_tastes<S: serde::Serializer>(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn poll_watch_patterns_are_used_for_quotes_without_replacing_actual_preferences() {
+        use crate::planning::weekly::Weekday;
+        let world = crate::demo::world();
+        let ages = world.audiences.iter().map(|a| (a.id, 42)).collect();
+        let patterns: BTreeMap<_, _> = world
+            .audiences
+            .iter()
+            .map(|a| (a.id, [[0.35; 3], [0.65; 3]]))
+            .collect();
+        let mut planner = Planner::new(
+            world,
+            Parameters::default(),
+            crate::demo::MAIN,
+            SimTick(300),
+            &[],
+        )
+        .unwrap();
+        planner
+            .configure_viewing_calendar(Weekday::SATURDAY, patterns.clone())
+            .unwrap();
+        planner.configure_research(719, 8, ages).unwrap();
+        let group = crate::demo::YOUNG;
+        let opening = planner.forecast_engine().unwrap().calendar.preferences[&group];
+        assert_ne!(opening, patterns[&group]);
+        planner.spend_insight(group, 8).unwrap();
+        assert_eq!(
+            opening,
+            planner.forecast_engine().unwrap().calendar.preferences[&group]
+        );
+        planner.set_polling(Polling::Daily).unwrap();
+        planner.advance_to(SimTick(96)).unwrap();
+        let forecast = planner.forecast_engine().unwrap();
+        assert_ne!(forecast.calendar.preferences[&group], opening);
+        assert_eq!(planner.engine.calendar.preferences, patterns);
+        assert!(planner.research_view().unwrap().groups[0]
+            .estimate
+            .watch_time_note
+            .is_some());
+    }
 
     #[test]
     fn forecast_uses_published_feature_preferences_without_replacing_actual_tastes() {

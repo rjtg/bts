@@ -89,7 +89,7 @@ fn place_move_remove_ids_and_overlap_are_atomic() {
         &mut s,
         Command::Place {
             programme: 5,
-            start_tick: 670,
+            start_tick: scenario::END_TICK - 2,
             advertiser: None,
         },
         "invalid_time",
@@ -313,7 +313,13 @@ fn malformed_commands_preserve_the_pending_quote_and_useful_errors() {
         serde_json::from_str(&s.dispatch_json(r#"{"api_version":1,"command":{"type":"inspect"}}"#))
             .unwrap();
     assert_eq!(response["error"]["code"], "unsupported_version");
-    reject(&mut s, Command::Advance { to_tick: 673 }, "invalid_advance");
+    reject(
+        &mut s,
+        Command::Advance {
+            to_tick: scenario::END_TICK + 1,
+        },
+        "invalid_advance",
+    );
     s.execute(Command::AcceptOffer {
         airing_id: id,
         offer_id: token,
@@ -453,10 +459,19 @@ fn varied_evening_results_unaccepted_ads_gaps_and_week_completion() {
     assert!(report.contracts.is_empty());
     assert_eq!(report.finances.costs_paid, "300");
     let immutable = report.results;
-    s.execute(Command::Advance { to_tick: 672 }).unwrap();
+    s.execute(Command::Advance {
+        to_tick: scenario::END_TICK,
+    })
+    .unwrap();
     assert_eq!(s.report().results, immutable);
     assert_eq!(s.report().now_tick, s.report().end_tick);
-    reject(&mut s, Command::Advance { to_tick: 673 }, "invalid_advance");
+    reject(
+        &mut s,
+        Command::Advance {
+            to_tick: scenario::END_TICK + 1,
+        },
+        "invalid_advance",
+    );
     s.execute(Command::Reset {}).unwrap();
     assert_eq!(s.report().now_tick, 0);
     assert_eq!(s.report().cash, "20000");
@@ -1111,4 +1126,48 @@ fn rights_visible_reports_are_bounded_and_tokens_are_session_local() {
         .news
         .iter()
         .any(|news| news.kind == "rival_purchased"));
+}
+
+#[test]
+fn weekly_preview_is_read_only_and_a_changed_schedule_requires_another_review() {
+    use serde_json::json;
+    let mut session = Session::new().unwrap();
+    let send = |s: &mut Session, command: Value| -> Value {
+        serde_json::from_str(
+            &s.dispatch_json(&json!({"api_version":API_VERSION,"command":command}).to_string()),
+        )
+        .unwrap()
+    };
+    let initial = session.report();
+    let observation = serde_json::to_value(&initial).unwrap();
+    let published = &observation["research"]["groups"][0]["estimate"];
+    assert!(published["watch_time_note"].is_string());
+    assert!(published.get("watch_pattern").is_none());
+    let preview = json!({"type":"preview_weekly","plan":{"programme":1,"weekday":5,"time":72,"count":3,"ad_minutes":10,"exceptions":[]}});
+    let result = send(&mut session, preview.clone());
+    assert_eq!(
+        result["report"]["weekly_review"]["rows"][1]["regular_tick"],
+        744
+    );
+    assert_eq!(session.report().schedule, initial.schedule);
+    assert_eq!(session.report().cash, initial.cash);
+    send(
+        &mut session,
+        json!({"type":"place","programme":2,"start_tick":744,"advertiser":null}),
+    );
+    assert_eq!(
+        send(&mut session, json!({"type":"confirm_weekly"}))["error"]["code"],
+        "weekly_review_required"
+    );
+    let result = send(&mut session, preview);
+    assert_eq!(
+        result["report"]["weekly_review"]["rows"][1]["issue"],
+        "overlap"
+    );
+    let before = session.report();
+    assert_eq!(
+        send(&mut session, json!({"type":"confirm_weekly"}))["error"]["code"],
+        "weekly_conflict"
+    );
+    assert_eq!(session.report(), before);
 }

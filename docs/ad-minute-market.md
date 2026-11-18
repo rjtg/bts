@@ -23,6 +23,8 @@ tokens are local to their session and airing, and any later state change
 invalidates the old quote. Rust verifies the quote and budget again before
 accepting. Money, inventory and schedule changes are atomic.
 
+Optional [autosell for recurring slots](weekly-scheduling.md#optional-autosell) is proposed. It would use these same per-airing commitments and settlement rules.
+
 ## Provisional pricing
 
 Let `U` be the existing uncapped target value for the airing: sum the relevant

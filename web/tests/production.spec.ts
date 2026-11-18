@@ -29,7 +29,7 @@ test('cast, review, earn Sway, negotiate and support a show then advertise and b
   await page.locator('#review-1').click(); await expect(page.locator('#booking-review-1')).toContainText('Cash remaining: 19,000');
   await expect(page.locator('#cash')).toHaveText('20,000'); // review reserves nothing
   await page.locator('#confirm-1').click(); await finish(page, 1);
-  await expect(page.locator('#clock')).toHaveText('Day 1 · 13:00'); await expect(page.locator('#sway-panel')).toContainText('Sway · 4'); await expect(page.locator('#resource-sway')).toHaveText('4');
+  await expect(page.locator('#clock')).toContainText('Day 1 · 13:00'); await expect(page.locator('#sway-panel')).toContainText('Sway · 4'); await expect(page.locator('#resource-sway')).toHaveText('4');
   await first.getByRole('button', { name: 'Show in programme library' }).click();
   await page.locator('#place-day').selectOption('0'); await page.locator('#place-time').selectOption('72'); await page.locator('#place').click();
   await page.locator('#advertiser').selectOption('2'); await page.locator('#set-advertiser').click(); await page.locator('#quote').click(); await page.locator('#accept').click(); await page.locator('#advance-next').click();
@@ -50,7 +50,7 @@ test('cast, review, earn Sway, negotiate and support a show then advertise and b
   await expect(second).toContainText('Team support: 2 Sway'); await expect(page.locator('#sway-panel')).toContainText('Sway · 0');
   await finish(page, 2); await page.locator('#production').screenshot({ path: '/tmp/bts-casting-desk.png' });
   await second.getByRole('button', { name: 'Show in programme library' }).click(); await page.locator('#place-day').selectOption('2'); await page.locator('#place-time').selectOption('72'); await page.locator('#place').click(); await page.locator('#advance-next').click();
-  await expect(page.locator('#clock')).toHaveText('Day 3 · 18:45'); await expect(page.locator('#selected-result')).toContainText('Completed.');
+  await expect(page.locator('#clock')).toContainText('Day 3 · 18:45'); await expect(page.locator('#selected-result')).toContainText('Completed.');
   await expect(page.locator('#results-list tbody tr')).toHaveCount(2);
   await page.locator('#reset').click();await expect(page.locator('#cash')).toHaveText('20,000');await expect(page.locator('#production-projects')).not.toContainText('Neighbourhood Conversations');await expect(page.locator('#production-day')).toHaveValue('0');await expect(page.locator('#production-time')).toHaveValue('40');await expect(page.locator('#production-name')).toHaveValue('Workshop Conversations');
   expect(failures).toEqual([]);

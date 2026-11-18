@@ -68,9 +68,9 @@ fn comparison(entertainment: bool) -> Value {
     );
     send(json!({"type":"advance","to_tick":52}));
     send(json!({"type":"place","start_tick":72,"programme":12,"advertiser":1}));
-    let quote = send(json!({"type":"request_offer","airing_id":57}));
+    let quote = send(json!({"type":"request_offer","airing_id":169}));
     let token = quote["report"]["offer"]["offer_id"].clone();
-    send(json!({"type":"accept_offer","airing_id":57,"offer_id":token}));
+    send(json!({"type":"accept_offer","airing_id":169,"offer_id":token}));
     let final_report = send(json!({"type":"advance","to_tick":75}));
     assert_eq!(final_report["status"], "ok");
     json!({"case":if entertainment { "popular_culture" } else { "technical_science" },"report":final_report["report"]})
@@ -93,9 +93,9 @@ fn main() {
     assert_eq!(early["error"]["code"], "production_not_ready");
     send(json!({"type":"advance","to_tick":52}));
     send(json!({"type":"place","start_tick":72,"programme":12,"advertiser":2}));
-    let quote = send(json!({"type":"request_offer","airing_id":57}));
+    let quote = send(json!({"type":"request_offer","airing_id":169}));
     let token = quote["report"]["offer"]["offer_id"].clone();
-    send(json!({"type":"accept_offer","airing_id":57,"offer_id":token}));
+    send(json!({"type":"accept_offer","airing_id":169,"offer_id":token}));
     send(json!({"type":"advance","to_tick":75}));
     send(
         json!({"type":"create_production","concept":concept("Neighbourhood Conversations",2,[5,6],"everyday_life","conversational","1000",232)}),
@@ -112,9 +112,9 @@ fn main() {
     );
     send(json!({"type":"advance","to_tick":244}));
     send(json!({"type":"place","start_tick":264,"programme":13,"advertiser":1}));
-    let quote = send(json!({"type":"request_offer","airing_id":58}));
+    let quote = send(json!({"type":"request_offer","airing_id":170}));
     let token = quote["report"]["offer"]["offer_id"].clone();
-    send(json!({"type":"accept_offer","airing_id":58,"offer_id":token}));
+    send(json!({"type":"accept_offer","airing_id":170,"offer_id":token}));
     send(json!({"type":"advance","to_tick":267}));
     send(json!({"type":"accept_request","request_id":2}));
     send(

@@ -5,6 +5,7 @@ pub mod film;
 pub mod production;
 pub mod research;
 pub mod rights;
+pub mod weekly;
 
 use crate::economy::{ContractId, Offer};
 use crate::*;
@@ -51,6 +52,7 @@ pub struct Airing {
     pub end: SimTick,
     pub advertiser: Option<BrandId>,
     pub ad_minutes: u8,
+    pub weekly: Option<AiringId>,
     pub contract: Option<ContractId>,
     pub result: Option<AiringResult>,
     snapshot: Option<AiringResult>,
@@ -110,10 +112,10 @@ impl Planner {
         end: SimTick,
         competitors: &[CompetitorAiring],
     ) -> Result<Self, PlanError> {
-        if end.0 == 0 || end.0 > 7 * 96 {
+        if end.0 == 0 || end.0 > weekly::MAX_DAYS * 96 {
             return Err(error(
                 "invalid_horizon",
-                "The planner supports up to seven days.",
+                "The planner supports up to three weeks.",
             ));
         }
         if !world.stations.iter().any(|s| s.id == player) {
@@ -330,7 +332,7 @@ impl Planner {
         if start < self.now() || end > self.end {
             return Err(error(
                 "invalid_time",
-                "Place the whole programme in unplayed time within the seven-day schedule.",
+                "Place the whole programme in unplayed time within the scenario schedule.",
             ));
         }
         if self
@@ -376,6 +378,7 @@ impl Planner {
                 end,
                 advertiser,
                 ad_minutes: 0,
+                weekly: None,
                 contract: None,
                 result: None,
                 snapshot: None,
@@ -550,7 +553,7 @@ impl Planner {
         if target <= self.now() || target > self.end {
             return Err(error(
                 "invalid_advance",
-                "Advance to a later tick within the seven-day scenario.",
+                "Advance to a later tick within the scenario.",
             ));
         }
         let mut candidate = self.clone();

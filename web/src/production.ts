@@ -66,7 +66,7 @@ export function initialiseProduction(ui: Callbacks) {
   function newDraft(): void {
     editing = null; element('production-editor-title').textContent = 'New concept'; element('create-production').textContent = 'Review concept';
     const now = ui.report().now_tick;
-    if (Number(select('production-day').value) * 96 + Number(select('production-time').value) < now) { select('production-day').value = String(Math.min(6, Math.floor(now / 96))); select('production-time').value = String(now % 96); }
+    if (Number(select('production-day').value) * 96 + Number(select('production-time').value) < now) { select('production-day').value = String(Math.min(Math.ceil(ui.report().end_tick / 96) - 1, Math.floor(now / 96))); select('production-time').value = String(now % 96); }
   }
   function edit(p: ProductionInfo): void {
     editing = p.id; cast = [p.host, ...p.guests]; subject = p.subject;

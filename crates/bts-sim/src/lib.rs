@@ -449,6 +449,7 @@ pub struct Engine<T: Clock> {
     world: World,
     parameters: Parameters,
     models: Models,
+    calendar: planning::weekly::ViewingCalendar,
     state: State<T>,
 }
 impl<T: Clock> Engine<T> {
@@ -483,6 +484,7 @@ impl<T: Clock> Engine<T> {
             world,
             parameters,
             models: Models::default(),
+            calendar: planning::weekly::ViewingCalendar::default(),
             state,
         })
     }
@@ -653,8 +655,11 @@ impl<T: Clock> Engine<T> {
                     loyalty_after: loyalty_before,
                 });
             }
-            let denominator =
-                self.parameters.outside_utility + viewing.iter().map(|v| v.utility).sum::<f64>();
+            let time_preference =
+                self.calendar
+                    .preference(audience.id, action.at, period, starts.is_some());
+            let denominator = self.parameters.outside_utility * (1.5 - time_preference)
+                + viewing.iter().map(|v| v.utility).sum::<f64>();
             for v in &mut viewing {
                 v.viewers = available * (v.utility / denominator);
                 v.fresh_viewers = v.viewers * (1.0 - v.history.familiarity);

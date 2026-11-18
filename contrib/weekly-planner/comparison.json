@@ -1,0 +1,22 @@
+[
+  {
+    "available": 4800.0,
+    "day": "Saturday",
+    "hour": 18,
+    "not_watching": 1700.6232854312111,
+    "player_expected_viewers": 2963.2282151464333,
+    "population": 6000,
+    "rival_expected_viewers": 1336.1484994223551,
+    "viewer_preference": 0.85
+  },
+  {
+    "available": 4800.0,
+    "day": "Monday",
+    "hour": 18,
+    "not_watching": 2134.763992002814,
+    "player_expected_viewers": 2664.0085662384154,
+    "population": 6000,
+    "rival_expected_viewers": 1201.2274417587705,
+    "viewer_preference": 0.15
+  }
+]

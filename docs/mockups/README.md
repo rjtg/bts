@@ -1,5 +1,7 @@
 # UI concept mockups
 
+The [Control Desk redesign](control-desk/README.md) is the later connected design package. The three concepts below are earlier references.
+
 Three generated visual concepts for Behind the Screens, added November 2026.
 These are design references, not screenshots of the implemented browser harness.
 See [Screens and interaction design](../screens.md) for the proposed workflows.

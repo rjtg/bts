@@ -1,6 +1,8 @@
 // Player protocol v8. Rust DTOs are authoritative; no developer-export types are imported.
 export type Command =
-  | { type: 'inspect' | 'reset' }
+  | { type: 'inspect' | 'reset' | 'confirm_weekly' }
+  | { type: 'preview_weekly'; plan: WeeklyPlan }
+  | { type: 'preview_weekly_edit'; airing_id: number; time: number }
   | { type: 'buy_rights' | 'accept_resale'; programme: number; token: string }
   | { type: 'assess_title'; programme: number; insight: number }
   | { type: 'list_resale'; programme: number }
@@ -33,7 +35,7 @@ export interface Programme {
 }
 export interface Airing {
   airing_id: number; station: number; programme: number; programme_name: string; genre:string; duration_minutes:number; start_tick: number; end_tick: number;
-  ad_minutes: number; sold_minutes: number; proposed_advertiser: number | null; booked: boolean; status: 'planned' | 'on_air' | 'completed' | 'off_air'; editable: boolean;
+  ad_minutes: number; sold_minutes: number; weekly_id: number | null; proposed_advertiser: number | null; booked: boolean; status: 'planned' | 'on_air' | 'completed' | 'off_air'; editable: boolean;
 }
 export interface Commitment {
   audience: string; forecast_relevant_delivery: number; promised_units: string; allocated_payment: string;
@@ -62,7 +64,7 @@ export interface Research {
   groups: {
     id: number;
     name: string;
-    estimate: { tick: number; population: number; typical_age: number; tastes: Record<string, number>; familiarity_level: string; uncertainty: number };
+    estimate: { tick: number; population: number; typical_age: number; tastes: Record<string, number>; familiarity_level: string; uncertainty: number; watch_time_note: string | null };
   }[];
 }
 export interface Report {
@@ -72,7 +74,7 @@ export interface Report {
   film_review: FilmReview | null;
   production: ProductionView;
   booking_review: { production_id: number; exceptional_person: number | null; cooperation_sway: number; studio:number; total_sway: number; sway_remaining: number; budget: string; cash_remaining: string } | null;
-  reporting: string; now_tick: number; end_tick: number; tick_minutes: number; next_airing: number | null; active_airing: number | null; cash: string;
+  reporting: string; now_tick: number; end_tick: number; first_weekday: number; weekly_review: WeeklyReview | null; tick_minutes: number; next_airing: number | null; active_airing: number | null; cash: string;
   stations: { id: number; name: string; is_player: boolean; staff:string[]; owned_studios:number|null }[];
   gaps: { start_tick: number; end_tick: number }[];
   finances: { opening_cash: string; costs_paid: string; revenue: string; rights_spent: string; resale_receipts: string; production_committed: string; production_in_escrow: string; production_spent: string; ledger: { rights_title: number | null; production_id: number | null; tick: number; airing_id: number | null; kind: string; amount: string }[] };
@@ -146,4 +148,15 @@ export type RightsMarket = {
   news: { programme: number; tick: number; kind: string; station: number | null }[];
   assessment_ticks: number;
   spending: { programme: number; tick: number; amount: number; balance: number }[];
+};
+
+export type WeeklyPlan = {
+  programme: number; weekday: number; time: number; count: number; ad_minutes: number;
+  exceptions: { occurrence: number; start_tick: number | null }[];
+};
+export type WeeklyReview = {
+  edition: boolean;
+  rows: { occurrence: number; airing: number | null; regular_tick: number;
+    start_tick: number | null; end_tick: number | null; runtime_minutes: number;
+    conflicts: number[]; issue: string | null; protected: boolean }[];
 };

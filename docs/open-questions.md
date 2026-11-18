@@ -27,9 +27,10 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
 - [Playful feedback](screens.md#playful-feedback-and-visible-passage-of-time): milestone
   notifications, a dashed current-time line, simulated daylight and later
   resource-sensitive office visuals; thresholds and interruption policies remain open.
-- Advance publication, airing-specific anticipation and recurring-slot habits:
-  choose buildup, delays, rescheduling consequences and readable evidence.
-- [Ad-minute market](simulation.md#proposed-ad-minute-market): tune how limited
+- [Weekly scheduling and audience flow](weekly-scheduling.md): the bounded recurrence, exception and weekday rules are implemented. Assess autosell timing and ordering, habit buildup and decay, and a conserved lead-in carryover model.
+- Advance publication and airing-specific anticipation: choose buildup, delays,
+  rescheduling consequences and readable evidence.
+- [Ad-minute market](ad-minute-market.md): tune how limited
   station-offered minutes and non-exclusive brand offers set per-minute price;
   decide how advertisers' exposure needs and unsold/self-promotional time work.
   Delivery thresholds, measurement and refunds are explicitly deferred.

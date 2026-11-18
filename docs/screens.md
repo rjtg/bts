@@ -1,5 +1,7 @@
 # Screens and interaction design
 
+The proposed [Control Desk redesign](mockups/control-desk/README.md) links the browser journey audit, directions, mockups and component guide.
+
 Status: broader screen organisation is proposed; the bounded programme-planning
 and standalone discussion-production subsets linked below are implemented.
 [Visual concept mockups](mockups/README.md) cover station overview, programme
@@ -135,6 +137,18 @@ rather than one long page of forms. A persistent **On air / Up next** strip show
 the clock, current programme and a prominent **Run until…** action. Selection
 must remain distinct from the next broadcast that will air. Preview the time
 advance destination and relevant obligations; do not accidentally skip a decision.
+
+For recurring placement, preview dates, occupied time, exceptions and conflicts.
+Let players edit the current occurrence or future occurrences explicitly. Show
+autosell policy and its sales on the selected airing. Audience dossiers can
+summarize estimated weekday and weekend viewing patterns. See the
+[weekly scheduling proposal](weekly-scheduling.md).
+
+The Control Desk planner now implements drag and drop for draft airings and
+library titles, a non-drag slot picker, a narrow agenda and weekly review. Its
+ghost and conflict hint are provisional. A drop or form submission still runs
+through Rust, and the selected airing remains distinct from Up Next.
+See [weekly scheduling](weekly-scheduling.md).
 
 ### Production and people
 The [Film desk](original-film.md) provides project cards, script delivery links,

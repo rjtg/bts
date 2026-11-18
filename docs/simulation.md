@@ -314,7 +314,7 @@ anticipation for a particular airing and recurring-slot habit have distinct
 meanings. Early publication creates an opportunity to be discovered, not
 automatic unlimited hype. Promotion may build anticipation with diminishing
 returns; moving/cancelling announced work can lose viewers or trust.
-Precise buildup, decay, cancellation and habit equations remain open.
+Precise buildup, decay, cancellation and habit equations remain open. The [weekly scheduling proposal](weekly-scheduling.md) separates time preferences from availability, slot habit from show loyalty, and lead-in carryover from new arrivals.
 
 ## Ad minutes and advertising load
 

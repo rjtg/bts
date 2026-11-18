@@ -402,6 +402,7 @@ impl Planner {
                 end,
                 advertiser: None,
                 ad_minutes: 0,
+                weekly: None,
                 contract: None,
                 result: None,
                 snapshot: None,

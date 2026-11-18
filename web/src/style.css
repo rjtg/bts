@@ -762,3 +762,56 @@ input[type=range] { width:100%; min-height:44px; accent-color:#ffc451; padding:0
   padding: .5rem; border: 1px solid #546a66;
 }
 .rights-study input { display: block; }
+
+/* Control Desk cabinet, timecode, and scheduling instruments. */
+.masthead { background: linear-gradient(100deg,#30342d,#18292d 45%,#13232b); }
+.clock { font-variant-numeric: tabular-nums; }
+#clock { color: #ffcd74; }
+.desk-on-air::before { content: '●'; color: #a4b7b8; margin-right: .4rem; }
+.desk-on-air.live::before { color: #ffa398; text-shadow: 0 0 .55rem #ff938588; }
+#double-speed::before, #advance-next::before, #move-future::before {
+  content: ''; display: inline-block; width: 16px; height: 16px; margin-right: .35rem;
+  background: url('/control-icons.png') var(--desk-icon) 0 / 160px 16px;
+  image-rendering: pixelated; vertical-align: -2px;
+}
+#double-speed { --desk-icon: -80px; }
+#advance-next { --desk-icon: -48px; }
+#advance-next::before { filter: brightness(.3); }
+#move-future { --desk-icon: -112px; }
+.library-cover { background-image: url('/portraits/rights-titles.webp'); background-size: 200% 200%; }
+.weekly-panel { border-color: #8c805b; }
+.weekly-options { display: flex; flex-wrap: wrap; align-items: end; gap: .65rem; }
+.weekly-options label { min-width: 6rem; }
+.weekly-options input { width: 7rem; }
+.weekly-dates { list-style: none; display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,16rem),1fr)); padding: 0; gap: .65rem; }
+.weekly-date { padding: .7rem; border: 1px solid #687d78; background: #192d32; }
+.weekly-conflict { border-color: #f3a49a; }
+.weekly-date details { margin: .6rem 0; }
+.weekly-date summary { cursor: pointer; }
+.weekly-confirmed { color: #a8d3b7; }
+.weekly-primary { min-height: 44px; }
+.drag-ghost { position: absolute; top: .2rem; bottom: .2rem; z-index: 8; pointer-events: none; border: 2px dashed #ffcd74; background: #725727dd; overflow: hidden; padding: .3rem; }
+.drag-ghost.conflict { border-color: #f3a49a; background: repeating-linear-gradient(135deg,#593b3d 0 6px,#3c292b 6px 12px); }
+.placement-preview { padding: .5rem; color: #ffdc91; }
+.placement-conflict { color: #ffd1cb; }
+.watch-time-note { color: #ffdc91; }
+.day-agenda { display: none; }
+@media (max-width: 700px) {
+  .day-agenda { display: grid; gap: .3rem; padding: .6rem; }
+  .day-agenda button, .agenda-grid-link, .weekly-options button { min-height: 44px; text-align: left; }
+  .day-agenda h3, .day-agenda p { margin: 0; }
+}
+.weekly-shortcut { display: inline-flex; padding: .55rem; margin-top: .35rem; min-height: 44px; align-items: center; }
+#weekly-edit-controls[hidden] { display: none; }
+@media (max-width: 780px) {
+  .app { grid-template-columns: minmax(0,1fr); }
+  .rail { flex-wrap: wrap; }
+  .weekly-options label { min-width: min(100%, 6rem); max-width: 100%; }
+  .day-agenda { grid-template-columns: minmax(0,1fr); }
+  .day-agenda button { overflow-wrap: anywhere; white-space: normal; }
+}
+@media (max-width: 780px) {
+  .resources { position: relative; }
+  .resources .resource { position: static; }
+  .resources .resource .resource-tooltip { left: 0; right: auto; }
+}

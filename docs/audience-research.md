@@ -58,3 +58,5 @@ the research view. There is no direct risk discount for stale estimates.
 
 The headless experiments and planners without research configured retain their
 existing forecasts. See the [paired forecast experiment](../contrib/audience-research/README.md).
+
+The [weekly planner](weekly-scheduling.md) adds a watch-time note to each published survey. Exact estimated band values drive ad forecasts internally. Actual preferences and values remain hidden.
