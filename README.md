@@ -36,6 +36,7 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Talent and contracts](docs/talent-and-contracts.md): proposed hiring market, obligations, recurring roles and rewriting boundaries.
 - [Production ambition draft](docs/production-ambition-draft.md): staged work, creative ambition, delivery shortfalls and downstream demands.
 - [Production logistics](docs/production-logistics.md): implemented station ownership/capacity and future setup/prop economies.
+- [Audience research](docs/audience-research.md) covers dated polls, Insight spending and ad forecasts.
 - [Casting desk](docs/casting-desk.md): portrait casting, booking reviews and adjustable cooperation support.
 - [Sway quests](docs/quest-opportunities.md): separate acceptance, deadlines and production hints.
 - [Pooled Sway](docs/pooled-sway.md): finite requests, station-wide social capital and bounded production uses.

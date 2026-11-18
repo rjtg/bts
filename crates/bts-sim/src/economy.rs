@@ -200,6 +200,7 @@ pub enum Account {
     Escrow(ContractId),
     Station(StationId),
     BroadcastCosts,
+    ResearchCosts,
     ProductionEscrow(ProductionId),
     ProductionCosts,
 }
@@ -211,6 +212,7 @@ pub enum LedgerReason {
     BroadcastCost,
     ProductionReserve,
     ProductionSpend,
+    AudiencePoll,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct LedgerEntry<T: Clock = SimHour> {
@@ -241,6 +243,7 @@ pub struct EconomyState<T: Clock = SimHour> {
     budgets: BTreeMap<BrandId, Money>,
     cash: BTreeMap<StationId, Money>,
     cost_sink: Money,
+    research_costs: Money,
     production_escrows: BTreeMap<ProductionId, Money>,
     production_costs: Money,
     contracts: BTreeMap<ContractId, Contract<T>>,
@@ -263,6 +266,7 @@ impl<T: Clock> EconomyState<T> {
                 .map(|s| (s.id, s.initial_cash))
                 .collect(),
             cost_sink: Money(0),
+            research_costs: Money(0),
             production_escrows: BTreeMap::new(),
             production_costs: Money(0),
             contracts: BTreeMap::new(),
@@ -315,6 +319,7 @@ impl<T: Clock> EconomyState<T> {
             .sum::<u128>()
             + self.escrow()
             + u128::from(self.cost_sink.0)
+            + u128::from(self.research_costs.0)
             + self.production_escrow()
             + u128::from(self.production_costs.0)
     }
@@ -371,6 +376,25 @@ impl<T: Clock> EconomyState<T> {
         );
         next.advance_revision()?;
         *self = next;
+        Ok(())
+    }
+    pub(crate) fn charge_poll(
+        &mut self,
+        at: T,
+        station: StationId,
+        price: Money,
+    ) -> Result<(), Error> {
+        let remaining = self.cash[&station].subtract(price)?;
+        let costs = self.research_costs.add(price)?;
+        self.cash.insert(station, remaining);
+        self.research_costs = costs;
+        self.transfer(
+            at,
+            Account::Station(station),
+            Account::ResearchCosts,
+            price,
+            LedgerReason::AudiencePoll,
+        );
         Ok(())
     }
     pub(crate) fn advance_revision(&mut self) -> Result<(), Error> {

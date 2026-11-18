@@ -48,6 +48,24 @@ Relationships connect entities. Events record things that happen and their conse
 
 Brands are organisations with brand-specific state and behaviour. An advertisement is a creative asset used by a campaign, not an ordinary programme that audiences independently choose to watch. A bounded headless prototype now gives standalone works and sequenced episodes explicit programme identities linked to series definitions. Series attachment, work familiarity and actual broadcast history are distinct; continuity mechanics are provisional. Broader format, rights and asset storage remains open. See [episode model](episodes-and-commitments.md).
 
+### Programme library, licensing and resale
+
+The station should begin with a back catalogue of older films and shows that fit
+the setting. New cinema releases enter the acquisition market on a regular weekly
+or monthly cadence after their theatrical window. Public reception, box office and
+general reputation provide baseline information; research can improve estimates
+without revealing exact future performance. See [Insight and research](resource-economies-idea.md#insight-and-market-research).
+
+Acquisition is a direct purchase at a price informed by expected airing success,
+title fit and solvent competitors' willingness and ability to pay. This is not an
+auction: competitors affect the price and may acquire a title if the player passes
+before a deadline, but the player does not bid against them. Once acquired, rights
+remain with the station indefinitely. Owners can list a title for resale; interested
+solvent competitors may make offers, which the owner can accept or decline. Without
+an offer, the work stays in the owner's library. Licensing, releases, prices,
+competitor decisions and resale are design proposals; the browser fixture currently
+has fixed disjoint libraries and no acquisition market.
+
 ## Audience groups
 
 Groups are evolving cohorts, not fixed demographic slots. Multiple teenage groups can coexist and grow into different adult groups while retaining some tastes, memories, and associations.
@@ -136,6 +154,12 @@ and open mechanics.
   chemistry. Cooperation support should be a freely chosen investment with
   diminishing returns that mitigates cooperation deficiencies, never missing
   skill or craft. It is not a favour redeemable only from the person who earned it.
+- **Insight** is proposed research capacity earned by spending cash and time on
+  polls, researchers or analysis, then spent to improve estimates about audiences,
+  acquisitions, role fit or cast chemistry. It reduces uncertainty with diminishing
+  returns, never reveals exact hidden truth, and retains dated evidence when public
+  news later changes what the player knows. The browser experiment supports seeded
+  Insight spending on audience groups. See [audience research](audience-research.md).
 - **Glamour** comes from winning awards and naturally decays. Holding it improves
   conditions with talent who value glamour; spending it grants significant
   performance boosts to specific airings. The affected performance dimensions,
@@ -189,11 +213,10 @@ slots can build habit. Schedule changes can lose anticipation or trust.
 These systems are agreed direction with uncalibrated mechanics, not implemented
 features. Do not force all long-term processes to update every tick.
 
-Advertising load is a station choice. Blocks occupy airtime; campaigns hold
-shares of each block. Total duration/interruptions affect annoyance; shares
-allocate exposure dose. A half-share is half the ad time/dose, not necessarily
-half the people reached. See [simulation](simulation.md) for measurement and
-timing boundaries.
+Advertising load is a station choice. In the proposed market the player sells
+minutes attached to a particular airing. Those minutes extend its runtime on
+the schedule. Total ad load can influence viewer annoyance. See [ad minutes and
+advertising load](simulation.md#ad-minutes-and-advertising-load).
 
 ## Relationships and news
 
@@ -217,7 +240,13 @@ Brands have product categories, positioning, target audiences, desired hype, cur
 
 Hype deficits create demand for advertising; budgets and expected effectiveness constrain willingness to pay. Brands can launch, grow, decline, be acquired, or disappear. Hype alone does not determine survival.
 
-Awareness as a slower-moving state alongside hype is a proposal. Audience-specific commitments are implemented experimentally, but campaign shares, variable ad blocks and measured-delivery settlement remain future work. Contract design and performance attribution are not final; see [simulation](simulation.md).
+Awareness as a slower-moving state alongside hype is a proposal. Audience-specific
+delivery commitments are implemented experimentally. Intended direction is a
+station-offered ad-minute market: advertisers make non-exclusive offers for part of
+the offered block, the player fills or shortens the break, and unsold time may carry
+station teasers. Ad minutes extend programme airtime; exact placement, thresholds,
+measurement and refunds remain open. The current fixed delivery contract is a
+provisional experiment, not this final market. See [advertising mechanics](simulation.md#proposed-ad-minute-market).
 
 ## Public world
 

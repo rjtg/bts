@@ -12,8 +12,10 @@ this is not a talent market, employment contract system or general relationship 
    on that date, or committed to an overlapping recording cannot be selected there.
    Rust still validates all commitments; browser guidance is not authorization.
 2. Choose a subject tile, a tone-slider position (calm/conversational/lively), a
-   budget preset and recording date. Presets are 600, 1,000 and 1,800 integer credits,
-   including all cast fees. **Review concept** creates a free, editable draft.
+   studio package and recording date. Studio quality and rental price are proposed
+   for a later slice; currently the form still uses budget presets of 600, 1,000
+   and 1,800 integer credits, including cast fees. **Review concept** creates a
+   free, editable draft.
 3. On that draft, choose exceptional
    participation and allocate whole Sway to **Help the team work together**. The
    range and exact-number input are linked, from zero to the available balance

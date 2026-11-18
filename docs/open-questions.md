@@ -29,11 +29,51 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
   resource-sensitive office visuals; thresholds and interruption policies remain open.
 - Advance publication, airing-specific anticipation and recurring-slot habits:
   choose buildup, delays, rescheduling consequences and readable evidence.
-- Ad blocks: define minutes, shares, annoyance, departures and exposure units.
-- Measurement: specify sampling, bias, delay, forecasts and the measurement
-  basis for contractual credit; current settlement still uses internal truth.
+- [Ad-minute market](simulation.md#proposed-ad-minute-market): tune how limited
+  station-offered minutes and non-exclusive brand offers set per-minute price;
+  decide how advertisers' exposure needs and unsold/self-promotional time work.
+  Delivery thresholds, measurement and refunds are explicitly deferred.
+- Measurement: if delivery-conditioned offers are added later, specify sampling,
+  bias, delay, forecasts and the measurement basis; current prototype settlement
+  still uses internal expected delivery.
 - Keep timing simple: due ticks plus selected state updates; no general effects
   framework is required.
+- [Production logistics](production-logistics.md): prototype always-available studio
+  rental with overlap-weighted demand pricing, script requirements for a few studio
+  quality dimensions, and a bounded quality star selector. Test price monotonicity,
+  integer settlement, affordability and whether the choice is legible before adding
+  ownership markets, recurring batches or prop inventories.
+- [Show identity and staged production](production-ambition-draft.md): separate a
+  show's ambition/run shape from preparation and each produced instalment. Decide
+  how one-shot, finite and open-ended runs link to sequels, and how prepared work's
+  freshness varies between news, discussion editions and scripted works.
+- Procedural episode ambition: model deviation from the show's promise, local
+  episode-to-episode swings, cumulative strain and recovery separately. Test an
+  isolated dark/action episode, repeated extremes, a return to baseline and a
+  gradual planned arc resolved by a finale before choosing adaptation/recovery
+  rates.
+- [Insight and research](resource-economies-idea.md#insight-and-market-research):
+  decide how paid studies and investigative preparation generate private station
+  knowledge independently of airing, how spending targets one estimate, how
+  reports age, and how diminishing returns preserve uncertainty across audience
+  forecasts, acquisitions, role fit and cast chemistry.
+- Research cadence: audience groups use paid automatic polls up to daily; talent
+  and pair relationships use optional decision-triggered auditions, with Insight
+  allocated immediately beforehand. Blind casting remains possible. Define shared
+  familiarity/noise and persistent-bias drift curves, how working together changes
+  familiarity, and how public disclosures update current knowledge without
+  rewriting old evidence.
+- Ad-market information: use each audience group's latest published poll and
+  uncertainty for offer-time reach/value estimates; the browser experiment uses published point estimates. How advertisers value
+  age and uncertainty directly remains open.
+- [Programme library and acquisition](design.md#programme-library-licensing-and-resale):
+  determine release cadence, price formation from expected performance and solvent
+  competitor demand, acquisition deadlines, and resale offers under perpetual
+  ownership rights.
+- Expectations and airing outcomes: keep prior estimates, contract delivery,
+  audience response and station resource returns distinct. Define how estimates
+  are recorded and updated, and how reports show per-airing versus cumulative show
+  costs/returns without a universal failure score.
 
 ## Later design questions
 

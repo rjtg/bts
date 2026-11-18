@@ -91,6 +91,14 @@ impl Session {
     }
     fn apply(&mut self, command: Command) -> Result<(), PlayerError> {
         match command {
+            Command::SetPolling { audience, polling } => self
+                .planner
+                .set_polling(bts_sim::AudienceId(audience), polling)
+                .map_err(player_error)?,
+            Command::SpendInsight { audience, amount } => self
+                .planner
+                .spend_insight(bts_sim::AudienceId(audience), amount)
+                .map_err(player_error)?,
             Command::Inspect {} => return Ok(()),
             Command::AcceptRequest { request_id } => self
                 .planner
@@ -576,6 +584,7 @@ impl Session {
                     airing_id: airing.map(|a| a.id.0),
                     kind: match l.reason {
                         LedgerReason::BroadcastCost => "broadcast_cost",
+                        LedgerReason::AudiencePoll => "audience_poll",
                         LedgerReason::ProductionReserve => "production_reserve",
                         LedgerReason::ProductionSpend => "production_spend",
                         _ => "advertising_payment",
@@ -652,6 +661,7 @@ impl Session {
             next_airing,
             active_airing,
             cash: economy.cash(PLAYER).unwrap().0.to_string(),
+            research: self.planner.research_view(),
             production: self.production_view(),
             booking_review: self.booking_review.clone(),
             finances: Finances {

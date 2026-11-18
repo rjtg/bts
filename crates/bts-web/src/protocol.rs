@@ -15,6 +15,14 @@ pub struct Request {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Command {
+    SetPolling {
+        audience: u16,
+        polling: bts_sim::planning::research::Polling,
+    },
+    SpendInsight {
+        audience: u16,
+        amount: u32,
+    },
     Inspect {},
     AcceptRequest {
         request_id: u16,
@@ -106,6 +114,7 @@ pub struct PlayerReport {
     pub gaps: Vec<Gap>,
     pub finances: Finances,
     pub cash: String,
+    pub research: Option<bts_sim::planning::research::ResearchView>,
     pub production: ProductionView,
     pub booking_review: Option<ProductionBookingReview>,
     pub catalogue: Vec<CatalogueEntry>,

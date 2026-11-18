@@ -24,6 +24,7 @@ jobs:
           RUSTDOCFLAGS: -D warnings
       - run: cargo run -p bts-fuzzy --example ventilation
       - run: cargo run -p bts-web --example planning_evening > "$RUNNER_TEMP/bts-planning-evening.json"
+      - run: cargo run -p bts-web --example audience_research > "$RUNNER_TEMP/bts-audience-research.json"
       - run: cargo run -p bts-web --example production_experiment > "$RUNNER_TEMP/bts-original-production.json"
       - run: cargo run -p bts-web --example casting_comparison > "$RUNNER_TEMP/bts-casting-comparison.json"
       - run: cargo run -p bts-sim --example sugeno_semantics

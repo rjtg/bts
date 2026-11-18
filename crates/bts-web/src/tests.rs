@@ -864,3 +864,97 @@ fn browser_station_libraries_and_staff_are_distinct_and_enforced_by_rust() {
     assert_eq!(work, 12);
     assert!(s.report().catalogue.iter().any(|p| p.id == work));
 }
+
+#[test]
+fn audience_research_changes_quotes_only_after_poll_and_preserves_actual_viewing() {
+    use bts_sim::planning::research::Polling;
+    use bts_sim::{AudienceId, BrandId, ProgrammeId, SimTick};
+    let mut control = scenario::planner().unwrap();
+    let id = control
+        .place(ProgrammeId(1), SimTick(168), Some(BrandId(1)))
+        .unwrap();
+    control.set_polling(AudienceId(1), Polling::Daily).unwrap();
+    let mut researched = control.clone();
+    let before = control.quote(id).unwrap().offer.payment;
+    let snapshot = researched.research_view().unwrap();
+    assert!(researched.spend_insight(AudienceId(1), 13).is_err());
+    assert_eq!(snapshot, researched.research_view().unwrap());
+    researched.spend_insight(AudienceId(1), 8).unwrap();
+    assert_eq!(researched.quote(id).unwrap().offer.payment, before);
+    assert_eq!(researched.research_view().unwrap().groups, snapshot.groups);
+    researched.advance_to(SimTick(96)).unwrap();
+    control.advance_to(SimTick(96)).unwrap();
+    let improved = researched.research_view().unwrap();
+    let baseline = control.research_view().unwrap();
+    assert_eq!(improved.groups[0].estimate.tick, 96);
+    assert!(improved.groups[0].estimate.uncertainty < baseline.groups[0].estimate.uncertainty);
+    assert!(baseline.groups[0].estimate.uncertainty > snapshot.groups[0].estimate.uncertainty);
+    let stale_delivery = snapshot.groups[0].estimate.population;
+    let true_population = control.world().audiences[0].population;
+    assert!(
+        improved.groups[0]
+            .estimate
+            .population
+            .abs_diff(true_population)
+            < stale_delivery.abs_diff(true_population)
+    );
+    assert_ne!(
+        researched.quote(id).unwrap().offer.forecast,
+        control.quote(id).unwrap().offer.forecast
+    );
+    for planner in [&mut researched, &mut control] {
+        let offer = planner.quote(id).unwrap();
+        planner.accept(&offer).unwrap();
+        planner.advance_to(SimTick(172)).unwrap();
+        assert_eq!(planner.state().economy().total_money(), 80_000);
+    }
+    assert_eq!(
+        researched
+            .airing(id)
+            .unwrap()
+            .result
+            .as_ref()
+            .unwrap()
+            .allocations,
+        control
+            .airing(id)
+            .unwrap()
+            .result
+            .as_ref()
+            .unwrap()
+            .allocations
+    );
+    let encoded = serde_json::to_value(improved).unwrap();
+    assert!(encoded["groups"][0]["estimate"].get("audience").is_none());
+    assert!(encoded["groups"][0]["estimate"].get("bias").is_none());
+}
+
+#[test]
+fn research_batches_match_single_ticks_and_poll_only_subscribed_groups() {
+    use bts_sim::planning::research::Polling;
+    use bts_sim::{AudienceId, SimTick};
+    let mut batch = scenario::planner().unwrap();
+    batch.set_polling(AudienceId(1), Polling::Daily).unwrap();
+    batch
+        .set_polling(AudienceId(2), Polling::EveryThreeDays)
+        .unwrap();
+    let mut step = batch.clone();
+    batch.advance_to(SimTick(289)).unwrap();
+    for tick in 1..=289 {
+        step.advance_to(SimTick(tick)).unwrap();
+    }
+    assert_eq!(batch.research_view(), step.research_view());
+    assert_eq!(batch.state().economy(), step.state().economy());
+    let view = batch.research_view().unwrap();
+    assert_eq!(
+        view.groups
+            .iter()
+            .map(|g| g.estimate.tick)
+            .collect::<Vec<_>>(),
+        [288, 288, 0]
+    );
+    assert_eq!(
+        batch.state().economy().cash(scenario::PLAYER).unwrap().0,
+        19_730
+    );
+}

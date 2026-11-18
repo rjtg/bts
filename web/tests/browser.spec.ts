@@ -39,7 +39,7 @@ test('plan a varied evening, move/remove broadcasts, book a selected future airi
   await expect(page.locator('#selected-id')).toContainText(`#${movieId}`);
   await page.locator('#advertiser').selectOption('1'); await page.locator('#set-advertiser').click(); await page.locator('#quote').click();
   await expect(page.locator('#offer')).toContainText(`Offer for airing #${movieId}`);
-  await expect(page.locator('#offer')).toContainText('Provisional contractual forecast');
+  await expect(page.locator('#offer')).toContainText('Forecast from published audience estimates');
   await firstBlock.click();
   await expect(page.locator('#offer')).toContainText('pending offer belongs to another airing');
   await expect(page.locator('#accept')).toHaveCount(0);

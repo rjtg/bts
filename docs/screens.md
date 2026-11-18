@@ -25,6 +25,17 @@ and publication/promotion/ad-share controls below remain proposals.
 This is a navigation proposal, not a requirement to implement eight destinations
 at once. Names, grouping and information density must be tested in mockups.
 
+The future library/market should combine a persistent station catalogue with a
+dated acquisition feed. It starts with older setting-appropriate titles; new
+cinema releases enter after theatrical runs. Show public reception and box office,
+an imperfect airing-success estimate, asking price and acquisition deadline. Listed
+owned titles remain in the library while offered for resale; incoming competitor
+offers are reviewable obligations/actions, not auction bids. See [programme rights
+and acquisition](design.md#programme-library-licensing-and-resale).
+
+The browser now includes an Audience panel for dated estimates, per-group polling and
+Insight spending. See [audience research](audience-research.md).
+
 ## Shared navigation and detail panels
 
 Keep time, pause/speed/advance controls, cash, urgent notifications and access to
@@ -73,8 +84,11 @@ catalogue and a contextual broadcast panel are proposals to compare visually.
 
 Clearly distinguish internal draft plans, published listings and aired history.
 Show which broadcast an offer/action affects; selecting a future broadcast must
-not silently book or advance a different one. Ad-block controls show total
-duration, campaign shares, remaining capacity and commitments.
+not silently book or advance a different one. The proposed ad-market panel lets
+the player offer a chosen number of minutes for a selected airing/context, review
+non-exclusive brand offers (minutes and total price), accept a mix up to capacity,
+or leave time unsold/shorten the break/use station teasers. It must show that ad
+minutes extend airtime. Break placement and refunds/thresholds remain deferred.
 
 The browser is primary, with an 80s television control-room / 8-bit aesthetic.
 Readability, clear hierarchy and understandable decisions take precedence over
@@ -90,8 +104,8 @@ parallel lane, library and contextual detail structure. Selection is independent
 of the Rust-calculated next airing. Stable airing IDs bind moves/removal,
 quotes, protected bookings, results and ledger entries. Empty airtime is explicit;
 advancement processes all ticks with a documented provisional start-snapshot cadence.
-All plans remain internal drafts; publication, promotion, campaign shares,
-research and a separate weekly view are deferred; the bounded production desk is now implemented. The mockup's values
+All plans remain internal drafts; publication, promotion, non-exclusive ad-minute
+offers and a separate weekly view are deferred; the bounded production desk is now implemented. The mockup's values
 and inconsistent runtimes are not imported as simulation rules.
 
 ## Player-facing interaction direction
@@ -152,7 +166,13 @@ The fixed-cost checkbox has now been replaced by the bounded casting desk; see [
 
 ### Results and language
 
-Lead a broadcast recap with viewers, earnings and contract outcome. Put detailed
+Lead a broadcast recap with viewers, earnings and contract outcome. Show the
+airing's cash and other resource costs/returns, then link to cumulative investment
+and returns for its show. A cash loss may still be worthwhile when the show earns
+needed Sway, Insight or another distinct resource. Do not assign a universal
+failure score: audiences, advertisers and the station have different expectations
+and consequences. Show the expectation recorded for the decision, outcome and
+uncertainty; contract refunds still follow their explicit terms. Put detailed
 tables behind **Details**, with causal explanations limited to legitimate player
 evidence. Current expected counts remain labelled provisional, not measured ratings.
 Do not invent research, staff knowledge or precise satisfaction reports to fill a panel.

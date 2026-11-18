@@ -52,6 +52,23 @@ Prototype cash and delivery contracts now exist in the bounded economy. The boun
 
 Exit evidence: obligations resolve correctly; production tradeoffs matter; at least one useful audience opportunity can be discovered; multiple plausible strategies survive under appropriate conditions.
 
+### Production identity and stages — proposed direction
+
+Create a show and its ambition before preparing or producing individual work.
+The show declares one-shot, finite planned episode count, or open-ended run, and
+may explicitly continue an existing original as a sequel or next season. Each
+instalment then gets format-appropriate preparation (writing, reporting research,
+or edition preparation), followed by production with the needed people, studio
+and resources. Preparation has a completion date and a format-specific freshness
+window: same-day for some news, roughly a week or two for a topical discussion
+edition, and longer for films or scripted episodes. These windows and effects
+need controlled experiments before implementation.
+
+The current browser workflow remains a single standalone discussion production.
+This broader show/instalment lifecycle is a proposed next architecture slice; it
+does not imply that writer teams, reporting, series runs, seasons or freshness
+decay are implemented.
+
 ### 3. Playable interface
 
 Expose only legitimate player information through a browser interface, building on the minimal Rust/Wasm harness. Provide scheduling, production, research, advertiser, and results views. Include save/load and a clear time-advance action.

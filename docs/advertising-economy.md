@@ -59,6 +59,10 @@ of an actual broadcast may underdeliver. The actual action is supplied separatel
 Quotes are recomputed on acceptance, including revision, inventory, budget and
 forecast; stale quotes and inconsistent prices or delivery terms are rejected.
 
+The headless economy experiments forecast from internal audience values. The browser planner with research configured uses the latest published audience estimates. See [audience research](audience-research.md).
+Actual delivery and contractual settlement evidence remain separate from those
+offer-time estimates; measurement-based refunds are not yet designed.
+
 ## Contract, money, deadlines, and update order
 
 Money uses nonnegative integer credits (`Money(u64)`). Configured amounts are
@@ -115,6 +119,14 @@ Decay can restore demand, but cannot restore spent budget. Repeated campaigns
 also have saturation and repetition effects from the broadcasting model. A brand
 can remain interested but unable to pay. Sales/profits of advertisers are not
 modelled; this is their exogenous finite marketing budget.
+
+The current delivery contract controls settlement only. A programme disappointing
+its audience or an advertiser does not itself create a refund unless the accepted
+terms prescribe underdelivery settlement. Future demand can react to actual
+delivery, while accepted prices and allocations stay frozen. In a later offer-market
+model, saleability and price would depend on advertiser expectations at purchase;
+post-airing satisfaction would inform later offers rather than retroactively
+relabeling the airing as a universal failure.
 
 ## Comparisons
 

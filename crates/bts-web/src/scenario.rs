@@ -127,6 +127,22 @@ pub(crate) fn planner_from_world(world: World) -> Result<Planner, PlanError> {
                 .collect(),
         },
     ])?;
+    let ages = planner
+        .world()
+        .audiences
+        .iter()
+        .map(|a| {
+            (
+                a.id,
+                match a.id.0 {
+                    1 => 22,
+                    2 => 42,
+                    _ => 56,
+                },
+            )
+        })
+        .collect();
+    planner.configure_research(719, 12, ages)?;
     Ok(planner)
 }
 

@@ -1,6 +1,7 @@
 //! Bounded duration-aware planning. See docs/programme-planning.md for provisional cadence.
 //! No presentation, player observations, filesystem or wall clock.
 pub mod production;
+pub mod research;
 
 use crate::economy::{ContractId, Offer};
 use crate::*;
@@ -90,6 +91,7 @@ pub struct Planner {
     next_id: u32,
     revision: u64,
     production: production::ProductionState,
+    research: Option<research::Research>,
     libraries: BTreeMap<StationId, BTreeSet<ProgrammeId>>,
     staff: BTreeMap<StationId, BTreeSet<production::PersonId>>,
     studio_counts: BTreeMap<StationId, u16>,
@@ -131,6 +133,7 @@ impl Planner {
             next_id: 1,
             revision: 0,
             production: production::ProductionState::default(),
+            research: None,
             libraries,
             staff: BTreeMap::new(),
             studio_counts,
@@ -468,8 +471,10 @@ impl Planner {
             )
         })?;
         let (proposal, starts) = self.interval_action(airing.start, Some((id, brand)));
-        let offer = self
-            .engine
+        let forecast = self.forecast_engine();
+        let offer = forecast
+            .as_ref()
+            .unwrap_or(&self.engine)
             .quote_cadence(
                 &proposal,
                 self.player,
@@ -628,6 +633,7 @@ impl Planner {
         }
         self.engine.state = completed_state;
         self.finish_productions(action.at)?;
+        self.poll_boundary(action.at)?;
         Ok(event)
     }
 }

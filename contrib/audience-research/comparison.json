@@ -1,0 +1,327 @@
+[
+  {
+    "actual_deliveries": [
+      [
+        1,
+        {
+          "audiences": [
+            {
+              "audience": 1,
+              "delivered_units": 2415470797,
+              "effectiveness": 0.8,
+              "priority": 1.0,
+              "relevant_delivery": 2415.470797577696,
+              "viewers": 3019.3384969721196
+            },
+            {
+              "audience": 2,
+              "delivered_units": 4308961371,
+              "effectiveness": 0.7975961538461539,
+              "priority": 1.0,
+              "relevant_delivery": 4308.9613719005065,
+              "viewers": 5402.4349931000925
+            },
+            {
+              "audience": 3,
+              "delivered_units": 4055410,
+              "effectiveness": 0.1,
+              "priority": 0.1,
+              "relevant_delivery": 4.0554106603512565,
+              "viewers": 405.5410660351256
+            }
+          ],
+          "credited_units": 6728,
+          "relevant_delivery": 6728.487580138554
+        }
+      ]
+    ],
+    "case": "stale",
+    "cash": 21279,
+    "forecast_relevant_delivery": 4900.534125845739,
+    "maximum_payment": 1429,
+    "research_at_quote": {
+      "groups": [
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 6123,
+            "tastes": [
+              1.0,
+              0.704112266429959,
+              0.0
+            ],
+            "tick": 0,
+            "typical_age": 22,
+            "uncertainty": 0.23500000000000001
+          },
+          "id": 1,
+          "missed_poll": false,
+          "name": "Young viewers",
+          "next_tick": null,
+          "polling": "off"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 12094,
+            "tastes": [
+              0.7858870667873153,
+              0.9810627013784979,
+              0.029704768151208913
+            ],
+            "tick": 0,
+            "typical_age": 35,
+            "uncertainty": 0.23500000000000001
+          },
+          "id": 2,
+          "missed_poll": false,
+          "name": "Households",
+          "next_tick": null,
+          "polling": "off"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 2394,
+            "tastes": [
+              0.22143522087867262,
+              0.8786120542007527,
+              0.7933420852335035
+            ],
+            "tick": 0,
+            "typical_age": 44,
+            "uncertainty": 0.23500000000000001
+          },
+          "id": 3,
+          "missed_poll": false,
+          "name": "Specialists",
+          "next_tick": null,
+          "polling": "off"
+        }
+      ],
+      "insight": 12,
+      "opening_insight": 12,
+      "spending": []
+    },
+    "total_money": 80000
+  },
+  {
+    "actual_deliveries": [
+      [
+        1,
+        {
+          "audiences": [
+            {
+              "audience": 1,
+              "delivered_units": 2415470797,
+              "effectiveness": 0.8,
+              "priority": 1.0,
+              "relevant_delivery": 2415.470797577696,
+              "viewers": 3019.3384969721196
+            },
+            {
+              "audience": 2,
+              "delivered_units": 4308961371,
+              "effectiveness": 0.7975961538461539,
+              "priority": 1.0,
+              "relevant_delivery": 4308.9613719005065,
+              "viewers": 5402.4349931000925
+            },
+            {
+              "audience": 3,
+              "delivered_units": 4055410,
+              "effectiveness": 0.1,
+              "priority": 0.1,
+              "relevant_delivery": 4.0554106603512565,
+              "viewers": 405.5410660351256
+            }
+          ],
+          "credited_units": 6728,
+          "relevant_delivery": 6728.487580138554
+        }
+      ]
+    ],
+    "case": "fresh",
+    "cash": 21206,
+    "forecast_relevant_delivery": 4855.6169589471565,
+    "maximum_payment": 1416,
+    "research_at_quote": {
+      "groups": [
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 6143,
+            "tastes": [
+              1.0,
+              0.7062743351123291,
+              0.0
+            ],
+            "tick": 96,
+            "typical_age": 22,
+            "uncertainty": 0.23804704752775993
+          },
+          "id": 1,
+          "missed_poll": false,
+          "name": "Young viewers",
+          "next_tick": 192,
+          "polling": "daily"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 12094,
+            "tastes": [
+              0.7858870667873153,
+              0.9810627013784979,
+              0.029704768151208913
+            ],
+            "tick": 0,
+            "typical_age": 35,
+            "uncertainty": 0.23500000000000001
+          },
+          "id": 2,
+          "missed_poll": false,
+          "name": "Households",
+          "next_tick": null,
+          "polling": "off"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 2394,
+            "tastes": [
+              0.22143522087867262,
+              0.8786120542007527,
+              0.7933420852335035
+            ],
+            "tick": 0,
+            "typical_age": 44,
+            "uncertainty": 0.23500000000000001
+          },
+          "id": 3,
+          "missed_poll": false,
+          "name": "Specialists",
+          "next_tick": null,
+          "polling": "off"
+        }
+      ],
+      "insight": 12,
+      "opening_insight": 12,
+      "spending": []
+    },
+    "total_money": 80000
+  },
+  {
+    "actual_deliveries": [
+      [
+        1,
+        {
+          "audiences": [
+            {
+              "audience": 1,
+              "delivered_units": 2415470797,
+              "effectiveness": 0.8,
+              "priority": 1.0,
+              "relevant_delivery": 2415.470797577696,
+              "viewers": 3019.3384969721196
+            },
+            {
+              "audience": 2,
+              "delivered_units": 4308961371,
+              "effectiveness": 0.7975961538461539,
+              "priority": 1.0,
+              "relevant_delivery": 4308.9613719005065,
+              "viewers": 5402.4349931000925
+            },
+            {
+              "audience": 3,
+              "delivered_units": 4055410,
+              "effectiveness": 0.1,
+              "priority": 0.1,
+              "relevant_delivery": 4.0554106603512565,
+              "viewers": 405.5410660351256
+            }
+          ],
+          "credited_units": 6728,
+          "relevant_delivery": 6728.487580138554
+        }
+      ]
+    ],
+    "case": "researched",
+    "cash": 21636,
+    "forecast_relevant_delivery": 6478.049839166818,
+    "maximum_payment": 1889,
+    "research_at_quote": {
+      "groups": [
+        {
+          "estimate": {
+            "familiarity_level": "High",
+            "population": 6062,
+            "tastes": [
+              1.0,
+              0.6175083090923347,
+              0.0
+            ],
+            "tick": 96,
+            "typical_age": 22,
+            "uncertainty": 0.10283296775168213
+          },
+          "id": 1,
+          "missed_poll": false,
+          "name": "Young viewers",
+          "next_tick": 192,
+          "polling": "daily"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 12094,
+            "tastes": [
+              0.7858870667873153,
+              0.9810627013784979,
+              0.029704768151208913
+            ],
+            "tick": 0,
+            "typical_age": 35,
+            "uncertainty": 0.23500000000000001
+          },
+          "id": 2,
+          "missed_poll": false,
+          "name": "Households",
+          "next_tick": null,
+          "polling": "off"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 2394,
+            "tastes": [
+              0.22143522087867262,
+              0.8786120542007527,
+              0.7933420852335035
+            ],
+            "tick": 0,
+            "typical_age": 44,
+            "uncertainty": 0.23500000000000001
+          },
+          "id": 3,
+          "missed_poll": false,
+          "name": "Specialists",
+          "next_tick": null,
+          "polling": "off"
+        }
+      ],
+      "insight": 4,
+      "opening_insight": 12,
+      "spending": [
+        {
+          "audience": 1,
+          "remaining": 4,
+          "spent": 8,
+          "tick": 0
+        }
+      ]
+    },
+    "total_money": 80000
+  }
+]

@@ -1,5 +1,6 @@
 import init, { WebSession, api_version } from '../pkg/bts_web.js';
 import type { Airing, Booking, BroadcastResult, Command, Programme, Report, Response } from './protocol';
+import { renderAudience } from './audience';
 import { initialiseProduction } from './production';
 import './style.css';
 import { element, select, button, node, option } from './ui/dom';
@@ -156,7 +157,7 @@ function renderDetails(): void {
   if (report.offer?.airing_id === a.airing_id) {
     const q = report.offer;
     offer.className = 'contract-panel'; offer.append(node('h4', `Offer for airing #${q.airing_id} · ${stamp(q.start_tick)}`));
-    offer.append(node('p', `${advertiserName(q.advertiser)} offers up to ${money(q.maximum_payment)} credits. Provisional contractual forecast; each audience settles separately at ${stamp(q.deadline_tick)}.`));
+    offer.append(node('p', `${advertiserName(q.advertiser)} offers up to ${money(q.maximum_payment)} credits. Forecast from published audience estimates; each audience settles separately at ${stamp(q.deadline_tick)}.`));
     offer.append(table('Terms if accepted', ['Audience', 'Forecast relevant impressions', 'Promised micro-units', 'Allocated credits'], q.targets.map(t => [t.audience, count(t.forecast_relevant_delivery), t.promised_units, money(t.allocated_payment)])));
     const accept = node('button', `Accept offer for airing #${q.airing_id}`); accept.id = 'accept'; accept.addEventListener('click', () => send({ type: 'accept_offer', airing_id: q.airing_id, offer_id: q.offer_id })); offer.append(accept);
   } else {
@@ -183,7 +184,7 @@ function renderReports(): void {
   summary.append(node('p', `Production budget remaining in escrow: ${money(report.finances.production_in_escrow)} · spent on recording: ${money(report.finances.production_spent)}. Reservation reduces cash once; spending transfers those reserved funds.`, 'production-reserve-note'));
   const ledger = element('ledger'); ledger.replaceChildren();
   if (report.finances.ledger.length) ledger.append(table('Station ledger · exact integer credits', ['Time', 'Airing / production', 'Transaction', 'Credits'], report.finances.ledger.map(l => {
-    const kinds: Record<string, string> = { broadcast_cost: 'Broadcast cost', advertising_payment: 'Advertising receipt', production_reserve: 'Production budget reserved (cash)', production_spend: 'Recording expense (from escrow)' };
+    const kinds: Record<string, string> = { broadcast_cost: 'Broadcast cost', audience_poll: 'Audience poll', advertising_payment: 'Advertising receipt', production_reserve: 'Production budget reserved (cash)', production_spend: 'Recording expense (from escrow)' };
     let link: string | HTMLButtonElement = l.airing_id === null ? '—' : airingLink(l.airing_id, `Airing #${l.airing_id}`);
     if (l.production_id !== null) { const id = l.production_id; link = node('button', `Production #${id}`, 'row-link'); link.addEventListener('click', () => productionUi?.showProject(id)); }
     return [stamp(l.tick), link, kinds[l.kind] ?? l.kind, money(l.amount)];
@@ -206,7 +207,7 @@ function render(next: Report): void {
   for (const id of ['advance-tick', 'advance-day', 'place']) button(id).disabled = report.now_tick >= report.end_tick;
   button('previous-day').disabled = viewedDay === 0; button('next-day').disabled = viewedDay === 6;
   element('reporting').textContent = report.reporting;
-  renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report);
+  renderAudience(report, stamp, send); renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report);
   if (playback?.isPlaying()) {
     const scroller = element('timeline-scroller'); const tickWidth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tick'));
     const x = (report.now_tick % 96) * tickWidth;

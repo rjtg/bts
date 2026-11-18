@@ -1,6 +1,8 @@
 // Player protocol v5. Rust DTOs are authoritative; no developer-export types are imported.
 export type Command =
   | { type: 'inspect' | 'reset' }
+  | { type: 'set_polling'; audience: number; polling: Polling }
+  | { type: 'spend_insight'; audience: number; amount: number }
   | { type: 'accept_request'; request_id: number }
   | { type: 'create_production'; concept: ProductionConcept }
   | { type: 'revise_production'; production_id: number; concept: ProductionConcept }
@@ -39,7 +41,22 @@ export interface BroadcastResult {
   aired_programme: number | null; aired_advertiser: number | null; off_air: boolean; broadcast_cost: string; cash_after: string;
   audiences: { audience: string; population: number; player_viewers: number; rival_viewers: number; not_watching: number }[];
 }
+export type Polling = 'off' | 'daily' | 'every_three_days';
+export interface Research {
+  insight: number;
+  opening_insight: number;
+  spending: { tick: number; audience: number; spent: number; remaining: number }[];
+  groups: {
+    id: number;
+    name: string;
+    polling: Polling;
+    next_tick: number | null;
+    missed_poll: boolean;
+    estimate: { tick: number; population: number; typical_age: number; tastes: number[]; familiarity_level: string; uncertainty: number };
+  }[];
+}
 export interface Report {
+  research: Research | null;
   production: ProductionView;
   booking_review: { production_id: number; exceptional_person: number | null; cooperation_sway: number; studio:number; total_sway: number; sway_remaining: number; budget: string; cash_remaining: string } | null;
   reporting: string; now_tick: number; end_tick: number; tick_minutes: number; next_airing: number | null; active_airing: number | null; cash: string;
