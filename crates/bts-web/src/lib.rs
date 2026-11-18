@@ -25,6 +25,7 @@ struct Pending {
 pub struct Session {
     planner: Planner,
     namespace: u32,
+    rights_epoch: u64,
     next_offer: u64,
     pending: Option<Pending>,
     minute_pending: Option<(
@@ -55,6 +56,7 @@ impl Session {
         }
         Ok(Self {
             planner: scenario::planner().map_err(player_error)?,
+            rights_epoch: 0,
             namespace,
             next_offer: 1,
             pending: None,
@@ -99,6 +101,29 @@ impl Session {
     }
     fn apply(&mut self, command: Command) -> Result<(), PlayerError> {
         match command {
+            Command::BuyRights { programme, token } => {
+                let token = self.rights_token(&token)?;
+                self.planner
+                    .buy_rights(ProgrammeId(programme), token)
+                    .map_err(player_error)?;
+            }
+            Command::AssessTitle { programme, insight } => {
+                self.planner
+                    .commission_title_assessment(ProgrammeId(programme), insight)
+                    .map_err(player_error)?;
+            }
+            Command::ListResale { programme } => {
+                self.planner
+                    .list_for_resale(ProgrammeId(programme))
+                    .map_err(player_error)?;
+            }
+            Command::AcceptResale { programme, token } => {
+                let token = self.rights_token(&token)?;
+                self.planner
+                    .accept_resale(ProgrammeId(programme), token)
+                    .map_err(player_error)?;
+            }
+
             Command::ResizeAdBlock { airing_id, minutes } => {
                 self.planner
                     .resize_ad_block(AiringId(airing_id), minutes)
@@ -248,6 +273,10 @@ impl Session {
                 )
                 .map_err(player_error)?,
             Command::Reset {} => {
+                self.rights_epoch = self
+                    .rights_epoch
+                    .checked_add(1)
+                    .ok_or_else(|| PlayerError::new("capacity", "Reset capacity exhausted."))?;
                 let mut fresh = scenario::planner().map_err(player_error)?;
                 fresh.retain_id_floor(&self.planner);
                 self.planner = fresh;
@@ -664,6 +693,7 @@ impl Session {
                     },
                 };
                 FinancialLine {
+                    rights_title: l.rights_title.map(|id| id.0),
                     production_id: match (l.from, l.to) {
                         (Account::ProductionEscrow(id), _) | (_, Account::ProductionEscrow(id)) => {
                             Some(id.0)
@@ -673,6 +703,8 @@ impl Session {
                     tick: l.at.0,
                     airing_id: airing.map(|a| a.id.0),
                     kind: match l.reason {
+                        LedgerReason::RightsPurchase => "rights_purchase",
+                        LedgerReason::RightsResale => "rights_resale",
                         LedgerReason::BroadcastCost => "broadcast_cost",
                         LedgerReason::AudiencePoll => "audience_poll",
                         LedgerReason::ProductionReserve => "production_reserve",
@@ -695,7 +727,7 @@ impl Session {
         let revenue = economy
             .ledger()
             .iter()
-            .filter(|l| l.to == Account::Station(PLAYER))
+            .filter(|l| l.to == Account::Station(PLAYER) && l.reason != LedgerReason::RightsResale)
             .map(|l| u128::from(l.amount.0))
             .sum::<u128>()
             .to_string();
@@ -802,6 +834,7 @@ impl Session {
             research: self.planner.research_view(),
             production: self.production_view(),
             film_desk: film_desk(&self.planner),
+            rights_market: self.rights_market(),
             film_review: self.film_review.clone(),
             booking_review: self.booking_review.clone(),
             finances: Finances {
@@ -815,6 +848,25 @@ impl Session {
                     .to_string(),
                 costs_paid,
                 revenue,
+                rights_spent: economy
+                    .ledger()
+                    .iter()
+                    .filter(|l| {
+                        l.from == Account::Station(PLAYER)
+                            && l.reason == LedgerReason::RightsPurchase
+                    })
+                    .map(|l| u128::from(l.amount.0))
+                    .sum::<u128>()
+                    .to_string(),
+                resale_receipts: economy
+                    .ledger()
+                    .iter()
+                    .filter(|l| {
+                        l.to == Account::Station(PLAYER) && l.reason == LedgerReason::RightsResale
+                    })
+                    .map(|l| u128::from(l.amount.0))
+                    .sum::<u128>()
+                    .to_string(),
                 production_committed: economy
                     .ledger()
                     .iter()
@@ -1098,5 +1150,101 @@ fn film_desk(planner: &Planner) -> FilmDesk {
                     .collect(),
             })
             .collect(),
+    }
+}
+
+impl Session {
+    fn rights_token(&self, token: &str) -> Result<u64, PlayerError> {
+        token
+            .strip_prefix(&format!("{}:{}:", self.namespace, self.rights_epoch))
+            .and_then(|suffix| suffix.parse().ok())
+            .ok_or_else(|| {
+                PlayerError::new("stale_rights_offer", "Refresh the offer in this session.")
+            })
+    }
+
+    fn rights_market(&self) -> RightsMarket {
+        use bts_sim::planning::rights::{RightsOffer, TitleStatus, ASSESSMENT_TICKS};
+        let offer = |q: &RightsOffer| MarketOffer {
+            token: format!("{}:{}:{}", self.namespace, self.rights_epoch, q.token),
+            price: q.price.0.to_string(),
+            deadline: q.deadline.0,
+        };
+        let round = |n: f64| (n / 100.0).round() as u64 * 100;
+        let titles = self
+            .planner
+            .titles()
+            .filter(|title| title.status != TitleStatus::Unreleased)
+            .map(|title| {
+                let id = title.seed.programme.id;
+                let f = self.planner.title_forecast(id).expect("published title");
+                MarketTitle {
+                    programme: id.0,
+                    name: title.seed.programme.name.clone(),
+                    status: title.status,
+                    owner: title.owner.map(|id| id.0),
+                    evidence: title.seed.evidence,
+                    art: title.seed.art,
+                    duration: title.seed.programme.duration_minutes,
+                    broadcast_cost: title.seed.programme.broadcast_cost.0.to_string(),
+                    acquisition: (title.status == TitleStatus::Listed)
+                        .then(|| title.acquisition.as_ref().map(offer))
+                        .flatten(),
+                    resale: title.resale.as_ref().map(offer),
+                    blocker: self.planner.resale_blocker(id).map(|id| id.0),
+                    rival_airing: self
+                        .planner
+                        .airings()
+                        .find(|a| {
+                            a.programme == id && a.station != PLAYER && a.end > self.planner.now()
+                        })
+                        .map(|a| a.id.0),
+                    assessment_due: title.assessment_due.map(|at| at.0),
+                    assessment_at: title.assessment_at.map(|at| at.0),
+                    qualities: programme_qualities(f.qualities),
+                    expected_viewers: round(f.expected_viewers),
+                    uncertainty: if f.relative_uncertainty >= 0.28 {
+                        "Rough read"
+                    } else if f.relative_uncertainty >= 0.20 {
+                        "Better informed"
+                    } else {
+                        "Well researched"
+                    },
+                    groups: f
+                        .groups
+                        .into_iter()
+                        .map(|(id, reach)| (self.audience_name(id), round(reach)))
+                        .collect(),
+                }
+            })
+            .collect();
+        let news = self
+            .planner
+            .rights_news()
+            .iter()
+            .map(|event| MarketNews {
+                programme: event.programme.0,
+                tick: event.at.0,
+                kind: event.kind,
+                station: event.station.map(|station| station.0),
+            })
+            .collect();
+        let spending = self
+            .planner
+            .rights_spending()
+            .iter()
+            .map(|entry| MarketSpend {
+                programme: entry.programme.0,
+                tick: entry.at.0,
+                amount: entry.amount,
+                balance: entry.balance,
+            })
+            .collect();
+        RightsMarket {
+            titles,
+            news,
+            assessment_ticks: ASSESSMENT_TICKS,
+            spending,
+        }
     }
 }

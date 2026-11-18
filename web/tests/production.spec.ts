@@ -73,7 +73,7 @@ test('conflicting bookings are rejected and cast cards explain duplicates and co
 
 test('discussion, pooled Sway and film commands in actual Wasm match the native sequence', async ({ page }) => {
   test.setTimeout(90_000);
-  const native = JSON.parse(execFileSync('cargo', ['run', '--locked', '--quiet', '-p', 'bts-web', '--example', 'production_experiment', '--', '--sequence'], { cwd: root, encoding: 'utf8' }));
+  const native = JSON.parse(execFileSync('cargo', ['run', '--locked', '--quiet', '-p', 'bts-web', '--example', 'production_experiment', '--', '--sequence'], { cwd: root, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 }));
   await page.route('**/__test__/bts_web.js', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web.js'), contentType: 'text/javascript' }));
   await page.route('**/__test__/bts_web_bg.wasm', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web_bg.wasm'), contentType: 'application/wasm' }));
   await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
@@ -97,7 +97,7 @@ test('discussion, pooled Sway and film commands in actual Wasm match the native 
       if (a === null || typeof a !== 'object' || Array.isArray(a)) return path;
       if (Object.keys(a).sort().join(',') !== Object.keys(b).sort().join(',')) return path;
       for (const [key, value] of Object.entries(b)) {
-        if (key === 'offer_id') continue;
+        if (key === 'offer_id' || key === 'token') continue;
         const mismatch = difference((a as Record<string, unknown>)[key], value, `${path}.${key}`);
         if (mismatch) return mismatch;
       }
@@ -145,7 +145,7 @@ test('distinct rival library and staff, with studio capacity independent of cast
   await page.goto('/');await expect(page.locator('#status')).toContainText('WASM READY');
   await expect(page.locator('#station-teams')).toContainText('Elian North, Mina Sol');await expect(page.locator('#station-teams')).toContainText('Vera Quinn');
   await expect(page.locator('#catalogue')).not.toContainText('After Hours');await page.locator('[data-station="2"] [data-airing]').first().click();
-  await expect(page.locator('#selected-name')).toHaveText('After Hours');await expect(page.locator('#known-details')).toContainText('not in your library');
+  await expect(page.locator('#selected-name')).toHaveText('After Hours');await expect(page.locator('#known-details')).toContainText('outside your library');
   await page.locator('#create-production').click();await book(page,1);
   await choose(page,0,'Mina Sol');await choose(page,1,'Jules Hart');await choose(page,2,'Rafi Linden');
   await page.locator('#production-name').fill('A second studio session');await page.locator('#create-production').click();await page.locator('#review-2').click();

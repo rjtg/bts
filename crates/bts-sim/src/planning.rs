@@ -4,6 +4,7 @@ pub mod ad_market;
 pub mod film;
 pub mod production;
 pub mod research;
+pub mod rights;
 
 use crate::economy::{ContractId, Offer};
 use crate::*;
@@ -96,6 +97,7 @@ pub struct Planner {
     production: production::ProductionState,
     films: BTreeMap<production::ProductionId, film::Film>,
     research: Option<research::Research>,
+    rights: Option<rights::Market>,
     libraries: BTreeMap<StationId, BTreeSet<ProgrammeId>>,
     staff: BTreeMap<StationId, BTreeSet<production::PersonId>>,
     studio_counts: BTreeMap<StationId, u16>,
@@ -139,6 +141,7 @@ impl Planner {
             production: production::ProductionState::default(),
             films: BTreeMap::new(),
             research: None,
+            rights: None,
             libraries,
             staff: BTreeMap::new(),
             studio_counts,
@@ -194,6 +197,7 @@ impl Planner {
         resources: Vec<StationResources>,
     ) -> Result<(), PlanError> {
         if self.now().0 != 0
+            || self.rights.is_some()
             || self.airings.values().any(|a| a.station == self.player)
             || self.production.projects().next().is_some()
             || self.production.requests().any(|r| r.acceptance.is_some())
@@ -683,6 +687,12 @@ impl Planner {
         self.finish_productions(action.at)?;
         self.advance_films(action.at)?;
         self.poll_boundary(action.at)?;
+        let ledger_before_rights = self.state().economy().ledger().len();
+        self.advance_rights(action.at)?;
+        event
+            .financial
+            .ledger
+            .extend_from_slice(&self.state().economy().ledger()[ledger_before_rights..]);
         Ok(event)
     }
 }

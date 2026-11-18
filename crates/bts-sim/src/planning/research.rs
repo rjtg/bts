@@ -55,7 +55,7 @@ pub struct Research {
     next: Option<SimTick>,
     missed: bool,
     seed: u64,
-    balance: u32,
+    pub(super) balance: u32,
     initial: u32,
     ledger: Vec<InsightEntry>,
     groups: BTreeMap<AudienceId, GroupKnowledge>,

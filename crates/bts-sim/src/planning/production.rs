@@ -673,17 +673,11 @@ impl Planner {
                 "Station cash cannot cover the whole production budget.",
             ));
         }
-        let next_programme = self
-            .engine
-            .world
-            .programmes
-            .iter()
-            .map(|p| p.id.0)
-            .max()
-            .unwrap_or(0)
-            .checked_add(1)
-            .ok_or_else(|| error("capacity", "Programme identifiers exhausted."))?
-            .max(self.production.next_programme);
+        let next_programme = super::rights::original_programme_number(
+            &self.engine.world.programmes,
+            self.rights.as_ref(),
+            self.production.next_programme,
+        )?;
         let following = next_programme
             .checked_add(1)
             .ok_or_else(|| error("capacity", "Programme identifiers exhausted."))?;

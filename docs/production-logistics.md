@@ -7,6 +7,8 @@ batching are next-slice design directions, not implemented mechanics.
 The [original film experiment](original-film.md) adds two fixed-price rental
 rooms with exclusive bookings and an equipment shortfall model.
 
+The [rights market](rights-market.md) adds exclusive acquisition and resale for selected finished works. The inventories below describe the opening fixture.
+
 ## Implemented station resources
 
 The world catalogue defines works; each station's library defines its rights to
@@ -30,8 +32,7 @@ bounded ownership model; freelance people may remain unassigned.
 Rust rejects scheduling a work outside the station's library, and rejects assigning
 another station's staff to your production. A completed original is inserted into
 your library only; world-catalogue existence does not grant the rival rights to it.
-Draft/uncompleted works remain unschedulable. No rights purchase/trade, staff
-poaching, rental contract or rival production AI is added.
+Draft/uncompleted works remain unschedulable. This older capacity experiment does not cover rights trading. Staff poaching and rival production AI remain future work.
 
 Player catalogue DTOs include only owned works. Rival public schedule entries carry
 title, genre and runtime so the planner can show competition without offering those

@@ -500,17 +500,11 @@ impl Planner {
                     film.phase = FilmPhase::Post;
                 }
                 FilmPhase::Post if film.due == Some(at) => {
-                    let next = self
-                        .engine
-                        .world
-                        .programmes
-                        .iter()
-                        .map(|p| p.id.0)
-                        .max()
-                        .unwrap_or(0)
-                        .checked_add(1)
-                        .ok_or_else(|| error("capacity", "Programme identifiers exhausted."))?
-                        .max(self.production.next_programme);
+                    let next = super::rights::original_programme_number(
+                        &self.engine.world.programmes,
+                        self.rights.as_ref(),
+                        self.production.next_programme,
+                    )?;
                     self.production.next_programme = next
                         .checked_add(1)
                         .ok_or_else(|| error("capacity", "Programme identifiers exhausted."))?;

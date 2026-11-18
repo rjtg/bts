@@ -4,7 +4,7 @@
 <header class="masthead"><div class="brand"><span class="signal" aria-hidden="true"><i></i><i></i><i></i></span><span>BEHIND <small>THE</small> SCREENS</span></div><div class="clock"><span id="clock">Day 1 · 00:00</span><strong id="playback-state">PAUSED</strong></div><div id="station-resources" class="resources" role="group" aria-label="Station resources"></div></header>
 <p id="status" role="status" class="load-status">Loading WebAssembly…</p><p id="error" role="alert" hidden></p>
 <div id="controls" class="app" hidden>
-  <aside class="rail"><span class="rail-caption">YOUR STATION</span><a href="#planning" class="active">▦ Planning</a><a href="#production">▣ Production</a><a href="#film-desk">▧ Film desk</a><a href="#audience">◉ Audience</a><a href="#results">▤ Results</a><a href="#finances">≡ Finances</a><div class="rail-note">SEVEN DAYS<br><strong>Draft schedule</strong><p>Make television.<br>See who watches.</p></div><button id="reset" class="quiet">Reset experiment</button></aside>
+  <aside class="rail"><span class="rail-caption">YOUR STATION</span><a href="#planning" class="active">▦ Planning</a><a href="#production">▣ Production</a><a href="#film-desk">▧ Film desk</a><a href="#rights-market">▱ Rights market</a><a href="#audience">◉ Audience</a><a href="#results">▤ Results</a><a href="#finances">≡ Finances</a><div class="rail-note">SEVEN DAYS<br><strong>Draft schedule</strong><p>Make television.<br>See who watches.</p></div><button id="reset" class="quiet">Reset experiment</button></aside>
   <main>
     <section class="transport" aria-label="Time controls"><div><span class="overline">NEXT TO AIR · YOUR CHANNEL</span><strong id="next-airing">Nothing planned</strong><span id="on-air"></span></div><div class="transport-buttons"><button id="play-pause" aria-pressed="false" aria-label="Play" title="Advance 15 simulated minutes every two seconds. Planning actions pause time.">▶ Play</button><button id="double-speed" class="quiet" aria-pressed="false" title="Double speed: 15 simulated minutes every second.">×2</button><button id="advance-tick" class="quiet">+15 min</button><button id="advance-next">Run next airing</button><button id="advance-day" class="quiet">Finish current day</button></div></section>
     <section id="planning" class="planning-panel"><div class="section-heading"><div><p class="overline">BROADCAST DESK</p><h1>Programme planning</h1></div><div class="day-controls"><button id="previous-day" class="quiet" aria-label="Previous planning day">‹</button><label>Planning day<select id="day"></select></label><button id="next-day" class="quiet" aria-label="Next planning day">›</button></div></div>
@@ -46,6 +46,12 @@
       </div>
     </section>
     <section id="film-desk" class="panel lower-panel"><div class="panel-heading"><h2>Film desk</h2></div><div id="film-notices" aria-live="polite"></div><div id="film-pitch"></div><div id="film-projects" class="production-projects"></div></section>
+    <section id="rights-market" class="panel lower-panel" aria-labelledby="rights-market-title">
+      <div class="panel-heading"><h2 id="rights-market-title">Rights market</h2></div>
+      <p class="muted">Buy finished titles to air as often as you like, or sell the rights when you are done with them.</p>
+      <div id="rights-news" aria-live="polite"></div>
+      <div id="rights-catalogue" class="rights-catalogue"></div>
+    </section>
     <section id="results" class="panel lower-panel"><div class="panel-heading"><h2>Broadcast results</h2><span class="tag">PROVISIONAL REPORTING</span></div><div id="results-list"></div></section>
     <section id="finances" class="panel lower-panel"><div class="panel-heading"><h2>Station finances</h2><span class="tag">INTEGER CREDITS</span></div><div id="finance-summary" class="finance-summary"></div><div id="ledger"></div></section>
     <footer><p id="reporting"></p><p>Publication, promotion and save/load are deferred. No developer inspector. Client-side observation filtering is not a security guarantee.</p></footer>

@@ -5,6 +5,8 @@ Status: proposed scope. This bounds implementation; it does not remove later fea
 The [original film experiment](original-film.md) now exercises one full fiction
 production from pitch through broadcast and advertising settlement.
 
+The [rights market experiment](rights-market.md) adds acquisition, appraisal, and resale as alternatives to original production.
+
 ## Question to answer
 
 Can a player observe an audience opportunity, make a production bet, schedule it effectively, earn advertising revenue, and understand the result well enough to improve?

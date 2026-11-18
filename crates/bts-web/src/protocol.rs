@@ -1,4 +1,4 @@
-//! Player protocol v5. These whitelisted DTOs deliberately do not serialize engine evidence.
+//! Player protocol v8. These whitelisted DTOs deliberately do not serialize engine evidence.
 use bts_sim::planning::production::{Subject, Tone};
 use serde::{Deserialize, Serialize};
 
@@ -15,6 +15,21 @@ pub struct Request {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Command {
+    BuyRights {
+        programme: u16,
+        token: String,
+    },
+    AssessTitle {
+        programme: u16,
+        insight: u32,
+    },
+    ListResale {
+        programme: u16,
+    },
+    AcceptResale {
+        programme: u16,
+        token: String,
+    },
     ResizeAdBlock {
         airing_id: u32,
         minutes: u8,
@@ -149,6 +164,7 @@ pub struct PlayerReport {
     pub research: Option<bts_sim::planning::research::ResearchView>,
     pub production: ProductionView,
     pub film_desk: FilmDesk,
+    pub rights_market: RightsMarket,
     pub film_review: Option<FilmReview>,
     pub booking_review: Option<ProductionBookingReview>,
     pub catalogue: Vec<CatalogueEntry>,
@@ -221,6 +237,8 @@ pub struct Finances {
     pub opening_cash: String,
     pub costs_paid: String,
     pub revenue: String,
+    pub rights_spent: String,
+    pub resale_receipts: String,
     pub production_committed: String,
     pub production_in_escrow: String,
     pub production_spent: String,
@@ -228,6 +246,7 @@ pub struct Finances {
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct FinancialLine {
+    pub rights_title: Option<u16>,
     pub production_id: Option<u32>,
     pub tick: u32,
     pub airing_id: Option<u32>,
@@ -524,4 +543,57 @@ pub struct MinuteSettlementView {
     pub payment: String,
     pub refund: String,
     pub viewer_minutes: f64,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct RightsMarket {
+    pub titles: Vec<MarketTitle>,
+    pub news: Vec<MarketNews>,
+    pub assessment_ticks: u32,
+    pub spending: Vec<MarketSpend>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct MarketTitle {
+    pub programme: u16,
+    pub name: String,
+    pub status: bts_sim::planning::rights::TitleStatus,
+    pub owner: Option<u16>,
+    pub evidence: &'static str,
+    pub art: &'static str,
+    pub duration: u16,
+    pub broadcast_cost: String,
+    pub acquisition: Option<MarketOffer>,
+    pub resale: Option<MarketOffer>,
+    pub blocker: Option<u32>,
+    pub rival_airing: Option<u32>,
+    pub assessment_due: Option<u32>,
+    pub assessment_at: Option<u32>,
+    pub qualities: Vec<Quality>,
+    pub expected_viewers: u64,
+    pub uncertainty: &'static str,
+    pub groups: Vec<(String, u64)>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct MarketOffer {
+    pub token: String,
+    pub price: String,
+    pub deadline: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct MarketNews {
+    pub programme: u16,
+    pub tick: u32,
+    pub kind: &'static str,
+    pub station: Option<u16>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct MarketSpend {
+    pub programme: u16,
+    pub tick: u32,
+    pub amount: u32,
+    pub balance: u32,
 }

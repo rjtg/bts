@@ -1066,3 +1066,49 @@ fn market_reports_hide_pricing_inputs_and_reject_reused_or_foreign_tokens() {
     );
     assert_eq!(send(&mut session, json!({"type":"inspect"})), booked);
 }
+
+#[test]
+fn rights_visible_reports_are_bounded_and_tokens_are_session_local() {
+    let mut session = Session::new().unwrap();
+    let market = session.report().rights_market;
+    assert_eq!(market.titles.len(), 2);
+    let title = &market.titles[0];
+    assert_eq!(title.expected_viewers % 100, 0);
+    let encoded = serde_json::to_string(&market).unwrap();
+    for private in [
+        "public_execution",
+        "execution",
+        "public_profile",
+        "feature_preferences",
+        "studied",
+        "base_price",
+    ] {
+        assert!(!encoded.contains(&format!("\"{private}\"")));
+    }
+    let token = title.acquisition.as_ref().unwrap().token.clone();
+    let command = || Command::BuyRights {
+        programme: title.programme,
+        token: token.clone(),
+    };
+    let mut other = Session::new().unwrap();
+    assert_eq!(
+        other.execute(command()).unwrap_err().code,
+        "stale_rights_offer"
+    );
+    session.execute(Command::Reset {}).unwrap();
+    assert_eq!(
+        session.execute(command()).unwrap_err().code,
+        "stale_rights_offer"
+    );
+    let report = session.execute(Command::Advance { to_tick: 192 }).unwrap();
+    assert!(report
+        .rights_market
+        .titles
+        .iter()
+        .any(|title| title.name == "Night Chase"));
+    assert!(report
+        .rights_market
+        .news
+        .iter()
+        .any(|news| news.kind == "rival_purchased"));
+}

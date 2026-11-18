@@ -28,6 +28,7 @@ jobs:
       - run: cargo run -p bts-web --example feature_profiles > "$RUNNER_TEMP/bts-feature-profiles.json"
       - run: cargo run -p bts-web --example film_comparison > "$RUNNER_TEMP/bts-film-comparison.json"
       - run: cargo run -p bts-web --example ad_minute_market > "$RUNNER_TEMP/bts-ad-minute-market.json"
+      - run: cargo run -p bts-web --example rights_market > "$RUNNER_TEMP/bts-rights-market.json"
       - run: cargo run -p bts-web --example production_experiment > "$RUNNER_TEMP/bts-original-production.json"
       - run: cargo run -p bts-web --example casting_comparison > "$RUNNER_TEMP/bts-casting-comparison.json"
       - run: cargo run -p bts-sim --example sugeno_semantics

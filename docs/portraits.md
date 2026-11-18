@@ -68,3 +68,12 @@ The prompt used Mina Sol as a style reference for 1980s pixel art, warm shading
 and teal backdrops. It requested a text-free four-column, two-row atlas of
 new, centred head-and-shoulders portraits in roster order. The top row is Ada,
 Leon, Inez and Dev. The bottom row is Nina, Sam, Rosa and a spare silhouette.
+
+## Rights listing art
+
+The [rights title atlas](../web/public/portraits/rights-titles.webp) was made
+with built-in ImageGen. The prompt requested one landscape 3:2 late-1980s
+pixel-art contact sheet with a two-by-two grid, no gutters or text, crisp pixel
+clusters, deep navy and teal and amber windows. The four tiles are a warm
+neighbourhood shop at twilight, a retro observatory, a running silhouette
+and vintage car in neon rain, and a spare cinema exterior.

@@ -204,6 +204,7 @@ pub enum Account {
     Station(StationId),
     BroadcastCosts,
     ResearchCosts,
+    RightsSellers,
     ProductionEscrow(ProductionId),
     ProductionCosts,
 }
@@ -219,6 +220,8 @@ pub enum LedgerReason {
     ProductionReserve,
     ProductionSpend,
     AudiencePoll,
+    RightsPurchase,
+    RightsResale,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct LedgerEntry<T: Clock = SimHour> {
@@ -227,6 +230,8 @@ pub struct LedgerEntry<T: Clock = SimHour> {
     pub to: Account,
     pub amount: Money,
     pub reason: LedgerReason,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rights_title: Option<ProgrammeId>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct FinancialEvent<T: Clock = SimHour> {
@@ -252,6 +257,7 @@ pub struct EconomyState<T: Clock = SimHour> {
     cash: BTreeMap<StationId, Money>,
     cost_sink: Money,
     research_costs: Money,
+    rights_costs: Money,
     production_escrows: BTreeMap<ProductionId, Money>,
     production_costs: Money,
     contracts: BTreeMap<ContractId, Contract<T>>,
@@ -276,6 +282,7 @@ impl<T: Clock> EconomyState<T> {
                 .collect(),
             cost_sink: Money(0),
             research_costs: Money(0),
+            rights_costs: Money(0),
             production_escrows: BTreeMap::new(),
             production_costs: Money(0),
             contracts: BTreeMap::new(),
@@ -336,8 +343,35 @@ impl<T: Clock> EconomyState<T> {
             + self.escrow()
             + u128::from(self.cost_sink.0)
             + u128::from(self.research_costs.0)
+            + u128::from(self.rights_costs.0)
             + self.production_escrow()
             + u128::from(self.production_costs.0)
+    }
+    pub(crate) fn transfer_rights(
+        &mut self,
+        at: T,
+        title: ProgrammeId,
+        buyer: StationId,
+        seller: Option<StationId>,
+        price: Money,
+    ) -> Result<(), Error> {
+        let balance = self.cash[&buyer].subtract(price)?;
+        let proceeds = match seller {
+            Some(station) => self.cash[&station].add(price)?,
+            None => self.rights_costs.add(price)?,
+        };
+        self.advance_revision()?;
+        self.cash.insert(buyer, balance);
+        let (destination, reason) = if let Some(station) = seller {
+            self.cash.insert(station, proceeds);
+            (Account::Station(station), LedgerReason::RightsResale)
+        } else {
+            self.rights_costs = proceeds;
+            (Account::RightsSellers, LedgerReason::RightsPurchase)
+        };
+        self.transfer(at, Account::Station(buyer), destination, price, reason);
+        self.ledger.last_mut().unwrap().rights_title = Some(title);
+        Ok(())
     }
     pub(crate) fn reserve_production(
         &mut self,
@@ -433,6 +467,7 @@ impl<T: Clock> EconomyState<T> {
                 to,
                 amount,
                 reason,
+                rights_title: None,
             });
         }
     }

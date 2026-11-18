@@ -1,0 +1,132 @@
+[
+  {
+    "broad_after_assessment": {
+      "groups": [
+        [
+          1,
+          2359.411931456206
+        ],
+        [
+          2,
+          5024.526411526921
+        ],
+        [
+          3,
+          381.233293759924
+        ]
+      ],
+      "price": 2456,
+      "title": "The Corner Shop",
+      "uncertainty": 0.20173509334225,
+      "viewers": 7765.171636743051
+    },
+    "broad_before_assessment": {
+      "groups": [
+        [
+          1,
+          2576.158350138209
+        ],
+        [
+          2,
+          5489.38407630902
+        ],
+        [
+          3,
+          421.6059473790476
+        ]
+      ],
+      "price": 2456,
+      "title": "The Corner Shop",
+      "uncertainty": 0.37,
+      "viewers": 8487.148373826278
+    },
+    "buyer_at_deadline": 2,
+    "money_total": 80000,
+    "rival_opening_cash": 20000,
+    "specialist": {
+      "groups": [
+        [
+          1,
+          949.4937062971812
+        ],
+        [
+          2,
+          2575.027184153327
+        ],
+        [
+          3,
+          628.7844827265864
+        ]
+      ],
+      "price": 1260,
+      "title": "Beyond the Observatory",
+      "uncertainty": 0.37,
+      "viewers": 4153.305373177095
+    }
+  },
+  {
+    "broad_after_assessment": {
+      "groups": [
+        [
+          1,
+          2359.411931456206
+        ],
+        [
+          2,
+          5024.526411526921
+        ],
+        [
+          3,
+          381.233293759924
+        ]
+      ],
+      "price": 2047,
+      "title": "The Corner Shop",
+      "uncertainty": 0.20173509334225,
+      "viewers": 7765.171636743051
+    },
+    "broad_before_assessment": {
+      "groups": [
+        [
+          1,
+          2576.158350138209
+        ],
+        [
+          2,
+          5489.38407630902
+        ],
+        [
+          3,
+          421.6059473790476
+        ]
+      ],
+      "price": 2047,
+      "title": "The Corner Shop",
+      "uncertainty": 0.37,
+      "viewers": 8487.148373826278
+    },
+    "buyer_at_deadline": null,
+    "money_total": 60150,
+    "rival_opening_cash": 150,
+    "specialist": {
+      "groups": [
+        [
+          1,
+          949.4937062971812
+        ],
+        [
+          2,
+          2575.027184153327
+        ],
+        [
+          3,
+          628.7844827265864
+        ]
+      ],
+      "price": 1050,
+      "title": "Beyond the Observatory",
+      "uncertainty": 0.37,
+      "viewers": 4153.305373177095
+    }
+  }
+]

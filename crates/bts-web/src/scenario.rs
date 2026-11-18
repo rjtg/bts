@@ -55,6 +55,8 @@ pub fn world() -> World {
     for audience in &mut world.audiences {
         let early = audience.availability[18];
         let late = audience.availability[21];
+        audience.availability[14] = early * 0.23;
+        audience.availability[15] = early * 0.30;
         for (hour, availability) in audience.availability.iter_mut().enumerate().skip(16) {
             *availability = match hour {
                 16 => early * 0.35,
@@ -143,6 +145,7 @@ pub(crate) fn planner_from_world(world: World) -> Result<Planner, PlanError> {
         })
         .collect();
     planner.configure_research(719, 12, ages)?;
+    planner.configure_rights(RIVAL, rights_titles(planner.world()))?;
     Ok(planner)
 }
 
@@ -159,4 +162,46 @@ pub fn production_roster() -> (
     rival.description = "Channel Two's regular studio host.".into();
     people.push(rival);
     (people, requests)
+}
+
+pub(crate) fn rights_titles(world: &World) -> Vec<bts_sim::planning::rights::TitleSeed> {
+    use bts_sim::{economy::Money, planning::rights::TitleSeed, FeatureProfile};
+    vec![
+        TitleSeed {
+            programme: bts_sim::Programme {
+                id: ProgrammeId(60000), kind: ProgrammeKind::Standalone,
+                name: "The Corner Shop".into(), profile: FeatureProfile::fiction([0.84,0.74,0.27,0.83,0.59,0.33,0.67]),
+                awareness: 0.66, cast_appeal: 0.6, execution: 0.50,
+                broadcast_cost: Money(100), duration_minutes: 90,
+            },
+            public_profile: FeatureProfile::fiction([0.84,0.78,0.24,0.88,0.56,0.44,0.72]),
+            public_execution: 0.81, release: SimTick(0), deadline: SimTick(144),
+            base_price: Money(350), evidence: "A familiar neighbourhood comedy. An old television guide praises its cast. No recent audience figures.",
+            art: "corner",
+        },
+        TitleSeed {
+            programme: bts_sim::Programme {
+                id: ProgrammeId(60001), kind: ProgrammeKind::Standalone,
+                name: "Beyond the Observatory".into(), profile: world.programmes[1].profile,
+                awareness: 0.45, cast_appeal: 0.35, execution: 0.86,
+                broadcast_cost: Money(70), duration_minutes: 60,
+            },
+            public_profile: world.programmes[1].profile,
+            public_execution: 0.58, release: SimTick(0), deadline: SimTick(216),
+            base_price: Money(220), evidence: "An archive astronomy special. A specialist magazine remembers its clear explanations. Public reception is sparse.",
+            art: "observatory",
+        },
+        TitleSeed {
+            programme: bts_sim::Programme {
+                id: ProgrammeId(60002), kind: ProgrammeKind::Standalone,
+                name: "Night Chase".into(), profile: FeatureProfile::fiction([0.26,0.3,0.88,0.30,0.60,0.86,0.89]),
+                awareness: 0.80, cast_appeal: 0.77, execution: 0.78,
+                broadcast_cost: Money(170), duration_minutes: 90,
+            },
+            public_profile: FeatureProfile::fiction([0.22,0.27,0.94,0.29,0.57,0.91,0.86]),
+            public_execution: 0.73, release: SimTick(192), deadline: SimTick(336),
+            base_price: Money(1350), evidence: "Fresh from cinemas. A strong opening weekend and favourable press for the chase sequences. Press reactions to the story were mixed.",
+            art: "chase",
+        },
+    ]
 }

@@ -11,6 +11,8 @@ For minute sales, the planner reserves the programme plus listed ad time rounded
 up to full ticks. See [ad-minute market](ad-minute-market.md) for schedule edits,
 inventory and settlement. Legacy contracts follow the rules below.
 
+See [programme rights](rights-market.md) for ownership transfers, rival gaps and schedule protections.
+
 ## Workspace and actions
 
 The browser has a full-day horizontal timeline with 96 quarter-hour cells,

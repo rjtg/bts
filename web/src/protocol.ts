@@ -1,6 +1,9 @@
 // Player protocol v8. Rust DTOs are authoritative; no developer-export types are imported.
 export type Command =
   | { type: 'inspect' | 'reset' }
+  | { type: 'buy_rights' | 'accept_resale'; programme: number; token: string }
+  | { type: 'assess_title'; programme: number; insight: number }
+  | { type: 'list_resale'; programme: number }
   | { type: 'resize_ad_block'; airing_id: number; minutes: number }
   | { type: 'request_minute_offers'; airing_id: number }
   | { type: 'accept_minute_offer'; airing_id: number; advertiser: number; token: string }
@@ -65,13 +68,14 @@ export interface Research {
 export interface Report {
   research: Research | null;
   film_desk: FilmDesk;
+  rights_market: RightsMarket;
   film_review: FilmReview | null;
   production: ProductionView;
   booking_review: { production_id: number; exceptional_person: number | null; cooperation_sway: number; studio:number; total_sway: number; sway_remaining: number; budget: string; cash_remaining: string } | null;
   reporting: string; now_tick: number; end_tick: number; tick_minutes: number; next_airing: number | null; active_airing: number | null; cash: string;
   stations: { id: number; name: string; is_player: boolean; staff:string[]; owned_studios:number|null }[];
   gaps: { start_tick: number; end_tick: number }[];
-  finances: { opening_cash: string; costs_paid: string; revenue: string; production_committed: string; production_in_escrow: string; production_spent: string; ledger: { production_id: number | null; tick: number; airing_id: number | null; kind: string; amount: string }[] };
+  finances: { opening_cash: string; costs_paid: string; revenue: string; rights_spent: string; resale_receipts: string; production_committed: string; production_in_escrow: string; production_spent: string; ledger: { rights_title: number | null; production_id: number | null; tick: number; airing_id: number | null; kind: string; amount: string }[] };
   catalogue: Programme[]; advertisers: { id: number; name: string }[]; schedule: Airing[];
   offer: { offer_id: string; airing_id: number; start_tick: number; end_tick: number; advertiser: number; deadline_tick: number; maximum_payment: string; targets: Commitment[] } | null;
   minute_offers: { airing_id: number; token: string; offers: {
@@ -127,4 +131,19 @@ export type FilmDesk = {
 export type MinuteBooking = {
   airing_id: number; advertiser: number; minutes: number; price: string;
   settlement: { aired_minutes: number; payment: string; refund: string; viewer_minutes: number } | null;
+};
+
+export type MarketOffer = { token: string; price: string; deadline: number };
+export type MarketTitle = {
+  programme: number; name: string; status: 'listed' | 'expired' | 'owned'; owner: number | null;
+  evidence: string; art: string; duration: number; broadcast_cost: string;
+  acquisition: MarketOffer | null; resale: MarketOffer | null; blocker: number | null;
+  rival_airing: number | null; assessment_due: number | null; assessment_at: number | null;
+  qualities: Quality[]; expected_viewers: number; uncertainty: string; groups: [string, number][];
+};
+export type RightsMarket = {
+  titles: MarketTitle[];
+  news: { programme: number; tick: number; kind: string; station: number | null }[];
+  assessment_ticks: number;
+  spending: { programme: number; tick: number; amount: number; balance: number }[];
 };

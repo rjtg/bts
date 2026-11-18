@@ -62,9 +62,9 @@ auction: competitors affect the price and may acquire a title if the player pass
 before a deadline, but the player does not bid against them. Once acquired, rights
 remain with the station indefinitely. Owners can list a title for resale; interested
 solvent competitors may make offers, which the owner can accept or decline. Without
-an offer, the work stays in the owner's library. Licensing, releases, prices,
-competitor decisions and resale are design proposals; the browser fixture currently
-has fixed disjoint libraries and no acquisition market.
+an offer, the work stays in the owner's library. The browser [rights market](rights-market.md) implements this loop for a small
+set of finished standalone titles. Recurring releases and wider strategy remain
+future work.
 
 ## Audience groups
 

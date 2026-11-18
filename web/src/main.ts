@@ -1,6 +1,7 @@
 import init, { WebSession, api_version } from '../pkg/bts_web.js';
 import type { Airing, Booking, BroadcastResult, Command, Programme, Report, Response } from './protocol';
 import { renderAdMarket, salesFor, minuteRevenue } from './ad-market';
+import { initialiseRightsMarket } from './rights-market';
 import { renderAudience } from './audience';
 import { initialiseFilmDesk } from './film';
 import { initialiseProduction } from './production';
@@ -14,6 +15,7 @@ const status = element('status');
 const error = element('error');
 let session: WebSession;
 let report: Report;
+let rightsUi: ReturnType<typeof initialiseRightsMarket> | undefined;
 let filmUi: ReturnType<typeof initialiseFilmDesk> | undefined;
 let productionUi: ReturnType<typeof initialiseProduction> | undefined;
 let selected: number | null = null;
@@ -162,7 +164,7 @@ function renderDetails(): void {
   element('selected-name').textContent = p.name; element('selected-window').textContent = `${windowText(a)} · ${p.duration_minutes} min`;
   element('selected-status').textContent = `${a.status.replace('_', ' ').toUpperCase()}${a.booked ? ' · BOOKED' : own && a.editable ? ' · INTERNAL DRAFT' : ''}`;
   const owned = own ? programmeFor(a.programme) : null;
-  element('known-details').textContent = owned ? `${owned.genre} · ${owned.kind}${owned.episode ? ` ${owned.episode}` : ''} · ${owned.production_type}. ${owned.qualities.map(q => `${q.name} · ${q.level}`).join(", ")}. Cost per airing: ${money(owned.broadcast_cost)} credits. Execution is unknown.` : `${p.genre} · competitor programme. This work is not in your library. Its execution and costs are unknown.`;
+  element('known-details').textContent = owned ? `${owned.genre} · ${owned.kind}${owned.episode ? ` ${owned.episode}` : ''} · ${owned.production_type}. ${owned.qualities.map(q => `${q.name} · ${q.level}`).join(", ")}. Cost per airing: ${money(owned.broadcast_cost)} credits. Execution is unknown.` : `${p.genre} · ${own ? 'previously owned programme' : 'competitor programme'}. This work is outside your library. Its execution is unknown.`;
   if(owned && owned.production_id!==null)element('known-details').append(document.createTextNode(` Your original interview/discussion, production #${owned.production_id}.`));
   element<HTMLFieldSetElement>('edit-controls').disabled = !a.editable;
   select('move-day').value = String(Math.floor(a.start_tick / 96)); select('move-time').value = String(a.start_tick % 96);
@@ -203,15 +205,16 @@ function renderReports(): void {
   if (!report.results.length) results.append(node('p', 'No completed broadcasts yet. Results arrive at each airing’s scheduled completion.', 'muted'));
   else results.append(table('Completed airings · select a row for audience counts and contract terms', ['Airing / programme', 'Broadcast window', 'Outcome', 'Cost', 'Cash after'], report.results.map(r => {
     const a = airingFor(r.airing_id)!;
-    return [airingLink(r.airing_id, `#${r.airing_id} · ${programmeFor(a.programme).name}`), windowText(a), r.off_air ? 'Off air' : 'Completed', money(r.broadcast_cost), money(r.cash_after)];
+    return [airingLink(r.airing_id, `#${r.airing_id} · ${publicProgrammeFor(a.programme).name}`), windowText(a), r.off_air ? 'Off air' : 'Completed', money(r.broadcast_cost), money(r.cash_after)];
   })));
   const summary = element('finance-summary'); summary.replaceChildren();
-  for (const [label, value] of [['Opening cash', report.finances.opening_cash], ['Broadcast costs', report.finances.costs_paid], ['Production committed', report.finances.production_committed], ['Ad receipts', report.finances.revenue], ['Current cash', report.cash]]) { const stat = node('div', '', 'finance-stat'); stat.append(node('span', label), node('strong', money(value))); summary.append(stat); }
+  for (const [label, value] of [['Opening cash', report.finances.opening_cash], ['Broadcast costs', report.finances.costs_paid], ['Production committed', report.finances.production_committed], ['Ad receipts', report.finances.revenue], ['Rights purchases', report.finances.rights_spent], ['Rights resale', report.finances.resale_receipts], ['Current cash', report.cash]]) { const stat = node('div', '', 'finance-stat'); stat.append(node('span', label), node('strong', money(value))); summary.append(stat); }
   summary.append(node('p', `Production budget remaining in escrow: ${money(report.finances.production_in_escrow)} · spent on recording: ${money(report.finances.production_spent)}. Reservation reduces cash once; spending transfers those reserved funds.`, 'production-reserve-note'));
   const ledger = element('ledger'); ledger.replaceChildren();
   if (report.finances.ledger.length) ledger.append(table('Station ledger · exact integer credits', ['Time', 'Airing / production', 'Transaction', 'Credits'], report.finances.ledger.map(l => {
-    const kinds: Record<string, string> = { broadcast_cost: 'Broadcast cost', audience_poll: 'Audience poll', advertising_payment: 'Advertising receipt', production_reserve: 'Production budget reserved (cash)', production_spend: 'Recording expense (from escrow)' };
+    const kinds: Record<string, string> = { broadcast_cost: 'Broadcast cost', audience_poll: 'Audience poll', advertising_payment: 'Advertising receipt', production_reserve: 'Production budget reserved (cash)', production_spend: 'Recording expense (from escrow)', rights_purchase: 'Rights purchase', rights_resale: 'Rights resale' };
     let link: string | HTMLButtonElement = l.airing_id === null ? '—' : airingLink(l.airing_id, `Airing #${l.airing_id}`);
+    if (l.rights_title !== null) link = report.rights_market.titles.find(title => title.programme === l.rights_title)?.name ?? 'Programme rights';
     if (l.production_id !== null) { const id = l.production_id; link = node('button', `Production #${id}`, 'row-link'); link.addEventListener('click', () => report.film_desk.projects.some(f => f.id === id) ? filmUi?.showProject(id) : productionUi?.showProject(id)); }
     return [stamp(l.tick), link, kinds[l.kind] ?? l.kind, money(l.amount)];
   })));
@@ -233,7 +236,7 @@ function render(next: Report): void {
   for (const id of ['advance-tick', 'advance-day', 'place']) button(id).disabled = report.now_tick >= report.end_tick;
   button('previous-day').disabled = viewedDay === 0; button('next-day').disabled = viewedDay === 6;
   element('reporting').textContent = report.reporting;
-  renderAudience(report, stamp, send); renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report); filmUi?.render(report);
+  renderAudience(report, stamp, send); renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report); filmUi?.render(report); rightsUi?.render(report);
   if (playback?.isPlaying()) {
     const scroller = element('timeline-scroller'); const tickWidth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tick'));
     const x = (report.now_tick % 96) * tickWidth;
@@ -276,6 +279,7 @@ async function start(): Promise<void> {
     };
     productionUi = initialiseProduction({ report: () => report, send, stamp, money, showProgramme });
     filmUi = initialiseFilmDesk({ send, stamp, money, showProgramme });
+    rightsUi = initialiseRightsMarket({ send, stamp, money, showProgramme, showAiring: id => chooseAiring(id, true) });
     session = new WebSession(); send({ type: 'inspect' });
     playback = initialisePlayback({ state:()=>report, tick:()=>send({type:'advance',to_tick:Math.min(report.end_tick,report.now_tick+1)},true), onPlay:()=>{viewedDay=Math.min(6,Math.floor(report.now_tick/96));select('day').value=String(viewedDay);renderTimeline();jump(Math.max(0,report.now_tick%96-4));} });
     element('place-form').addEventListener('submit', event => { event.preventDefault(); if(!report.catalogue.some(p=>p.id===libraryProgramme))return; send({ type: 'place', programme: libraryProgramme, start_tick: Number(select('place-day').value) * 96 + Number(select('place-time').value), advertiser: null }); });

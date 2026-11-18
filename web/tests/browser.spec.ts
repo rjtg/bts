@@ -132,7 +132,7 @@ test('actual Wasm protocol matches native planning, booking, tick accounting and
     if (Array.isArray(expected)) { expect(Array.isArray(actual)).toBe(true); expect((actual as unknown[]).length).toBe(expected.length); expected.forEach((value, i) => compare((actual as unknown[])[i], value)); return; }
     if (expected !== null && typeof expected === 'object') {
       expect(Object.keys(actual as object).sort()).toEqual(Object.keys(expected).sort());
-      for (const [key, value] of Object.entries(expected)) { if (key === 'offer_id') { expect(typeof (actual as Record<string, unknown>)[key]).toBe('string'); continue; } compare((actual as Record<string, unknown>)[key], value); } return;
+      for (const [key, value] of Object.entries(expected)) { if (key === 'offer_id' || key === 'token') { expect(typeof (actual as Record<string, unknown>)[key]).toBe('string'); continue; } compare((actual as Record<string, unknown>)[key], value); } return;
     }
     expect(actual).toEqual(expected);
   }

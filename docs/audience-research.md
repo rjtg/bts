@@ -5,6 +5,8 @@ programme feature preference estimates. The panel shows when the estimate was ma
 describes familiarity and uncertainty at that poll. Station familiarity is
 separate from the audience's familiarity with a programme.
 
+Title assessments also draw from the same Insight balance. See [rights market](rights-market.md) for their timing and display.
+
 The browser opens with one free baseline snapshot per group, familiarity 0.25,
 all paid polling switched off, and 12 Insight. The age input is one authored
 typical age per group in this fixture. Full age distributions and changing
