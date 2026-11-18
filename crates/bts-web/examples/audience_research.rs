@@ -12,7 +12,7 @@ fn main() {
     ] {
         let mut planner = bts_web::scenario::planner().unwrap();
         let group = AudienceId(1);
-        planner.set_polling(group, polling).unwrap();
+        planner.set_polling(polling).unwrap();
         if insight > 0 {
             planner.spend_insight(group, insight).unwrap();
         }

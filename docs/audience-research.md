@@ -1,7 +1,7 @@
 # Audience research experiment
 
 The browser Audience panel shows each known group's latest size, typical age and
-genre preference estimates. The panel shows when the estimate was made and
+programme feature preference estimates. The panel shows when the estimate was made and
 describes familiarity and uncertainty at that poll. Station familiarity is
 separate from the audience's familiarity with a programme.
 
@@ -10,7 +10,7 @@ all paid polling switched off, and 12 Insight. The age input is one authored
 typical age per group in this fixture. Full age distributions and changing
 audience traits remain future work.
 
-| Polling tier | Schedule | Cash per snapshot |
+| Polling tier | Schedule | Cash per survey (all groups) |
 | --- | --- | ---: |
 | Off | None | 0 |
 | Daily | Every 96 quarter-hour ticks | 60 |
@@ -18,12 +18,10 @@ audience traits remain future work.
 
 Changing tiers schedules the next strictly future aligned boundary. Each tick
 first processes actual broadcasts, payments and production. Familiarity then
-decays by a factor of 0.9995 regardless of polling. Polls due at that boundary
-are processed in ascending audience ID order using cash available then. Each
-successful poll transfers its fee to the research cost account. An unaffordable
-poll is skipped, retains the old snapshot and waits until the next regular due
-time. A long advance visits each boundary in order, with the same effects as
-individual ticks.
+decays by a factor of 0.9995 regardless of polling. One station-wide survey
+refreshes every group together and transfers a single flat fee to the research
+cost account. If the station cannot pay, all snapshots stay as they were until
+the next successful survey. Long advances visit each boundary in order.
 
 Spending a positive integer amount `n` sets familiarity to
 `F + (1 - F) × (1 - 0.85^n)`. This immediately debits Insight and records the
@@ -43,12 +41,12 @@ Population uses the relative error `u × bias`, rounded to a positive u32.
 Typical age uses an additive error of `60 × u × bias` years, rounded and
 bounded to 0–120. Unit attributes use additive error clipped to [0, 1],
 except hourly availability which uses relative error to preserve closed hours.
-Preferences are independent affinities and do not sum to one. These are
+Preferences are independent desired feature levels and do not sum to one. The public report rounds each published preference to the nearest half star on a five-star scale. These are
 provisional error scales, not calibrated confidence intervals. Only the dated
 estimates and qualitative familiarity enter the public report.
 
 Browser offer-time previews substitute the latest snapshot inputs for audience
-population, genre and tone preferences, hourly availability, purchasing power
+population, feature preferences, hourly availability, purchasing power
 and product interest. Actual allocation and delivery use the world in Rust.
 Estimated delivery freezes into the existing contract on acceptance, and the
 existing per-audience settlement compares actual eligible delivery with those

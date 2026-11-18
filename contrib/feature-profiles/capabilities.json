@@ -1,0 +1,118 @@
+[
+  {
+    "audiences": [
+      {
+        "attraction": 0.3670336154603201,
+        "audience": 1,
+        "satisfaction": 0.5813758373111089,
+        "viewers": 1031.328563563861
+      },
+      {
+        "attraction": 0.4571072986603199,
+        "audience": 2,
+        "satisfaction": 0.655563589618801,
+        "viewers": 2574.77571839524
+      },
+      {
+        "attraction": 0.57888504517852,
+        "audience": 3,
+        "satisfaction": 0.7981364314649548,
+        "viewers": 624.0327631963723
+      }
+    ],
+    "production": {
+      "achieved": {
+        "production_type": "Nonfiction",
+        "values": [
+          0.12055500000000002,
+          0.247475,
+          null,
+          0.5444249999999999,
+          null,
+          null,
+          0.35448749999999996,
+          0.7621775,
+          null,
+          null
+        ]
+      },
+      "ambition": {
+        "production_type": "Nonfiction",
+        "values": [
+          0.18000000000000002,
+          0.2,
+          null,
+          0.7,
+          null,
+          null,
+          0.44999999999999996,
+          0.97,
+          null,
+          null
+        ]
+      },
+      "craft": 0.8825,
+      "host_depth_capability": 0.1,
+      "subject_fit": 0.9624999999999999
+    },
+    "total_money": 80000
+  },
+  {
+    "audiences": [
+      {
+        "attraction": 0.35244929515312,
+        "audience": 1,
+        "satisfaction": 0.5751659909357241,
+        "viewers": 967.1826603522767
+      },
+      {
+        "attraction": 0.43835120235312,
+        "audience": 2,
+        "satisfaction": 0.6463452509357241,
+        "viewers": 2418.370214895606
+      },
+      {
+        "attraction": 0.59470197619932,
+        "audience": 3,
+        "satisfaction": 0.8222178297049549,
+        "viewers": 643.7643626385785
+      }
+    ],
+    "production": {
+      "achieved": {
+        "production_type": "Nonfiction",
+        "values": [
+          0.12055500000000002,
+          0.247475,
+          null,
+          0.5444249999999999,
+          null,
+          null,
+          0.35448749999999996,
+          0.9173775000000001,
+          null,
+          null
+        ]
+      },
+      "ambition": {
+        "production_type": "Nonfiction",
+        "values": [
+          0.18000000000000002,
+          0.2,
+          null,
+          0.7,
+          null,
+          null,
+          0.44999999999999996,
+          0.97,
+          null,
+          null
+        ]
+      },
+      "craft": 0.8825,
+      "host_depth_capability": 0.9,
+      "subject_fit": 0.9624999999999999
+    },
+    "total_money": 80000
+  }
+]

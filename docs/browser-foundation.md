@@ -5,8 +5,9 @@ the CLI remains a developer tool. The first fourteen-slot integration harness
 has been replaced by the [programme-planning workspace](programme-planning.md).
 That specification documents the current seven-day scenario, explicit runtimes,
 15-minute ticks, processing cadence and observation boundary. [Original production](original-production.md)
-adds the bounded studio workflow and current protocol v5. Protocols v1/v2/v3/v4 are
-no longer supported.
+adds the bounded studio workflow. [Programme feature profiles](feature-profiles.md)
+introduced programme profiles in protocol v6. The current protocol v8 reports
+audience preferences in half-star steps. Earlier versions are unsupported.
 
 ## Architecture
 
@@ -20,7 +21,7 @@ enter the simulation.
 `bts-web::Session` owns one Rust planner/simulation per game session. It exposes
 `new`, `execute(Command)`, `dispatch_json(&str)` and `report()`. The wasm-bindgen
 ABI provides `new WebSession()`, `session.dispatch(json)`, `session.free()` and
-`api_version()` (5). Clone/apply/observe/commit keeps rejected commands atomic.
+`api_version()` (8). Clone/apply/observe/commit keeps rejected commands atomic.
 TypeScript owns controls and formatting, not simulation or accounting.
 
 Player observations are constructed from a whitelist, separately from developer

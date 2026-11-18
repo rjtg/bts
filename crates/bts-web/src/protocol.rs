@@ -2,7 +2,7 @@
 use bts_sim::planning::production::{Subject, Tone};
 use serde::{Deserialize, Serialize};
 
-pub const API_VERSION: u32 = 5;
+pub const API_VERSION: u32 = 8;
 pub const REPORTING: &str = "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. One ad exposure opportunity per airing; delivery units are millionths of a relevant impression.";
 
 #[derive(Clone, Debug, Deserialize)]
@@ -15,8 +15,28 @@ pub struct Request {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Command {
+    PitchFilm {
+        title: String,
+        subject: Subject,
+        ambition: [f64; 7],
+    },
+    WriteFilm {
+        film_id: u32,
+        writer: u16,
+        focus: Option<u8>,
+    },
+    AcceptScript {
+        film_id: u32,
+    },
+    ReviewFilm {
+        film_id: u32,
+        booking: FilmBookingInput,
+    },
+    BookFilm {
+        film_id: u32,
+        booking: FilmBookingInput,
+    },
     SetPolling {
-        audience: u16,
         polling: bts_sim::planning::research::Polling,
     },
     SpendInsight {
@@ -116,6 +136,8 @@ pub struct PlayerReport {
     pub cash: String,
     pub research: Option<bts_sim::planning::research::ResearchView>,
     pub production: ProductionView,
+    pub film_desk: FilmDesk,
+    pub film_review: Option<FilmReview>,
     pub booking_review: Option<ProductionBookingReview>,
     pub catalogue: Vec<CatalogueEntry>,
     pub advertisers: Vec<Advertiser>,
@@ -123,6 +145,11 @@ pub struct PlayerReport {
     pub offer: Option<Quote>,
     pub contracts: Vec<Booking>,
     pub results: Vec<BroadcastReport>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct Quality {
+    pub name: &'static str,
+    pub level: &'static str,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct CatalogueEntry {
@@ -133,7 +160,8 @@ pub struct CatalogueEntry {
     pub kind: String,
     pub series_name: Option<String>,
     pub episode: Option<u32>,
-    pub tone: f64,
+    pub production_type: bts_sim::ProductionType,
+    pub qualities: Vec<Quality>,
     pub awareness: f64,
     pub cast_appeal: f64,
     pub broadcast_cost: String,
@@ -253,6 +281,7 @@ pub struct AudienceReport {
     pub player_viewers: f64,
     pub rival_viewers: f64,
     pub not_watching: f64,
+    pub film_reception: Option<&'static str>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -284,7 +313,7 @@ pub struct ProductionView {
 pub struct PersonInfo {
     pub id: u16,
     pub name: String,
-    pub role: &'static str,
+    pub role: bts_sim::planning::production::Role,
     pub fee: String,
     pub description: String,
     pub normal_until_tick: u32,
@@ -300,6 +329,7 @@ pub struct ProductionInfo {
     pub guests: [u16; 2],
     pub subject: Subject,
     pub tone: Tone,
+    pub ambition: Vec<Quality>,
     pub budget: String,
     pub fees: String,
     pub record_at: u32,
@@ -372,4 +402,81 @@ pub struct QuestHint {
     pub matches_requirements: bool,
     pub can_finish_in_time: bool,
     pub achievement_tick: u32,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct FilmBookingInput {
+    pub cast: [u16; 2],
+    pub director: u16,
+    pub studio: u8,
+    pub start: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct FilmReview {
+    pub id: u32,
+    pub cast: [u16; 2],
+    pub director: u16,
+    pub studio: u8,
+    pub start: u32,
+    pub recording_end: u32,
+    pub ready: u32,
+    pub fees: String,
+    pub rent: String,
+    pub total: String,
+    pub studio_shortfall: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct FilmDesk {
+    pub projects: Vec<FilmCard>,
+    pub people: Vec<FilmPerson>,
+    pub studios: Vec<FilmStudio>,
+    pub roles: [&'static str; 2],
+    pub writing_ticks: u32,
+    pub revision_ticks: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct FilmCard {
+    pub id: u32,
+    pub title: String,
+    pub subject: Subject,
+    pub phase: bts_sim::planning::film::FilmPhase,
+    pub committed: String,
+    pub writer: Option<u16>,
+    pub due: Option<u32>,
+    pub script: Option<FilmScript>,
+    pub revised: bool,
+    pub booking: Option<FilmReview>,
+    pub programme: Option<u16>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct FilmScript {
+    pub qualities: Vec<Quality>,
+    pub weaknesses: Vec<(u8, &'static str)>,
+    pub studio_demand: &'static str,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct FilmPerson {
+    pub id: u16,
+    pub name: &'static str,
+    pub job: bts_sim::planning::film::FilmJob,
+    pub fee: String,
+    pub revision_fee: String,
+    pub specialty: &'static str,
+    pub available_until: u32,
+    pub commitments: Vec<(String, u32, u32)>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct FilmStudio {
+    pub id: u8,
+    pub name: &'static str,
+    pub fee: String,
+    pub summary: &'static str,
+    pub commitments: Vec<(String, u32, u32)>,
 }

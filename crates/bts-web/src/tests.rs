@@ -299,10 +299,10 @@ fn malformed_commands_preserve_the_pending_quote_and_useful_errors() {
     for invalid in [
         "{}",
         "not json",
-        r#"{"api_version":5,"command":{"type":"advance","to_tick":80,"extra":true}}"#,
-        r#"{"api_version":5,"command":{"type":"place","start_tick":-1,"programme":1}}"#,
-        r#"{"api_version":5,"command":{"type":"place","start_tick":1.5,"programme":1}}"#,
-        r#"{"api_version":5,"command":{"type":"remove","airing_id":4294967296}}"#,
+        r#"{"api_version":8,"command":{"type":"advance","to_tick":80,"extra":true}}"#,
+        r#"{"api_version":8,"command":{"type":"place","start_tick":-1,"programme":1}}"#,
+        r#"{"api_version":8,"command":{"type":"place","start_tick":1.5,"programme":1}}"#,
+        r#"{"api_version":8,"command":{"type":"remove","airing_id":4294967296}}"#,
     ] {
         let before = s.report();
         let response: Value = serde_json::from_str(&s.dispatch_json(invalid)).unwrap();
@@ -336,6 +336,9 @@ fn audit(value: &Value) {
                         "penalty",
                         "craft",
                         "subject_fit",
+                        "capabilities",
+                        "feature_preferences",
+                        "achieved",
                         "preferred_tone",
                         "recognition",
                         "output",
@@ -616,8 +619,8 @@ fn production_invalid_commands_reset_ids_and_pooled_sway_isolation() {
         "unknown_production",
     );
     for json in [
-        r#"{"api_version":5,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":9007199254740993,"record_at":40}}}"#,
-        r#"{"api_version":5,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"unknown","tone":"calm","budget":"1000","record_at":40}}}"#,
+        r#"{"api_version":8,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":9007199254740993,"record_at":40}}}"#,
+        r#"{"api_version":8,"command":{"type":"create_production","concept":{"title":"Test","host":1,"guests":[3,4],"subject":"unknown","tone":"calm","budget":"1000","record_at":40}}}"#,
     ] {
         let before = a.report();
         let response: Value = serde_json::from_str(&a.dispatch_json(json)).unwrap();
@@ -656,7 +659,7 @@ fn old_redemption_fields_are_rejected_and_failed_sway_spending_preserves_quotes(
         "insufficient_sway",
     );
     let before = s.report();
-    let result: Value = serde_json::from_str(&s.dispatch_json(r#"{"api_version":5,"command":{"type":"book_production","production_id":1,"promise_request":1,"call_favour":1,"cooperation_sway":0}}"#)).unwrap();
+    let result: Value = serde_json::from_str(&s.dispatch_json(r#"{"api_version":8,"command":{"type":"book_production","production_id":1,"promise_request":1,"call_favour":1,"cooperation_sway":0}}"#)).unwrap();
     assert_eq!(result["error"]["code"], "malformed_command");
     assert_eq!(before, s.report());
     let result: Value =
@@ -723,10 +726,10 @@ fn booking_review_is_read_only_and_invalidated_by_world_changes() {
         1
     );
     for invalid in [
-        r#"{"api_version":5,"command":{"type":"book_production","production_id":1,"promise_request":1,"cooperation_sway":0}}"#,
-        r#"{"api_version":5,"command":{"type":"book_production","production_id":1,"smooth_cooperation":true}}"#,
-        r#"{"api_version":5,"command":{"type":"book_production","production_id":1,"cooperation_sway":-1}}"#,
-        r#"{"api_version":5,"command":{"type":"book_production","production_id":1,"cooperation_sway":1.5}}"#,
+        r#"{"api_version":8,"command":{"type":"book_production","production_id":1,"promise_request":1,"cooperation_sway":0}}"#,
+        r#"{"api_version":8,"command":{"type":"book_production","production_id":1,"smooth_cooperation":true}}"#,
+        r#"{"api_version":8,"command":{"type":"book_production","production_id":1,"cooperation_sway":-1}}"#,
+        r#"{"api_version":8,"command":{"type":"book_production","production_id":1,"cooperation_sway":1.5}}"#,
     ] {
         let before = s.report();
         let r: Value = serde_json::from_str(&s.dispatch_json(invalid)).unwrap();
@@ -873,7 +876,7 @@ fn audience_research_changes_quotes_only_after_poll_and_preserves_actual_viewing
     let id = control
         .place(ProgrammeId(1), SimTick(168), Some(BrandId(1)))
         .unwrap();
-    control.set_polling(AudienceId(1), Polling::Daily).unwrap();
+    control.set_polling(Polling::Daily).unwrap();
     let mut researched = control.clone();
     let before = control.quote(id).unwrap().offer.payment;
     let snapshot = researched.research_view().unwrap();
@@ -927,17 +930,21 @@ fn audience_research_changes_quotes_only_after_poll_and_preserves_actual_viewing
     let encoded = serde_json::to_value(improved).unwrap();
     assert!(encoded["groups"][0]["estimate"].get("audience").is_none());
     assert!(encoded["groups"][0]["estimate"].get("bias").is_none());
+    let tastes = encoded["groups"][0]["estimate"]["tastes"]
+        .as_object()
+        .unwrap();
+    assert_eq!(tastes.len(), 10);
+    assert!(tastes
+        .values()
+        .all(|value| value.as_u64().is_some_and(|n| n <= 10)));
 }
 
 #[test]
-fn research_batches_match_single_ticks_and_poll_only_subscribed_groups() {
+fn research_batches_match_single_ticks_and_refresh_all_groups() {
     use bts_sim::planning::research::Polling;
-    use bts_sim::{AudienceId, SimTick};
+    use bts_sim::SimTick;
     let mut batch = scenario::planner().unwrap();
-    batch.set_polling(AudienceId(1), Polling::Daily).unwrap();
-    batch
-        .set_polling(AudienceId(2), Polling::EveryThreeDays)
-        .unwrap();
+    batch.set_polling(Polling::Daily).unwrap();
     let mut step = batch.clone();
     batch.advance_to(SimTick(289)).unwrap();
     for tick in 1..=289 {
@@ -951,10 +958,56 @@ fn research_batches_match_single_ticks_and_poll_only_subscribed_groups() {
             .iter()
             .map(|g| g.estimate.tick)
             .collect::<Vec<_>>(),
-        [288, 288, 0]
+        [288, 288, 288]
     );
     assert_eq!(
         batch.state().economy().cash(scenario::PLAYER).unwrap().0,
-        19_730
+        19_820
     );
+}
+
+#[test]
+fn film_reports_keep_delivery_evidence_private_and_invalid_commands_atomic() {
+    use serde_json::json;
+    let mut session = Session::new().unwrap();
+    let send = |s: &mut Session, command: Value| -> Value {
+        serde_json::from_str(
+            &s.dispatch_json(&json!({"api_version": API_VERSION,"command":command}).to_string()),
+        )
+        .unwrap()
+    };
+    let pitched = send(
+        &mut session,
+        json!({"type":"pitch_film","title":"Night Signal","subject":"everyday_life","ambition":[0.1,0.2,0.9,0.4,0.5,0.9,0.8]}),
+    );
+    let id = pitched["report"]["film_desk"]["projects"][0]["id"].clone();
+    let before = send(&mut session, json!({"type":"inspect"}));
+    assert_eq!(
+        send(&mut session, json!({"type":"accept_script","film_id":id}))["error"]["code"],
+        "film_stage"
+    );
+    assert_eq!(before, send(&mut session, json!({"type":"inspect"})));
+    assert_eq!(
+        send(
+            &mut session,
+            json!({"type":"write_film","film_id":id,"writer":101,"focus":null})
+        )["status"],
+        "ok"
+    );
+    let delivered = send(&mut session, json!({"type":"advance","to_tick":48}));
+    assert_eq!(
+        delivered["report"]["film_desk"]["projects"][0]["phase"],
+        "script_review"
+    );
+    let serialized = delivered["report"]["film_desk"].to_string();
+    for field in [
+        "capability",
+        "craft",
+        "execution",
+        "equipment_demand",
+        "recognition",
+        "spectacle_support",
+    ] {
+        assert!(!serialized.contains(&format!("\"{field}\"")));
+    }
 }

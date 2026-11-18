@@ -25,8 +25,7 @@ fn controlled_world() -> World {
         *audience = template.clone();
         audience.id = AudienceId(i as u16 + 1);
         audience.population = 10000;
-        audience.genre_tastes = [1.0; 3];
-        audience.preferred_tone = 0.8;
+        audience.feature_preferences = [0.8; 10];
         audience.purchasing_power = 1.0;
         audience.product_interests = [1.0; 2];
         audience.availability = [0.0; 24];
@@ -34,7 +33,7 @@ fn controlled_world() -> World {
         audience.availability[20] = 1.0;
     }
     let programme = &mut world.programmes[0];
-    programme.tone = 0.8;
+    programme.profile = FeatureProfile::fiction([0.8; 7]);
     programme.awareness = 1.0;
     programme.cast_appeal = 1.0;
     programme.execution = 1.0;

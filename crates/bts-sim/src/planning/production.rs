@@ -15,6 +15,11 @@ pub struct RequestId(pub u16);
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Role {
+    Actor,
+    Director,
+    Writer,
+    Anchor,
+    Reporter,
     Host,
     Guest,
 }
@@ -26,7 +31,7 @@ pub enum Subject {
     Entertainment,
 }
 impl Subject {
-    fn index(self) -> usize {
+    pub(super) fn index(self) -> usize {
         match self {
             Self::Science => 0,
             Self::EverydayLife => 1,
@@ -38,13 +43,6 @@ impl Subject {
             Self::Science => "Science and invention",
             Self::EverydayLife => "Everyday life",
             Self::Entertainment => "Entertainment and culture",
-        }
-    }
-    fn genre(self) -> Genre {
-        match self {
-            Self::Science => Genre::Science,
-            Self::EverydayLife => Genre::Drama,
-            Self::Entertainment => Genre::Comedy,
         }
     }
 }
@@ -83,7 +81,7 @@ pub struct Talent {
     pub craft: f64,
     /// Science, everyday life, entertainment.
     pub subject_fit: [f64; 3],
-    pub preferred_tone: f64,
+    pub capabilities: Capabilities,
     pub normal_until: SimTick,
     pub negotiable_from: Option<SimTick>,
 }
@@ -97,6 +95,28 @@ pub struct Concept {
     pub budget: Money,
     pub record_at: SimTick,
 }
+impl Concept {
+    pub fn ambition(&self) -> FeatureProfile {
+        let playful = self.tone.score();
+        FeatureProfile::nonfiction([
+            Some(playful * 0.9),
+            Some(playful),
+            None,
+            Some(0.7),
+            None,
+            None,
+            Some(0.35 + playful * 0.5),
+            Some(match self.subject {
+                Subject::Science => 0.97,
+                Subject::EverydayLife => 0.58,
+                Subject::Entertainment => 0.25,
+            }),
+            None,
+            None,
+        ])
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Phase {
     Draft,
@@ -201,7 +221,9 @@ pub struct CooperationIssue {
 pub struct ProductionOutcome {
     pub craft: f64,
     pub subject_fit: f64,
-    pub tone_fit: f64,
+    pub capability: f64,
+    pub ambition: FeatureProfile,
+    pub achieved: FeatureProfile,
     pub resources: f64,
     pub base_execution: f64,
     pub cooperation_penalty: f64,
@@ -218,8 +240,8 @@ pub struct ProductionState {
     requests: BTreeMap<RequestId, ProductionRequest>,
     sway: u32,
     sway_history: Vec<SwayEntry>,
-    next_project: u32,
-    next_programme: u16,
+    pub(super) next_project: u32,
+    pub(super) next_programme: u16,
 }
 impl Default for ProductionState {
     fn default() -> Self {
@@ -333,9 +355,10 @@ impl Planner {
                     "Invalid person identity, fee or booking window.",
                 ));
             }
-            for value in [person.recognition, person.craft, person.preferred_tone]
+            for value in [person.recognition, person.craft]
                 .into_iter()
                 .chain(person.subject_fit)
+                .chain(person.capabilities.0.into_iter().flatten())
             {
                 unit(value, "talent parameter").map_err(engine_error)?;
             }
@@ -719,14 +742,31 @@ impl Planner {
             .iter()
             .map(|(t, w)| t.subject_fit[p.concept.subject.index()] * w)
             .sum::<f64>();
-        let tone_fit = crew
+        let ambition = p.concept.ambition();
+        let delivery: [f64; 10] = std::array::from_fn(|i| {
+            crew.iter()
+                .map(|(person, weight)| person.capabilities.0[i].unwrap_or(0.0) * weight)
+                .sum()
+        });
+        let capability = ambition
+            .values
             .iter()
-            .map(|(t, w)| (1.0 - (t.preferred_tone - p.concept.tone.score()).abs()) * w)
-            .sum::<f64>();
+            .zip(delivery)
+            .filter_map(|(target, skill)| target.map(|_| skill))
+            .sum::<f64>()
+            / ambition.values.iter().flatten().count() as f64;
+        let achieved = FeatureProfile::nonfiction(std::array::from_fn(|i| {
+            ambition.values[i].map(|target| {
+                let ceiling = 0.30 + 0.40 * delivery[i] + 0.20 * craft + 0.10 * fit;
+                let baseline = if i == 1 { 0.5 } else { 0.0 };
+                baseline + (target - baseline) * ceiling
+            })
+        }));
         let resources = (((p.concept.budget.0 - p.fees.0) as f64 / 1000.0).clamp(0.0, 1.0)).sqrt();
         let cast = crew.iter().map(|(t, w)| t.recognition * w).sum::<f64>();
         let base_execution =
-            (0.15 + 0.45 * craft + 0.25 * fit + 0.10 * tone_fit + 0.05 * resources).clamp(0.0, 1.0);
+            (0.15 + 0.45 * craft + 0.25 * fit + 0.10 * capability + 0.05 * resources)
+                .clamp(0.0, 1.0);
         let people = [p.concept.host, p.concept.guests[0], p.concept.guests[1]];
         let issues = self
             .production
@@ -746,7 +786,9 @@ impl Planner {
         let outcome = ProductionOutcome {
             craft,
             subject_fit: fit,
-            tone_fit,
+            capability,
+            ambition,
+            achieved,
             resources,
             base_execution,
             cooperation_penalty,
@@ -760,8 +802,7 @@ impl Planner {
                 id,
                 kind: ProgrammeKind::Standalone,
                 name: p.concept.title.clone(),
-                genre: p.concept.subject.genre(),
-                tone: p.concept.tone.score(),
+                profile: achieved,
                 awareness: 0.55,
                 cast_appeal: cast,
                 execution: execution.clamp(0.0, 1.0),
@@ -918,12 +959,12 @@ impl Planner {
 /// Small fictional content, separate from the production rules.
 pub fn demo_roster() -> (Vec<Talent>, Vec<ProductionRequest>) {
     let roster=vec![
-        Talent { id:PersonId(1),name:"Elian North".into(),role:Role::Host,fee:Money(220),description:"A careful science presenter, strongest with calm explanations.".into(),recognition:0.55,craft:0.90,subject_fit:[0.95,0.7,0.25],preferred_tone:0.2,normal_until:SimTick(672),negotiable_from:None },
-        Talent { id:PersonId(2),name:"Mina Sol".into(),role:Role::Host,fee:Money(120),description:"A familiar entertainment host with a lively conversational style.".into(),recognition:0.85,craft:0.72,subject_fit:[0.25,0.6,0.95],preferred_tone:0.8,normal_until:SimTick(672),negotiable_from:None },
-        Talent { id:PersonId(3),name:"Nora Vale".into(),role:Role::Guest,fee:Money(220),description:"An inventor who enjoys explaining practical science. Available days 1–2; later by explicit Sway negotiation.".into(),recognition:0.50,craft:0.85,subject_fit:[0.95,0.7,0.3],preferred_tone:0.25,normal_until:SimTick(192),negotiable_from:Some(SimTick(192)) },
-        Talent { id:PersonId(4),name:"Felix Reed".into(),role:Role::Guest,fee:Money(180),description:"A hands-on engineer, comfortable with detailed technical discussion.".into(),recognition:0.30,craft:0.88,subject_fit:[1.0,0.6,0.2],preferred_tone:0.2,normal_until:SimTick(672),negotiable_from:None },
-        Talent { id:PersonId(5),name:"Jules Hart".into(),role:Role::Guest,fee:Money(140),description:"A well-known performer with show-business stories and a theatrical delivery. Available days 1–2; later by explicit Sway negotiation.".into(),recognition:0.90,craft:0.65,subject_fit:[0.15,0.5,1.0],preferred_tone:0.85,normal_until:SimTick(192),negotiable_from:Some(SimTick(192)) },
-        Talent { id:PersonId(6),name:"Rafi Linden".into(),role:Role::Guest,fee:Money(160),description:"A community storyteller who connects everyday life and popular culture.".into(),recognition:0.65,craft:0.80,subject_fit:[0.45,0.95,0.9],preferred_tone:0.6,normal_until:SimTick(672),negotiable_from:None },
+        Talent { id:PersonId(1),name:"Elian North".into(),role:Role::Host,fee:Money(220),description:"A careful science presenter, strongest with calm explanations.".into(),recognition:0.55,craft:0.90,subject_fit:[0.95,0.7,0.25],capabilities:Capabilities::discussion([0.25,0.64,0.50,0.55,0.97]),normal_until:SimTick(672),negotiable_from:None },
+        Talent { id:PersonId(2),name:"Mina Sol".into(),role:Role::Host,fee:Money(120),description:"A familiar entertainment host with a lively conversational style.".into(),recognition:0.85,craft:0.72,subject_fit:[0.25,0.6,0.95],capabilities:Capabilities::discussion([0.96,0.94,0.65,0.96,0.40]),normal_until:SimTick(672),negotiable_from:None },
+        Talent { id:PersonId(3),name:"Nora Vale".into(),role:Role::Guest,fee:Money(220),description:"An inventor who enjoys explaining practical science. Available days 1–2; later by explicit Sway negotiation.".into(),recognition:0.50,craft:0.85,subject_fit:[0.95,0.7,0.3],capabilities:Capabilities::discussion([0.28,0.73,0.65,0.53,0.98]),normal_until:SimTick(192),negotiable_from:Some(SimTick(192)) },
+        Talent { id:PersonId(4),name:"Felix Reed".into(),role:Role::Guest,fee:Money(180),description:"A hands-on engineer, comfortable with detailed technical discussion.".into(),recognition:0.30,craft:0.88,subject_fit:[1.0,0.6,0.2],capabilities:Capabilities::discussion([0.19,0.68,0.40,0.52,0.95]),normal_until:SimTick(672),negotiable_from:None },
+        Talent { id:PersonId(5),name:"Jules Hart".into(),role:Role::Guest,fee:Money(140),description:"A well-known performer with show-business stories and a theatrical delivery. Available days 1–2; later by explicit Sway negotiation.".into(),recognition:0.90,craft:0.65,subject_fit:[0.15,0.5,1.0],capabilities:Capabilities::discussion([0.98,0.87,0.85,0.95,0.32]),normal_until:SimTick(192),negotiable_from:Some(SimTick(192)) },
+        Talent { id:PersonId(6),name:"Rafi Linden".into(),role:Role::Guest,fee:Money(160),description:"A community storyteller who connects everyday life and popular culture.".into(),recognition:0.65,craft:0.80,subject_fit:[0.45,0.95,0.9],capabilities:Capabilities::discussion([0.80,0.96,0.95,0.82,0.73]),normal_until:SimTick(672),negotiable_from:None },
     ];
     (
         roster,

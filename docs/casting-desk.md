@@ -4,6 +4,9 @@ Status: implemented bounded discussion-show milestone, November 2026. All numeri
 parameters are provisional. The browser uses the existing six fictional portraits;
 this is not a talent market, employment contract system or general relationship model.
 
+The [feature profile experiment](feature-profiles.md) supersedes the tone
+suitability term below with role-specific feature delivery skills.
+
 ## Playable workflow
 
 1. Open **Production**. Click the host or either guest seat to open the portrait

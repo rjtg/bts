@@ -1,6 +1,7 @@
 import init, { WebSession, api_version } from '../pkg/bts_web.js';
 import type { Airing, Booking, BroadcastResult, Command, Programme, Report, Response } from './protocol';
 import { renderAudience } from './audience';
+import { initialiseFilmDesk } from './film';
 import { initialiseProduction } from './production';
 import './style.css';
 import { element, select, button, node, option } from './ui/dom';
@@ -12,6 +13,7 @@ const status = element('status');
 const error = element('error');
 let session: WebSession;
 let report: Report;
+let filmUi: ReturnType<typeof initialiseFilmDesk> | undefined;
 let productionUi: ReturnType<typeof initialiseProduction> | undefined;
 let selected: number | null = null;
 let libraryProgramme = 1;
@@ -130,6 +132,14 @@ function resultPanel(result: BroadcastResult): HTMLElement {
   const panel = node('div', '', 'contract-panel'); panel.append(node('h4', `Broadcast result · airing #${result.airing_id}`));
   panel.append(node('p', `${result.off_air ? 'OFF AIR — programme could not be funded. No programme or ad exposure.' : 'Completed.'} Cost ${money(result.broadcast_cost)} · cash after completion ${money(result.cash_after)} credits.`));
   panel.append(table(`Provisional expected counts sampled at ${stamp(result.snapshot_tick)} · not measured ratings`, ['Audience', 'Your channel', 'Rival', 'Not watching'], result.audiences.map(a => [a.audience, count(a.player_viewers), count(a.rival_viewers), count(a.not_watching)])));
+  const scheduled = report.schedule.find(airing => airing.airing_id === result.airing_id);
+  const film = report.film_desk.projects.find(project => project.programme === scheduled?.programme);
+  if (film) {
+    const earned = report.contracts.find(booking => booking.airing_id === result.airing_id)?.settlement?.payment ?? '0';
+    panel.append(node('p', `Film investment: ${money(film.committed)} credits · This airing’s ad revenue: ${money(earned)} credits.`));
+    const reception = result.audiences.filter(row => row.film_reception);
+    if (reception.length) panel.append(table('Provisional audience reception', ['Audience', 'Reception'], reception.map(row => [row.audience, row.film_reception!])));
+  }
   return panel;
 }
 function renderDetails(): void {
@@ -142,7 +152,7 @@ function renderDetails(): void {
   element('selected-name').textContent = p.name; element('selected-window').textContent = `${windowText(a)} · ${p.duration_minutes} min`;
   element('selected-status').textContent = `${a.status.replace('_', ' ').toUpperCase()}${a.booked ? ' · BOOKED' : own && a.editable ? ' · INTERNAL DRAFT' : ''}`;
   const owned = own ? programmeFor(a.programme) : null;
-  element('known-details').textContent = owned ? `${owned.genre} · ${owned.kind}${owned.episode ? ` ${owned.episode}` : ''} · tone ${owned.tone.toFixed(2)} · awareness ${owned.awareness.toFixed(2)} · cast appeal ${owned.cast_appeal.toFixed(2)}. Cost per airing: ${money(owned.broadcast_cost)} credits. Execution is unknown.` : `${p.genre} · competitor programme. This work is not in your library. Its execution and costs are unknown.`;
+  element('known-details').textContent = owned ? `${owned.genre} · ${owned.kind}${owned.episode ? ` ${owned.episode}` : ''} · ${owned.production_type}. ${owned.qualities.map(q => `${q.name} · ${q.level}`).join(", ")}. Cost per airing: ${money(owned.broadcast_cost)} credits. Execution is unknown.` : `${p.genre} · competitor programme. This work is not in your library. Its execution and costs are unknown.`;
   if(owned && owned.production_id!==null)element('known-details').append(document.createTextNode(` Your original interview/discussion, production #${owned.production_id}.`));
   element<HTMLFieldSetElement>('edit-controls').disabled = !a.editable;
   select('move-day').value = String(Math.floor(a.start_tick / 96)); select('move-time').value = String(a.start_tick % 96);
@@ -186,7 +196,7 @@ function renderReports(): void {
   if (report.finances.ledger.length) ledger.append(table('Station ledger · exact integer credits', ['Time', 'Airing / production', 'Transaction', 'Credits'], report.finances.ledger.map(l => {
     const kinds: Record<string, string> = { broadcast_cost: 'Broadcast cost', audience_poll: 'Audience poll', advertising_payment: 'Advertising receipt', production_reserve: 'Production budget reserved (cash)', production_spend: 'Recording expense (from escrow)' };
     let link: string | HTMLButtonElement = l.airing_id === null ? '—' : airingLink(l.airing_id, `Airing #${l.airing_id}`);
-    if (l.production_id !== null) { const id = l.production_id; link = node('button', `Production #${id}`, 'row-link'); link.addEventListener('click', () => productionUi?.showProject(id)); }
+    if (l.production_id !== null) { const id = l.production_id; link = node('button', `Production #${id}`, 'row-link'); link.addEventListener('click', () => report.film_desk.projects.some(f => f.id === id) ? filmUi?.showProject(id) : productionUi?.showProject(id)); }
     return [stamp(l.tick), link, kinds[l.kind] ?? l.kind, money(l.amount)];
   })));
   else ledger.append(node('p', 'No station transactions yet. Advertiser escrow is separate from your station cash.', 'muted'));
@@ -207,7 +217,7 @@ function render(next: Report): void {
   for (const id of ['advance-tick', 'advance-day', 'place']) button(id).disabled = report.now_tick >= report.end_tick;
   button('previous-day').disabled = viewedDay === 0; button('next-day').disabled = viewedDay === 6;
   element('reporting').textContent = report.reporting;
-  renderAudience(report, stamp, send); renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report);
+  renderAudience(report, stamp, send); renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report); filmUi?.render(report);
   if (playback?.isPlaying()) {
     const scroller = element('timeline-scroller'); const tickWidth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tick'));
     const x = (report.now_tick % 96) * tickWidth;
@@ -218,7 +228,7 @@ function send(command: Command, automatic = false): void {
   if (!automatic) playback?.pause();
   try {
     const previousIds = report?.schedule.map(a => a.airing_id) ?? [];
-    const response: Response = JSON.parse(session.dispatch(JSON.stringify({ api_version: 5, command })));
+    const response: Response = JSON.parse(session.dispatch(JSON.stringify({ api_version: 8, command })));
     if (response.status === 'error') { playback?.pause(); error.textContent = `${response.error.code}: ${response.error.message}`; error.hidden = false; return; }
     error.hidden = true; productionUi?.commandSucceeded(command);
     if (command.type === 'place') {
@@ -237,17 +247,19 @@ function jump(tickInDay: number): void {
 function dayChanged(): void { playback?.pause(); viewedDay = Number(select('day').value); button('previous-day').disabled = viewedDay === 0; button('next-day').disabled = viewedDay === 6; renderTimeline(); }
 async function start(): Promise<void> {
   try {
-    await init(); if (api_version() !== 5) throw new Error('Unsupported player protocol version');
+    await init(); if (api_version() !== 8) throw new Error('Unsupported player protocol version');
     for (const id of ['day', 'place-day', 'move-day']) select(id).replaceChildren(...Array.from({ length: 7 }, (_, i) => option(i, `Day ${i + 1}`)));
     for (const id of ['place-time', 'move-time']) select(id).replaceChildren(...Array.from({ length: 96 }, (_, i) => option(i, time(i))));
     select('place-time').value = '72';
-    productionUi = initialiseProduction({ report: () => report, send, stamp, money, showProgramme: id => {
+    const showProgramme = (id: number) => {
       libraryProgramme = id; select('genre-filter').value = 'all';
       const planned = Number(select('place-day').value) * 96 + Number(select('place-time').value);
       if (planned < report.now_tick) { select('place-day').value = String(Math.min(6, Math.floor(report.now_tick / 96))); select('place-time').value = String(report.now_tick % 96); }
       renderCatalogue(); element('library-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
       document.querySelector<HTMLElement>(`[data-programme="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    } });
+    };
+    productionUi = initialiseProduction({ report: () => report, send, stamp, money, showProgramme });
+    filmUi = initialiseFilmDesk({ send, stamp, money, showProgramme });
     session = new WebSession(); send({ type: 'inspect' });
     playback = initialisePlayback({ state:()=>report, tick:()=>send({type:'advance',to_tick:Math.min(report.end_tick,report.now_tick+1)},true), onPlay:()=>{viewedDay=Math.min(6,Math.floor(report.now_tick/96));select('day').value=String(viewedDay);renderTimeline();jump(Math.max(0,report.now_tick%96-4));} });
     element('place-form').addEventListener('submit', event => { event.preventDefault(); if(!report.catalogue.some(p=>p.id===libraryProgramme))return; send({ type: 'place', programme: libraryProgramme, start_tick: Number(select('place-day').value) * 96 + Number(select('place-time').value), advertiser: null }); });

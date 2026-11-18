@@ -703,7 +703,7 @@ fn support_recovers_only_cooperation_losses_with_diminishing_returns_for_every_i
     for o in &outcomes {
         assert_eq!(o.craft, outcomes[0].craft);
         assert_eq!(o.subject_fit, outcomes[0].subject_fit);
-        assert_eq!(o.tone_fit, outcomes[0].tone_fit);
+        assert_eq!(o.capability, outcomes[0].capability);
         assert_eq!(o.base_execution, outcomes[0].base_execution);
     }
     let gains = outcomes
@@ -1039,4 +1039,27 @@ fn station_resource_configuration_is_validated_and_cannot_override_live_commitme
         |p| p.configure_station_resources(station_resources(1)),
         "station_resources_locked",
     );
+}
+
+#[test]
+fn host_capability_changes_achievement_with_the_same_ambition_and_craft() {
+    let run = |skill| {
+        let mut p = planner();
+        let (mut roster, requests) = demo_roster();
+        roster[0].capabilities.0[7] = Some(skill);
+        p.configure_production(roster, requests).unwrap();
+        let id = p.create_production(concept()).unwrap();
+        p.book_production(id, None, 0).unwrap();
+        p.advance_to(SimTick(52)).unwrap();
+        p.production().project(id).unwrap().outcome.clone().unwrap()
+    };
+    let weak = run(0.1);
+    let strong = run(0.9);
+    assert_eq!(strong, run(0.9));
+    assert_eq!(weak.ambition, strong.ambition);
+    assert_eq!(weak.craft, strong.craft);
+    assert_eq!(weak.subject_fit, strong.subject_fit);
+    assert_eq!(weak.achieved.values[0], strong.achieved.values[0]);
+    assert!(weak.achieved.values[7] < strong.achieved.values[7]);
+    assert!(strong.achieved.values[7] < strong.ambition.values[7]);
 }

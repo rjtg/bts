@@ -29,7 +29,7 @@ impl Money {
             Ok(())
         }
     }
-    fn add(self, other: Self) -> Result<Self, Error> {
+    pub(crate) fn add(self, other: Self) -> Result<Self, Error> {
         self.0
             .checked_add(other.0)
             .map(Self)
@@ -331,7 +331,12 @@ impl<T: Clock> EconomyState<T> {
         amount: Money,
     ) -> Result<(), Error> {
         amount.validate()?;
-        if amount.0 == 0 || self.production_escrows.contains_key(&id) {
+        if amount.0 == 0
+            || self
+                .production_escrows
+                .get(&id)
+                .is_some_and(|held| held.0 != 0)
+        {
             return Err(Error::Invalid(
                 "invalid or duplicate production reserve".into(),
             ));

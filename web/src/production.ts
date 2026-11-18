@@ -100,6 +100,7 @@ export function initialiseProduction(ui: Callbacks) {
     const r = report.booking_review;
     if (r && r.production_id === p.id && r.exceptional_person === c.exceptional && r.cooperation_sway === c.support) {
       reviewArea.append(node('h4', 'Ready to book?'), node('p', `${personName(p.host)} with ${p.guests.map(personName).join(' and ')}. ${subjects[p.subject]} · ${p.tone}.`), node('p', `Record ${ui.stamp(p.record_at)}–${ui.stamp(p.recording_end)}. Ready ${ui.stamp(p.ready_at)}.`));
+      reviewArea.append(node('p', 'Aiming for ' + p.ambition.map(q => q.name + ' · ' + q.level).join(', ') + '.'));
       reviewArea.append(node('p', `Commit ${ui.money(r.budget)} credits, including ${ui.money(p.fees)} in fees. Cash remaining: ${ui.money(r.cash_remaining)}.`), node('p', `Spend ${r.total_sway} Sway (${r.cooperation_sway} support). Sway remaining: ${r.sway_remaining}.`));
       reviewArea.append(node('p', `This reserves Studio ${r.studio} and the cast’s recording time. Booked productions cannot be changed or cancelled.`, 'small'));
       const confirm = action('Confirm booking', () => ui.send({ type: 'book_production', production_id: p.id, exceptional_person: r.exceptional_person, cooperation_sway: r.cooperation_sway }), ''); confirm.id = `confirm-${p.id}`; reviewArea.append(confirm);

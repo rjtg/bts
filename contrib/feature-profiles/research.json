@@ -1,0 +1,372 @@
+[
+  {
+    "actual_deliveries": [
+      [
+        1,
+        {
+          "audiences": [
+            {
+              "audience": 1,
+              "delivered_units": 2431163477,
+              "effectiveness": 0.8,
+              "priority": 1.0,
+              "relevant_delivery": 2431.1634773136248,
+              "viewers": 3038.954346642031
+            },
+            {
+              "audience": 2,
+              "delivered_units": 4200696277,
+              "effectiveness": 0.7886891679748823,
+              "priority": 1.0,
+              "relevant_delivery": 4200.696277215416,
+              "viewers": 5326.1746804530685
+            },
+            {
+              "audience": 3,
+              "delivered_units": 5317526,
+              "effectiveness": 0.1,
+              "priority": 0.1,
+              "relevant_delivery": 5.317526557746814,
+              "viewers": 531.7526557746813
+            }
+          ],
+          "credited_units": 6637,
+          "relevant_delivery": 6637.177281086787
+        }
+      ]
+    ],
+    "case": "stale",
+    "cash": 21721,
+    "forecast_relevant_delivery": 6416.459392861138,
+    "maximum_payment": 1871,
+    "research_at_quote": {
+      "groups": [
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 6123,
+            "tastes": {
+              "Editorial rigour": 4,
+              "Humour": 10,
+              "Information depth": 2,
+              "Intimacy": 6,
+              "Pace": 6,
+              "Playfulness": 10,
+              "Spectacle": 5,
+              "Tension": 2,
+              "Topical urgency": 6,
+              "Warmth": 8
+            },
+            "tick": 0,
+            "typical_age": 22,
+            "uncertainty": 0.23500000000000001
+          },
+          "id": 1,
+          "name": "Young viewers"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 12094,
+            "tastes": {
+              "Editorial rigour": 6,
+              "Humour": 7,
+              "Information depth": 2,
+              "Intimacy": 4,
+              "Pace": 7,
+              "Playfulness": 8,
+              "Spectacle": 6,
+              "Tension": 4,
+              "Topical urgency": 7,
+              "Warmth": 6
+            },
+            "tick": 0,
+            "typical_age": 35,
+            "uncertainty": 0.23500000000000001
+          },
+          "id": 2,
+          "name": "Households"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 2394,
+            "tastes": {
+              "Editorial rigour": 10,
+              "Humour": 2,
+              "Information depth": 10,
+              "Intimacy": 9,
+              "Pace": 0,
+              "Playfulness": 3,
+              "Spectacle": 3,
+              "Tension": 0,
+              "Topical urgency": 5,
+              "Warmth": 3
+            },
+            "tick": 0,
+            "typical_age": 44,
+            "uncertainty": 0.23500000000000001
+          },
+          "id": 3,
+          "name": "Specialists"
+        }
+      ],
+      "insight": 12,
+      "missed_poll": false,
+      "next_tick": null,
+      "opening_insight": 12,
+      "polling": "off",
+      "spending": []
+    },
+    "total_money": 80000
+  },
+  {
+    "actual_deliveries": [
+      [
+        1,
+        {
+          "audiences": [
+            {
+              "audience": 1,
+              "delivered_units": 2431163477,
+              "effectiveness": 0.8,
+              "priority": 1.0,
+              "relevant_delivery": 2431.1634773136248,
+              "viewers": 3038.954346642031
+            },
+            {
+              "audience": 2,
+              "delivered_units": 4200696277,
+              "effectiveness": 0.7886891679748823,
+              "priority": 1.0,
+              "relevant_delivery": 4200.696277215416,
+              "viewers": 5326.1746804530685
+            },
+            {
+              "audience": 3,
+              "delivered_units": 5317526,
+              "effectiveness": 0.1,
+              "priority": 0.1,
+              "relevant_delivery": 5.317526557746814,
+              "viewers": 531.7526557746813
+            }
+          ],
+          "credited_units": 6637,
+          "relevant_delivery": 6637.177281086787
+        }
+      ]
+    ],
+    "case": "fresh",
+    "cash": 21665,
+    "forecast_relevant_delivery": 6432.369822329101,
+    "maximum_payment": 1875,
+    "research_at_quote": {
+      "groups": [
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 6143,
+            "tastes": {
+              "Editorial rigour": 4,
+              "Humour": 10,
+              "Information depth": 2,
+              "Intimacy": 5,
+              "Pace": 6,
+              "Playfulness": 10,
+              "Spectacle": 5,
+              "Tension": 2,
+              "Topical urgency": 6,
+              "Warmth": 8
+            },
+            "tick": 96,
+            "typical_age": 22,
+            "uncertainty": 0.23804704752775993
+          },
+          "id": 1,
+          "name": "Young viewers"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 12099,
+            "tastes": {
+              "Editorial rigour": 6,
+              "Humour": 7,
+              "Information depth": 2,
+              "Intimacy": 4,
+              "Pace": 7,
+              "Playfulness": 8,
+              "Spectacle": 6,
+              "Tension": 4,
+              "Topical urgency": 7,
+              "Warmth": 6
+            },
+            "tick": 96,
+            "typical_age": 35,
+            "uncertainty": 0.23804704752775993
+          },
+          "id": 2,
+          "name": "Households"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 2392,
+            "tastes": {
+              "Editorial rigour": 10,
+              "Humour": 2,
+              "Information depth": 10,
+              "Intimacy": 9,
+              "Pace": 0,
+              "Playfulness": 3,
+              "Spectacle": 3,
+              "Tension": 0,
+              "Topical urgency": 5,
+              "Warmth": 3
+            },
+            "tick": 96,
+            "typical_age": 44,
+            "uncertainty": 0.23804704752775993
+          },
+          "id": 3,
+          "name": "Specialists"
+        }
+      ],
+      "insight": 12,
+      "missed_poll": false,
+      "next_tick": 192,
+      "opening_insight": 12,
+      "polling": "daily",
+      "spending": []
+    },
+    "total_money": 80000
+  },
+  {
+    "actual_deliveries": [
+      [
+        1,
+        {
+          "audiences": [
+            {
+              "audience": 1,
+              "delivered_units": 2431163477,
+              "effectiveness": 0.8,
+              "priority": 1.0,
+              "relevant_delivery": 2431.1634773136248,
+              "viewers": 3038.954346642031
+            },
+            {
+              "audience": 2,
+              "delivered_units": 4200696277,
+              "effectiveness": 0.7886891679748823,
+              "priority": 1.0,
+              "relevant_delivery": 4200.696277215416,
+              "viewers": 5326.1746804530685
+            },
+            {
+              "audience": 3,
+              "delivered_units": 5317526,
+              "effectiveness": 0.1,
+              "priority": 0.1,
+              "relevant_delivery": 5.317526557746814,
+              "viewers": 531.7526557746813
+            }
+          ],
+          "credited_units": 6637,
+          "relevant_delivery": 6637.177281086787
+        }
+      ]
+    ],
+    "case": "researched",
+    "cash": 21673,
+    "forecast_relevant_delivery": 6477.925846677006,
+    "maximum_payment": 1889,
+    "research_at_quote": {
+      "groups": [
+        {
+          "estimate": {
+            "familiarity_level": "High",
+            "population": 6062,
+            "tastes": {
+              "Editorial rigour": 4,
+              "Humour": 10,
+              "Information depth": 2,
+              "Intimacy": 5,
+              "Pace": 7,
+              "Playfulness": 9,
+              "Spectacle": 5,
+              "Tension": 3,
+              "Topical urgency": 5,
+              "Warmth": 7
+            },
+            "tick": 96,
+            "typical_age": 22,
+            "uncertainty": 0.10283296775168213
+          },
+          "id": 1,
+          "name": "Young viewers"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 12099,
+            "tastes": {
+              "Editorial rigour": 6,
+              "Humour": 7,
+              "Information depth": 2,
+              "Intimacy": 4,
+              "Pace": 7,
+              "Playfulness": 8,
+              "Spectacle": 6,
+              "Tension": 4,
+              "Topical urgency": 7,
+              "Warmth": 6
+            },
+            "tick": 96,
+            "typical_age": 35,
+            "uncertainty": 0.23804704752775993
+          },
+          "id": 2,
+          "name": "Households"
+        },
+        {
+          "estimate": {
+            "familiarity_level": "Low",
+            "population": 2392,
+            "tastes": {
+              "Editorial rigour": 10,
+              "Humour": 2,
+              "Information depth": 10,
+              "Intimacy": 9,
+              "Pace": 0,
+              "Playfulness": 3,
+              "Spectacle": 3,
+              "Tension": 0,
+              "Topical urgency": 5,
+              "Warmth": 3
+            },
+            "tick": 96,
+            "typical_age": 44,
+            "uncertainty": 0.23804704752775993
+          },
+          "id": 3,
+          "name": "Specialists"
+        }
+      ],
+      "insight": 4,
+      "missed_poll": false,
+      "next_tick": 192,
+      "opening_insight": 12,
+      "polling": "daily",
+      "spending": [
+        {
+          "audience": 1,
+          "remaining": 4,
+          "spent": 8,
+          "tick": 0
+        }
+      ]
+    },
+    "total_money": 80000
+  }
+]

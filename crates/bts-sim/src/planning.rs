@@ -1,5 +1,6 @@
 //! Bounded duration-aware planning. See docs/programme-planning.md for provisional cadence.
 //! No presentation, player observations, filesystem or wall clock.
+pub mod film;
 pub mod production;
 pub mod research;
 
@@ -91,6 +92,7 @@ pub struct Planner {
     next_id: u32,
     revision: u64,
     production: production::ProductionState,
+    films: BTreeMap<production::ProductionId, film::Film>,
     research: Option<research::Research>,
     libraries: BTreeMap<StationId, BTreeSet<ProgrammeId>>,
     staff: BTreeMap<StationId, BTreeSet<production::PersonId>>,
@@ -133,6 +135,7 @@ impl Planner {
             next_id: 1,
             revision: 0,
             production: production::ProductionState::default(),
+            films: BTreeMap::new(),
             research: None,
             libraries,
             staff: BTreeMap::new(),
@@ -633,6 +636,7 @@ impl Planner {
         }
         self.engine.state = completed_state;
         self.finish_productions(action.at)?;
+        self.advance_films(action.at)?;
         self.poll_boundary(action.at)?;
         Ok(event)
     }

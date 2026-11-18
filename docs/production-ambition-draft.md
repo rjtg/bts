@@ -6,6 +6,9 @@ not implemented behaviour or a new implementation commitment.
 See [game design](design.md), [simulation](simulation.md) and the
 [current production experiment](original-production.md).
 
+The [original film experiment](original-film.md) implements a bounded pitch,
+writing, revision and recording workflow. This draft covers the broader direction.
+
 ## Core idea
 
 The player starts by creating a **show**: a durable creative identity and plan,
@@ -33,12 +36,33 @@ Every stage has demands and achieved delivery.
 | Demands | Skills, time, resources and coordination required to achieve it |
 | Delivery | Achieved strengths, shortcomings and compromises |
 
-A writing brief might aim for strong humour, elaborate action, convincing
-romance and a little science fiction. These dimensions are not one quality
-slider. Writers or writing teams receive time and consequently pay to attempt
-the brief. Relevant skill and working conditions determine how fully they
-deliver each aspect. Success and failure are gradual; selected fuzzy rules
-may suit these judgements, but no formula or stochastic model is chosen.
+A creative brief might aim for strong humour, high tension, warmth, intimacy,
+spectacle and a chosen pace. Playfulness and seriousness form one continuum;
+other features can coexist independently. Nonfiction briefs can also aim for
+information depth, topical urgency and editorial rigour, while still using the
+creative features. Fiction does not use those factual-reporting dimensions.
+Features not relevant to a work are absent rather than set to zero. Writers or
+writing teams receive time and consequently pay to attempt the brief. Relevant
+skill and working conditions determine how fully they deliver each aspect.
+Success and shortfall are gradual; no formula or stochastic model is chosen.
+See the feature definitions and production-type rules in [game design](design.md#programme-formats-and-subject-matter).
+
+People contribute capabilities relevant to their roles; they do not have
+preferences for the qualities they work on. Actors may convey humour, warmth,
+intimacy or tension; directors can shape pace and spectacle; writers create
+the material's humour, tension and other intended qualities. Hosts and guests
+contribute conversational qualities such as humour, warmth and candour.
+Reporters, editors and anchors contribute to information depth, topical urgency
+and editorial rigour through research, verification, context and presentation.
+These are distinct from general craft, subject knowledge, chemistry and
+recognition. The ambition profile names what the production attempts, while
+role-relevant capabilities and working conditions affect what is achieved.
+The mapping from roles to capabilities and the equations for combining a team
+remain open; these profiles should create trade-offs, not deterministic
+guarantees.
+
+The [feature profile experiment](feature-profiles.md) implements a subset for
+standalone discussion shows. The broader staged workflow below is proposed.
 
 ## Work, review and revision
 
@@ -123,7 +147,7 @@ fictional season limit solely because the engine requires a count.
 
 ## Procedural ambition across episodes
 
-A procedural has a stable **show ambition**: its established genre promise, tone,
+A procedural has a stable **show ambition**: its established feature profile
 and typical intensity. Each episode may deliberately vary along those same
 dimensions. A lighter procedural can try a darker episode or a more action-heavy
 case; variation creates opportunity and risk rather than being automatically
@@ -172,13 +196,13 @@ future work; the first writing experiment need not implement a full casting pipe
 
 ## News and topical programmes
 
-Truthful, neutral reporting is a high ambition, especially for less-skilled
+Truthful, fair and well-contextualized reporting is a high ambition, especially for less-skilled
 reporters or difficult, poorly documented subjects. Verification, corroboration,
 context and fair framing consume skill and time.
 
 Under pressure the player can narrow coverage, allow more preparation, qualify
-uncertain claims, delay a piece or risk errors. Choosing a neutral editorial
-profile does not guarantee neutral output. Assess reporting against reasonably
+uncertain claims, delay a piece or risk errors. Choosing a rigorous editorial
+ambition does not guarantee accurate or fair output. Assess reporting against reasonably
 available knowledge, keeping actual truth, staff knowledge and player evidence
 distinct.
 

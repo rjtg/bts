@@ -4,6 +4,9 @@ Status: distinct browser station libraries/host rosters and owned-studio capacit
 implemented. Rental, setup/cleanup economies, reusable props and multi-edition
 batching are next-slice design directions, not implemented mechanics.
 
+The [original film experiment](original-film.md) adds two fixed-price rental
+rooms with exclusive bookings and an equipment shortfall model.
+
 ## Implemented station resources
 
 The world catalogue defines works; each station's library defines its rights to

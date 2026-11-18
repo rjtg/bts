@@ -183,7 +183,7 @@ fn justified_interactions_distinguish_inputs_with_equal_old_linear_scores() {
         .trace
         .rules
         .iter()
-        .any(|r| r.name.contains("execution with genre fit")));
+        .any(|r| r.name.contains("execution with profile fit")));
 }
 #[test]
 fn financial_conservation_and_exact_ledger_balances_at_every_action() {

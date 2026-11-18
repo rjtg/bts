@@ -70,7 +70,7 @@ has fixed disjoint libraries and no acquisition market.
 
 Groups are evolving cohorts, not fixed demographic slots. Multiple teenage groups can coexist and grow into different adult groups while retaining some tastes, memories, and associations.
 
-Track population and age distribution; income and price sensitivity; interests and spending relevance; viewing availability; genre, theme, tone, and novelty preferences; quality expectations; advertising tolerance; social cohesion; and station, series, talent, or organisation attachments.
+Track population and age distribution; income and price sensitivity; interests and spending relevance; viewing availability and preferred viewing times; preferences for audience-facing programme qualities; quality expectations; advertising tolerance; social cohesion; and station, series, talent, or organisation attachments. Audience preference should attach to concrete qualities of work rather than genre labels. The implemented experiment uses preferences for programme qualities. Preferred viewing times remain separate from viewing availability and are planned.
 
 Preferences vary within a group. Cohesion describes social transmission, not complete agreement. Age influences circumstances but does not fully determine taste.
 
@@ -80,7 +80,17 @@ Life stage, cohort history, and current cultural climate contribute separately. 
 
 People can have multiple roles: acting, directing, screenwriting, producing, composing, presenting, journalism, politics, and others as gameplay requires. Public figure is a status, not a separate kind of person.
 
-Separate craft skill, task specialisation, genre experience, creative style, working traits, relationships, career state, and public perception. Ability, project fit, recognition, fashionability, and reputation are distinct.
+Separate craft skill, task specialisation, ability to deliver relevant programme
+features, format experience, working traits, relationships, career state, and
+public perception. People have capability profiles, not audience-style
+preferences: an actor may be especially good at comic timing or conveying
+warmth; a director may shape tension, spectacle and pace; a host may bring
+humour or intimacy; a news anchor or reporter may deliver depth, urgency and
+editorial rigour; a guest may contribute a compelling or reassuring manner.
+Which capabilities matter depends on the person's role and the production's
+ambition. General craft, a particular capability, project fit, recognition,
+fashionability and reputation remain distinct. Genre is a derived work summary,
+so talent experience should not depend on genre labels alone.
 
 Skills usually change slowly; public attention can change quickly. Shared work develops familiarity and relationships. New entrants, role changes, discovery, rising fees, breaks, and retirement support a changing talent market.
 
@@ -101,19 +111,57 @@ the talent-market UI remain unimplemented.
 
 ## Programme formats and subject matter
 
-Agreed direction: programmes combine format, subject matter, tone, editorial
-profile and production choices. These are not exclusive genre buckets: a
-programme can cover news through comedy, interviews or theatrical debate.
+Agreed direction: use broad production types to establish the production
+workflow and the feature vocabulary that can describe a work. The initial types
+are **Fiction** (movies and series) and **Nonfiction** (news and magazines,
+including talk shows, science magazines and cooking shows). **Live Event** for
+sport, music and similar coverage is a possible later type. These are not genre
+buckets: a nonfiction news programme can be humorous, and a fiction series can
+mix warmth, tension and spectacle.
+
+Production profiles use concrete audience-facing features, not a universal
+genre preference or an ambiguous tone score:
+
+| Feature | Meaning |
+| --- | --- |
+| Humour | How much the material aims to amuse |
+| Playfulness ↔ seriousness | One continuum describing the work's overall register |
+| Tension | Suspense, conflict, danger or uncertainty |
+| Warmth | Affection, optimism or emotional reassurance |
+| Intimacy | Personal closeness and emotional candour |
+| Spectacle | Physical or visual scale and excitement |
+| Pace | How quickly scenes, ideas or discussion move |
+| Information depth | Explanation, evidence and context offered |
+| Topical urgency | How closely the work responds to current events |
+| Editorial rigour | Verification, context and fair representation in factual work |
+
+Fiction uses the creative features (humour, playfulness/seriousness, tension,
+warmth, intimacy, spectacle and pace); information depth, topical urgency and
+editorial rigour are nonfiction dimensions and do not score fictional work.
+Nonfiction can use the full vocabulary, including
+humour, playfulness, warmth, tension and spectacle: high humour in news can
+produce a late-night format without removing its factual responsibilities.
+Features outside a work's applicable set are absent, not zero, and neither
+penalize the work nor dilute audience fit. Genre remains a readable summary
+derived from a work's profile, not a direct audience-response input. Novelty
+and generic tone are not features in this vocabulary; novelty may later be
+considered as a changing familiarity effect rather than a fixed ambition.
+
+Keep intended ambition, achieved work and audience response distinct. A
+production attempts a profile; preparation, people, resources and execution
+determine what the finished work actually delivers. Editorial rigour and
+truthfulness concern factual work and its evidence, not merely a selected style
+or an audience's taste. Audience trust and knowledge of accuracy are separate
+from actual accuracy. The first feature model is implemented for catalogue works and the discussion
+prototype. See [programme feature profiles](feature-profiles.md) for mechanics
+and scope.
 
 | Format | Distinctive production choices |
 | --- | --- |
-| Scripted series / film | Concept, writing, casting, direction, production |
-| Game show | Rules, host, contestants, prizes |
-| Interview / discussion | Guests, topics, host/moderator, preparation, approach |
-| Presented reports / magazine | Journalists, host, editorial profile, coverage resources |
-| Monologue / topical comedy | Host, writers, subjects, guests, satirical style |
-| Music / variety | Performers, host, running order, presentation |
-| Live coverage | Event access or rights, commentary, production capability |
+| Fiction: series / film | Concept and creative ambition, writing, casting, direction, production |
+| Nonfiction: news / magazine | Topics, guests or sources, host/journalists, preparation, editorial approach |
+| Magazine examples: talk, science and cooking shows | Hosts, guests, demonstrations, subject research and preparation |
+| Live event (later) | Sport, music and other event access or rights, commentary, production capability |
 
 All share production resources, scheduling, promotion, audience response,
 reputation and advertising, with role/format-specific recipes. Production

@@ -12,8 +12,7 @@ fn world(opening: f64, continuity: f64) -> World {
     w.brands.clear();
     let a = &mut w.audiences[0];
     a.population = 10000;
-    a.genre_tastes = [1.0; 3];
-    a.preferred_tone = 0.8;
+    a.feature_preferences = [0.8; 10];
     a.availability = [0.8; 24];
     w.stations[0].initial_cash = Money(100000);
     let template = w.programmes[0].clone();
@@ -35,8 +34,7 @@ fn world(opening: f64, continuity: f64) -> World {
                     sequence: u32::from(id.0 - 10),
                 }
             };
-            p.genre = Genre::Drama;
-            p.tone = 0.8;
+            p.profile = FeatureProfile::fiction([0.8; 7]);
             p.awareness = 0.8;
             p.cast_appeal = 0.8;
             p.execution = if id == FIRST { opening } else { 0.9 };

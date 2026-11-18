@@ -321,7 +321,7 @@ fn staggered_completion_samples_keep_learning_bounded() {
     let mut w = world();
     for a in &mut w.audiences {
         a.availability = [1.0; 24];
-        a.genre_tastes = [1.0; 3];
+        a.feature_preferences = [0.8; 10];
     }
     w.programmes[1].duration_minutes = 45;
     w.programmes[1].kind = ProgrammeKind::Episode {

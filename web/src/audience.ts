@@ -1,64 +1,127 @@
 import type { Command, Polling, Report } from './protocol';
-import { element, node, option } from './ui/dom';
+import { element, node } from './ui/dom';
+import { rotaryDial } from './ui/dial';
+import { starRating } from './ui/stars';
 
-const tiers: [Polling, string][] = [
-  ['off', 'Off'], ['daily', 'Daily · 60 credits per poll'],
-  ['every_three_days', 'Every 3 days · 90 credits per poll'],
+const portraits: Partial<Record<number, string>> = {
+  1: 'young-viewers',
+  2: 'households',
+  3: 'specialists',
+};
+
+const tiers: { id: Polling; icon: string; title: string; cost: string }[] = [
+  { id: 'off', icon: 'Ⅱ', title: 'Off', cost: 'No charge' },
+  { id: 'daily', icon: '▥', title: 'Daily', cost: '60 credits per survey' },
+  { id: 'every_three_days', icon: '▦', title: 'Every 3 days', cost: '90 credits per survey' },
 ];
-const affinity = (value: number) => value >= .67 ? 'High' : value >= .34 ? 'Medium' : 'Low';
+
+function symbol(glyph: string): HTMLElement {
+  const icon = node('span', glyph, 'research-icon');
+  icon.setAttribute('aria-hidden', 'true');
+  return icon;
+}
 
 export function renderAudience(report: Report, stamp: (tick: number) => string, send: (command: Command) => void) {
   const root = element('audience-research');
   const research = report.research;
   if (!research) return;
-  root.replaceChildren(node('p', `Insight available: ${research.insight}. Spending improves the next poll for that group.`));
+  const desk = node('section', '', 'production-card research-desk');
+  const heading = node('h3', 'Audience surveys');
+  heading.prepend(symbol('▤'));
+  const stock = node('p', `Insight available: ${research.insight}`, 'insight-stock');
+  stock.prepend(symbol('◈'));
+  const choices = node('div', '', 'survey-choices');
+  choices.setAttribute('role', 'group');
+  choices.setAttribute('aria-label', 'Polling frequency for all audiences');
+  for (const tier of tiers) {
+    const button = node('button', '', 'survey-choice');
+    button.dataset.polling = tier.id;
+    button.setAttribute('aria-pressed', String(research.polling === tier.id));
+    button.append(symbol(tier.icon), node('strong', tier.title), node('small', tier.cost));
+    button.addEventListener('click', () => {
+      send({ type: 'set_polling', polling: tier.id });
+      root.querySelector<HTMLButtonElement>(`[data-polling="${tier.id}"]`)?.focus();
+    });
+    choices.append(button);
+  }
+  desk.append(heading, stock, choices);
+  if (research.missed_poll) desk.append(node('p', 'The last survey was skipped because cash was too low.'));
+  if (research.next_tick !== null && research.next_tick <= report.end_tick) {
+    desk.append(node('p', `Next survey for all groups · ${stamp(research.next_tick)}`));
+  }
+  const draftAmounts = new Map(Array.from(
+    root.querySelectorAll<HTMLInputElement>('.rotary-dial input'),
+    input => [input.id, input.valueAsNumber],
+  ));
+  root.replaceChildren(desk);
   for (const group of research.groups) {
-    const card = node('article', '', 'production-card');
+    const card = node('article', '', 'production-card audience-card');
+    const header = node('header', '', 'audience-card-header');
+    const dossier = node('div', '', 'audience-dossier');
+    const portrait = portraits[group.id];
+    if (portrait) {
+      const image = node('img', '', 'audience-portrait');
+      image.src = `${import.meta.env.BASE_URL}audiences/${portrait}.webp`;
+      image.alt = '';
+      header.append(image);
+    }
     const snapshot = group.estimate;
     const ageHours = Math.floor((report.now_tick - snapshot.tick) / 4);
     const size = Math.round(snapshot.population / 100) * 100;
     const age = Math.round(snapshot.typical_age / 5) * 5;
-    card.append(
+    dossier.append(
       node('h3', group.name),
       node('p', `Estimated size: about ${size.toLocaleString()} · Typical age: about ${age}`),
-      node('p', ['Comedy', 'Drama', 'Science'].map((genre, i) => `${genre}: ${affinity(snapshot.tastes[i])}`).join(' · ')),
       node('p', `${stamp(snapshot.tick)} · ${ageHours}h old · Familiarity at poll: ${snapshot.familiarity_level} · Uncertainty: ${snapshot.uncertainty >= .22 ? 'High' : snapshot.uncertainty >= .12 ? 'Moderate' : 'Low'}`),
     );
-    if (group.missed_poll) card.append(node('p', 'The last poll was skipped because cash was too low.'));
-    if (group.next_tick !== null && group.next_tick <= report.end_tick) card.append(node('p', `Next poll: ${stamp(group.next_tick)}`));
-    const controls = node('div', '', 'form-row');
-    const label = node('label', 'Polling frequency');
-    const select = node('select');
-    for (const [value, title] of tiers) select.append(option(value, title));
-    select.value = group.polling;
-    select.addEventListener('change', () => {
-      const polling = select.value as Polling;
-      select.value = group.polling;
-      send({ type: 'set_polling', audience: group.id, polling });
-      root.querySelector<HTMLSelectElement>(`#polling-${group.id}`)?.focus();
-    });
-    select.id = `polling-${group.id}`;
-    label.append(select);
-    const form = node('form', '', 'form-row');
-    const spendLabel = node('label', 'Insight to spend');
+    header.append(dossier);
+    card.append(header);
+    const tastes = node('ul', '', 'audience-tastes');
+    for (const [quality, halfStars] of Object.entries(snapshot.tastes)) {
+      const row = node('li');
+      const label = node('span', quality);
+      if (quality === 'Playfulness') label.title = 'Fewer stars indicate a preference for a more serious register.';
+      row.append(label, starRating(halfStars));
+      tastes.append(row);
+    }
+    card.append(node('h4', 'What they like'), tastes);
+    const form = node('form', '', 'investigate-panel');
     const input = node('input');
-    input.type = 'number';
-    input.min = '1';
+    const id = `insight-${group.id}`;
+    input.id = id;
+    input.type = 'range';
+    input.min = '0';
     input.max = String(research.insight);
     input.step = '1';
-    input.value = '1';
-    input.required = true;
-    const spend = node('button', 'Improve next estimate');
-    spend.disabled = input.disabled = research.insight === 0;
-    spendLabel.append(input);
-    form.append(spendLabel, spend);
+    input.value = String(Math.min(draftAmounts.get(id) ?? 0, research.insight));
+    input.disabled = research.insight === 0;
+    input.setAttribute('aria-label', 'Insight to spend');
+    const title = node('h4', 'Investigate');
+    const cost = node('output', '', 'investigate-cost');
+    cost.setAttribute('for', id);
+    const spend = node('button', 'Spend Insight', 'investigate-spend');
+    const refresh = () => {
+      const amount = input.valueAsNumber;
+      cost.textContent = `${amount} Insight · ${research.insight - amount} left`;
+      spend.disabled = amount === 0;
+      spend.setAttribute('aria-label', `Spend ${amount} Insight`);
+    };
+    input.addEventListener('input', refresh);
+    refresh();
+    const brief = node('div', '', 'investigate-brief');
+    brief.append(title, node('p', 'Get a clearer read on this group in the next survey.'), cost, spend);
+    form.append(rotaryDial(input), brief);
     form.addEventListener('submit', event => {
       event.preventDefault();
-      send({ type: 'spend_insight', audience: group.id, amount: input.valueAsNumber });
-      root.querySelector<HTMLSelectElement>(`#polling-${group.id}`)?.focus();
+      if (spend.disabled) return;
+      const amount = input.valueAsNumber;
+      input.value = '0';
+      send({ type: 'spend_insight', audience: group.id, amount });
+      const next = root.querySelector<HTMLInputElement>(`#${id}`);
+      if (next?.disabled) root.querySelector<HTMLButtonElement>('[data-polling][aria-pressed="true"]')?.focus();
+      else next?.focus();
     });
-    controls.append(label, form);
-    card.append(controls);
+    card.append(form);
     root.append(card);
   }
 }

@@ -102,7 +102,7 @@ labour-market system. This is not an implementation commitment.
 
 ### Talent and relationships
 
-Which craft dimensions create distinct hiring decisions? How much genre experience is explicit versus derived? How can partnerships improve without becoming permanent optimal combinations?
+Which role-specific capabilities let people deliver distinct programme features, and how do those combine with general craft? How should format experience affect fit? How can partnerships improve without becoming permanent optimal combinations?
 
 Experiment: compare familiar, mismatched, inexpensive, and fashionable teams across several project types.
 

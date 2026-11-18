@@ -5,8 +5,8 @@ use serde::Serialize;
 /// Typed numerical features passed into TV rules.
 #[derive(Clone, Copy, Debug, PartialEq, Serialize)]
 pub enum Feature {
-    GenreFit,
-    ToneFit,
+    ProfileFit,
+    WeakestFit,
     Awareness,
     CastAppeal,
     Execution,
@@ -71,26 +71,26 @@ fn interaction(
 impl Default for Models {
     fn default() -> Self {
         let mut attraction = paired(&[
-            (Feature::GenreFit, 0.35),
-            (Feature::ToneFit, 0.10),
+            (Feature::ProfileFit, 0.35),
+            (Feature::WeakestFit, 0.10),
             (Feature::Awareness, 0.30),
             (Feature::CastAppeal, 0.25),
         ]);
         interaction(
             &mut attraction,
-            "cast with genre fit",
-            high(Feature::GenreFit).and(high(Feature::CastAppeal)),
+            "cast with profile fit",
+            high(Feature::ProfileFit).and(high(Feature::CastAppeal)),
             0.25,
         );
         let mut satisfaction = paired(&[
-            (Feature::GenreFit, 0.15),
-            (Feature::ToneFit, 0.15),
+            (Feature::ProfileFit, 0.15),
+            (Feature::WeakestFit, 0.15),
             (Feature::Execution, 0.70),
         ]);
         interaction(
             &mut satisfaction,
-            "execution with genre fit",
-            high(Feature::GenreFit).and(high(Feature::Execution)),
+            "execution with profile fit",
+            high(Feature::ProfileFit).and(high(Feature::Execution)),
             0.30,
         );
         let creative = high(Feature::ProductInterest)
@@ -136,16 +136,16 @@ fn evaluate(
 impl Models {
     pub fn attraction(
         &self,
-        genre: f64,
-        tone: f64,
+        fit: f64,
+        weakest: f64,
         awareness: f64,
         cast: f64,
     ) -> Result<ModelEvaluation, crate::Error> {
         evaluate(
             &self.attraction,
             vec![
-                (Feature::GenreFit, genre),
-                (Feature::ToneFit, tone),
+                (Feature::ProfileFit, fit),
+                (Feature::WeakestFit, weakest),
                 (Feature::Awareness, awareness),
                 (Feature::CastAppeal, cast),
             ],
@@ -153,15 +153,15 @@ impl Models {
     }
     pub fn satisfaction(
         &self,
-        genre: f64,
-        tone: f64,
+        fit: f64,
+        weakest: f64,
         execution: f64,
     ) -> Result<ModelEvaluation, crate::Error> {
         evaluate(
             &self.satisfaction,
             vec![
-                (Feature::GenreFit, genre),
-                (Feature::ToneFit, tone),
+                (Feature::ProfileFit, fit),
+                (Feature::WeakestFit, weakest),
                 (Feature::Execution, execution),
             ],
         )

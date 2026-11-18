@@ -76,21 +76,8 @@ impl Clock for SimTick {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
-pub enum Genre {
-    Comedy,
-    Drama,
-    Science,
-}
-impl Genre {
-    fn index(self) -> usize {
-        match self {
-            Self::Comedy => 0,
-            Self::Drama => 1,
-            Self::Science => 2,
-        }
-    }
-}
+mod features;
+pub use features::*;
 #[derive(Clone, Copy, Debug, PartialEq, Serialize)]
 pub enum Product {
     Snacks,
@@ -111,9 +98,7 @@ pub struct Audience {
     pub id: AudienceId,
     pub name: String,
     pub population: u32,
-    /// Comedy, drama, science affinities, in that order.
-    pub genre_tastes: [f64; 3],
-    pub preferred_tone: f64,
+    pub feature_preferences: [f64; 10],
     /// Availability fraction for each hour of the day.
     pub availability: [f64; 24],
     pub purchasing_power: f64,
@@ -137,8 +122,7 @@ pub struct Programme {
     pub id: ProgrammeId,
     pub kind: ProgrammeKind,
     pub name: String,
-    pub genre: Genre,
-    pub tone: f64,
+    pub profile: FeatureProfile,
     pub awareness: f64,
     pub cast_appeal: f64,
     pub execution: f64,
@@ -294,11 +278,11 @@ impl World {
                 ));
             }
             for value in a
-                .genre_tastes
+                .feature_preferences
                 .iter()
                 .chain(&a.availability)
                 .chain(&a.product_interests)
-                .chain([&a.preferred_tone, &a.purchasing_power])
+                .chain([&a.purchasing_power])
             {
                 unit(*value, &format!("audience {:?}", a.id))?;
             }
@@ -313,7 +297,13 @@ impl World {
                     "programme duration must be a positive multiple of 15 minutes".into(),
                 ));
             }
-            for value in [p.tone, p.awareness, p.cast_appeal, p.execution] {
+            if !p.profile.is_valid() {
+                return Err(Error::Invalid(format!(
+                    "invalid feature profile for {:?}",
+                    p.id
+                )));
+            }
+            for value in [p.awareness, p.cast_appeal, p.execution] {
                 unit(value, &format!("programme {:?}", p.id))?;
             }
         }
@@ -612,15 +602,20 @@ impl<T: Clock> Engine<T> {
                     .iter()
                     .find(|p| p.id == broadcast.programme)
                     .expect("validated programme");
-                let genre = audience.genre_tastes[programme.genre.index()];
-                let tone = 1.0 - (audience.preferred_tone - programme.tone).abs();
+                let mut advertised = programme.profile;
+                advertised.values[EDITORIAL_RIGOUR] = None;
+                let preferences = &audience.feature_preferences;
                 let attraction = self.models.attraction(
-                    genre,
-                    tone,
+                    advertised.fit(preferences).powi(2),
+                    advertised.weakest_fit(preferences),
                     programme.awareness,
                     programme.cast_appeal,
                 )?;
-                let satisfaction = self.models.satisfaction(genre, tone, programme.execution)?;
+                let satisfaction = self.models.satisfaction(
+                    programme.profile.fit(preferences).powi(2),
+                    programme.profile.weakest_fit(preferences),
+                    programme.execution,
+                )?;
                 let history = self.selection_history(audience.id, programme)?;
                 let loyalty_before = programme
                     .series()

@@ -97,11 +97,11 @@ Illustrative rules, not fixed formulas:
 
 | Condition | Consequence |
 | --- | --- |
-| Strong actor appeal and genre fit | Higher initial interest |
+| Strong actor appeal and fit with the work's advertised qualities | Higher initial interest |
 | High exposure and disappointing recent work | Greater fatigue |
 | High production demands and insufficient resources | Weaker execution |
 | Strong writing and cast chemistry | Better satisfaction |
-| Strong familiarity and genre saturation | Less excitement |
+| Strong familiarity with repeatedly aired works | Less excitement |
 
 Membership curves should create smooth effects. Fuzzy membership is not probability or uncertainty: partial fashionability differs from an uncertain estimate of fashionability.
 
@@ -118,17 +118,21 @@ with free concept drafts, fixed recording/post-production time, paid talent
 commitments, completed library works and finite requests and pooled Sway.
 Recurring editions, pilots, careers and general relationship effects remain proposals.
 
-A project specifies intended format, themes, tone, ambition, people, budget allocation, time, and production demands. Role-specific craft, task fit, relationships, and resources affect different execution dimensions.
+A project specifies production type, format, subject, applicable feature ambitions, people, budget allocation, time, and production demands. Intended features are not achieved quality: role-specific craft, task fit, relationships, preparation and resources affect delivery. The agreed feature vocabulary, genre-as-summary direction, and Fiction/Nonfiction applicability are documented in [game design](design.md#programme-formats-and-subject-matter). See [programme feature profiles](feature-profiles.md) for the implemented fit and discussion equations.
 
 Spending has diminishing returns. Not every low-budget show is weak: demands matter. Collaboration improves familiarity but can also produce conflict or predictability.
 
 Actual abilities, hiring assessments, and public fame remain distinct. Production time creates market risk because tastes and competition can change before release.
 
-News and topical entertainment use this same production system. Their format
+News and topical entertainment use this same production system. Their nonfiction
+ambition can combine factual dimensions (information depth, topical urgency and
+editorial rigour) with creative features such as humour, pace and warmth. Format
 and editorial profile determine how current events become editions; no separate
 newsroom or routine manual bulletin assembly is required. See [design](design.md)
-and [screens](screens.md). Editorial profile covers topic priorities, leaning,
-presentation and depth; it can change interest and trust over repeated editions.
+and [screens](screens.md). Editorial ambition does not guarantee achieved
+truthfulness or fairness: verification, sources, staff, preparation and framing
+affect actual reporting quality, which remains distinct from audience knowledge
+and trust.
 
 Evidence: estimates, staff reports, milestones, pilots, and later audience response.
 
@@ -357,7 +361,7 @@ altering what an earlier report knew. Diminishing returns leave uncertainty in
 place. The browser implements a bounded version for audience groups. See
 [audience research](audience-research.md).
 
-Audience polling is automatic and group-specific, with paid frequency
+Audience polling is automatic and station-wide, with paid frequency
 tiers up to daily. Polling produces snapshots but does not preserve familiarity or
 reduce noise. Familiarity with each group decays regardless of polling. Spending
 Insight raises that familiarity immediately; the improved estimate appears only
@@ -391,7 +395,10 @@ The eventual research interface should not show exact future ratings. The browse
 
 ## Optional AI concept interpretation
 
-A later model may translate free-text pitches into structured genre, theme, tone, complexity, originality, and production-demand attributes, plus an editorial report.
+A later model may translate free-text pitches into a structured production type,
+subject, applicable ambition features, complexity and production demands, plus an
+editorial report. Genre may be derived as a readable summary of the resulting
+profile; it should not replace the underlying features.
 
 Core outcomes remain in the simulation. Do not make an arbitrary model quality score authoritative. Store accepted interpretations so saves remain stable. Structured concept entry must work without AI; model choice, hardware, and integration are open.
 

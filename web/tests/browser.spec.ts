@@ -22,6 +22,8 @@ test('plan a varied evening, move/remove broadcasts, book a selected future airi
   await page.locator('[data-programme="2"]').click(); await expect(page.locator('#place-time')).toHaveValue('74'); await page.locator('#place').click();
   const secondId = Number((await page.locator('#selected-id').textContent())!.match(/#(\d+)/)![1]);
   await expect(page.locator('#selected-window')).toContainText('18:30–19:15 · 45 min');
+  await expect(page.locator('#known-details')).toContainText('Information depth');
+  await expect(page.locator('#known-details')).not.toContainText('Editorial rigour');
   await page.locator('#move-time').selectOption('73'); await page.locator('#move').click();
   await expect(page.getByRole('alert')).toContainText('overlap');
   await expect(page.locator(`[data-airing="${secondId}"]`)).toHaveAttribute('data-start', '74');
@@ -98,7 +100,7 @@ test('actual Wasm protocol matches native planning, booking, tick accounting and
     // @ts-expect-error test-only routes serve generated bindings, not a product inspector
     const { default: init, WebSession } = await import('/__test__/bts_web.js'); await init();
     const a = new WebSession(); const b = new WebSession();
-    const send = (s: { dispatch: (s: string) => string }, command: object) => JSON.parse(s.dispatch(JSON.stringify({ api_version: 5, command })));
+    const send = (s: { dispatch: (s: string) => string }, command: object) => JSON.parse(s.dispatch(JSON.stringify({ api_version: 8, command })));
     const reports = [send(a, { type: 'inspect' }), send(a, { type: 'place', start_tick: 72, programme: 1, advertiser: 1 })];
     const id = reports[1].report.schedule.find((a: { station: number }) => a.station === 1).airing_id;
     reports.push(send(a, { type: 'request_offer', airing_id: id })); const token = reports[2].report.offer.offer_id;
@@ -106,7 +108,7 @@ test('actual Wasm protocol matches native planning, booking, tick accounting and
     const invalid = send(a, { type: 'place', start_tick: 73, programme: 1, advertiser: null });
     const afterInvalid = send(a, { type: 'inspect' });
     const malformed = JSON.parse(a.dispatch('{bad'));
-    const wide = JSON.parse(a.dispatch('{"api_version":5,"command":{"type":"remove","airing_id":4294967296}}'));
+    const wide = JSON.parse(a.dispatch('{"api_version":8,"command":{"type":"remove","airing_id":4294967296}}'));
     reports.push(send(a, { type: 'accept_offer', airing_id: id, offer_id: token }));
     reports.push(send(a, { type: 'advance', to_tick: 74 }));
     const beforeLocked = send(a, { type: 'inspect' });

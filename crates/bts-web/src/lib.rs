@@ -5,7 +5,7 @@ pub mod scenario;
 
 use bts_sim::economy::{Account, AudienceCommitment, Contract, ContractStatus, LedgerReason};
 use bts_sim::planning::production::{
-    Concept, PersonId, ProductionId, RequestId, Role, SwayReason, PARTICIPATION_COST,
+    Concept, PersonId, ProductionId, RequestId, SwayReason, PARTICIPATION_COST,
 };
 use bts_sim::planning::{AiringId, PlanError, Planner, PlanningOffer};
 use bts_sim::{BrandId, ProgrammeId, SimTick};
@@ -28,6 +28,7 @@ pub struct Session {
     next_offer: u64,
     pending: Option<Pending>,
     booking_review: Option<ProductionBookingReview>,
+    film_review: Option<FilmReview>,
 }
 impl Session {
     pub fn new() -> Result<Self, PlayerError> {
@@ -53,6 +54,7 @@ impl Session {
             next_offer: 1,
             pending: None,
             booking_review: None,
+            film_review: None,
         })
     }
     pub fn execute(&mut self, command: Command) -> Result<PlayerReport, PlayerError> {
@@ -73,7 +75,7 @@ impl Session {
             )),
             Ok(request) if request.api_version != API_VERSION => Err(PlayerError::new(
                 "unsupported_version",
-                "This adapter supports api_version 5.",
+                "This adapter supports api_version 8.",
             )),
             Ok(request) => self.execute(request.command),
         };
@@ -91,10 +93,46 @@ impl Session {
     }
     fn apply(&mut self, command: Command) -> Result<(), PlayerError> {
         match command {
-            Command::SetPolling { audience, polling } => self
+            Command::PitchFilm {
+                title,
+                subject,
+                ambition,
+            } => {
+                self.planner
+                    .pitch_film(title, subject, ambition)
+                    .map_err(player_error)?;
+            }
+            Command::WriteFilm {
+                film_id,
+                writer,
+                focus,
+            } => {
+                self.planner
+                    .write_film(ProductionId(film_id), PersonId(writer), focus)
+                    .map_err(player_error)?;
+            }
+            Command::AcceptScript { film_id } => self
                 .planner
-                .set_polling(bts_sim::AudienceId(audience), polling)
+                .accept_script(ProductionId(film_id))
                 .map_err(player_error)?,
+            Command::ReviewFilm { film_id, booking } => {
+                let booking = film_booking(booking);
+                let quote = self
+                    .planner
+                    .review_film(ProductionId(film_id), booking)
+                    .map_err(player_error)?;
+                self.film_review = Some(film_review(film_id, booking, &quote));
+                return Ok(());
+            }
+            Command::BookFilm { film_id, booking } => {
+                self.planner
+                    .book_film(ProductionId(film_id), film_booking(booking))
+                    .map_err(player_error)?;
+            }
+
+            Command::SetPolling { polling } => {
+                self.planner.set_polling(polling).map_err(player_error)?
+            }
             Command::SpendInsight { audience, amount } => self
                 .planner
                 .spend_insight(bts_sim::AudienceId(audience), amount)
@@ -263,6 +301,7 @@ impl Session {
         }
         self.pending = None;
         self.booking_review = None;
+        self.film_review = None;
         Ok(())
     }
     fn audience_name(&self, id: bts_sim::AudienceId) -> String {
@@ -337,10 +376,7 @@ impl Session {
                 .map(|p| PersonInfo {
                     id: p.id.0,
                     name: p.name.clone(),
-                    role: match p.role {
-                        Role::Host => "host",
-                        Role::Guest => "guest",
-                    },
+                    role: p.role,
                     fee: p.fee.0.to_string(),
                     description: p.description.clone(),
                     normal_until_tick: p.normal_until.0,
@@ -375,6 +411,7 @@ impl Session {
                     guests: p.concept.guests.map(|g| g.0),
                     subject: p.concept.subject,
                     tone: p.concept.tone,
+                    ambition: qualities(p.concept.ambition()),
                     budget: p.concept.budget.0.to_string(),
                     fees: p.fees.0.to_string(),
                     record_at: p.concept.record_at.0,
@@ -489,15 +526,14 @@ impl Session {
                     .unwrap()
                     .name
                     .clone(),
-                genre: format!(
-                    "{:?}",
-                    world
-                        .programmes
-                        .iter()
-                        .find(|p| p.id == a.programme)
-                        .unwrap()
-                        .genre
-                ),
+                genre: world
+                    .programmes
+                    .iter()
+                    .find(|p| p.id == a.programme)
+                    .unwrap()
+                    .profile
+                    .genre()
+                    .into(),
                 duration_minutes: world
                     .programmes
                     .iter()
@@ -647,6 +683,22 @@ impl Session {
                                 .map(|v| v.viewers)
                                 .sum(),
                             not_watching: allocation.not_watching,
+                            film_reception: self
+                                .planner
+                                .films()
+                                .any(|f| f.programme == Some(a.programme))
+                                .then(|| {
+                                    allocation
+                                        .viewing
+                                        .iter()
+                                        .find(|v| v.station == PLAYER && v.viewers >= 1.0)
+                                })
+                                .flatten()
+                                .map(|v| match v.satisfaction.trace.output {
+                                    x if x >= 0.72 => "Strong",
+                                    x if x >= 0.50 => "Mixed",
+                                    _ => "Cool",
+                                }),
                         })
                         .collect(),
                 })
@@ -663,6 +715,8 @@ impl Session {
             cash: economy.cash(PLAYER).unwrap().0.to_string(),
             research: self.planner.research_view(),
             production: self.production_view(),
+            film_desk: film_desk(&self.planner),
+            film_review: self.film_review.clone(),
             booking_review: self.booking_review.clone(),
             finances: Finances {
                 opening_cash: world
@@ -724,7 +778,7 @@ impl Session {
                         .map(|project| project.id.0),
                     id: p.id.0,
                     name: p.name.clone(),
-                    genre: format!("{:?}", p.genre),
+                    genre: p.profile.genre().into(),
                     kind: if p.series().is_some() {
                         "episode"
                     } else {
@@ -741,7 +795,8 @@ impl Session {
                             .clone()
                     }),
                     episode: p.sequence(),
-                    tone: p.tone,
+                    production_type: p.profile.production_type,
+                    qualities: programme_qualities(p.profile),
                     awareness: p.awareness,
                     cast_appeal: p.cast_appeal,
                     broadcast_cost: p.broadcast_cost.0.to_string(),
@@ -829,4 +884,133 @@ fn concept_input(input: ProductionConceptInput) -> Result<Concept, PlayerError> 
         budget: bts_sim::economy::Money(budget),
         record_at: SimTick(input.record_at),
     })
+}
+
+fn qualities(profile: bts_sim::FeatureProfile) -> Vec<Quality> {
+    bts_sim::FEATURE_NAMES
+        .into_iter()
+        .zip(profile.values)
+        .filter_map(|(name, value)| {
+            value.map(|value| Quality {
+                name,
+                level: bts_sim::feature_band(name, value),
+            })
+        })
+        .collect()
+}
+
+fn programme_qualities(mut profile: bts_sim::FeatureProfile) -> Vec<Quality> {
+    profile.values[bts_sim::EDITORIAL_RIGOUR] = None;
+    qualities(profile)
+}
+
+fn film_booking(b: FilmBookingInput) -> bts_sim::planning::film::FilmBooking {
+    bts_sim::planning::film::FilmBooking {
+        cast: b.cast.map(PersonId),
+        director: PersonId(b.director),
+        studio: b.studio,
+        start: SimTick(b.start),
+    }
+}
+fn film_review(
+    id: u32,
+    b: bts_sim::planning::film::FilmBooking,
+    q: &bts_sim::planning::film::FilmQuote,
+) -> FilmReview {
+    FilmReview {
+        id,
+        cast: b.cast.map(|p| p.0),
+        director: b.director.0,
+        studio: b.studio,
+        start: b.start.0,
+        recording_end: q.recording_end.0,
+        ready: q.ready.0,
+        fees: q.fees.0.to_string(),
+        rent: q.rent.0.to_string(),
+        total: q.total.0.to_string(),
+        studio_shortfall: q.studio_shortfall,
+    }
+}
+fn film_desk(planner: &Planner) -> FilmDesk {
+    use bts_sim::planning::film::*;
+    let now = planner.now().0;
+    FilmDesk {
+        roles: ROLES,
+        writing_ticks: WRITING_TICKS,
+        revision_ticks: REVISION_TICKS,
+        projects: planner
+            .films()
+            .map(|film| FilmCard {
+                id: film.id.0,
+                title: film.title.clone(),
+                subject: film.subject,
+                phase: film.phase,
+                committed: film.committed.0.to_string(),
+                writer: film.writer.map(|w| w.0),
+                due: film.due.map(|tick| tick.0),
+                revised: film.revision_focus.is_some(),
+                programme: film.programme.map(|id| id.0),
+                script: film.script.as_ref().map(|script| FilmScript {
+                    qualities: qualities(script.profile),
+                    weaknesses: script
+                        .weaknesses
+                        .iter()
+                        .map(|&i| (i as u8, bts_sim::FEATURE_NAMES[i]))
+                        .collect(),
+                    studio_demand: if script.equipment_demand > 0.32 {
+                        "Needs equipped staging"
+                    } else {
+                        "A compact room will do"
+                    },
+                }),
+                booking: film
+                    .booking
+                    .zip(film.quote.as_ref())
+                    .map(|(b, q)| film_review(film.id.0, b, q)),
+            })
+            .collect(),
+        people: PEOPLE
+            .iter()
+            .map(|person| FilmPerson {
+                id: person.id.0,
+                name: person.name,
+                job: person.job,
+                fee: person.fee.0.to_string(),
+                revision_fee: person.fee.0.div_ceil(2).to_string(),
+                specialty: person.specialty,
+                available_until: person.available_until,
+                commitments: planner
+                    .films()
+                    .filter_map(|f| {
+                        if matches!(f.phase, FilmPhase::Writing | FilmPhase::Revising)
+                            && f.writer == Some(person.id)
+                        {
+                            return Some((f.title.clone(), f.writing_start?.0, f.due?.0));
+                        }
+                        let (b, q) = f.booking.zip(f.quote.as_ref())?;
+                        (q.recording_end.0 > now
+                            && (b.cast.contains(&person.id) || b.director == person.id))
+                            .then(|| (f.title.clone(), b.start.0, q.recording_end.0))
+                    })
+                    .collect(),
+            })
+            .collect(),
+        studios: RENTALS
+            .iter()
+            .map(|studio| FilmStudio {
+                id: studio.id,
+                name: studio.name,
+                fee: studio.fee.0.to_string(),
+                summary: studio.summary,
+                commitments: planner
+                    .films()
+                    .filter_map(|f| {
+                        let (b, q) = f.booking.zip(f.quote.as_ref())?;
+                        (b.studio == studio.id && q.recording_end.0 > now)
+                            .then(|| (f.title.clone(), b.start.0, q.recording_end.0))
+                    })
+                    .collect(),
+            })
+            .collect(),
+    }
 }

@@ -33,7 +33,7 @@ owned titles remain in the library while offered for resale; incoming competitor
 offers are reviewable obligations/actions, not auction bids. See [programme rights
 and acquisition](design.md#programme-library-licensing-and-resale).
 
-The browser now includes an Audience panel for dated estimates, per-group polling and
+The browser now includes an Audience panel for dated estimates, a shared survey schedule and
 Insight spending. See [audience research](audience-research.md).
 
 ## Shared navigation and detail panels
@@ -53,8 +53,10 @@ There is no separate Newsroom destination. A news bulletin, current-affairs
 magazine, political panel or topical late-night show is created and managed
 through Production, then scheduled through Programme planning.
 
-Format, subject matter, tone and editorial leaning are separate dimensions.
-News and entertainment can coexist in one programme. Examples:
+Production type and format establish the applicable feature vocabulary; subject
+and the achieved profile shape the actual programme. Nonfiction can combine
+reporting rigour with entertainment features, so news and comedy can coexist in
+one programme. Examples:
 
 | Programme | Format | Subjects and style |
 | --- | --- | --- |
@@ -136,6 +138,9 @@ must remain distinct from the next broadcast that will air. Preview the time
 advance destination and relevant obligations; do not accidentally skip a decision.
 
 ### Production and people
+The [Film desk](original-film.md) provides project cards, script delivery links,
+portrait casting and a booking review for standalone fiction.
+
 
 Use a casting desk: host and guest portraits occupy visible seats; clicking an
 empty seat opens a roster of person cards. Display specialties, fees and known
@@ -143,7 +148,10 @@ availability directly. For scripted work, use named roles rather than generic
 seats, following [talent and contracts](talent-and-contracts.md).
 
 Prefer subject tiles, buttons or chips for discrete choices. Sliders suit gradual
-choices such as restrained-to-lively tone. Budget presets such as **Shoestring /
+choices such as the current discussion prototype's calm-to-lively tone. Future
+ambition controls should use the concrete feature vocabulary in
+[game design](design.md#programme-formats-and-subject-matter), not treat that
+prototype tone value as a universal content axis. Budget presets such as **Shoestring /
 Standard / Lavish** can reduce form filling, while always displaying the exact
 price and what it commits. Preset names and effects need testing; they are not
 new balance rules. Avoid replacing every dropdown with a slider indiscriminately.

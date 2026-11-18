@@ -15,22 +15,12 @@ fn world() -> World {
         a.id = AudienceId(i as u16 + 1);
         a.population = 10000;
         a.availability = [1.0; 24];
-        a.preferred_tone = 0.8;
         a.purchasing_power = 1.0;
         a.product_interests = [1.0; 2];
-        a.genre_tastes = if i == 0 {
-            [1.0, 0.0, 0.0]
-        } else {
-            [0.0, 0.0, 1.0]
-        };
+        a.feature_preferences = [if i == 0 { 1.0 } else { 0.0 }; 10];
     }
     for (i, p) in w.programmes.iter_mut().enumerate() {
-        p.genre = if i == 0 {
-            Genre::Comedy
-        } else {
-            Genre::Science
-        };
-        p.tone = 0.8;
+        p.profile = FeatureProfile::fiction([if i == 0 { 1.0 } else { 0.0 }; 7]);
         p.awareness = 0.0;
         p.cast_appeal = 0.0;
         p.execution = 1.0;

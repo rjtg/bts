@@ -11,6 +11,7 @@ async function choose(page: Page, seat: number, name: string) {
 async function book(page: Page, id: number) {
   await page.locator(`#review-${id}`).click();
   await expect(page.locator(`#booking-review-${id}`)).toContainText('Ready to book?');
+  await expect(page.locator(`#booking-review-${id}`)).toContainText('Aiming for');
   await page.locator(`#confirm-${id}`).click();
 }
 async function finish(page: Page, id: number) { await page.locator(`#production-${id}`).getByRole('button', { name: /^Finish / }).click(); }
@@ -70,7 +71,7 @@ test('conflicting bookings are rejected and cast cards explain duplicates and co
   await page.locator('#production-2').getByRole('button', { name: 'Discard concept' }).click(); await expect(page.locator('#production-2')).toHaveCount(0);
 });
 
-test('production and pooled Sway commands in actual Wasm match the native sequence', async ({ page }) => {
+test('discussion, pooled Sway and film commands in actual Wasm match the native sequence', async ({ page }) => {
   test.setTimeout(90_000);
   const native = JSON.parse(execFileSync('cargo', ['run', '--locked', '--quiet', '-p', 'bts-web', '--example', 'production_experiment', '--', '--sequence'], { cwd: root, encoding: 'utf8' }));
   await page.route('**/__test__/bts_web.js', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web.js'), contentType: 'text/javascript' }));
@@ -82,13 +83,29 @@ test('production and pooled Sway commands in actual Wasm match the native sequen
     for (const request of requests) { if (request.command.type === 'accept_offer') request.command.offer_id = token; const response = JSON.parse(s.dispatch(JSON.stringify(request))); responses.push(response); if (response.status === 'ok' && response.report.offer) token = response.report.offer.offer_id; }
     s.free(); return responses;
   }, native.requests);
-  function compare(a: unknown, b: unknown): void {
-    if (typeof b === 'number') { expect(a).toBeCloseTo(b, 8); return; }
-    if (Array.isArray(b)) { expect(Array.isArray(a)).toBe(true); expect((a as unknown[]).length).toBe(b.length); b.forEach((value, i) => compare((a as unknown[])[i], value)); return; }
-    if (b !== null && typeof b === 'object') { expect(Object.keys(a as object).sort()).toEqual(Object.keys(b).sort()); for (const [key, value] of Object.entries(b)) { if (key === 'offer_id') continue; compare((a as Record<string, unknown>)[key], value); } return; }
-    expect(a).toEqual(b);
+  function difference(a: unknown, b: unknown, path = 'response'): string | undefined {
+    if (typeof b === 'number') return typeof a === 'number' && Math.abs(a - b) < 5e-9 ? undefined : path;
+    if (Array.isArray(b)) {
+      if (!Array.isArray(a) || a.length !== b.length) return path;
+      for (let i = 0; i < b.length; i++) {
+        const mismatch = difference(a[i], b[i], `${path}[${i}]`);
+        if (mismatch) return mismatch;
+      }
+      return undefined;
+    }
+    if (b !== null && typeof b === 'object') {
+      if (a === null || typeof a !== 'object' || Array.isArray(a)) return path;
+      if (Object.keys(a).sort().join(',') !== Object.keys(b).sort().join(',')) return path;
+      for (const [key, value] of Object.entries(b)) {
+        if (key === 'offer_id') continue;
+        const mismatch = difference((a as Record<string, unknown>)[key], value, `${path}.${key}`);
+        if (mismatch) return mismatch;
+      }
+      return undefined;
+    }
+    return a === b ? undefined : path;
   }
-  compare(actual, native.responses);
+  expect(difference(actual, native.responses), 'first native/Wasm mismatch').toBeUndefined();
   expect(actual.filter((r: { status: string }) => r.status === 'error').map((r: { error: { code: string } }) => r.error.code)).toEqual(['production_not_ready', 'exceptional_participation_required']);
 });
 

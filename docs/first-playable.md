@@ -2,6 +2,9 @@
 
 Status: proposed scope. This bounds implementation; it does not remove later features from the design.
 
+The [original film experiment](original-film.md) now exercises one full fiction
+production from pitch through broadcast and advertising settlement.
+
 ## Question to answer
 
 Can a player observe an audience opportunity, make a production bet, schedule it effectively, earn advertising revenue, and understand the result well enough to improve?
@@ -14,8 +17,8 @@ Season length, starting funds, contract thresholds, and the definition of a retu
 
 ## Suggested content budget
 
-- Six audience groups with distinct availability, tastes, purchasing power, and novelty preferences.
-- Four broad scripted genres.
+- Six audience groups with distinct availability, tastes, purchasing power, and preferences for programme qualities.
+- Four distinct profiles for scripted works.
 - Approximately twenty fictional people covering necessary creative roles and interview guests.
 - One competing station following a simple audience-aware strategy.
 - A small purchased-programme catalogue.

@@ -24,13 +24,12 @@ fn world(creative: f64) -> World {
     world.brands.truncate(1);
     let audience = &mut world.audiences[0];
     audience.population = 10000;
-    audience.genre_tastes = [1.0; 3];
+    audience.feature_preferences = [0.8; 10];
     audience.availability = [1.0; 24];
-    audience.preferred_tone = 0.8;
     audience.purchasing_power = 1.0;
     audience.product_interests = [1.0; 2];
     let programme = &mut world.programmes[0];
-    programme.tone = 0.8;
+    programme.profile = FeatureProfile::fiction([0.8; 7]);
     programme.awareness = 1.0;
     programme.cast_appeal = 1.0;
     programme.execution = 1.0;

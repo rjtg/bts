@@ -658,7 +658,9 @@ pub fn advertiser_value_report(
 pub struct ProductionReport {
     pub craft: f64,
     pub subject_fit: f64,
-    pub tone_fit: f64,
+    pub capability: f64,
+    pub ambition: crate::FeatureProfile,
+    pub achieved: crate::FeatureProfile,
     pub resources: f64,
     pub base_execution: f64,
     pub cooperation_penalty: f64,
@@ -679,7 +681,9 @@ impl ProductionReport {
         Some(Self {
             craft: o.craft,
             subject_fit: o.subject_fit,
-            tone_fit: o.tone_fit,
+            capability: o.capability,
+            ambition: o.ambition,
+            achieved: o.achieved,
             resources: o.resources,
             base_execution: o.base_execution,
             cooperation_penalty: o.cooperation_penalty,

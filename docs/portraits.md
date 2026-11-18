@@ -38,3 +38,33 @@ through both hosts and all four guests, decoded all six square portraits, verifi
 accessible image labels and recorded no page errors. The TypeScript language
 server was unavailable; `tsc --noEmit` and the browser check supplied feedback.
 No Rust simulation or protocol changes were needed.
+
+## Audience group portraits
+
+The audience dossiers use three illustrative group portraits, mapped by scenario
+audience ID in `web/src/audience.ts`. Add future illustrations to
+`web/public/audiences/` and extend that mapping when a group needs one.
+
+Built-in ImageGen prompt set, with the existing Mina Sol portrait as style
+reference. Each brief uses this shared direction.
+
+> Landscape group portrait for Behind the Screens audience dossier. Match the
+> existing Mina Sol portrait's 1980s pixel-art game illustration, crisp deliberate
+> pixel clusters, warm shading, deep teal backdrop, coral and amber accents.
+> Distinct faces and readable silhouettes at thumbnail size. Frame all faces
+> centrally with breathing room. No text, logos or borders.
+
+- `young-viewers.webp` depicts three diverse late teens and young adults in
+  colourful 1980s casual clothes sharing popcorn on a couch.
+- `households.webp` depicts a relaxed multigenerational household, including an
+  older adult and a child watching together on a sofa.
+- `specialists.webp` depicts three adult hobbyists in a community workshop with
+  an electronics project and notebook.
+
+## Film freelancers
+
+Built-in ImageGen created [the film roster atlas](../web/public/portraits/film-roster.webp).
+The prompt used Mina Sol as a style reference for 1980s pixel art, warm shading
+and teal backdrops. It requested a text-free four-column, two-row atlas of
+new, centred head-and-shoulders portraits in roster order. The top row is Ada,
+Leon, Inez and Dev. The bottom row is Nina, Sam, Rosa and a spare silhouette.

@@ -11,6 +11,9 @@ recording, reserves a fixed budget and supports exceptional participation throug
 guests, with person and studio reservations. It does not implement negotiated employment, multi-edition
 contracts, character casting, script rewrites or a dynamic talent market.
 
+The [original film experiment](original-film.md) books freelance writers,
+actors and directors for one project and distinguishes named roles from actors.
+
 ## Three distinct layers
 
 | Layer | Meaning | Example |

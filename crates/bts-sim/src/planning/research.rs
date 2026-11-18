@@ -27,7 +27,8 @@ pub struct AudienceEstimate {
     pub(super) audience: Audience,
     pub population: u32,
     pub typical_age: u8,
-    pub tastes: [f64; 3],
+    #[serde(serialize_with = "serialize_tastes")]
+    pub tastes: [f64; 10],
     pub tick: u32,
     pub familiarity_level: &'static str,
     pub uncertainty: f64,
@@ -45,14 +46,14 @@ pub struct InsightEntry {
 struct GroupKnowledge {
     age: u8,
     familiarity: f64,
-    polling: Polling,
-    next: Option<SimTick>,
-    missed: bool,
     estimate: AudienceEstimate,
 }
 
 #[derive(Clone, Debug)]
 pub struct Research {
+    polling: Polling,
+    next: Option<SimTick>,
+    missed: bool,
     seed: u64,
     balance: u32,
     initial: u32,
@@ -64,14 +65,14 @@ pub struct Research {
 pub struct GroupView {
     pub id: AudienceId,
     pub name: String,
-    pub polling: Polling,
-    pub next_tick: Option<u32>,
-    pub missed_poll: bool,
     pub estimate: AudienceEstimate,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct ResearchView {
+    pub polling: Polling,
+    pub next_tick: Option<u32>,
+    pub missed_poll: bool,
     pub insight: u32,
     pub opening_insight: u32,
     pub spending: Vec<InsightEntry>,
@@ -108,10 +109,10 @@ fn estimate(
         .clamp(1.0, f64::from(u32::MAX)) as u32;
     let typical_age = (f64::from(age) + 60.0 * error()).round().clamp(0.0, 120.0) as u8;
     for value in audience
-        .genre_tastes
+        .feature_preferences
         .iter_mut()
         .chain(&mut audience.product_interests)
-        .chain([&mut audience.preferred_tone, &mut audience.purchasing_power])
+        .chain([&mut audience.purchasing_power])
     {
         *value = (*value + error()).clamp(0.0, 1.0);
     }
@@ -121,7 +122,7 @@ fn estimate(
     AudienceEstimate {
         population: audience.population,
         typical_age,
-        tastes: audience.genre_tastes,
+        tastes: audience.feature_preferences,
         tick: tick.0,
         familiarity_level: if familiarity >= 0.65 {
             "High"
@@ -175,15 +176,15 @@ impl Planner {
                     GroupKnowledge {
                         age,
                         familiarity: 0.25,
-                        polling: Polling::Off,
-                        next: None,
-                        missed: false,
                         estimate: estimate(seed, a, age, 0.25, SimTick(0)),
                     },
                 )
             })
             .collect();
         self.research = Some(Research {
+            polling: Polling::Off,
+            next: None,
+            missed: false,
             seed,
             balance: insight,
             initial: insight,
@@ -196,6 +197,9 @@ impl Planner {
     pub fn research_view(&self) -> Option<ResearchView> {
         let r = self.research.as_ref()?;
         Some(ResearchView {
+            polling: r.polling,
+            next_tick: r.next.map(|t| t.0),
+            missed_poll: r.missed,
             insight: r.balance,
             opening_insight: r.initial,
             spending: r.ledger.clone(),
@@ -205,9 +209,6 @@ impl Planner {
                 .map(|(&id, g)| GroupView {
                     id,
                     name: g.estimate.audience.name.clone(),
-                    polling: g.polling,
-                    next_tick: g.next.map(|t| t.0),
-                    missed_poll: g.missed,
                     estimate: g.estimate.clone(),
                 })
                 .collect(),
@@ -221,19 +222,22 @@ impl Planner {
             .ok_or_else(|| error("unknown_research_group", "Choose a known audience group."))
     }
 
-    pub fn set_polling(&mut self, id: AudienceId, polling: Polling) -> Result<(), PlanError> {
-        let group = self.research_group(id)?;
-        if group.polling == polling {
+    pub fn set_polling(&mut self, polling: Polling) -> Result<(), PlanError> {
+        let research = self
+            .research
+            .as_ref()
+            .ok_or_else(|| error("research_unavailable", "Audience research is unavailable."))?;
+        if research.polling == polling {
             return Ok(());
         }
         let next = polling
             .terms()
             .map(|(period, _)| SimTick((self.now().0 / period + 1) * period));
         self.bump()?;
-        let group = self.research.as_mut().unwrap().groups.get_mut(&id).unwrap();
-        group.polling = polling;
-        group.next = next;
-        group.missed = false;
+        let research = self.research.as_mut().unwrap();
+        research.polling = polling;
+        research.next = next;
+        research.missed = false;
         Ok(())
     }
 
@@ -265,22 +269,24 @@ impl Planner {
         let Some(r) = self.research.as_mut() else {
             return Ok(());
         };
-        for (&id, group) in &mut r.groups {
+        for group in r.groups.values_mut() {
             group.familiarity *= 0.9995;
-            if group.next != Some(at) {
-                continue;
-            }
-            let (period, price) = group.polling.terms().unwrap();
-            group.next = Some(SimTick(at.0 + period));
-            group.missed = self.engine.state.economy.cash(self.player).unwrap() < price;
-            if group.missed {
-                continue;
-            }
-            self.engine
-                .state
-                .economy
-                .charge_poll(at, self.player, price)
-                .map_err(engine_error)?;
+        }
+        if r.next != Some(at) {
+            return Ok(());
+        }
+        let (period, price) = r.polling.terms().unwrap();
+        r.next = Some(SimTick(at.0 + period));
+        r.missed = self.engine.state.economy.cash(self.player).unwrap() < price;
+        if r.missed {
+            return Ok(());
+        }
+        self.engine
+            .state
+            .economy
+            .charge_poll(at, self.player, price)
+            .map_err(engine_error)?;
+        for (&id, group) in &mut r.groups {
             let truth = self
                 .engine
                 .world
@@ -303,9 +309,55 @@ impl Planner {
     }
 }
 
+fn serialize_tastes<S: serde::Serializer>(
+    values: &[f64; 10],
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    use serde::ser::SerializeMap;
+    let mut map = serializer.serialize_map(Some(values.len()))?;
+    for (name, value) in FEATURE_NAMES.into_iter().zip(values) {
+        let half_stars = (value * 10.0).round() as u8;
+        map.serialize_entry(name, &half_stars)?;
+    }
+    map.end()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn forecast_uses_published_feature_preferences_without_replacing_actual_tastes() {
+        let world = crate::demo::world();
+        let ages = world.audiences.iter().map(|a| (a.id, 42)).collect();
+        let truth = world.audiences[0].feature_preferences;
+        let mut planner = Planner::new(
+            world,
+            Parameters::default(),
+            crate::demo::MAIN,
+            SimTick(300),
+            &[],
+        )
+        .unwrap();
+        planner.configure_research(719, 8, ages).unwrap();
+        let id = AudienceId(1);
+        let opening = planner.research_group(id).unwrap().estimate.tastes;
+        assert_ne!(opening, truth);
+        planner.spend_insight(id, 8).unwrap();
+        assert_eq!(
+            planner.forecast_engine().unwrap().world.audiences[0].feature_preferences,
+            opening
+        );
+        planner.set_polling(Polling::Daily).unwrap();
+        planner.advance_to(SimTick(96)).unwrap();
+        let published = planner.research_group(id).unwrap().estimate.tastes;
+        assert_ne!(published, opening);
+        assert_eq!(
+            planner.forecast_engine().unwrap().world.audiences[0].feature_preferences,
+            published
+        );
+        assert_eq!(planner.world().audiences[0].feature_preferences, truth);
+    }
 
     #[test]
     fn insight_has_diminishing_gains_and_unaffordable_polls_are_skipped() {
@@ -333,14 +385,14 @@ mod tests {
         planner.spend_insight(id, 1).unwrap();
         let second = planner.research_group(id).unwrap().familiarity;
         assert!(first > initial && second > first && second - first < first - initial);
-        planner.set_polling(id, Polling::Daily).unwrap();
+        planner.set_polling(Polling::Daily).unwrap();
         planner.advance_to(SimTick(193)).unwrap();
         let view = planner.research_view().unwrap();
         assert_eq!(view.insight, 2);
         assert_eq!(view.spending.len(), 2);
-        assert!(view.groups[0].missed_poll);
+        assert!(view.missed_poll);
         assert_eq!(view.groups[0].estimate.tick, 96);
-        assert_eq!(view.groups[0].next_tick, Some(288));
+        assert_eq!(view.next_tick, Some(288));
         assert_eq!(
             planner.state().economy().cash(crate::demo::MAIN),
             Some(Money(0))
@@ -359,7 +411,7 @@ mod tests {
                     .tastes
                     .into_iter()
                     .zip(second.tastes)
-                    .zip(group.genre_tastes)
+                    .zip(group.feature_preferences)
                 {
                     assert!((0.0..=1.0).contains(&after));
                     assert!((before - after).abs() <= 0.04 * second.uncertainty);

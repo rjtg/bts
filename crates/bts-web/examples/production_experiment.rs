@@ -12,14 +12,14 @@ fn dispatch(
         review["type"] = json!("review_production");
         let mut candidate = s.clone();
         let result: Value = serde_json::from_str(
-            &candidate.dispatch_json(&json!({"api_version":5,"command":review}).to_string()),
+            &candidate.dispatch_json(&json!({"api_version":8,"command":review}).to_string()),
         )
         .unwrap();
         if result["status"] == "ok" {
             dispatch(s, review, requests, responses);
         }
     }
-    let request = json!({"api_version":5,"command":command});
+    let request = json!({"api_version":8,"command":command});
     let response: Value = serde_json::from_str(&s.dispatch_json(&request.to_string())).unwrap();
     requests.push(request);
     responses.push(response.clone());
@@ -126,6 +126,20 @@ fn main() {
     let final_report = send(json!({"type":"advance","to_tick":292}));
     assert_eq!(final_report["status"], "ok");
     if std::env::args().any(|arg| arg == "--sequence") {
+        for command in [
+            json!({"type":"pitch_film","title":"Night Signal","subject":"everyday_life","ambition":[0.2,0.2,0.93,0.32,0.48,0.95,0.86]}),
+            json!({"type":"write_film","film_id":4,"writer":101,"focus":null}),
+            json!({"type":"advance","to_tick":340}),
+            json!({"type":"write_film","film_id":4,"writer":101,"focus":5}),
+            json!({"type":"advance","to_tick":372}),
+            json!({"type":"accept_script","film_id":4}),
+            json!({"type":"review_film","film_id":4,"booking":{"cast":[105,106],"director":104,"studio":2,"start":380}}),
+            json!({"type":"book_film","film_id":4,"booking":{"cast":[105,106],"director":104,"studio":2,"start":380}}),
+            json!({"type":"advance","to_tick":404}),
+        ] {
+            let response = send(command);
+            assert_eq!(response["status"], "ok", "{response}");
+        }
         println!("{}", json!({"requests":requests,"responses":responses}));
     } else {
         println!("{}",serde_json::to_string_pretty(&json!({"experiment":"pooled_sway_v1","comparisons":comparisons,"sway_chain":final_report["report"],"rejected_without_sway":without["error"]})).unwrap());

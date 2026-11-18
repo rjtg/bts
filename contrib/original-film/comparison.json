@@ -1,0 +1,339 @@
+[
+  {
+    "ambition": [
+      0.4,
+      0.35,
+      0.35,
+      0.75,
+      0.7,
+      0.12,
+      0.45
+    ],
+    "case": "modest, Ada, Backlot",
+    "committed_credits": 2090,
+    "equipment_demand": 0.29000000000000004,
+    "equipment_fit": 1.0,
+    "execution": 0.89925,
+    "final_script": {
+      "production_type": "Fiction",
+      "values": [
+        0.4,
+        0.35,
+        0.35,
+        0.75,
+        0.7,
+        0.12,
+        0.45,
+        null,
+        null,
+        null
+      ]
+    },
+    "finished": {
+      "production_type": "Fiction",
+      "values": [
+        0.34642000000000006,
+        0.36705499999999996,
+        0.3056375,
+        0.6485250000000001,
+        0.61789,
+        0.11559,
+        0.41139000000000003,
+        null,
+        null,
+        null
+      ]
+    },
+    "first_script": {
+      "production_type": "Fiction",
+      "values": [
+        0.4,
+        0.35,
+        0.35,
+        0.75,
+        0.7,
+        0.12,
+        0.45,
+        null,
+        null,
+        null
+      ]
+    },
+    "money_conserved": 80000,
+    "spectacle_support": 0.97,
+    "weaknesses": [],
+    "writer": 101
+  },
+  {
+    "ambition": [
+      0.2,
+      0.2,
+      0.93,
+      0.32,
+      0.48,
+      0.95,
+      0.86
+    ],
+    "case": "demanding, Ada, Backlot",
+    "committed_credits": 2090,
+    "equipment_demand": 0.6468799999999999,
+    "equipment_fit": 0.4946821667078903,
+    "execution": 0.7311729636566905,
+    "final_script": {
+      "production_type": "Fiction",
+      "values": [
+        0.2,
+        0.2,
+        0.642816,
+        0.32,
+        0.48,
+        0.5958399999999999,
+        0.716896,
+        null,
+        null,
+        null
+      ]
+    },
+    "finished": {
+      "production_type": "Fiction",
+      "values": [
+        0.17321000000000003,
+        0.23410999999999998,
+        0.5613390720000001,
+        0.27670400000000006,
+        0.4236960000000001,
+        0.4464968599950532,
+        0.6553863232,
+        null,
+        null,
+        null
+      ]
+    },
+    "first_script": {
+      "production_type": "Fiction",
+      "values": [
+        0.2,
+        0.2,
+        0.642816,
+        0.32,
+        0.48,
+        0.5958399999999999,
+        0.716896,
+        null,
+        null,
+        null
+      ]
+    },
+    "money_conserved": 80000,
+    "spectacle_support": 0.4946821667078903,
+    "weaknesses": [
+      2,
+      5,
+      6
+    ],
+    "writer": 101
+  },
+  {
+    "ambition": [
+      0.2,
+      0.2,
+      0.93,
+      0.32,
+      0.48,
+      0.95,
+      0.86
+    ],
+    "case": "demanding, Ada, revised, Backlot",
+    "committed_credits": 2270,
+    "equipment_demand": 0.74940932,
+    "equipment_fit": 0.4270029628134328,
+    "execution": 0.7380420084701703,
+    "final_script": {
+      "production_type": "Fiction",
+      "values": [
+        0.2,
+        0.2,
+        0.642816,
+        0.32,
+        0.48,
+        0.7325457599999999,
+        0.716896,
+        null,
+        null,
+        null
+      ]
+    },
+    "finished": {
+      "production_type": "Fiction",
+      "values": [
+        0.17321000000000003,
+        0.23410999999999998,
+        0.5613390720000001,
+        0.27670400000000006,
+        0.4236960000000001,
+        0.5266281235423881,
+        0.6553863232,
+        null,
+        null,
+        null
+      ]
+    },
+    "first_script": {
+      "production_type": "Fiction",
+      "values": [
+        0.2,
+        0.2,
+        0.642816,
+        0.32,
+        0.48,
+        0.5958399999999999,
+        0.716896,
+        null,
+        null,
+        null
+      ]
+    },
+    "money_conserved": 80000,
+    "spectacle_support": 0.4270029628134328,
+    "weaknesses": [
+      2,
+      5,
+      6
+    ],
+    "writer": 101
+  },
+  {
+    "ambition": [
+      0.2,
+      0.2,
+      0.93,
+      0.32,
+      0.48,
+      0.95,
+      0.86
+    ],
+    "case": "demanding, Ada, revised, Soundstage",
+    "committed_credits": 2920,
+    "equipment_demand": 0.74940932,
+    "equipment_fit": 1.0,
+    "execution": 0.8160382558114285,
+    "final_script": {
+      "production_type": "Fiction",
+      "values": [
+        0.2,
+        0.2,
+        0.642816,
+        0.32,
+        0.48,
+        0.7325457599999999,
+        0.716896,
+        null,
+        null,
+        null
+      ]
+    },
+    "finished": {
+      "production_type": "Fiction",
+      "values": [
+        0.17321000000000003,
+        0.23410999999999998,
+        0.5613390720000001,
+        0.27670400000000006,
+        0.4236960000000001,
+        0.7056247033199999,
+        0.6553863232,
+        null,
+        null,
+        null
+      ]
+    },
+    "first_script": {
+      "production_type": "Fiction",
+      "values": [
+        0.2,
+        0.2,
+        0.642816,
+        0.32,
+        0.48,
+        0.5958399999999999,
+        0.716896,
+        null,
+        null,
+        null
+      ]
+    },
+    "money_conserved": 80000,
+    "spectacle_support": 0.97,
+    "weaknesses": [
+      2,
+      5,
+      6
+    ],
+    "writer": 101
+  },
+  {
+    "ambition": [
+      0.2,
+      0.2,
+      0.93,
+      0.32,
+      0.48,
+      0.95,
+      0.86
+    ],
+    "case": "demanding, Leon, Backlot",
+    "committed_credits": 2410,
+    "equipment_demand": 0.9124999999999999,
+    "equipment_fit": 0.3506849315068494,
+    "execution": 0.8018527397260273,
+    "final_script": {
+      "production_type": "Fiction",
+      "values": [
+        0.2,
+        0.2,
+        0.93,
+        0.32,
+        0.48,
+        0.95,
+        0.86,
+        null,
+        null,
+        null
+      ]
+    },
+    "finished": {
+      "production_type": "Fiction",
+      "values": [
+        0.17321000000000003,
+        0.23410999999999998,
+        0.8121225000000001,
+        0.27670400000000006,
+        0.4236960000000001,
+        0.6503303082191781,
+        0.786212,
+        null,
+        null,
+        null
+      ]
+    },
+    "first_script": {
+      "production_type": "Fiction",
+      "values": [
+        0.2,
+        0.2,
+        0.93,
+        0.32,
+        0.48,
+        0.95,
+        0.86,
+        null,
+        null,
+        null
+      ]
+    },
+    "money_conserved": 80000,
+    "spectacle_support": 0.3506849315068494,
+    "weaknesses": [],
+    "writer": 102
+  }
+]

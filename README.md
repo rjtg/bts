@@ -37,6 +37,8 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Production ambition draft](docs/production-ambition-draft.md): staged work, creative ambition, delivery shortfalls and downstream demands.
 - [Production logistics](docs/production-logistics.md): implemented station ownership/capacity and future setup/prop economies.
 - [Audience research](docs/audience-research.md) covers dated polls, Insight spending and ad forecasts.
+- [Programme feature profiles](docs/feature-profiles.md) covers ambition, achieved qualities, audience fit and catalogue labels.
+- [Original films](docs/original-film.md) covers script commissions, revisions, casting, studio bookings and airing results.
 - [Casting desk](docs/casting-desk.md): portrait casting, booking reviews and adjustable cooperation support.
 - [Sway quests](docs/quest-opportunities.md): separate acceptance, deadlines and production hints.
 - [Pooled Sway](docs/pooled-sway.md): finite requests, station-wide social capital and bounded production uses.
@@ -97,7 +99,7 @@ npm run dev
 
 `npm run build` produces the static `web/dist/` bundle. `npm run test:e2e`
 runs real Chromium tests after `npx playwright install --with-deps chromium`.
-Player protocol v5 excludes internal preferences, hype, execution and fuzzy
+Player protocol v8 excludes internal preferences, hype, execution and fuzzy
 traces. Audience delivery uses explicitly provisional start-of-airing expected counts;
 measured ratings and research remain future work. See the [browser guide](docs/browser-foundation.md)
 for contractual edit constraints, JSON money strings and verification results.

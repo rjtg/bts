@@ -6,6 +6,10 @@ two distinct guests, one subject, one tone, total budget and recording date.
 This is a playable addition to the [seven-day planner](programme-planning.md),
 not a full production, careers or relationship system.
 
+The [feature profile experiment](feature-profiles.md) supersedes the original
+tone suitability input and describes the current production and viewing equations.
+The equations below document the original milestone.
+
 ## Browser workflow
 
 1. Open **Production**, choose the title, host, two guests, subject, tone, budget
@@ -144,7 +148,7 @@ A concept contains `title`, `host` ID, `guests` (two IDs), `subject` (`science`,
 `budget` (decimal string) and `record_at` (tick number). E.g.:
 
 ```json
-{"api_version":5,"command":{"type":"create_production","concept":{"title":"Workshop Conversations","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":"1000","record_at":40}}}
+{"api_version":8,"command":{"type":"create_production","concept":{"title":"Workshop Conversations","host":1,"guests":[3,4],"subject":"science","tone":"calm","budget":"1000","record_at":40}}}
 ```
 
 Rust owns all decisions and exact accounts. Player observations whitelist public
@@ -182,7 +186,7 @@ Jules's day-3 participation and cooperation smoothing, then Rafi's different
 request earning at completed-production tick 292. See [current Sway evidence](../contrib/pooled-sway/README.md).
 The [original comparison evidence](../contrib/original-production/README.md)
 is retained as a historical protocol-v3 snapshot. `--sequence` now supplies
-protocol-v5 native commands for Wasm parity testing, not a save format.
+protocol-v8 native commands for Wasm parity testing, not a save format.
 
 ## Verification and remaining limits
 
