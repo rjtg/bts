@@ -1,14 +1,15 @@
+import { pickTime } from './planner-helpers';
 import { expect, test } from '@playwright/test';
 
 test('pitch, revise, cast, book, advertise and air a film', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('/');
+  await page.goto('/#planning');
   await expect(page.locator('#status')).toContainText('WASM READY');
-  await page.getByRole('link', { name: /Film desk/ }).click();
+  await page.locator('.rail a[href="#film-desk"]').click();
   await page.getByRole('button', { name: 'Big-city thriller' }).click();
   await page.getByRole('button', { name: 'Save free pitch' }).click();
   const film = page.locator('.film-project');
-  await expect(film).toContainText('0 credits committed');
+  await expect(film).toContainText('0 Funds committed');
   await film.getByRole('button', { name: 'Commission script' }).click();
   await film.getByRole('button', { name: 'Advance to script delivery' }).click();
   await expect(page.locator('#film-notices')).toContainText('Script ready');
@@ -20,7 +21,7 @@ test('pitch, revise, cast, book, advertise and air a film', async ({ page }) => 
   await film.getByRole('button', { name: /Dev Rowan/ }).click();
   await film.getByRole('combobox', { name: 'Studio', exact: true }).selectOption('2');
   await film.getByRole('button', { name: 'Review film booking' }).click();
-  await expect(film).toContainText('1,450 credits talent + 930 credits studio = 2,380 credits');
+  await expect(film).toContainText('1,450 Funds talent + 930 Funds studio = 2,380 Funds');
   if (process.env.BTS_FILM_SCREENSHOTS) {
     await film.screenshot({ path: '../contrib/original-film/booking.png' });
   }
@@ -28,8 +29,7 @@ test('pitch, revise, cast, book, advertise and air a film', async ({ page }) => 
   await film.getByRole('button', { name: 'Advance to film delivery' }).click();
   await expect(page.locator('#film-notices')).toContainText('Film ready');
   await film.getByRole('button', { name: 'Open in programme library' }).click();
-  await page.locator('#place-day').selectOption('1');
-  await page.locator('#place-time').selectOption('72');
+  await pickTime(page, 72, 1);
   await page.locator('#place').click();
   await page.locator('#open-ad-sales').click();
   await page.locator('#advertiser').selectOption('1');
@@ -40,7 +40,7 @@ test('pitch, revise, cast, book, advertise and air a film', async ({ page }) => 
   await page.locator('#advance-selected').click();
   await page.locator('#open-review').click();
   const result = page.locator('#selected-result');
-  await expect(result).toContainText('Film investment: 2,920 credits');
+  await expect(result).toContainText('Film investment: 2,920 Funds');
   await expect(result).toContainText('Provisional audience reception');
   await expect(result).toContainText(/ad revenue: [1-9]/);
   if (process.env.BTS_FILM_SCREENSHOTS) {

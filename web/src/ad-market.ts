@@ -1,6 +1,8 @@
 import type { Airing, Command, MinuteBooking, Report } from './protocol';
 import { action, element, node } from './ui/dom';
 
+const declined = new Map<number, Set<number>>();
+
 export const salesFor = (report: Report, airing: number) => report.minute_sales.filter(sale => sale.airing_id === airing);
 export const minuteRevenue = (sales: MinuteBooking[]) => sales.reduce((total, sale) => total + BigInt(sale.settlement?.payment ?? '0'), 0n);
 
@@ -21,13 +23,12 @@ export function renderAdMarket(
   if (airing.proposed_advertiser !== null) return;
   const id = airing.airing_id;
   const time = airing.duration_minutes + airing.ad_minutes;
-  const reserved = (airing.end_tick - airing.start_tick) * report.tick_minutes;
   const free = airing.ad_minutes - airing.sold_minutes;
   const sales = salesFor(report, id);
   const editable = airing.status === 'planned';
   const panel = node('section', '', 'contract-panel minute-market');
   panel.append(node('h4', 'Sell ad time'));
-  panel.append(node('p', `${airing.duration_minutes} min programme + ${airing.ad_minutes} min ad block · ${time} min runtime · ${reserved} min reserved`));
+  panel.append(node('p', `${airing.duration_minutes} min programme + ${airing.ad_minutes} min ad block · ${time} min runtime · until ${String(Math.floor(airing.end_minute % 1440 / 60)).padStart(2, '0')}:${String(airing.end_minute % 60).padStart(2, '0')}`));
   panel.append(node('p', `${airing.sold_minutes} min sold · ${free} min available`));
   if (airing.ad_minutes > 0) {
     const strip = node('ul', '', 'minute-strip');
@@ -63,7 +64,7 @@ export function renderAdMarket(
   }
   if (sales.length) {
     const confirmed = node('ul', '', 'minute-confirmed');
-    for (const sale of sales) confirmed.append(node('li', `${brandName(sale.advertiser)} · ${sale.minutes} min · ${money(sale.price)} credits agreed`));
+    for (const sale of sales) confirmed.append(node('li', `${brandName(sale.advertiser)} · ${sale.minutes} min · ${money(sale.price)} Funds agreed`));
     panel.append(confirmed);
   }
   const batch = report.minute_offers;
@@ -79,14 +80,32 @@ export function renderAdMarket(
       mark.setAttribute('aria-hidden', 'true');
       const title = node('h5', name);
       title.prepend(mark);
-      card.append(title, node('p', `${offer.minutes} min · ${money(offer.price)} credits · ${perMinute} / min`),
+      card.append(title, node('p', `${offer.minutes} min · ${money(offer.price)} Funds · ${perMinute} / min`),
         node('p', `About ${Math.round(offer.expected_target_viewers).toLocaleString('en')} target viewers · provisional forecast`));
       review.append(node('summary', 'Review offer'),
         node('p', `Sell ${offer.minutes} minutes and leave ${free - offer.minutes} open. Payment is due if the purchased time airs.`),
         action(`Accept ${name} offer`, () => send({
           type: 'accept_minute_offer', airing_id: id, advertiser: offer.advertiser, token: batch.token,
         })));
-      card.append(review); cards.append(card);
+      const crossed = declined.get(id) ?? new Set<number>();
+      declined.set(id, crossed);
+      function updateDecline() {
+        const skipped = crossed.has(offer.advertiser);
+        card.classList.toggle('declined', skipped);
+        review.hidden = skipped;
+        decline.textContent = skipped ? 'Restore offer' : 'Strike through';
+      }
+      const decline = action('Strike through', () => {
+        if (crossed.has(offer.advertiser)) crossed.delete(offer.advertiser);
+        else crossed.add(offer.advertiser);
+        updateDecline();
+      });
+      const signature = node('span', '✓ ');
+      signature.setAttribute('aria-hidden', 'true');
+      review.querySelector('button')?.prepend(signature);
+      card.append(review, decline);
+      updateDecline();
+      cards.append(card);
     }
     panel.append(cards);
   }

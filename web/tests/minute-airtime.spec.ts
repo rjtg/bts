@@ -1,0 +1,61 @@
+import { expect, test } from '@playwright/test';
+import { pickTime, setAdLoad } from './planner-helpers';
+
+test('place a 45-minute tape with 9 ad minutes and place the next tape at 18:54', async ({ page }) => {
+  await page.setViewportSize({ width: 1320, height: 940 });
+  await page.goto('/#planning');
+  await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.locator('[data-programme="2"]').click();
+  await setAdLoad(page, 20);
+  await expect(page.locator('#place-note')).toContainText('45 min programme + 9 min ads · 54 min airtime');
+  await expect(page.locator('#paper-on-desk')).toContainText('Programme sheet');
+  await pickTime(page, 72);
+  await page.getByRole('button', { name: 'Place at 18:00' }).click();
+  const first = page.locator('[data-station="1"] [data-start-minute="1080"]');
+  await expect(first).toHaveAttribute('data-end-minute', '1134');
+  await page.locator('#desk-notes').getByRole('button', { name: '18:00 · 9 ad min unsold' }).click();
+  const market = page.locator('#planner-airing-mount #ad-minute-market');
+  await market.getByRole('button', { name: 'Find offers' }).click();
+  const offer = market.locator('.minute-offer').first();
+  await offer.getByRole('button', { name: 'Strike through' }).click();
+  await expect(offer).toHaveClass(/declined/);
+  await offer.getByRole('button', { name: 'Restore offer' }).click();
+  await offer.locator('summary').click();
+  await offer.getByRole('button', { name: /^Accept/ }).click();
+
+  await page.locator('.series-box summary').click();
+  await page.locator('[data-programme="1"]').click();
+  await expect(page.locator('#place')).toHaveText('Place at 18:54');
+  await page.locator('#place').press('Enter');
+  await expect(page.locator('[data-station="1"] [data-start-minute="1134"]')).toHaveCount(1);
+  await first.click();
+  await page.locator('#advance-selected').click();
+  await expect(page.locator('#clock')).toContainText('18:54');
+  await expect(page.locator('#planner-airing-mount')).toContainText('Minute sale settlement');
+});
+
+test('fill a one-minute hole with a teaser and keep the next programme fixed', async ({ page }) => {
+  await page.setViewportSize({ width: 1320, height: 940 });
+  await page.goto('/#planning');
+  await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.locator('[data-programme="2"]').click();
+  await setAdLoad(page, 20);
+  await pickTime(page, 72);
+  await page.locator('#place').click();
+  await setAdLoad(page, 0);
+  await page.locator('.series-box summary').click();
+  await page.locator('[data-programme="1"]').click();
+  await pickTime(page, 76);
+  await page.locator('#place').click();
+  await page.locator('#move-time').fill('18:55');
+  await page.locator('#move').click();
+  await page.locator('#jump-evening').click();
+  await expect(page.locator('#desk-notes')).toContainText('18:54 · 1 min');
+  await page.locator('#desk-notes').getByRole('button', { name: 'Tease Neighbourhood Laughs' }).click();
+  const lane = page.locator('[data-station="1"]');
+  const filler = lane.locator('[data-start-minute="1134"]');
+  await expect(filler).toContainText('Upcoming show teaser');
+  await expect(filler).toHaveAttribute('data-end-minute', '1135');
+  await expect(lane.locator('[data-start-minute="1135"]')).toContainText('Neighbourhood Laughs');
+  await expect(page.locator('#open-ad-sales')).toBeHidden();
+});

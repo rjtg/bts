@@ -7,14 +7,13 @@ The legacy delivery contract remains available on airings without a minute listi
 
 ## Schedule and booking
 
-Exact runtime is programme minutes plus listed minutes. Occupied ticks are
-`ceil(exact runtime / 15)`. Unsold space and rounding padding are reserved schedule
-time without paid exposure. The player can remove unsold minutes to reclaim
-whole ticks. The planner rejects same-station overlaps and reservations beyond
-the scenario. A sale protects the airing's start, programme, and identity.
-The station can resize the block while it is still planned, subject to sold
-minutes and schedule occupancy. Legacy contracts and minute sales cannot share
-an airing. The model does not simulate the order of spots.
+Exact runtime is programme minutes plus listed minutes. Unsold space is real
+schedule time with no paid exposure. Removing unsold minutes reclaims those
+exact minutes. Rust rejects same-station overlaps and intervals outside the
+scenario. A sale protects the airing's start, programme, and identity. The
+station can resize a planned block around accepted sales and existing airings.
+The legacy delivery contract uses separate inventory. See
+[minute airtime](minute-airtime.md) for the station default and exact boundaries.
 
 A quote batch may contain more requested minutes than the station has listed.
 Accepting one offer reserves its exact credits and minutes and produces a fresh
@@ -45,12 +44,13 @@ comparisons and have no claim to balance.
 
 ## Exposure and settlement
 
-An airing that runs samples actual viewer allocation once, at programme start.
-For a purchased block of `m` minutes, report `viewer count × m` viewer-minutes
-and apply `m / 5` ad opportunities per sampled viewer to the existing hype
-and repetition model. Unsold minutes generate no exposure. This dose is not
-unique reach, actual time spent watching, or measured impressions. A funded
-airing with no viewers generates no hype.
+The recap samples actual viewing at the programme's start. Purchased spots run
+after the programme in acceptance order. Split at spot and lineup boundaries
+within quarter-hour intervals. For each purchased segment of `m` minutes,
+record `viewer count × m` viewer-minutes and apply `m / 5` ad opportunities per
+segment viewer to hype and repetition. Unsold minutes generate no exposure.
+These numbers are expected viewer-minutes, distinct from unique reach and
+measured impressions. A funded airing with no viewers generates no hype.
 
 At the end of the reserved airing the station earns the frozen price for
 each sale if the airing ran. If it went off air, every sale releases its
@@ -62,7 +62,15 @@ Legacy delivery contracts retain their audience-specific refund rules.
 Player reports show estimated target viewers, offers, agreed minutes and
 prices, provisional audience counts and settled outcomes. Developer evidence
 includes accepted quote inputs, timestamps and viewer-minute delivery. Measured
-ratings, audience guarantees, ad-load effects on viewing, placement, and
-station promos are future work.
+ratings, audience guarantees, ad-load effects on viewing and player-controlled in-break placement remain future work.
 
 [Walkthrough, screenshots and comparisons](../contrib/ad-minute-market/README.md)
+
+## Placement in the office interface
+
+Ad sales belongs to scheduling. Set or review block length when placing a
+programme, then open the scheduled airing's teal dossier to compare offers
+and sign sales. An unsold-ad desk note is a shortcut to that file. The same
+file gains provisional turnout and settlement after transmission. This is a
+presentation change to the existing minute market and commitment rules.
+See [the playable Station Office hub](station-office.md#playable-office-hub).

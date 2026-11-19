@@ -330,7 +330,7 @@ impl Planner {
         self.engine
             .state
             .economy
-            .charge_poll(at, self.player, price)
+            .charge_poll(AirMinute::from_tick(at), self.player, price)
             .map_err(engine_error)?;
         for (&id, group) in &mut r.groups {
             let truth = self
@@ -346,7 +346,7 @@ impl Planner {
         Ok(())
     }
 
-    pub(super) fn forecast_engine(&self) -> Option<Engine<SimTick>> {
+    pub(super) fn forecast_engine(&self) -> Option<Engine<AirMinute>> {
         let r = self.research.as_ref()?;
         let mut engine = self.engine.clone();
         for audience in &mut engine.world.audiences {

@@ -1,6 +1,7 @@
+import { fundsMark } from './funds';
 import { node } from './dom';
 const definitions = [
-  { key:'cash',name:'Cash',valueId:'cash',help:'Cash · spendable integer credits after commitments.',art:'<path d="M2 6h20v12H2zM5 3h14M5 21h14"/><circle cx="12" cy="12" r="3"/>' },
+  { key:'cash',name:'Funds',valueId:'cash',help:'Funds · spendable balance after commitments.',art:'<path d="M2 6h20v12H2zM5 3h14M5 21h14"/><circle cx="12" cy="12" r="3"/>' },
   { key:'insight',name:'Insight',valueId:'resource-insight',help:'Insight · shared budget for audience and title research.',art:'<circle cx="10" cy="10" r="5"/><path d="m14 14 6 6"/>' },
   { key:'sway',name:'Sway',valueId:'resource-sway',help:'Sway · pooled cooperation earned from completed quests.',art:'<path d="m2 10 5-5 5 2 5-2 5 5-7 9h-5l-8-9Zm5-5 5 7 4-3M7 15l3-3m0 6 3-3"/>' },
   { key:'glamour',name:'Glamour',help:'Glamour · planned award-driven prestige; not yet available.',art:'<path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/>' },
@@ -15,7 +16,7 @@ export function createResourceHud(root:HTMLElement) {
     const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('aria-hidden','true');
     icon.innerHTML=resource.art; // Static code-authored SVG only; never user or simulation text.
     const value=node('strong','—');if(resource.valueId)value.id=resource.valueId;values.set(resource.key,value);
-    const tip=node('span',resource.help,'resource-tooltip');tip.id=`${resource.key}-tip`;tip.setAttribute('role','tooltip');item.append(icon,value,tip);root.append(item);
+    const tip=node('span',resource.help,'resource-tooltip');tip.id=`${resource.key}-tip`;tip.setAttribute('role','tooltip');item.append(resource.key === 'cash' ? fundsMark() : icon,value,tip);root.append(item);
   }
   return { render(known:{cash:string;sway:string;insight:string}) { for(const [key,value] of Object.entries(known))values.get(key)!.textContent=value; } };
 }

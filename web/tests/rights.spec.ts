@@ -1,3 +1,4 @@
+import { pickTime } from './planner-helpers';
 import { expect, test } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
@@ -6,7 +7,7 @@ const root = resolve(import.meta.dirname, '../..');
 
 test('assess, acquire, air, resell and see a rival acquisition', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('/');
+  await page.goto('/#planning');
   await expect(page.locator('#status')).toContainText('WASM READY');
   await page.getByRole('link', { name: /Rights market/ }).click();
   const market = page.locator('#rights-market');
@@ -22,8 +23,7 @@ test('assess, acquire, air, resell and see a rival acquisition', async ({ page }
   await corner.getByRole('button', { name: /Buy rights/ }).click();
   await expect(corner).toContainText('In your library');
   await corner.getByRole('button', { name: 'Open in programme library' }).click();
-  await page.locator('#place-day').selectOption('0');
-  await page.locator('#place-time').selectOption('72');
+  await pickTime(page, 72, 0);
   await page.locator('#place').click();
   await page.getByRole('link', { name: /Rights market/ }).click();
   await corner.getByRole('button', { name: 'List for resale' }).click();
@@ -57,7 +57,7 @@ test('rights acquisition, assessment and resale match native execution', async (
   const native = JSON.parse(execFileSync('cargo', ['run', '--locked', '--quiet', '-p', 'bts-web', '--example', 'rights_market', '--', '--replay'], { cwd: root, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 }));
   await page.route('**/__test__/bts_web.js', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web.js'), contentType: 'text/javascript' }));
   await page.route('**/__test__/bts_web_bg.wasm', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web_bg.wasm'), contentType: 'application/wasm' }));
-  await page.goto('/');
+  await page.goto('/#planning');
   const actual = await page.evaluate(async requests => {
     // @ts-expect-error generated bindings are only served by test routes
     const { default: init, WebSession } = await import('/__test__/bts_web.js');

@@ -19,9 +19,11 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 ## Design documents
 
 - [Game design](docs/design.md): scope, entities, relationships, formats, and scenarios.
+- [Station Office widget guide](docs/office-widget-style.md) maps desk props to current and planned workspaces.
 - [Screens and interaction design](docs/screens.md): proposed workspaces, shared production and mockup brief.
 - [UI concept mockups](docs/mockups/README.md): station overview, programme planning and production editorial profile.
 - [Weekly scheduling](docs/weekly-scheduling.md): recurring slots, weekday preferences and deferred follow-ups.
+- [Minute airtime and the planning desk](docs/minute-airtime.md): exact placement, ad-load defaults, dossiers and one-minute fillers.
 - [Playable Control Desk](contrib/focused-desks/README.md): Schedule, Weekly Run, Ad Sales, Broadcast Review and pause.
 - [Control Desk redesign](docs/mockups/control-desk/README.md): connected UI mockups, audit and visual guide.
 - [Resource economies](docs/resource-economies-idea.md): pooled Sway, award-driven Glamour and the Credibility–Backing–loyalty loop.

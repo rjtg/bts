@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Behind the Screens · Station Office comparison</title>
+<style>
+  body { background: #231d17; color: #f5e8c9; font: 1rem/1.5 system-ui, sans-serif; max-width: 1280px; margin: auto; padding: 1rem; }
+  a { color: #ffcf7d; } figure { margin: 0 0 1.25rem; } img { display: block; width: 100%; height: auto; }
+  .narrow img { max-width: 390px; } section { margin-block: 2rem; }
+</style>
+</head>
+<body>
+<h1>Station Office comparison</h1>
+<p><a href="/">Open the playable build</a> · <a href="../perspective-desk.png">Approved mockup</a></p>
+<p>The baseline and rebuilt desktop scenes use 1280 × 900 Chromium viewports. The reference panel is shown at the same display width.</p>
+<section>
+<h2>Office</h2>
+<figure><figcaption>Approved office panel</figcaption><img src="reference-office.webp" alt="Approved office with angled shelf, CRT, and open dossier"></figure>
+<figure><figcaption>Before</figcaption><img src="before/office.png" alt="Timeline, shelf, tape, and programme sheet in stacked browser panels"></figure>
+<figure><figcaption>Composition pass</figcaption><img src="pass-one/office.png" alt="Connected office scene with overly tall programme tab"></figure>
+<figure><figcaption>Rebuilt office</figcaption><img src="after/office.png" alt="Staffed office with one selected tape, graph paper, CRT, and gap note"></figure>
+<figure><figcaption>Reception paper</figcaption><img src="after/reception.png" alt="Two reception pages and the time picker"></figure>
+</section>
+<section>
+<h2>Manual pause</h2>
+<figure><figcaption>Approved test-card panel</figcaption><img src="reference-pause.webp" alt="Reference calibration picture with colour bars and Continue"></figure>
+<figure><figcaption>Before</figcaption><img src="before/paused.png" alt="Previous pixelated pause treatment"></figure>
+<figure><figcaption>Rebuilt OFF AIR test card</figcaption><img src="after/paused.png" alt="Full-viewport still calibration card with Continue button"></figure>
+</section>
+<section>
+<h2>Planning Room</h2>
+<figure><figcaption>Day timeline</figcaption><img src="after/planning.png" alt="Planning Room day timeline and schedule controls"></figure>
+<figure><figcaption>Week summary</figcaption><img src="after/week.png" alt="Planning Room overview of dates, first gaps, occupancy and unsold ads"></figure>
+</section>
+<section class="narrow">
+<h2>Narrow office</h2>
+<figure><figcaption>Before</figcaption><img src="before/narrow.png" alt="Earlier narrow office view"></figure>
+<figure><figcaption>Rebuilt office at 390 pixels wide</figcaption><img src="after/narrow.png" alt="Vertical office layout at a narrow viewport"></figure>
+<figure><figcaption>Programme dossier</figcaption><img src="after/narrow-paper.png" alt="Programme dossier and chart scrolled into view"></figure>
+</section>
+</body>
+</html>

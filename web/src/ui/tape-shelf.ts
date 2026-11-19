@@ -5,10 +5,11 @@ export function initialiseTapeShelf() {
   const shelf = element<HTMLDetailsElement>('library');
   const home = shelf.parentElement!;
   const picker = element<HTMLDialogElement>('library-picker');
+  let office = false;
   const shelfButton = button('open-library');
 
   function layout() {
-    if (narrow.matches) picker.append(shelf);
+    if (narrow.matches && !office) picker.append(shelf);
     else {
       picker.close();
       home.prepend(shelf);
@@ -17,7 +18,7 @@ export function initialiseTapeShelf() {
 
   function open() {
     shelf.open = true;
-    if (narrow.matches && !picker.open) picker.showModal();
+    if (narrow.matches && !office && !picker.open) picker.showModal();
   }
 
   shelfButton.addEventListener('click', open);
@@ -29,5 +30,5 @@ export function initialiseTapeShelf() {
   });
   narrow.addEventListener('change', layout);
   layout();
-  return { open, close: () => picker.close() };
+  return { open, close: () => picker.close(), setOffice(value: boolean) { office = value; layout(); } };
 }

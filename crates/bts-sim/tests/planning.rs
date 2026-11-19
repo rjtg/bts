@@ -26,7 +26,10 @@ fn unchanged(
 fn real_durations_adjacency_overlaps_moves_removal_and_boundaries() {
     let mut p = planner();
     let first = p.place(ProgrammeId(1), SimTick(72), None).unwrap();
-    assert_eq!(p.airing(first).unwrap().end, SimTick(76));
+    assert_eq!(
+        p.airing(first).unwrap().end,
+        bts_sim::AirMinute::from_tick(SimTick(76))
+    );
     unchanged(
         &mut p,
         |p| p.place(ProgrammeId(2), SimTick(75), None).map(|_| ()),
@@ -40,7 +43,10 @@ fn real_durations_adjacency_overlaps_moves_removal_and_boundaries() {
     let replacement = p.place(ProgrammeId(1), SimTick(72), None).unwrap();
     assert_ne!(first, replacement);
     let midnight = p.place(ProgrammeId(4), SimTick(94), None).unwrap();
-    assert_eq!(p.airing(midnight).unwrap().end, SimTick(98));
+    assert_eq!(
+        p.airing(midnight).unwrap().end,
+        bts_sim::AirMinute::from_tick(SimTick(98))
+    );
     unchanged(
         &mut p,
         |p| p.place(ProgrammeId(1), SimTick(670), None).map(|_| ()),
@@ -55,14 +61,11 @@ fn real_durations_adjacency_overlaps_moves_removal_and_boundaries() {
 }
 
 #[test]
-fn positive_tick_aligned_programme_durations_are_validated() {
-    for bad in [0, 1, 14, 16, 59] {
-        let mut w = world();
-        w.programmes[0].duration_minutes = bad;
-        assert!(Simulation::new(w.clone(), Parameters::default()).is_err());
-        assert!(Planner::new(w, Parameters::default(), MAIN, SimTick(96), &[]).is_err());
-    }
-    for duration in [15, 30, 45, 90, 180] {
+fn positive_minute_durations_are_validated() {
+    let mut invalid = world();
+    invalid.programmes[0].duration_minutes = 0;
+    assert!(Planner::new(invalid, Parameters::default(), MAIN, SimTick(96), &[]).is_err());
+    for duration in [1, 14, 15, 16, 59, 90, 180] {
         let mut w = world();
         w.programmes[0].duration_minutes = duration;
         assert!(Simulation::new(w, Parameters::default()).is_ok());
@@ -128,7 +131,13 @@ fn a_long_airing_has_one_cost_one_exposure_one_completion_and_one_settlement() {
             .count(),
         1
     );
-    assert!(first.last().unwrap().hype.iter().any(|h| h.exposures > 0.0));
+    assert_eq!(
+        first
+            .iter()
+            .filter(|event| event.hype.iter().any(|h| h.exposures > 0.0))
+            .count(),
+        1
+    );
     let cash = p.state().economy().cash(MAIN);
     p.advance_to(SimTick(96)).unwrap();
     assert_eq!(p.state().economy().cash(MAIN), cash);
@@ -279,7 +288,10 @@ fn explicit_airing_identity_stale_quotes_and_fixed_competitors() {
     assert_ne!(a, b);
     let quoted = p.quote(b).unwrap();
     assert_eq!(quoted.airing_id, b);
-    assert_eq!(quoted.offer.deadline, SimTick(84));
+    assert_eq!(
+        quoted.offer.deadline,
+        bts_sim::AirMinute::from_tick(SimTick(84))
+    );
     p.move_airing(a, SimTick(64)).unwrap();
     unchanged(&mut p, |p| p.accept(&quoted).map(|_| ()), "stale_offer");
     p.advance_to(SimTick(65)).unwrap();

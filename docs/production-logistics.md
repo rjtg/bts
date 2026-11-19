@@ -1,5 +1,7 @@
 # Station libraries, staff and production logistics
 
+See the [recurring newsroom design](station-office.md#gameplay-changes-to-explore-separately) for regular reporting, studio and transmission commitments.
+
 Status: distinct browser station libraries/host rosters and owned-studio capacity
 implemented. Rental, setup/cleanup economies, reusable props and multi-edition
 batching are next-slice design directions, not implemented mechanics.

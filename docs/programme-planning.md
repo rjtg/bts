@@ -9,13 +9,16 @@ a complete season game remains deferred.
 
 The [Control Desk weekly planner](weekly-scheduling.md) now extends the browser calendar to three weeks, adds recurring slots and enables weekday viewing preferences. The [focused Control Desk](../contrib/focused-desks/README.md) separates Schedule, Weekly Run, Ad Sales and Broadcast Review. The original seven-day implementation below is the baseline.
 
-For minute sales, the planner reserves the programme plus listed ad time rounded
-up to full ticks. See [ad-minute market](ad-minute-market.md) for schedule edits,
-inventory and settlement. Legacy contracts follow the rules below.
+The current planner reserves the programme plus listed ad time to the minute.
+See [minute airtime](minute-airtime.md) and [ad-minute market](ad-minute-market.md)
+for placement, segment processing, inventory and settlement. The original
+quarter-hour planning implementation below provides historical context.
 
 See [programme rights](rights-market.md) for ownership transfers, rival gaps and schedule protections.
 
 ## Workspace and actions
+
+The [Planning Room design](station-office.md) describes the office CRT entry, calendar summaries and Today behaviour.
 
 The browser has a full-day horizontal timeline with 96 quarter-hour cells,
 a read-only competitor lane, a filterable programme catalogue and contextual
@@ -78,9 +81,9 @@ is .35 times the early fraction, 17:00 .65, 19:00/20:00 linearly interpolate,
 22:00 is .8 times the late fraction and 23:00 .5. Other hours remain zero.
 These are provisional content parameters, not engine count/hour restrictions.
 
-## Processing cadence and units
+## Original processing cadence and units
 
-This milestone deliberately retains **one provisional start snapshot per airing**,
+The quarter-hour milestone deliberately retains **one provisional start snapshot per airing**,
 rather than adding an interval exposure or viewer-retention model. Runtime
 consumes airtime and changes which programmes compete; it does not multiply
 an airing's cost or its single implicit advertising opportunity.
@@ -258,6 +261,20 @@ a checked compare-and-exchange loop, preserving namespace isolation and overflow
 handling without depending on the renamed API. The fixture availability update
 uses iteration to satisfy current Clippy, and wasm-bindgen is a Wasm-only
 dependency so native builds do not report an unused dependency.
+
+## Future public rival schedules
+
+The daily planner should support multiple competitors with one optional
+comparison lane. That lane shows publicly observable past broadcasts and
+future airings the rival has both committed to and published. Private drafts,
+unannounced commitments, and internal changes remain hidden. Where no future
+listing is public, show **No listing published**. Reserve **Off air** for
+confirmed information. Exact rival schedules remain available to the
+simulation and developer tools. Player-facing forecasts should use public
+listings and express uncertainty where information is missing.
+
+Publication timing and the handling of public revisions or cancellations
+remain open. The current prototype still shows its fixed rival schedule.
 
 ## Limits and next milestone
 

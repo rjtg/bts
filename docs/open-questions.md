@@ -179,4 +179,31 @@ competition, midnight boundaries and short ad blocks. Schedule overlap,
 accepted inventory, cost and settlement should use exact airing identities
 and boundaries. Define how ads are positioned or attributed within that
 interval, and test that adding an ad minute cannot create a whole extra
-quarter-hour of delivery. The current browser still reserves whole ticks.
+quarter-hour of delivery. The current mechanism is documented in
+[minute airtime](minute-airtime.md).
+
+### One-minute fillers and teasers
+
+A minute-accurate schedule can leave a small opening before a fixed slot.
+If a programme ends at 17:59 and the regular show starts at 18:00, let the
+player use the intervening minute for a station ident or a teaser. Leave the
+gap off air if the player does nothing. The planner can offer **Fill with
+ident** and **Tease an upcoming show** on short openings. Try authored
+one-minute items first. Keep the regular slot and any signed ad blocks at
+their original times.
+
+A station ident provides continuity with no commercial receipts. A teaser
+points to a specific upcoming airing on the player's channel. It can also
+act as a small promotion once that system exists. Credit any promotional
+effect only for actual teaser exposure during its minute, with a bounded
+response to repeats. A player should be able to see which airing was teased.
+If that airing is moved or cancelled before the teaser plays, flag it for
+review and resolve the uncorrected slot as an ident. Decide later what
+happens to anticipation after a teaser has already aired.
+
+Treat these as explicit airtime intervals. Apply the same overlap checks and
+minute-weighted audience accounting as other broadcasts. The filler earns
+no advertiser delivery and cannot also occupy sold ad inventory. Its viewers
+belong to its own minute and give the next show no automatic viewing credit.
+Placement inside commercial breaks, production of custom trailers, automatic
+gap filling, and lead-in effects remain separate proposals.

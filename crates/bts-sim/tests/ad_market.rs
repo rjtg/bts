@@ -21,7 +21,7 @@ fn partial_sales_revalidate_inventory_and_payment_and_settle_once() {
     let mut p = planner(demo::world());
     let total = p.state().economy().total_money();
     let id = list(&mut p, 72, 16);
-    assert_eq!(p.airing(id).unwrap().end, SimTick(78));
+    assert_eq!(p.airing(id).unwrap().end, AirMinute(1156));
     let offers = p.minute_offers(id).unwrap();
     assert_eq!(offers.len(), 2);
     let first = &offers[0];
@@ -49,7 +49,10 @@ fn partial_sales_revalidate_inventory_and_payment_and_settle_once() {
     p.accept_minutes(&second).unwrap();
     p.resize_ad_block(id, first.minutes + second.minutes)
         .unwrap();
-    assert_eq!(p.airing(id).unwrap().end, SimTick(77));
+    assert_eq!(
+        p.airing(id).unwrap().end,
+        AirMinute(1140 + u32::from(first.minutes + second.minutes))
+    );
     let mut replay = p.clone();
     let events = p.advance_to(SimTick(78)).unwrap();
     for tick in 1..=78 {
@@ -102,7 +105,7 @@ fn oversubscribed_offers_and_overlapping_extensions_are_atomic() {
     assert!(p.minute_offers(id).unwrap().is_empty());
     assert!(p.accept_minutes(&offers[1]).is_err());
     let end = p.airing(id).unwrap().end;
-    p.advance_to(end).unwrap();
+    p.advance_exact(end).unwrap();
     assert_eq!(p.sold_minutes(id), 1);
 }
 
@@ -125,7 +128,7 @@ fn finite_budget_and_unfunded_airing_release_reserved_minutes() {
     p.accept_minutes(&offer).unwrap();
     assert_eq!(p.state().economy().budget(SNACKS), Some(Money(0)));
     let end = p.airing(late).unwrap().end;
-    let events = p.advance_to(end).unwrap();
+    let events = p.advance_exact(end).unwrap();
     assert!(!p.airing(early).unwrap().cancelled());
     assert!(p.airing(late).unwrap().cancelled());
     let outcome = p
@@ -159,8 +162,11 @@ fn unfilled_inventory_reserves_time_without_creating_extra_exposure() {
     trimmed.resize_ad_block(id, offer.minutes).unwrap();
     let original = p.advance_to(SimTick(78)).unwrap();
     let shorter = trimmed.advance_to(SimTick(78)).unwrap();
-    assert_eq!(p.airing(id).unwrap().end, SimTick(78));
-    assert_eq!(trimmed.airing(id).unwrap().end, SimTick(77));
+    assert_eq!(p.airing(id).unwrap().end, AirMinute(1156));
+    assert_eq!(
+        trimmed.airing(id).unwrap().end,
+        AirMinute(1140 + u32::from(offer.minutes))
+    );
     assert_eq!(original[72].hype, shorter[72].hype);
     assert!(original[72]
         .hype

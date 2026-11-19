@@ -44,6 +44,7 @@ mod clock_sealed {
     pub trait Sealed {}
     impl Sealed for super::SimHour {}
     impl Sealed for super::SimTick {}
+    impl Sealed for super::AirMinute {}
 }
 pub trait Clock: clock_sealed::Sealed + Copy + std::fmt::Debug + Eq + Ord + Serialize {
     fn zero() -> Self;
@@ -73,6 +74,38 @@ impl Clock for SimTick {
     }
     fn elapsed_hours(self, before: Self) -> f64 {
         f64::from(self.0 - before.0) / 4.0
+    }
+}
+
+/// Absolute airtime in minutes. Studio and survey due times still use SimTick.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+pub struct AirMinute(pub u32);
+
+impl AirMinute {
+    pub fn from_tick(tick: SimTick) -> Self {
+        Self(tick.0.saturating_mul(15))
+    }
+
+    pub fn tick_floor(self) -> SimTick {
+        SimTick(self.0 / 15)
+    }
+
+    pub fn tick_ceil(self) -> SimTick {
+        SimTick(self.0.div_ceil(15))
+    }
+}
+
+impl Clock for AirMinute {
+    fn zero() -> Self {
+        Self(0)
+    }
+
+    fn availability_index(self) -> usize {
+        ((self.0 / 60) % 24) as usize
+    }
+
+    fn elapsed_hours(self, before: Self) -> f64 {
+        f64::from(self.0 - before.0) / 60.0
     }
 }
 
@@ -127,7 +160,7 @@ pub struct Programme {
     pub cast_appeal: f64,
     pub execution: f64,
     pub broadcast_cost: Money,
-    /// Positive runtime, in whole 15-minute ticks expressed as minutes.
+    /// Positive runtime in whole minutes.
     pub duration_minutes: u16,
 }
 impl Programme {
@@ -292,10 +325,8 @@ impl World {
         }
         for p in &self.programmes {
             p.broadcast_cost.validate()?;
-            if p.duration_minutes == 0 || !p.duration_minutes.is_multiple_of(15) {
-                return Err(Error::Invalid(
-                    "programme duration must be a positive multiple of 15 minutes".into(),
-                ));
+            if p.duration_minutes == 0 {
+                return Err(Error::Invalid("programme duration must be positive".into()));
             }
             if !p.profile.is_valid() {
                 return Err(Error::Invalid(format!(
@@ -702,10 +733,9 @@ impl<T: Clock> Engine<T> {
                         .iter()
                         .find(|b| b.station == v.station)
                         .unwrap();
-                    if starts.is_some_and(|set| !set.contains(&v.station)) {
-                        continue;
-                    }
-                    let exposure_scale = if broadcast.advertisement == Some(brand.id) {
+                    let exposure_scale = if broadcast.advertisement == Some(brand.id)
+                        && starts.is_none_or(|set| set.contains(&v.station))
+                    {
                         1.0
                     } else if let Some(minutes) = campaigns.get(&(v.station, brand.id)) {
                         f64::from(*minutes) / 5.0

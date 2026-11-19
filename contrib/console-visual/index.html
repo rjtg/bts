@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Control Desk visual comparison</title>
+<style>
+  body { margin: 1.25rem; background: #181715; color: #f2e3c4; font: 1rem/1.5 system-ui; }
+  a { color: #ffd380; }
+  .compare { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  figure { margin: 0; min-width: 0; }
+  figcaption { margin-bottom: .4rem; font-weight: bold; }
+  img { display: block; width: 100%; height: auto; }
+  .reference { display: block; aspect-ratio: 2/1; overflow: hidden; }
+  .reference.audience img { transform: translateY(-50%); }
+  .narrow { display: grid; grid-template-columns: repeat(2, minmax(0, 390px)); gap: 1rem; }
+  @media (max-width: 900px) { .compare { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<h1>Control Desk visual comparison</h1>
+<p><a href="/">Play the current build</a> · <a href="../tape-shelf.png">Open the approved mockup</a></p>
+<p>Browser captures use the same evening, tape and 1280 × 900 viewport. Click any capture for the full image.</p>
+<h2>Schedule</h2>
+<div class="compare">
+  <figure><figcaption>Approved reference</figcaption><a class="reference" href="../tape-shelf.png"><img src="../tape-shelf.png" alt="Mockup of the CRT with tape spines and one cassette on the desk"></a></figure>
+  <figure><figcaption>Before</figcaption><a href="before/schedule.png"><img src="before/schedule.png" alt="Earlier browser planner with the shelf partly below the viewport"></a></figure>
+  <figure><figcaption>Current build</figcaption><a href="after/schedule.png"><img src="after/schedule.png" alt="Live CRT timeline with the marked gap, tapes, desk and placement action"></a></figure>
+</div>
+<h2>Audience paper</h2>
+<div class="compare">
+  <figure><figcaption>Approved reference</figcaption><a class="reference audience" href="../tape-shelf.png"><img src="../tape-shelf.png" alt="Mockup of a manila audience folder with three tabs"></a></figure>
+  <figure><figcaption>Before</figcaption><a href="before/audience.png"><img src="before/audience.png" alt="Earlier station-file overlay"></a></figure>
+  <figure><figcaption>Current build</figcaption><a href="after/audience.png"><img src="after/audience.png" alt="Live station file with the Audience paper open"></a></figure>
+</div>
+<h2>Narrow layout</h2>
+<div class="narrow">
+  <figure><figcaption>Tape shelf</figcaption><a href="after/narrow-shelf.png"><img src="after/narrow-shelf.png" alt="Narrow view with the selected tape and placement action"></a></figure>
+  <figure><figcaption>Audience paper</figcaption><a href="after/narrow-audience.png"><img src="after/narrow-audience.png" alt="Station file filling the narrow viewport"></a></figure>
+</div>
+</body>
+</html>

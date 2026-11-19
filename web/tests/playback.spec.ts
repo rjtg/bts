@@ -1,6 +1,7 @@
+import { pickTime } from './planner-helpers';
 import { expect, test, type Page } from '@playwright/test';
 async function ready(page: Page) {
-  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.goto('/#planning'); await expect(page.locator('#status')).toContainText('WASM READY');
 }
 async function freezeClock(page: Page) {
   await page.clock.install({ time: new Date('2026-11-18T00:00:00Z') });
@@ -29,7 +30,7 @@ test('play, pause, double speed and background pause send bounded explicit ticks
 });
 test('automatic tick processing charges a whole programme once, just like manual ticks', async ({ page }) => {
   await ready(page); await freezeClock(page);
-  await page.locator('#place-time').selectOption('0'); await page.locator('#place').click();
+  await pickTime(page, 0); await page.locator('#place').click();
   await page.getByRole('button',{name:'Play',exact:true}).click(); await page.clock.runFor(8000);
   await page.getByRole('button',{name:'Pause',exact:true}).click();
   await expect(page.locator('#clock')).toContainText('Day 1 · 01:00'); await expect(page.locator('#cash')).toHaveText('19,850');
@@ -38,7 +39,7 @@ test('automatic tick processing charges a whole programme once, just like manual
   await expect(page.locator('#selected-result')).toContainText('Completed. Cost 150');
   const viewers=await page.locator('#selected-result tbody').innerText();
   await page.locator('#reset').click(); await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
-  await page.locator('#place-time').selectOption('0'); await page.locator('#place').click();
+  await pickTime(page, 0); await page.locator('#place').click();
   for(let i=0;i<4;i++)await page.locator('#advance-tick').click();
   await page.locator('#open-review').click();
   await expect(page.locator('#cash')).toHaveText('19,850'); expect(await page.locator('#selected-result tbody').innerText()).toBe(viewers);

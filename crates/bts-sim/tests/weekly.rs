@@ -21,7 +21,7 @@ fn weekly_dates_conflicts_exceptions_protection_and_atomic_edits() {
     let mut plan = WeeklyPlan {
         programme: ProgrammeId(1),
         weekday: Weekday::SATURDAY,
-        time: 72,
+        time: 72 * 15,
         count: 3,
         ad_minutes: 10,
         exceptions: vec![],
@@ -42,35 +42,35 @@ fn weekly_dates_conflicts_exceptions_protection_and_atomic_edits() {
     let mut skip = plan.clone();
     skip.exceptions.push(Exception {
         occurrence: 1,
-        start_tick: None,
+        start_minute: None,
     });
     assert_eq!(p.clone().place_weekly(&skip).unwrap().len(), 2);
     plan.exceptions.push(Exception {
         occurrence: 1,
-        start_tick: Some(752),
+        start_minute: Some((752) * 15),
     });
     let ids = p.place_weekly(&plan).unwrap();
-    assert_eq!(p.airing(ids[1]).unwrap().start.0, 752);
+    assert_eq!(p.airing(ids[1]).unwrap().start.tick_floor().0, 752);
     assert!(ids
         .iter()
         .all(|&id| p.airing(id).unwrap().weekly == Some(ids[0])
             && p.airing(id).unwrap().ad_minutes == 10));
     let offer = p.minute_offers(ids[0]).unwrap().remove(0);
     p.accept_minutes(&offer).unwrap();
-    let review = p.preview_weekly_edit(ids[0], 80).unwrap();
+    let review = p.preview_weekly_edit(ids[0], 80 * 15).unwrap();
     assert!(review[0].protected);
     let before = format!("{p:?}");
-    assert!(p.edit_weekly(ids[0], 72).is_err());
+    assert!(p.edit_weekly(ids[0], 72 * 15).is_err());
     assert_eq!(format!("{p:?}"), before);
-    p.edit_weekly(ids[0], 80).unwrap();
-    assert_eq!(p.airing(ids[0]).unwrap().start.0, 72);
-    assert_eq!(p.airing(ids[2]).unwrap().start.0, 1424);
+    p.edit_weekly(ids[0], 80 * 15).unwrap();
+    assert_eq!(p.airing(ids[0]).unwrap().start.tick_floor().0, 72);
+    assert_eq!(p.airing(ids[2]).unwrap().start.tick_floor().0, 1424);
     p.move_airing(ids[2], SimTick(1428)).unwrap();
     assert_eq!(p.airing(ids[2]).unwrap().weekly, Some(ids[0]));
     p.advance_to(SimTick(97)).unwrap();
     let upcoming = p.preview_weekly(&plan).unwrap();
     assert_eq!(upcoming[0].regular_tick, 744);
-    assert_eq!(p.airing(ids[0]).unwrap().start.0, 72);
+    assert_eq!(p.airing(ids[0]).unwrap().start.tick_floor().0, 72);
 }
 
 #[test]

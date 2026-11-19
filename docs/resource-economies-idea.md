@@ -1,5 +1,7 @@
 # Resource economies — design direction
 
+See the [station office design](station-office.md) for the Funds name, currency glyph, and proposed transmission charge.
+
 Updated November 2026. The directions below are agreed; formulas, costs and
 unresolved mechanisms remain proposals. This is not an implementation specification
 or an expansion of the current milestone. See [game design](design.md#station-resources-and-editorial-capital)

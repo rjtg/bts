@@ -47,11 +47,11 @@ fn compare() -> Value {
             }
         }
         let end = planner.airing(airing).unwrap().end;
-        let events = planner.advance_to(end).unwrap();
+        let events = planner.advance_exact(end).unwrap();
         assert_eq!(planner.state().economy().total_money(), total);
         let start = events
             .iter()
-            .find(|event| event.action.at == SimTick(169))
+            .find(|event| event.action.at == bts_sim::AirMinute::from_tick(SimTick(169)))
             .unwrap();
         let viewers: f64 = start
             .allocations

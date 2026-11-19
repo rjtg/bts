@@ -3,7 +3,7 @@ use bts_sim::planning::production::{Subject, Tone};
 use serde::{Deserialize, Serialize};
 
 pub const API_VERSION: u32 = 8;
-pub const REPORTING: &str = "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. One ad exposure opportunity per airing; delivery units are millionths of a relevant impression.";
+pub const REPORTING: &str = "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. Purchased ad impressions use viewer-minutes; legacy delivery uses the opening sample. Delivery units are millionths of a relevant impression.";
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -15,12 +15,32 @@ pub struct Request {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Command {
+    PlaceExact {
+        programme: u16,
+        start_minute: u32,
+        ad_minutes: Option<u8>,
+    },
+    MoveExact {
+        airing_id: u32,
+        start_minute: u32,
+    },
+    AdvanceExact {
+        to_minute: u32,
+    },
+    SetAdLoad {
+        percent: u8,
+    },
+    PlaceFiller {
+        start_minute: u32,
+        teaser_for: Option<u32>,
+    },
     PreviewWeekly {
         plan: WeeklyInput,
     },
     PreviewWeeklyEdit {
         airing_id: u32,
-        time: u8,
+        time: Option<u8>,
+        minute_of_day: Option<u16>,
     },
     ConfirmWeekly {},
     BuyRights {
@@ -161,6 +181,8 @@ pub enum Response {
 pub struct PlayerReport {
     pub reporting: &'static str,
     pub now_tick: u32,
+    pub now_minute: u32,
+    pub ad_load_percent: u8,
     pub end_tick: u32,
     pub first_weekday: u8,
     pub weekly_review: Option<WeeklyReview>,
@@ -222,6 +244,11 @@ pub struct ScheduleEntry {
     pub duration_minutes: u16,
     pub start_tick: u32,
     pub end_tick: u32,
+    pub start_minute: u32,
+    pub end_minute: u32,
+    pub filler: bool,
+    pub teaser_for: Option<u32>,
+    pub teaser_current: bool,
     pub proposed_advertiser: Option<u16>,
     pub ad_minutes: u8,
     pub sold_minutes: u8,
@@ -242,6 +269,8 @@ pub struct StationInfo {
 pub struct Gap {
     pub start_tick: u32,
     pub end_tick: u32,
+    pub start_minute: u32,
+    pub end_minute: u32,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Finances {
@@ -271,6 +300,8 @@ pub struct Quote {
     pub airing_id: u32,
     pub start_tick: u32,
     pub end_tick: u32,
+    pub start_minute: u32,
+    pub end_minute: u32,
     pub deadline_tick: u32,
     pub maximum_payment: String,
     pub targets: Vec<Commitment>,
@@ -312,6 +343,8 @@ pub struct BroadcastReport {
     pub airing_id: u32,
     pub start_tick: u32,
     pub end_tick: u32,
+    pub start_minute: u32,
+    pub end_minute: u32,
     pub snapshot_tick: u32,
     pub aired_programme: Option<u16>,
     pub aired_advertiser: Option<u16>,
@@ -614,10 +647,18 @@ pub struct MarketSpend {
 pub struct WeeklyInput {
     pub programme: u16,
     pub weekday: u8,
-    pub time: u8,
+    pub time: Option<u8>,
+    pub minute_of_day: Option<u16>,
     pub count: u8,
     pub ad_minutes: u8,
-    pub exceptions: Vec<bts_sim::planning::weekly::Exception>,
+    pub exceptions: Vec<WeeklyExceptionInput>,
+}
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WeeklyExceptionInput {
+    pub occurrence: u8,
+    pub start_tick: Option<u32>,
+    pub start_minute: Option<u32>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct WeeklyReview {

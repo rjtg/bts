@@ -472,14 +472,14 @@ impl<T: Clock> EconomyState<T> {
         }
     }
 }
-impl EconomyState<SimTick> {
+impl EconomyState<AirMinute> {
     pub fn minute_sales(&self) -> impl Iterator<Item = &MinuteSale> {
         self.minute_sales.values()
     }
 
     pub(crate) fn reserve_minutes(
         &mut self,
-        at: SimTick,
+        at: AirMinute,
         offer: MinuteOffer,
     ) -> Result<MinuteSaleId, Error> {
         let id = MinuteSaleId(self.next_contract);
@@ -512,10 +512,10 @@ impl EconomyState<SimTick> {
 
     pub(crate) fn settle_minutes(
         &mut self,
-        at: SimTick,
+        at: AirMinute,
         airing: AiringId,
         aired: bool,
-        viewers: f64,
+        viewer_minutes: &BTreeMap<MinuteSaleId, f64>,
     ) -> Result<Vec<MinuteSale>, Error> {
         let ids: Vec<_> = self
             .minute_sales
@@ -535,7 +535,7 @@ impl EconomyState<SimTick> {
                     MinuteSettlement {
                         at,
                         aired_minutes: offer.minutes,
-                        viewer_minutes: viewers * f64::from(offer.minutes),
+                        viewer_minutes: viewer_minutes.get(&id).copied().unwrap_or(0.0),
                         payment: offer.payment,
                         refund: Money(0),
                     },

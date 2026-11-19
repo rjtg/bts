@@ -1,4 +1,5 @@
 import type { Command, Report, WeeklyPlan } from './protocol';
+import { DAY_MINUTES, displayTime, parseTime } from './ui/airtime';
 import { action, element, node, option } from './ui/dom';
 
 export const WEEKDAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
@@ -8,15 +9,13 @@ const reasons: Record<string, string> = {
 };
 
 export function initialiseWeeklyPlanner(ui: {
-  send: (command: Command) => void; stamp: (tick: number) => string;
-  time: (tick: number) => string; dayLabel: (day: number) => string; showAiring: (id: number) => void;
+  send: (command: Command) => void; stamp: (minute: number) => string; dayLabel: (day: number) => string; showAiring: (id: number) => void;
 }) {
   const form = node('form', '', 'weekly-options');
-  const programme = node('select'), weekday = node('select'), time = node('select'), count = node('select'), ads = node('input');
+  const programme = node('select'), weekday = node('select'), time = node('input'), count = node('select'), ads = node('input');
   for (const [i, name] of WEEKDAYS.entries()) weekday.append(option(i, name));
   weekday.value = '5';
-  for (let i = 0; i < 96; i++) time.append(option(i, ui.time(i)));
-  time.value = '72';
+  time.type = 'time'; time.required = true; time.value = '18:00';
   for (let i = 1; i <= 3; i++) count.append(option(i, String(i)));
   count.value = '3';
   ads.type = 'number'; ads.min = '0'; ads.max = '30'; ads.step = '1'; ads.value = '10'; ads.required = true;
@@ -34,17 +33,22 @@ export function initialiseWeeklyPlanner(ui: {
   form.addEventListener('submit', event => {
     event.preventDefault();
     draft = { programme: Number(programme.value), weekday: Number(weekday.value),
-      time: Number(time.value), count: Number(count.value), ad_minutes: ads.valueAsNumber, exceptions: [] };
+      minute_of_day: parseTime(time.value), count: Number(count.value), ad_minutes: ads.valueAsNumber, exceptions: [] };
     lastResult.textContent = '';
     ask();
   });
   function exception(index: number, target: number | null) {
     if (!draft) return;
     draft.exceptions = draft.exceptions.filter(item => item.occurrence !== index);
-    draft.exceptions.push({ occurrence: index, start_tick: target });
+    draft.exceptions.push({ occurrence: index, start_minute: target });
     ask();
   }
   return {
+    choose(id: number, slot: number, minutes: number) {
+      programme.value = String(id);
+      time.value = displayTime(slot);
+      ads.value = String(minutes);
+    },
     render(report: Report) {
       const selected = programme.value;
       if (Array.from(programme.options).map(item => Number(item.value)).join() !== report.catalogue.map(p => p.id).join()) {
@@ -59,33 +63,35 @@ export function initialiseWeeklyPlanner(ui: {
       const list = node('ol', '', 'weekly-dates');
       for (const row of model.rows) {
         const card = node('li', '', `weekly-date${row.issue ? ' weekly-conflict' : ''}`);
-        card.append(node('strong', ui.stamp(row.regular_tick)),
-          node('p', row.start_tick === null ? 'Skipped' :
-            `${row.start_tick !== row.regular_tick ? `Moved to ${ui.stamp(row.start_tick)} · ` : ''}${row.runtime_minutes} min runtime · holds until ${row.end_tick === null ? 'outside the calendar' : ui.stamp(row.end_tick)}`));
+        card.append(node('strong', ui.stamp(row.regular_minute)),
+          node('p', row.start_minute === null ? 'Skipped' :
+            `${row.start_minute !== row.regular_minute ? `Moved to ${ui.stamp(row.start_minute)} · ` : ''}${row.runtime_minutes} min runtime · holds until ${row.end_minute === null ? 'outside the calendar' : ui.stamp(row.end_minute)}`));
         if (row.protected) card.append(node('p', 'Protected · keeps its existing time'));
         if (row.issue) card.append(node('p', reasons[row.issue] ?? 'This occurrence cannot be booked.'));
         for (const id of row.conflicts) {
           const other = report.schedule.find(a => a.airing_id === id);
           card.append(action(other ? `Conflict: ${other.programme_name}` : 'Show conflict', () => ui.showAiring(id)));
         }
-        if (!model.edition && row.start_tick !== null) {
+        if (!model.edition && row.start_minute !== null) {
           const move = node('details');
-          const day = node('select'), hour = node('select');
-          const start = row.start_tick;
+          const day = node('select'), hour = node('input');
+          hour.type = 'time';
+          const start = row.start_minute;
           for (let d = 0; d < Math.ceil(report.end_tick / 96); d++) day.append(option(d, ui.dayLabel(d)));
-          for (let t = 0; t < 96; t++) hour.append(option(t, ui.time(t)));
-          day.value = String(Math.floor(start / 96));
-          hour.value = String(start % 96);
+          day.value = String(Math.floor(start / DAY_MINUTES));
+          hour.value = displayTime(start);
           move.append(node('summary', 'Move this occurrence'), label('New date', day), label('New time', hour),
-            action('Update preview', () => exception(row.occurrence, Number(day.value) * 96 + Number(hour.value))));
+            action('Update preview', () => {
+              if (hour.value) exception(row.occurrence, Number(day.value) * DAY_MINUTES + parseTime(hour.value));
+            }));
           card.append(move, action('Skip this occurrence', () => exception(row.occurrence, null)));
         } else if (!model.edition) {
-          card.append(action('Restore regular slot', () => exception(row.occurrence, row.regular_tick)));
+          card.append(action('Restore regular slot', () => exception(row.occurrence, row.regular_minute)));
         }
         list.append(card);
       }
       const confirm = action(model.edition ? 'Confirm future moves' : 'Confirm weekly schedule', () => ui.send({ type: 'confirm_weekly' }), 'weekly-primary');
-      confirm.disabled = model.rows.some(row => row.issue !== null) || !model.rows.some(row => row.start_tick !== null && !row.protected);
+      confirm.disabled = model.rows.some(row => row.issue !== null) || !model.rows.some(row => row.start_minute !== null && !row.protected);
       review.append(list, confirm);
     },
     confirmed(edited: boolean) {

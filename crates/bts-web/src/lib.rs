@@ -8,7 +8,7 @@ use bts_sim::planning::production::{
     Concept, PersonId, ProductionId, RequestId, SwayReason, PARTICIPATION_COST,
 };
 use bts_sim::planning::{AiringId, PlanError, Planner, PlanningOffer};
-use bts_sim::{BrandId, ProgrammeId, SimTick};
+use bts_sim::{AirMinute, BrandId, ProgrammeId, SimTick};
 use protocol::*;
 use scenario::PLAYER;
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -23,13 +23,14 @@ struct Pending {
 #[derive(Clone)]
 enum WeeklyDraft {
     Create(bts_sim::planning::weekly::WeeklyPlan),
-    Edit(AiringId, u8),
+    Edit(AiringId, u16),
 }
 /// Each game session exclusively owns its simulation. Rejections are atomic.
 #[derive(Clone)]
 pub struct Session {
     planner: Planner,
     namespace: u32,
+    ad_load_percent: u8,
     rights_epoch: u64,
     weekly_pending: Option<(WeeklyDraft, WeeklyReview)>,
     next_offer: u64,
@@ -63,6 +64,7 @@ impl Session {
         Ok(Self {
             planner: scenario::planner().map_err(player_error)?,
             rights_epoch: 0,
+            ad_load_percent: 0,
             weekly_pending: None,
             namespace,
             next_offer: 1,
@@ -108,16 +110,95 @@ impl Session {
     }
     fn apply(&mut self, command: Command) -> Result<(), PlayerError> {
         match command {
+            Command::PlaceFiller {
+                start_minute,
+                teaser_for,
+            } => {
+                self.planner
+                    .place_filler(AirMinute(start_minute), teaser_for.map(AiringId))
+                    .map_err(player_error)?;
+            }
+            Command::SetAdLoad { percent } => {
+                if percent > 50 {
+                    return Err(PlayerError::new(
+                        "ad_load",
+                        "Choose a default ad load from 0 to 50 percent.",
+                    ));
+                }
+                self.ad_load_percent = percent;
+            }
+            Command::PlaceExact {
+                programme,
+                start_minute,
+                ad_minutes,
+            } => {
+                let programme = ProgrammeId(programme);
+                let minutes = match ad_minutes {
+                    Some(minutes) => minutes,
+                    None => {
+                        let duration = self
+                            .planner
+                            .world()
+                            .programmes
+                            .iter()
+                            .find(|work| work.id == programme)
+                            .ok_or_else(|| {
+                                PlayerError::new(
+                                    "unknown_programme",
+                                    "Choose a tape from the library.",
+                                )
+                            })?
+                            .duration_minutes;
+                        ((u32::from(duration) * u32::from(self.ad_load_percent) + 50) / 100).min(30)
+                            as u8
+                    }
+                };
+                self.planner
+                    .place_exact(programme, AirMinute(start_minute), minutes)
+                    .map_err(player_error)?;
+            }
+            Command::MoveExact {
+                airing_id,
+                start_minute,
+            } => {
+                self.planner
+                    .move_exact(AiringId(airing_id), AirMinute(start_minute))
+                    .map_err(player_error)?;
+            }
+            Command::AdvanceExact { to_minute } => {
+                self.planner
+                    .advance_exact(AirMinute(to_minute))
+                    .map_err(player_error)?;
+            }
             Command::PreviewWeekly { plan } => {
                 let weekday = bts_sim::planning::weekly::Weekday::new(plan.weekday)
                     .ok_or_else(|| PlayerError::new("weekly_plan", "Choose a weekday."))?;
                 let plan = bts_sim::planning::weekly::WeeklyPlan {
                     programme: ProgrammeId(plan.programme),
                     weekday,
-                    time: plan.time,
+                    time: weekly_time(plan.time, plan.minute_of_day)?,
                     count: plan.count,
                     ad_minutes: plan.ad_minutes,
-                    exceptions: plan.exceptions,
+                    exceptions: plan
+                        .exceptions
+                        .into_iter()
+                        .map(|exception| {
+                            if exception.start_tick.is_some() && exception.start_minute.is_some() {
+                                return Err(PlayerError::new(
+                                    "weekly_exception",
+                                    "Supply one start time per exception.",
+                                ));
+                            }
+                            Ok(bts_sim::planning::weekly::Exception {
+                                occurrence: exception.occurrence,
+                                start_minute: exception.start_minute.or_else(|| {
+                                    exception
+                                        .start_tick
+                                        .map(|tick| AirMinute::from_tick(SimTick(tick)).0)
+                                }),
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()?,
                 };
                 let rows = self.planner.preview_weekly(&plan).map_err(player_error)?;
                 self.weekly_pending = Some((
@@ -129,7 +210,12 @@ impl Session {
                 ));
                 return Ok(());
             }
-            Command::PreviewWeeklyEdit { airing_id, time } => {
+            Command::PreviewWeeklyEdit {
+                airing_id,
+                time,
+                minute_of_day,
+            } => {
+                let time = weekly_time(time, minute_of_day)?;
                 let id = AiringId(airing_id);
                 let rows = self
                     .planner
@@ -345,6 +431,7 @@ impl Session {
                 )
                 .map_err(player_error)?,
             Command::Reset {} => {
+                self.ad_load_percent = 0;
                 self.rights_epoch = self
                     .rights_epoch
                     .checked_add(1)
@@ -471,7 +558,7 @@ impl Session {
             })
             .collect()
     }
-    fn booking(&self, contract: &Contract<SimTick>) -> Booking {
+    fn booking(&self, contract: &Contract<AirMinute>) -> Booking {
         let airing = self
             .planner
             .airings()
@@ -500,7 +587,7 @@ impl Session {
             airing_id: airing.id.0,
             contract_id: contract.id.0.to_string(),
             advertiser: contract.offer.brand.0,
-            deadline_tick: contract.offer.deadline.0,
+            deadline_tick: contract.offer.deadline.tick_ceil().0,
             maximum_payment: contract.offer.payment.0.to_string(),
             targets: self.commitments(&contract.commitments),
             settlement,
@@ -659,6 +746,7 @@ impl Session {
     pub fn report(&self) -> PlayerReport {
         let world = self.planner.world();
         let now = self.planner.now().0;
+        let now_minute = self.planner.now_minute().0;
         let mut schedule = self
             .planner
             .airings()
@@ -666,13 +754,21 @@ impl Session {
                 airing_id: a.id.0,
                 station: a.station.0,
                 programme: a.programme.0,
-                programme_name: world
-                    .programmes
-                    .iter()
-                    .find(|p| p.id == a.programme)
-                    .unwrap()
-                    .name
-                    .clone(),
+                programme_name: match a.filler {
+                    Some(bts_sim::planning::Filler::Teaser { .. })
+                        if self.planner.teaser_is_current(a) =>
+                    {
+                        "Upcoming show teaser".into()
+                    }
+                    Some(_) => "Station ident".into(),
+                    None => world
+                        .programmes
+                        .iter()
+                        .find(|p| p.id == a.programme)
+                        .unwrap()
+                        .name
+                        .clone(),
+                },
                 genre: world
                     .programmes
                     .iter()
@@ -687,8 +783,16 @@ impl Session {
                     .find(|p| p.id == a.programme)
                     .unwrap()
                     .duration_minutes,
-                start_tick: a.start.0,
-                end_tick: a.end.0,
+                start_tick: a.start.tick_floor().0,
+                end_tick: a.end.tick_ceil().0,
+                start_minute: a.start.0,
+                end_minute: a.end.0,
+                filler: a.filler.is_some(),
+                teaser_for: match a.filler {
+                    Some(bts_sim::planning::Filler::Teaser { airing, .. }) => Some(airing.0),
+                    _ => None,
+                },
+                teaser_current: self.planner.teaser_is_current(a),
                 proposed_advertiser: a.advertiser.map(|id| id.0),
                 ad_minutes: a.ad_minutes,
                 sold_minutes: self.planner.sold_minutes(a.id),
@@ -709,36 +813,37 @@ impl Session {
                     && self.planner.sold_minutes(a.id) == 0,
             })
             .collect::<Vec<_>>();
-        schedule.sort_by_key(|a| (a.station, a.start_tick, a.airing_id));
+        schedule.sort_by_key(|a| (a.station, a.start_minute, a.airing_id));
         let mut player = schedule
             .iter()
             .filter(|a| a.station == PLAYER.0)
             .collect::<Vec<_>>();
-        player.sort_by_key(|a| (a.start_tick, a.airing_id));
+        player.sort_by_key(|a| (a.start_minute, a.airing_id));
         let next_airing = player
             .iter()
-            .find(|a| a.start_tick >= now)
+            .find(|a| a.start_minute >= now_minute)
             .map(|a| a.airing_id);
         let active_airing = player
             .iter()
-            .find(|a| a.start_tick < now && now < a.end_tick)
+            .find(|a| a.start_minute < now_minute && now_minute < a.end_minute)
             .map(|a| a.airing_id);
         let mut gaps = vec![];
         let mut cursor = 0;
-        for a in &player {
-            if a.start_tick > cursor {
+        let boundary = self.planner.end().0 * 15;
+        for (start, end) in player
+            .iter()
+            .map(|a| (a.start_minute, a.end_minute))
+            .chain(std::iter::once((boundary, boundary)))
+        {
+            if start > cursor {
                 gaps.push(Gap {
-                    start_tick: cursor,
-                    end_tick: a.start_tick,
+                    start_tick: cursor / 15,
+                    end_tick: start.div_ceil(15),
+                    start_minute: cursor,
+                    end_minute: start,
                 });
             }
-            cursor = a.end_tick;
-        }
-        if cursor < self.planner.end().0 {
-            gaps.push(Gap {
-                start_tick: cursor,
-                end_tick: self.planner.end().0,
-            });
+            cursor = end;
         }
         let economy = self.planner.state().economy();
         let ledger = economy
@@ -754,7 +859,7 @@ impl Session {
                     LedgerReason::BroadcastCost => self
                         .planner
                         .airings()
-                        .find(|a| a.station == PLAYER && a.start.0 + 1 == l.at.0),
+                        .find(|a| a.station == PLAYER && a.start < l.at && l.at <= a.end),
                     _ => match l.from {
                         Account::Escrow(id) => {
                             self.planner.airings().find(|a| a.contract == Some(id))
@@ -774,7 +879,7 @@ impl Session {
                         }
                         _ => None,
                     },
-                    tick: l.at.0,
+                    tick: l.at.tick_ceil().0,
                     airing_id: airing.map(|a| a.id.0),
                     kind: match l.reason {
                         LedgerReason::RightsPurchase => "rights_purchase",
@@ -812,9 +917,11 @@ impl Session {
             .filter_map(|a| {
                 a.result.as_ref().map(|r| BroadcastReport {
                     airing_id: a.id.0,
-                    start_tick: a.start.0,
-                    end_tick: a.end.0,
-                    snapshot_tick: a.start.0,
+                    start_tick: a.start.tick_floor().0,
+                    end_tick: a.end.tick_ceil().0,
+                    start_minute: a.start.0,
+                    end_minute: a.end.0,
+                    snapshot_tick: a.start.tick_floor().0,
                     aired_programme: (!r.off_air).then_some(a.programme.0),
                     aired_advertiser: if r.off_air || a.contract.is_none() {
                         None
@@ -900,6 +1007,8 @@ impl Session {
 
             reporting: REPORTING,
             now_tick: now,
+            now_minute,
+            ad_load_percent: self.ad_load_percent,
             end_tick: self.planner.end().0,
             first_weekday: self.planner.first_weekday().number(),
             weekly_review: self
@@ -985,7 +1094,10 @@ impl Session {
             catalogue: world
                 .programmes
                 .iter()
-                .filter(|p| self.planner.owns_programme(PLAYER, p.id))
+                .filter(|p| {
+                    self.planner.owns_programme(PLAYER, p.id)
+                        && self.planner.filler_programme() != Some(p.id)
+                })
                 .map(|p| CatalogueEntry {
                     production_id: self
                         .planner
@@ -1034,10 +1146,12 @@ impl Session {
                 Quote {
                     offer_id: p.token.clone(),
                     airing_id: airing.id.0,
-                    start_tick: airing.start.0,
-                    end_tick: airing.end.0,
+                    start_tick: airing.start.tick_floor().0,
+                    end_tick: airing.end.tick_ceil().0,
+                    start_minute: airing.start.0,
+                    end_minute: airing.end.0,
                     advertiser: p.quote.offer.brand.0,
-                    deadline_tick: p.quote.offer.deadline.0,
+                    deadline_tick: p.quote.offer.deadline.tick_ceil().0,
                     maximum_payment: p.quote.offer.payment.0.to_string(),
                     targets: p.targets.clone(),
                 }
@@ -1045,6 +1159,16 @@ impl Session {
             contracts: economy.contracts().map(|c| self.booking(c)).collect(),
             results,
         }
+    }
+}
+fn weekly_time(tick: Option<u8>, minute: Option<u16>) -> Result<u16, PlayerError> {
+    match (tick, minute) {
+        (Some(tick), None) => Ok(u16::from(tick) * 15),
+        (None, Some(minute)) => Ok(minute),
+        _ => Err(PlayerError::new(
+            "weekly_time",
+            "Supply one airtime for the regular slot.",
+        )),
     }
 }
 fn player_error(error: PlanError) -> PlayerError {
@@ -1275,7 +1399,9 @@ impl Session {
                         .planner
                         .airings()
                         .find(|a| {
-                            a.programme == id && a.station != PLAYER && a.end > self.planner.now()
+                            a.programme == id
+                                && a.station != PLAYER
+                                && a.end > self.planner.now_minute()
                         })
                         .map(|a| a.id.0),
                     assessment_due: title.assessment_due.map(|at| at.0),

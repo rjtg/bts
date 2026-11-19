@@ -1,8 +1,13 @@
 // Player protocol v8. Rust DTOs are authoritative; no developer-export types are imported.
 export type Command =
+  | { type: 'place_exact'; programme: number; start_minute: number; ad_minutes: number | null }
+  | { type: 'move_exact'; airing_id: number; start_minute: number }
+  | { type: 'advance_exact'; to_minute: number }
+  | { type: 'set_ad_load'; percent: number }
+  | { type: 'place_filler'; start_minute: number; teaser_for: number | null }
   | { type: 'inspect' | 'reset' | 'confirm_weekly' }
   | { type: 'preview_weekly'; plan: WeeklyPlan }
-  | { type: 'preview_weekly_edit'; airing_id: number; time: number }
+  | { type: 'preview_weekly_edit'; airing_id: number; minute_of_day: number }
   | { type: 'buy_rights' | 'accept_resale'; programme: number; token: string }
   | { type: 'assess_title'; programme: number; insight: number }
   | { type: 'list_resale'; programme: number }
@@ -34,8 +39,8 @@ export interface Programme {
   broadcast_cost: string; duration_minutes: number;
 }
 export interface Airing {
-  airing_id: number; station: number; programme: number; programme_name: string; genre:string; duration_minutes:number; start_tick: number; end_tick: number;
-  ad_minutes: number; sold_minutes: number; weekly_id: number | null; proposed_advertiser: number | null; booked: boolean; status: 'planned' | 'on_air' | 'completed' | 'off_air'; editable: boolean;
+  airing_id: number; station: number; programme: number; programme_name: string; genre:string; duration_minutes:number; start_tick: number; end_tick: number; start_minute: number; end_minute: number;
+  filler: boolean; teaser_for: number | null; teaser_current: boolean; ad_minutes: number; sold_minutes: number; weekly_id: number | null; proposed_advertiser: number | null; booked: boolean; status: 'planned' | 'on_air' | 'completed' | 'off_air'; editable: boolean;
 }
 export interface Commitment {
   audience: string; forecast_relevant_delivery: number; promised_units: string; allocated_payment: string;
@@ -49,7 +54,7 @@ export interface Booking {
   targets: Commitment[]; settlement: Settlement | null;
 }
 export interface BroadcastResult {
-  airing_id: number; start_tick: number; end_tick: number; snapshot_tick: number;
+  airing_id: number; start_tick: number; end_tick: number; start_minute: number; end_minute: number; snapshot_tick: number;
   aired_programme: number | null; aired_advertiser: number | null; off_air: boolean; broadcast_cost: string; cash_after: string;
   audiences: { audience: string; population: number; player_viewers: number; rival_viewers: number; not_watching: number; film_reception: string | null }[];
 }
@@ -74,12 +79,12 @@ export interface Report {
   film_review: FilmReview | null;
   production: ProductionView;
   booking_review: { production_id: number; exceptional_person: number | null; cooperation_sway: number; studio:number; total_sway: number; sway_remaining: number; budget: string; cash_remaining: string } | null;
-  reporting: string; now_tick: number; end_tick: number; first_weekday: number; weekly_review: WeeklyReview | null; tick_minutes: number; next_airing: number | null; active_airing: number | null; cash: string;
+  reporting: string; now_tick: number; now_minute: number; ad_load_percent: number; end_tick: number; first_weekday: number; weekly_review: WeeklyReview | null; tick_minutes: number; next_airing: number | null; active_airing: number | null; cash: string;
   stations: { id: number; name: string; is_player: boolean; staff:string[]; owned_studios:number|null }[];
-  gaps: { start_tick: number; end_tick: number }[];
+  gaps: { start_tick: number; end_tick: number; start_minute: number; end_minute: number }[];
   finances: { opening_cash: string; costs_paid: string; revenue: string; rights_spent: string; resale_receipts: string; production_committed: string; production_in_escrow: string; production_spent: string; ledger: { rights_title: number | null; production_id: number | null; tick: number; airing_id: number | null; kind: string; amount: string }[] };
   catalogue: Programme[]; advertisers: { id: number; name: string }[]; schedule: Airing[];
-  offer: { offer_id: string; airing_id: number; start_tick: number; end_tick: number; advertiser: number; deadline_tick: number; maximum_payment: string; targets: Commitment[] } | null;
+  offer: { offer_id: string; airing_id: number; start_tick: number; end_tick: number; start_minute: number; end_minute: number; advertiser: number; deadline_tick: number; maximum_payment: string; targets: Commitment[] } | null;
   minute_offers: { airing_id: number; token: string; offers: {
     advertiser: number; minutes: number; price: string; expected_target_viewers: number;
   }[] } | null;
@@ -151,12 +156,12 @@ export type RightsMarket = {
 };
 
 export type WeeklyPlan = {
-  programme: number; weekday: number; time: number; count: number; ad_minutes: number;
-  exceptions: { occurrence: number; start_tick: number | null }[];
+  programme: number; weekday: number; minute_of_day: number; count: number; ad_minutes: number;
+  exceptions: { occurrence: number; start_minute: number | null }[];
 };
 export type WeeklyReview = {
   edition: boolean;
-  rows: { occurrence: number; airing: number | null; regular_tick: number;
-    start_tick: number | null; end_tick: number | null; runtime_minutes: number;
+  rows: { occurrence: number; airing: number | null; regular_minute: number;
+    start_minute: number | null; end_minute: number | null; runtime_minutes: number;
     conflicts: number[]; issue: string | null; protected: boolean }[];
 };

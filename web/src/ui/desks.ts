@@ -1,14 +1,21 @@
-import { element } from './dom';
+import { element, node } from './dom';
 
-export function initialiseDesks(closeShelf: () => void) {
+export function initialiseDesks(closeShelf: () => void, onChange: (desk: string) => void, keepOffice: () => boolean) {
   const views = Array.from(document.querySelectorAll<HTMLElement>('[data-desk]'));
   const rail = Array.from(document.querySelectorAll<HTMLAnchorElement>('.rail a'));
   const offsets = new Map<string, number>();
+  const workspaceOffsets = new Map<string, number>();
   const timeline = element('timeline-scroller');
   let active = '';
   let scheduleOffset = 0;
 
   history.scrollRestoration = 'manual';
+  for (const view of views) {
+    if (view.dataset.desk === 'office' || view.querySelector('#back-office')) continue;
+    const back = node('a', '← Back to Office', 'desk-back');
+    back.href = '#office';
+    view.prepend(back);
+  }
 
   function show(name: string, focus = true) {
     const next = views.find(view => view.dataset.desk === name) ?? views[0];
@@ -17,19 +24,31 @@ export function initialiseDesks(closeShelf: () => void) {
       closeShelf();
       scheduleOffset = timeline.scrollLeft;
     }
-    if (active) offsets.set(active, window.scrollY);
+    if (active) {
+      offsets.set(active, window.scrollY);
+      const previous = views.find(view => view.dataset.desk === active);
+      if (previous) workspaceOffsets.set(active, previous.scrollTop);
+    }
     active = next.dataset.desk!;
-    for (const view of views) view.hidden = view !== next;
+    const alongsideOffice = active !== 'office' && keepOffice();
+    document.body.classList.toggle('prop-workspace', alongsideOffice);
+    for (const view of views) {
+      const background = view.dataset.desk === 'office' && (active === 'planning' || alongsideOffice);
+      view.hidden = view !== next && !background;
+      view.inert = background;
+    }
     for (const link of rail) {
       const current = link.hash === '#' + active;
-      link.classList.toggle('active', current || (link.hash === '#planning' && ['weekly-planner', 'ad-sales'].includes(active)));
+      link.classList.toggle('active', current || (link.hash === '#planning' && ['weekly-planner'].includes(active)));
       if (current) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     }
+    onChange(active);
     if (active === 'planning') timeline.scrollLeft = scheduleOffset;
+    next.scrollTop = workspaceOffsets.get(active) ?? 0;
     if (focus) {
       const heading = next.querySelector<HTMLElement>('h1,h2');
-      if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
+      if (heading && active !== 'office') { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
     }
     window.scrollTo(0, offsets.get(active) ?? 0);
   }

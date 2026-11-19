@@ -19,7 +19,7 @@ pub struct MinuteOffer {
     pub forecast_relevant: f64,
     pub demand_pressure: f64,
     pub uncapped_inventory_value: f64,
-    pub quoted_at: SimTick,
+    pub quoted_at: AirMinute,
     revision: u64,
 }
 
@@ -27,13 +27,13 @@ pub struct MinuteOffer {
 pub struct MinuteSale {
     pub id: MinuteSaleId,
     pub offer: MinuteOffer,
-    pub accepted_at: SimTick,
+    pub accepted_at: AirMinute,
     pub settlement: Option<MinuteSettlement>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct MinuteSettlement {
-    pub at: SimTick,
+    pub at: AirMinute,
     pub aired_minutes: u8,
     /// Sampled viewer-minute impressions. These are not unique reach.
     pub viewer_minutes: f64,
@@ -53,6 +53,12 @@ impl Planner {
 
     pub fn resize_ad_block(&mut self, id: AiringId, minutes: u8) -> Result<(), PlanError> {
         let airing = self.upcoming(id)?;
+        if airing.filler.is_some() && minutes > 0 {
+            return Err(error(
+                "filler_inventory",
+                "Station fillers cannot sell advertising.",
+            ));
+        }
         if minutes > MAX_AD_MINUTES || minutes < self.sold_minutes(id) {
             return Err(error(
                 "ad_inventory",
@@ -139,7 +145,7 @@ impl Planner {
                     forecast_relevant: reach.forecast.relevant_delivery,
                     demand_pressure: reach.demand.pressure,
                     uncapped_inventory_value: uncapped,
-                    quoted_at: self.now(),
+                    quoted_at: self.now_minute(),
                     revision: self.revision,
                 });
             }
@@ -156,7 +162,7 @@ impl Planner {
         }
         let mut candidate = self.clone();
         candidate.bump()?;
-        let now = candidate.now();
+        let now = candidate.now_minute();
         let id = candidate
             .engine
             .state
@@ -167,14 +173,67 @@ impl Planner {
         Ok(id)
     }
 
-    pub(super) fn minute_campaigns(&self, start: SimTick) -> BTreeMap<(StationId, BrandId), u8> {
+    // Sold minutes are consecutive, in sale order, after programme content.
+    // Any unsold part of the block follows the purchased minutes.
+    pub(super) fn spots(&self) -> Vec<(MinuteSaleId, StationId, BrandId, AirMinute, AirMinute)> {
+        let mut offsets = BTreeMap::<AiringId, u32>::new();
         self.state()
             .economy()
             .minute_sales()
-            .filter(|sale| {
-                sale.settlement.is_none() && self.airings[&sale.offer.airing].start == start
+            .filter_map(|sale| {
+                let airing = &self.airings[&sale.offer.airing];
+                if sale.settlement.is_some() || airing.cancelled() {
+                    return None;
+                }
+                let offset = offsets
+                    .entry(airing.id)
+                    .or_insert_with(|| airing.end.0 - u32::from(airing.ad_minutes));
+                let start = AirMinute(*offset);
+                *offset += u32::from(sale.offer.minutes);
+                Some((
+                    sale.id,
+                    sale.offer.station,
+                    sale.offer.brand,
+                    start,
+                    AirMinute(*offset),
+                ))
             })
-            .map(|sale| ((sale.offer.station, sale.offer.brand), sale.offer.minutes))
+            .collect()
+    }
+
+    pub(super) fn next_airtime_change(&self, from: AirMinute) -> AirMinute {
+        self.airings
+            .values()
+            .flat_map(|a| {
+                [
+                    a.start,
+                    a.end,
+                    if a.contract.is_some() {
+                        AirMinute(a.start.0 + 1)
+                    } else {
+                        a.start
+                    },
+                ]
+            })
+            .chain(
+                self.spots()
+                    .into_iter()
+                    .flat_map(|(_, _, _, start, end)| [start, end]),
+            )
+            .filter(|time| *time > from)
+            .min()
+            .unwrap_or_else(|| AirMinute::from_tick(self.end))
+    }
+
+    pub(super) fn minute_campaigns(
+        &self,
+        start: AirMinute,
+        end: AirMinute,
+    ) -> BTreeMap<(StationId, BrandId), u8> {
+        self.spots()
+            .into_iter()
+            .filter(|(_, _, _, begin, finish)| *begin <= start && end <= *finish)
+            .map(|(_, station, brand, _, _)| ((station, brand), (end.0 - start.0) as u8))
             .collect()
     }
 }
@@ -204,7 +263,7 @@ mod tests {
         for group in &mut p.engine.world.audiences {
             group.availability = [0.0; 24];
         }
-        let events = p.advance_to(p.airing(id).unwrap().end).unwrap();
+        let events = p.advance_exact(p.airing(id).unwrap().end).unwrap();
         assert!(events
             .iter()
             .flat_map(|e| &e.hype)

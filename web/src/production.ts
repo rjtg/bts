@@ -43,7 +43,7 @@ export function initialiseProduction(ui: Callbacks) {
       const id = cast[index]; const p = person(id); if (!p) continue;
       const seat = action(``, () => openPicker(index as Seat), 'cast-seat'); seat.id = `seat-${index}`; seat.setAttribute('aria-label', `Choose ${label.toLowerCase()}: ${p.name}`);
       const img = portrait(id); if (img) seat.append(img);
-      seat.append(node('span', label, 'overline'), node('strong', p.name), node('span', `${ui.money(p.fee)} credits`), node('small', availability(id).label)); seats.append(seat);
+      seat.append(node('span', label, 'overline'), node('strong', p.name), node('span', `${ui.money(p.fee)} Funds`), node('small', availability(id).label)); seats.append(seat);
     }
     concerns(cast, element('cast-concerns'));
     renderChoices<Subject>(element('production-subjects'),Object.entries(subjects).map(([value,label])=>({value:value as Subject,label})),subject,value=>{subject=value;renderSeats();});
@@ -51,7 +51,7 @@ export function initialiseProduction(ui: Callbacks) {
   }
   const picker = modalPicker<Report['production']['people'][number]>({ dialog:element<HTMLDialogElement>('talent-picker'), title:element('talent-picker-title'), list:element('talent-cards'), closeButton:element('close-talent-picker'), restoreFocus:()=>element(`seat-${activeSeat}`).focus(), renderItem:p=>{
       const card = node('article', '', 'talent-card'); const img = portrait(p.id); if (img) card.append(img);
-      card.append(node('h4', p.name), node('p', p.station_id===null?'Freelance guest':'Your station’s staff', 'overline'), node('p', p.description), node('strong', `${ui.money(p.fee)} credits`));
+      card.append(node('h4', p.name), node('p', p.station_id===null?'Freelance guest':'Your station’s staff', 'overline'), node('p', p.description), node('strong', `${ui.money(p.fee)} Funds`));
       const commitments=node('ul','','personal-schedule');
       for(const booking of p.commitments.filter(c=>c.end_tick>ui.report().now_tick))commitments.append(node('li',`${booking.title}: ${ui.stamp(booking.start_tick)}–${ui.stamp(booking.end_tick)}`));
       if(commitments.childElementCount)card.append(node('small','Upcoming recording commitments'),commitments);
@@ -74,7 +74,7 @@ export function initialiseProduction(ui: Callbacks) {
     element<HTMLInputElement>('production-tone').value = String(tones.indexOf(p.tone));
     const budget = document.querySelector<HTMLInputElement>(`input[name="production-budget"][value="${p.budget}"]`);
     if (budget) budget.checked = true;
-    else { const label = node('label', `Custom · ${ui.money(p.budget)} credits`); const input = node('input'); input.type = 'radio'; input.name = 'production-budget'; input.value = p.budget; input.checked = true; label.prepend(input); element('production-form').querySelector('.budget-presets')!.append(label); }
+    else { const label = node('label', `Custom · ${ui.money(p.budget)} Funds`); const input = node('input'); input.type = 'radio'; input.name = 'production-budget'; input.value = p.budget; input.checked = true; label.prepend(input); element('production-form').querySelector('.budget-presets')!.append(label); }
     select('production-day').value = String(Math.floor(p.record_at / 96)); select('production-time').value = String(p.record_at % 96);
     element('production-editor-title').textContent = `Revise ${p.title}`; element('create-production').textContent = 'Update concept'; renderSeats(); element('production-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
@@ -101,7 +101,7 @@ export function initialiseProduction(ui: Callbacks) {
     if (r && r.production_id === p.id && r.exceptional_person === c.exceptional && r.cooperation_sway === c.support) {
       reviewArea.append(node('h4', 'Ready to book?'), node('p', `${personName(p.host)} with ${p.guests.map(personName).join(' and ')}. ${subjects[p.subject]} · ${p.tone}.`), node('p', `Record ${ui.stamp(p.record_at)}–${ui.stamp(p.recording_end)}. Ready ${ui.stamp(p.ready_at)}.`));
       reviewArea.append(node('p', 'Aiming for ' + p.ambition.map(q => q.name + ' · ' + q.level).join(', ') + '.'));
-      reviewArea.append(node('p', `Commit ${ui.money(r.budget)} credits, including ${ui.money(p.fees)} in fees. Cash remaining: ${ui.money(r.cash_remaining)}.`), node('p', `Spend ${r.total_sway} Sway (${r.cooperation_sway} support). Sway remaining: ${r.sway_remaining}.`));
+      reviewArea.append(node('p', `Commit ${ui.money(r.budget)} Funds, including ${ui.money(p.fees)} in fees. Cash remaining: ${ui.money(r.cash_remaining)}.`), node('p', `Spend ${r.total_sway} Sway (${r.cooperation_sway} support). Sway remaining: ${r.sway_remaining}.`));
       reviewArea.append(node('p', `This reserves Studio ${r.studio} and the cast’s recording time. Booked productions cannot be changed or cancelled.`, 'small'));
       const confirm = action('Confirm booking', () => ui.send({ type: 'book_production', production_id: p.id, exceptional_person: r.exceptional_person, cooperation_sway: r.cooperation_sway }), ''); confirm.id = `confirm-${p.id}`; reviewArea.append(confirm);
     }
@@ -146,7 +146,7 @@ export function initialiseProduction(ui: Callbacks) {
     for (const p of report.production.projects) {
       const card = node('article', '', 'production-card'); card.id = `production-${p.id}`;
       const heading = node('div', '', 'panel-heading'); heading.append(node('h3', p.title), node('span', p.phase.replace('_', ' ').toUpperCase(), 'tag')); card.append(heading);
-      card.append(node('p', `${personName(p.host)} with ${p.guests.map(personName).join(' and ')}.`), node('p', `${subjects[p.subject]} · ${p.tone} · ${ui.money(p.budget)} credits, including ${ui.money(p.fees)} in fees.`), node('p', `Record ${ui.stamp(p.record_at)}–${ui.stamp(p.recording_end)}. Ready ${ui.stamp(p.ready_at)}.`, 'small muted'));
+      card.append(node('p', `${personName(p.host)} with ${p.guests.map(personName).join(' and ')}.`), node('p', `${subjects[p.subject]} · ${p.tone} · ${ui.money(p.budget)} Funds, including ${ui.money(p.fees)} in fees.`), node('p', `Record ${ui.stamp(p.record_at)}–${ui.stamp(p.recording_end)}. Ready ${ui.stamp(p.ready_at)}.`, 'small muted'));
       for (const hint of p.quest_hints) {
         const quest = report.production.requests.find(r => r.id === hint.request_id)!;
         card.append(node('p', `${personName(quest.proposer)}’s open quest: ${hint.matches_requirements ? hint.can_finish_in_time ? `matches production requirements; could fulfil at ${ui.stamp(hint.achievement_tick)} if completed as planned.` : 'matches the concept, but cannot meet the accepted timing requirements.' : 'this concept does not match the requirements.'} Actual achievement is still required.`, 'quest-hint'));

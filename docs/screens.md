@@ -11,6 +11,8 @@ subset: seven full days of quarter-hour planning, explicit runtimes, competitor
 lane, catalogue, contextual contracts/results and station finances. Other screens
 and publication/promotion/ad-share controls below remain proposals.
 
+See the [Station Office widget guide](office-widget-style.md) for the visual language and prop-to-workspace map.
+
 ## Main workspaces
 
 | Screen | Main decisions and information |
@@ -144,40 +146,53 @@ autosell policy and its sales on the selected airing. Audience dossiers can
 summarize estimated weekday and weekend viewing patterns. See the
 [weekly scheduling proposal](weekly-scheduling.md).
 
-The Control Desk planner now implements drag and drop for draft airings and
-library titles, a non-drag slot picker, a narrow agenda and weekly review. Its
-ghost and conflict hint are provisional. A drop or form submission still runs
-through Rust, and the selected airing remains distinct from Up Next.
-See [weekly scheduling](weekly-scheduling.md).
+The Control Desk planner implements minute-accurate placement and moves,
+a narrow agenda, and a weekly review. The preview is provisional. Rust validates
+each placement, and the selected airing remains distinct from Up Next.
 
 #### Focused Control Desk screens
 
-The focused Control Desk gives each job its own view. Schedule shows both
-channels, direct placement, and a compact selection with links to the relevant
-tasks. Weekly Run owns recurrence, date previews and exceptions. Ad Sales opens
-for one airing and owns inventory, offers and confirmed bookings. Broadcast
-Review shows provisional audience delivery, receipts and costs, and links back
-to the schedule. Returning preserves the viewed day, selection and scroll
-position. Schedule distinguishes actual programme-plus-ad runtime from the
-remaining reserved minutes with a shaded tail and exact minute labels. The
-clock, transport and distinct On Air / Up Next readouts stay in
-the shared shell while playing. On narrow screens each task gets the full view.
+The [station office and Planning Room design](station-office.md) carries forward the perspective mockup, dossiers, calendar summaries, and OFF AIR pause card.
+The [playable office hub](station-office.md#playable-office-hub) adds focusable room hotspots, closable colour-coded dossiers, and ad sales inside the selected airing file.
+The [blotter layout](station-office.md#blotter-layout-and-prop-transitions) makes desk props the primary entry points and keeps the office visible behind focused work.
+
+Future planner direction. Open the daily planner on the player's own channel.
+Offer a comparison selector that can show one rival lane alongside it. A
+player can switch rivals or return to the single-channel view without losing
+the selected day, time, or airing. The station's own lane includes private
+drafts. The rival lane uses the public schedule described in
+[programme planning](programme-planning.md#future-public-rival-schedules).
+
+The current Schedule displays the player and fixed competitor lanes. Opening
+an airing brings its paperwork to the desk. Planned airings show their exact
+occupied interval, inventory, and offers. Past airings show the ledger and
+link to Broadcast Review. Weekly Run owns recurrence, date previews, and
+exceptions. The clock, transport and distinct On Air / Up Next readouts stay
+in the shared shell. Ad sales and settlement share the teal Airing file.
+Broadcast Review remains available from the ledger and completed airings.
 
 #### Programme library in Schedule
 
-Treat the library as a station's tape shelf. Use existing artwork on compact
-spine or sleeve cards and a consistent illustrated fallback for titles without
-art. Keep the title, programme type and runtime visible on every card. Put a
-short synopsis and additional evidence in the selected title's details.
+The CRT timeline spans the rack of upright tapes and boxed series. Standalone
+titles have vertical spine labels and a full accessible title. An opened
+series case shows its episodes in order. Search and runtime filters help pick
+a recording without reference to the schedule. **Fill Next Gap** uses the gap
+identified by the desk note and gives fitting works an estimate-based order.
+The [placement and forecasting rules](minute-airtime.md) define how this works.
 
-The shelf should answer two quick questions: what can I air, and what fits
-this gap? Provide title search and a **Fits this gap** filter once a gap is
-selected. Explain when a title fits on its own but the proposed ad minutes
-take it past the gap, using the reserved quarter-hour interval. Preserve the
-search and filter when returning from another task. Keep the shelf collapsible
-on desktop and give it a focused picker on narrow screens. Use the same cards
-for dragging and for selecting a title before opening the keyboard/touch slot
-picker. Rust validates placement as usual.
+Selecting a cassette brings it onto the desk beside its open Programme,
+Audience and Ledger papers. On narrow devices the tape picker offers a
+full-screen station file. The programme paper shows known credits. The
+audience paper uses dated published research and distinguishes forecasts from
+past results. The ledger links recent broadcasts to Broadcast Review and
+totals settled ad receipts, airing costs, and known production investment.
+
+Use the desk actions for the next gap, the best estimated slot, or a regular
+run. The CRT accepts drag placement and minute adjustments by keyboard.
+The desk's ad-load ratio converts each work's runtime into its default ad
+minutes. Sticky notes open gap candidates, short filler options, and unsold
+inventory. In an airing file, the signature accepts the quote. A strike-through
+marks it declined locally and can be restored before acceptance.
 
 #### Playback and pause
 

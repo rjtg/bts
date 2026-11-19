@@ -42,7 +42,12 @@ impl ViewingCalendar {
         };
         // Planner actions timestamp the end of a quarter hour. Its audience samples
         // belong to that interval's start, including 23:45 at a day boundary.
-        let hours = at.elapsed_hours(T::zero()) - if interval { 0.25 } else { 0.0 };
+        let hours = at.elapsed_hours(T::zero());
+        let hours = if interval && hour == 23 && hours % 24.0 == 0.0 {
+            hours - 1.0 / 60.0
+        } else {
+            hours
+        };
         let day = first.offset((hours.max(0.0) / 24.0).floor() as u32);
         let band = if hour < 12 {
             0
@@ -59,14 +64,14 @@ impl ViewingCalendar {
 #[serde(deny_unknown_fields)]
 pub struct Exception {
     pub occurrence: u8,
-    pub start_tick: Option<u32>,
+    pub start_minute: Option<u32>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct WeeklyPlan {
     pub programme: ProgrammeId,
     pub weekday: Weekday,
-    pub time: u8,
+    pub time: u16,
     pub count: u8,
     pub ad_minutes: u8,
     pub exceptions: Vec<Exception>,
@@ -77,8 +82,11 @@ pub struct Placement {
     pub occurrence: u8,
     pub airing: Option<AiringId>,
     pub regular_tick: u32,
+    pub regular_minute: u32,
     pub start_tick: Option<u32>,
     pub end_tick: Option<u32>,
+    pub start_minute: Option<u32>,
+    pub end_minute: Option<u32>,
     pub runtime_minutes: u16,
     pub conflicts: Vec<AiringId>,
     pub issue: Option<&'static str>,
@@ -120,18 +128,18 @@ impl Planner {
     pub fn preview_weekly(&self, plan: &WeeklyPlan) -> Result<Vec<Placement>, PlanError> {
         if plan.count == 0
             || plan.count > 3
-            || plan.time >= 96
+            || plan.time >= 1440
             || plan.ad_minutes > ad_market::MAX_AD_MINUTES
         {
             return Err(error(
                 "weekly_plan",
-                "Choose one to three weeks, a grid time, and up to 30 ad minutes.",
+                "Choose one to three weeks, a time, and up to 30 ad minutes.",
             ));
         }
         let exceptions: BTreeMap<_, _> = plan
             .exceptions
             .iter()
-            .map(|e| (e.occurrence, e.start_tick))
+            .map(|e| (e.occurrence, e.start_minute))
             .collect();
         if exceptions.len() != plan.exceptions.len()
             || exceptions.keys().any(|&index| index >= plan.count)
@@ -144,15 +152,15 @@ impl Planner {
         let first = self.first_weekday();
         let current_day = self.now().0 / DAY;
         let offset = (u32::from(plan.weekday.0) + 7 - u32::from(first.offset(current_day).0)) % 7;
-        let start = (current_day + offset) * DAY + u32::from(plan.time);
-        let first_start = if start < self.now().0 {
-            start + WEEK
+        let start = (current_day + offset) * DAY * 15 + u32::from(plan.time);
+        let first_start = if AirMinute(start) < self.now_minute() {
+            start + WEEK * 15
         } else {
             start
         };
         let mut rows = Vec::new();
         for occurrence in 0..plan.count {
-            let regular = first_start + u32::from(occurrence) * WEEK;
+            let regular = first_start + u32::from(occurrence) * WEEK * 15;
             let actual = exceptions
                 .get(&occurrence)
                 .copied()
@@ -191,7 +199,7 @@ impl Planner {
                 )
             })?;
         let runtime = work.duration_minutes + u16::from(ads);
-        let end = start.and_then(|s| s.checked_add(u32::from(runtime).div_ceil(15)));
+        let end = start.and_then(|s| s.checked_add(u32::from(runtime)));
         let conflicts = match (start, end) {
             (Some(s), Some(e)) => self
                 .airings()
@@ -203,16 +211,19 @@ impl Planner {
             _ => vec![],
         };
         let issue = start.and_then(|s| {
-            self.validate_placement(self.player, programme, SimTick(s), airing, ads)
+            self.validate_placement(self.player, programme, AirMinute(s), airing, ads)
                 .err()
                 .map(|failure| failure.code)
         });
         Ok(Placement {
             occurrence,
             airing,
-            regular_tick: regular,
-            start_tick: start,
-            end_tick: end,
+            regular_tick: regular / 15,
+            regular_minute: regular,
+            start_tick: start.map(|minute| minute / 15),
+            end_tick: end.map(|minute| minute.div_ceil(15)),
+            start_minute: start,
+            end_minute: end,
             runtime_minutes: runtime,
             conflicts,
             issue,
@@ -230,9 +241,8 @@ impl Planner {
         }
         let mut candidate = self.clone();
         let mut ids = Vec::new();
-        for start in rows.iter().filter_map(|row| row.start_tick) {
-            let id = candidate.insert(self.player, plan.programme, SimTick(start), None)?;
-            candidate.resize_ad_block(id, plan.ad_minutes)?;
+        for start in rows.iter().filter_map(|row| row.start_minute) {
+            let id = candidate.place_exact(plan.programme, AirMinute(start), plan.ad_minutes)?;
             let group = ids.first().copied().unwrap_or(id);
             candidate.airings.get_mut(&id).unwrap().weekly = Some(group);
             ids.push(id);
@@ -244,11 +254,15 @@ impl Planner {
         Ok(ids)
     }
 
-    pub fn preview_weekly_edit(&self, id: AiringId, time: u8) -> Result<Vec<Placement>, PlanError> {
+    pub fn preview_weekly_edit(
+        &self,
+        id: AiringId,
+        time: u16,
+    ) -> Result<Vec<Placement>, PlanError> {
         let a = self.airing(id)?;
         let group = a
             .weekly
-            .filter(|_| a.station == self.player && time < 96)
+            .filter(|_| a.station == self.player && time < 1440)
             .ok_or_else(|| error("weekly_edit", "Choose a recurring airing and time."))?;
         let targets: Vec<_> = self
             .airings()
@@ -266,7 +280,7 @@ impl Planner {
             let start = if protected {
                 target.start.0
             } else {
-                (target.start.0 / DAY) * DAY + u32::from(time)
+                (target.start.0 / (DAY * 15)) * DAY * 15 + u32::from(time)
             };
             let mut row = preview.placement_row(
                 target.programme,
@@ -287,7 +301,7 @@ impl Planner {
         Ok(rows)
     }
 
-    pub fn edit_weekly(&mut self, id: AiringId, time: u8) -> Result<(), PlanError> {
+    pub fn edit_weekly(&mut self, id: AiringId, time: u16) -> Result<(), PlanError> {
         let rows = self.preview_weekly_edit(id, time)?;
         if rows.iter().any(|row| row.issue.is_some()) {
             return Err(error(
@@ -299,8 +313,8 @@ impl Planner {
         candidate.bump()?;
         for row in rows.into_iter().filter(|row| !row.protected) {
             let changed = candidate.airings.get_mut(&row.airing.unwrap()).unwrap();
-            changed.start = SimTick(row.start_tick.unwrap());
-            changed.end = SimTick(row.end_tick.unwrap());
+            changed.start = AirMinute(row.start_minute.unwrap());
+            changed.end = AirMinute(row.end_minute.unwrap());
         }
         *self = candidate;
         Ok(())
@@ -309,13 +323,13 @@ impl Planner {
 
 fn mark_internal_clashes(rows: &mut [Placement]) {
     for index in 0..rows.len() {
-        let Some((start, end)) = rows[index].start_tick.zip(rows[index].end_tick) else {
+        let Some((start, end)) = rows[index].start_minute.zip(rows[index].end_minute) else {
             continue;
         };
         for next in index + 1..rows.len() {
             if rows[next]
-                .start_tick
-                .zip(rows[next].end_tick)
+                .start_minute
+                .zip(rows[next].end_minute)
                 .is_some_and(|(s, e)| start < e && s < end)
             {
                 for i in [index, next] {

@@ -5,6 +5,7 @@ use bts_sim::{demo, Parameters, ProgrammeId, ProgrammeKind, SimTick, World};
 pub const DAYS: u32 = bts_sim::planning::weekly::MAX_DAYS;
 pub const END_TICK: u32 = DAYS * 96;
 pub const PLAYER: bts_sim::StationId = demo::MAIN;
+const IDENT: ProgrammeId = ProgrammeId(0);
 pub const RIVAL: bts_sim::StationId = demo::RIVAL;
 
 pub fn world() -> World {
@@ -50,6 +51,16 @@ pub fn world() -> World {
         work.kind = ProgrammeKind::Standalone;
         world.programmes.push(work);
     }
+    let mut ident = world.programmes[0].clone();
+    ident.id = IDENT;
+    ident.name = "Station ident".into();
+    ident.kind = ProgrammeKind::Standalone;
+    ident.profile = bts_sim::FeatureProfile::fiction([0.1; 7]);
+    ident.duration_minutes = 1;
+    ident.broadcast_cost = bts_sim::economy::Money(0);
+    ident.awareness = 0.05;
+    ident.cast_appeal = 0.0;
+    world.programmes.push(ident);
     // Fixed provisional availability extends the earlier two-snapshot fixture
     // to the evening. No affinity/availability profile is sent to the browser.
     for audience in &mut world.audiences {
@@ -112,7 +123,7 @@ pub(crate) fn planner_from_world(world: World) -> Result<Planner, PlanError> {
         StationResources {
             station: PLAYER,
             studios: 1,
-            programmes: (1..=7).map(ProgrammeId).collect(),
+            programmes: (1..=7).map(ProgrammeId).chain([IDENT]).collect(),
             staff: [
                 bts_sim::planning::production::PersonId(1),
                 bts_sim::planning::production::PersonId(2),
@@ -129,6 +140,7 @@ pub(crate) fn planner_from_world(world: World) -> Result<Planner, PlanError> {
                 .collect(),
         },
     ])?;
+    planner.configure_filler(IDENT)?;
     let ages = planner
         .world()
         .audiences

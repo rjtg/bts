@@ -4,34 +4,77 @@
 <header class="masthead"><div class="brand"><span class="signal" aria-hidden="true"><i></i><i></i><i></i></span><span>BEHIND <small>THE</small> SCREENS</span></div><div class="clock"><span id="clock">Day 1 · 00:00</span><strong id="playback-state">PAUSED</strong></div><div id="station-resources" class="resources" role="group" aria-label="Station resources"></div></header>
 <p id="status" role="status" class="load-status">Loading WebAssembly…</p><p id="error" role="alert" hidden></p>
 <div id="controls" class="app" hidden>
-  <aside class="rail"><span class="rail-caption">YOUR STATION</span><a href="#planning" class="active">▦ Schedule</a><a href="#production">▣ Production</a><a href="#film-desk">▧ Film desk</a><a href="#rights-market">▱ Rights market</a><a href="#audience">◉ Audience</a><a href="#results">▤ Broadcast Review</a><a href="#finances">≡ Finances</a><div class="rail-note">THREE WEEKS<br><strong>Draft schedule</strong><p>Make television.<br>See who watches.</p></div><button id="reset" class="quiet">Reset experiment</button></aside>
+  <aside class="rail"><span class="rail-caption">YOUR STATION</span><a href="#office" class="active">▰ Office</a><a href="#planning">▦ Schedule</a><a href="#production">▣ Production</a><a href="#film-desk">▧ Preparation</a><a href="#film-production">▥ Film Production</a><a href="#rights-market">▱ Rights market</a><a href="#audience">◉ Audience</a><a href="#results">▤ Broadcast Review</a><a href="#finances">≡ Finances</a><div class="rail-note">THREE WEEKS<br><strong>Draft schedule</strong><p>Make television.<br>See who watches.</p></div><label class="room-motion-control">Room motion <select id="room-motion"><option value="auto">Auto</option><option value="on">On</option><option value="off">Off</option></select></label><button id="reset" class="quiet">Reset experiment</button></aside>
   <main>
-    <section class="transport" aria-label="Time controls"><div><span class="overline">UP NEXT</span><strong id="next-airing">Nothing planned</strong><span id="on-air" class="desk-on-air"></span></div><div class="transport-buttons"><button id="play-pause" aria-pressed="false" aria-label="Play" title="Advance 15 simulated minutes every two seconds. Editing puts the clock in standby.">▶ Play</button><button id="double-speed" class="quiet" aria-pressed="false" title="Double speed: 15 simulated minutes every second.">×2</button><button id="advance-tick" class="quiet">+15 min</button><button id="advance-next">Run next airing</button><button id="advance-day" class="quiet">Finish current day</button></div></section>
-    <div data-desk="planning"><section id="planning" class="planning-panel"><div class="section-heading"><div><p class="overline">BROADCAST DESK</p><h1>Schedule</h1></div><div class="day-controls"><button id="previous-day" class="quiet" aria-label="Previous planning day">‹</button><label>Planning day<select id="day"></select></label><button id="next-day" class="quiet" aria-label="Next planning day">›</button></div></div>
-      <div class="timeline-toolbar"><span><i class="key draft"></i>Draft <i class="key booked"></i>Booked <i class="key selected"></i>Selected <i class="key history"></i>Aired</span><div><button id="jump-now" class="text-button">Now</button><button id="jump-evening" class="text-button">Evening</button><button id="jump-midnight" class="text-button">00:00</button></div></div>
-      <div id="day-agenda" class="day-agenda" aria-label="Day agenda"></div><p id="placement-preview" role="status" class="placement-preview" hidden></p><div id="timeline-scroller" class="timeline-scroller" tabindex="0" aria-label="Full-day programme timeline; scroll horizontally from 00:00 to 24:00"><div id="timeline" class="timeline"></div></div>
-      <div class="timeline-footer"><span>24-hour timeline · 15-minute grid · click a gap to set placement time</span><span id="day-gaps"></span></div>
+    <section class="transport" aria-label="Time controls"><div><span class="overline">UP NEXT</span><strong id="next-airing">Nothing planned</strong><span id="on-air" class="desk-on-air"></span></div><div class="transport-buttons"><button id="play-pause" aria-pressed="false" aria-label="Play" title="Advance 15 simulated minutes every two seconds. Editing puts the clock in standby.">▶ Play</button><button id="double-speed" class="quiet" aria-pressed="false" title="Double speed: 15 simulated minutes every second.">×2</button><button id="advance-tick" class="quiet">Next tick</button><button id="advance-next">Run next airing</button><button id="advance-day" class="quiet">Finish current day</button></div>
+    <section id="today-strip" aria-label="Today's schedule">
+      <div class="today-readout"><strong>Today</strong><span id="office-on-air"></span><span id="office-up-next"></span></div>
+      <div id="today-track" aria-label="Your channel, midnight to midnight"></div>
+      <p id="today-preview" role="status" hidden></p>
+    </section></section>
+    <section data-desk="office" id="office" aria-label="Station office">
+      <div class="office-room">
+        <div id="office-blotter" aria-hidden="true"></div>
+        <div class="desk-dressing" aria-hidden="true"></div>
+        <div class="office-plant" aria-hidden="true"></div>
+        <div class="office-steam" aria-hidden="true"><i></i><i></i></div>
+        <div class="office-idle-staff" aria-hidden="true"></div>
+        <div class="office-idle-reader" aria-hidden="true"></div>
+        <div class="office-idle-standing" aria-hidden="true"></div>
+        <div class="office-idle-colleague" aria-hidden="true"></div>
+        <div data-quiet-pose="left-seat" aria-hidden="true"></div>
+        <div data-quiet-pose="leaning" aria-hidden="true"></div>
+        <div data-quiet-pose="through-glass" aria-hidden="true"></div>
+        <div class="office-lamp-glow" aria-hidden="true"></div>
+        <div class="studio-idle-camera" aria-hidden="true"></div>
+        <div class="studio-idle-second-camera" aria-hidden="true"></div>
+        <div data-quiet-pose="floor-assistant" aria-hidden="true"></div>
+        <div class="studio-idle-guest" aria-hidden="true"></div>
+        <div class="studio-idle-host" aria-hidden="true"></div>
+        <div class="studio-tally" aria-hidden="true"></div>
+        <div class="studio-glass" aria-hidden="true"><span></span></div>
+        <img class="office-phone" src="/office-art/telephone.png" alt="">
+        <div class="shelf-stock" aria-hidden="true"></div><i class="shelf-pull-reaction" aria-hidden="true"></i>
+        <a id="office-crt" href="#planning" title="Open Programming"><strong>Programming ↗</strong></a>
+        <div class="monitor-reel" aria-hidden="true"><i></i><i></i><i></i></div>
+        <button id="pull-tapes" type="button" aria-expanded="false" aria-controls="office-workspace"><span>Pull out tapes</span></button>
+        <button id="put-tapes-away" type="button" hidden>Put tapes away</button>
+        <button id="open-notebook" type="button" data-tip="Open desk notebook"><span>Desk<br>notebook</span><small id="notebook-cover"></small></button>
+        <div id="office-job-links" class="room-links" aria-label="Station work areas">
+          <div id="desk-file-piles" class="desk-files" aria-label="Desk folders"><a href="#film-desk" data-prop="script" data-tip="Open Preparation"><span>Preparation</span></a><a href="#film-production" data-prop="production" data-tip="Open Production"><span>Production</span></a><a href="#audience" data-prop="research" data-tip="Open audience research"><span>Research</span></a><a href="#rights-market" data-prop="rights" data-tip="Open Rights Market"><span>Rights</span></a><a href="#finances" data-prop="ledger" data-tip="Open station ledger"><span>Ledger</span></a><a href="#results" data-prop="reviews" data-tip="Open broadcast reviews"><span>Reviews</span></a></div>
+        </div>
+        <div id="office-workspace"></div>
+      </div>
     </section>
+    <div data-desk="planning" hidden><div class="calendar-strip">
+      <a id="back-office" href="#office">← Back to Office</a>
+      <div id="calendar-modes" role="group" aria-label="Calendar view"><button type="button" data-mode="day">Day</button><button type="button" data-mode="week">Week</button><button type="button" data-mode="month">Month</button></div>
+      <button type="button" id="calendar-today">Today</button><span id="calendar-position" aria-live="polite"></span>
+    </div>
+    <div id="calendar-summary" hidden></div><section id="planning" class="planning-panel"><div class="crt-controls"><div class="section-heading"><div><p class="overline">BROADCAST DESK</p><h1>Schedule</h1></div><div class="day-controls"><button id="previous-day" class="quiet" aria-label="Previous planning day">‹</button><label>Planning day<select id="day"></select></label><button id="next-day" class="quiet" aria-label="Next planning day">›</button></div></div>
+      <div class="timeline-toolbar"><span><i class="key draft"></i>Draft <i class="key booked"></i>Booked <i class="key selected"></i>Selected <i class="key history"></i>Aired</span><div><button id="jump-now" class="text-button">Now</button><button id="jump-evening" class="text-button">Evening</button><button id="jump-midnight" class="text-button">00:00</button></div></div></div>
+      <div id="day-agenda" class="day-agenda" aria-label="Day agenda"></div><div class="crt-cabinet"><div class="crt-instrument" aria-hidden="true"><span></span><i></i></div><div id="timeline-scroller" class="timeline-scroller" tabindex="0" aria-label="Full-day programme timeline; scroll horizontally from 00:00 to 24:00"><div id="timeline" class="timeline"></div></div><div class="crt-speaker" aria-hidden="true"></div></div><p id="placement-preview" role="status" class="placement-preview" hidden></p>
+      <div class="timeline-footer"><span>24-hour timeline · place to the minute</span><span id="day-gaps"></span></div>
+    </section>
+    <div id="planner-airing-mount"></div>
     <button type="button" class="quiet" id="open-library">Open tape shelf</button>
-    <div class="workspace">
-      <details class="library panel" id="library" open><summary>Tape shelf</summary><section aria-labelledby="library-title"><div class="panel-heading"><h2 id="library-title">Programme library</h2><label class="sr-only" for="genre-filter">Filter library by genre</label><select id="genre-filter"><option value="all">All genres</option><option>Comedy</option><option>Drama</option><option>Explainer</option><option>Thriller</option><option>Magazine</option><option>News</option><option>Late-night</option></select></div><div class="shelf-tools"><label>Find a title<input id="library-search" type="search"></label><label><input id="library-fit" type="checkbox"> Fits this gap</label><label>Preview ad minutes<input id="library-ads" type="number" min="0" max="30" step="1" value="0"></label></div><p id="library-gap" class="muted"></p><div id="catalogue" class="catalogue"></div>
-        <form id="place-form" class="placement"><span class="overline">PLACE FROM LIBRARY</span><strong id="place-name"></strong><div id="library-description"></div><div class="form-row"><label>Day<select id="place-day"></select></label><label>Start time<select id="place-time"></select></label></div><button id="place" type="submit">Place broadcast</button><small id="place-note"></small></form><a class="quiet weekly-shortcut" href="#weekly-planner">Give a show a weekly slot</a>
+    <div id="planning-workspace"><div id="station-workspace" class="workspace">
+      <details class="library panel" id="library" open><summary>Tape shelf</summary><section class="tape-room" aria-labelledby="library-title"><div class="shelf-bay"><div class="panel-heading"><h2 id="library-title">Programme library</h2><label class="sr-only" for="genre-filter">Filter library by genre</label><select id="genre-filter"><option value="all">All genres</option><option>Comedy</option><option>Drama</option><option>Explainer</option><option>Thriller</option><option>Magazine</option><option>News</option><option>Late-night</option></select></div><div class="shelf-tools"><label>Find a title<input id="library-search" type="search"></label><label><input id="library-fit" type="checkbox"> Fill Next Gap</label><label>Type<select id="library-type"><option value="">All types</option><optgroup label="Fiction"><option>Fiction</option><option>Film</option><option>Series</option></optgroup><optgroup label="Nonfiction"><option>Nonfiction</option><option>News</option><option>Magazine</option></optgroup></select></label><label>Runtime<select id="library-runtime"><option value="">Any length</option><option value="30">Up to 30 min</option><option value="45">Up to 45 min</option><option value="60">Up to 60 min</option></select></label></div><div id="catalogue" class="catalogue"></div></div>
+        <form id="place-form" class="placement tape-desk"><div class="desk-objects"><button id="open-tape-record" type="button" class="folder-tab">Open station file</button><div id="desk-tape" class="desk-tape"><span class="desk-reel" aria-hidden="true"></span><div class="desk-tape-label"><strong id="place-name"></strong><span id="desk-runtime"></span></div><span class="desk-reel" aria-hidden="true"></span></div></div><div class="shelf-actions"><p id="library-description" class="assistant-note"></p><label class="placement-minutes">This airing <input id="placement-ad-minutes" type="number" min="0" max="30" step="1"> ad min</label><output id="placement-runtime"></output><button id="place" type="submit">Next gap</button><button id="place-best" type="button">Best slot</button><a id="regular-slot" href="#weekly-planner">Regular slot</a></div><div class="ad-load-control"><label>Default ad load <output id="ad-load-label"></output><input id="ad-load" type="range" min="0" max="50" step="1" value="0"></label></div><small id="place-note"></small><div id="desk-notes" class="desk-notes" aria-label="Desk notes"></div></form><div id="paper-on-desk" class="paper-on-desk"></div>
       </section></details>
-      <section id="details" class="details panel" aria-labelledby="details-title"><div class="panel-heading"><h2 id="details-title">Broadcast details</h2><span class="tag">SELECTED AIRING</span></div><div id="selection-empty" class="empty-state"><span class="screen-icon" aria-hidden="true">▣</span><h3>Your schedule starts here.</h3><p>Choose a programme from the library, pick a time, and place it on your channel. Select any broadcast to move it, arrange advertising or review its result.</p><p class="muted">Selecting an airing does not change which one airs next.</p></div><div id="selection-content" hidden>
+      <div id="airing-file-home" hidden><details id="details" class="details panel airing-file"><summary id="details-title">Airing file</summary><div id="selection-empty" class="empty-state"><span class="screen-icon" aria-hidden="true">▣</span><h3>Your schedule starts here.</h3><p>Choose a programme from the library, pick a time, and place it on your channel. Select any broadcast to move it, arrange advertising or review its result.</p><p class="muted">Selecting an airing does not change which one airs next.</p></div><div id="selection-content" hidden>
           <div class="selected-header"><span id="selected-genre" class="genre-tile" aria-hidden="true"></span><div><span id="selected-id" class="overline"></span><h3 id="selected-name"></h3><p id="selected-window"></p><p id="selected-runtime" class="muted small"></p><span id="selected-status" class="tag"></span></div></div>
-          <p id="known-details" class="muted"></p>
-          <fieldset id="edit-controls"><legend>Move or remove this airing</legend><div class="form-row"><label>Day<select id="move-day"></select></label><label>Start time<select id="move-time"></select></label><button id="move">Move this airing</button><button id="remove" class="danger">Remove</button></div></fieldset><p id="lock-note" class="muted"></p><fieldset id="weekly-edit-controls" hidden><legend>Move future occurrences</legend><div class="form-row"><label>Time on each date<select id="weekly-edit-time"></select></label><button id="move-future" type="button" class="quiet">Review future occurrences</button></div></fieldset>
-          <div class="desk-actions"><a id="open-ad-sales" href="#ad-sales">Open Ad Sales</a><a id="open-review" href="#results">Review broadcast</a><button id="advance-selected" class="quiet">Run through selected airing</button></div>
-        </div></section>
+          <details class="airing-notes"><summary>Programme notes</summary><p id="known-details" class="muted"></p></details>
+          <fieldset id="edit-controls"><legend>Move or remove this airing</legend><div class="form-row"><label>Day<select id="move-day"></select></label><label>Start time<input id="move-time" type="time" step="60"></label><button id="move">Move this airing</button><button id="remove" class="danger">Remove</button></div></fieldset><p id="lock-note" class="muted"></p><fieldset id="weekly-edit-controls" hidden><legend>Move future occurrences</legend><div class="form-row"><label>Time on each date<input type="time" id="weekly-edit-time"></label><button id="move-future" type="button" class="quiet">Review future occurrences</button></div></fieldset>
+          <div class="desk-actions"><button type="button" id="open-ad-sales">Ad terms on this airing</button><a id="open-review" href="#results">Review broadcast</a><button id="advance-selected" class="quiet">Run through selected airing</button></div>
+        </div><div id="airing-paper-content"></div></details></div>
+    </div></div>
     </div>
-      <dialog id="library-picker" aria-labelledby="library-picker-title"><div class="panel-heading"><h2 id="library-picker-title">Tape shelf</h2><button type="button" id="close-library" class="quiet">Back to Schedule</button></div></dialog>
-    </div>
-    <section id="ad-sales" data-desk="ad-sales" class="panel task-desk" hidden>
-      <a href="#planning" class="desk-back">← Schedule</a><h1>Ad Sales</h1>
-      <p id="ad-empty">Select an upcoming airing in Schedule to sell ad minutes.</p>
-      <div id="ad-content" hidden><h2 id="ad-title"></h2><p id="ad-window"></p><a id="ad-review" class="desk-back" href="#results" hidden>Review settlement</a>
+      <dialog id="library-picker" aria-labelledby="library-picker-title"><div class="panel-heading"><h2 id="library-picker-title">Tape shelf</h2><button type="button" id="close-library" class="quiet">Back</button></div></dialog>
+    <div id="ad-sales" hidden><p id="ad-empty">Select an upcoming airing.</p>
+      <div id="ad-content-home"></div><div id="ad-content" hidden><h2 id="ad-title"></h2><p id="ad-window"></p><a id="ad-review" class="desk-back" href="#results" hidden>Review settlement</a>
           <div id="ad-minute-market"></div><h4 id="legacy-ad-heading">Legacy delivery contract</h4><div class="ad-controls"><label>Prospective advertiser<select id="advertiser"></select></label><button id="set-advertiser" class="quiet">Set advertiser</button><button id="quote">Request offer</button></div><p class="muted small">An ad airs only after acceptance. A booking locks the airing's programme, start, duration and advertiser.</p>
-          <div id="offer"></div><div id="selected-contract"></div></div></section>
+          <div id="offer"></div><div id="selected-contract"></div></div></div>
     <section data-desk="weekly-planner" hidden class="panel lower-panel weekly-panel task-desk" id="weekly-planner" aria-labelledby="weekly-title">
       <a href="#planning" class="desk-back">← Schedule</a><div class="panel-heading"><h2 id="weekly-title">Give a show a regular slot</h2></div>
       <div id="weekly-form"></div><div id="weekly-review" aria-live="polite"></div>
@@ -48,7 +91,7 @@
           <dialog id="talent-picker" aria-labelledby="talent-picker-title"><div class="panel-heading"><h3 id="talent-picker-title">Choose talent</h3><button id="close-talent-picker" type="button" class="quiet">Close</button></div><p>Fees and existing recording commitments still apply.</p><div id="talent-cards" class="talent-cards"></div></dialog>
           <fieldset><legend>What is the conversation about?</legend><div id="production-subjects" class="choice-tiles"><button type="button" data-subject="science" aria-pressed="true">Science &amp; invention</button><button type="button" data-subject="everyday_life" aria-pressed="false">Everyday life</button><button type="button" data-subject="entertainment" aria-pressed="false">Entertainment &amp; culture</button></div></fieldset>
           <label for="production-tone">Creative brief · <output id="tone-label">Calm</output></label><input id="production-tone" type="range" min="0" max="2" step="1" value="0"><div class="range-labels"><span>Calm</span><span>Conversational</span><span>Lively</span></div>
-          <fieldset><legend>Production budget · includes fees</legend><div class="budget-presets"><label><input type="radio" name="production-budget" value="600">Shoestring<strong>600 credits</strong></label><label><input type="radio" name="production-budget" value="1000" checked>Standard<strong>1,000 credits</strong></label><label><input type="radio" name="production-budget" value="1800">Generous<strong>1,800 credits</strong></label></div></fieldset>
+          <fieldset><legend>Production budget · includes fees</legend><div class="budget-presets"><label><input type="radio" name="production-budget" value="600">Shoestring<strong>600 Funds</strong></label><label><input type="radio" name="production-budget" value="1000" checked>Standard<strong>1,000 Funds</strong></label><label><input type="radio" name="production-budget" value="1800">Generous<strong>1,800 Funds</strong></label></div></fieldset>
           <div class="form-row"><label>Recording day<select id="production-day"></select></label><label>Recording time<select id="production-time"></select></label></div>
           <div id="cast-concerns" class="cast-concerns"></div>
           <p class="muted small">Drafts are free. Booking commits the whole budget and the recording time. Team support can ease working friction, but cannot supply missing skills.</p>
@@ -57,7 +100,8 @@
         <div><section id="sway-panel" class="sway-panel" aria-label="Pooled Sway and production requests"></section><div id="production-projects" class="production-projects"></div></div>
       </div>
     </section>
-    <section hidden data-desk="film-desk" id="film-desk" class="panel lower-panel"><div class="panel-heading"><h2>Film desk</h2></div><div id="film-notices" aria-live="polite"></div><div id="film-pitch"></div><div id="film-projects" class="production-projects"></div></section>
+    <section hidden data-desk="film-desk" id="film-desk" class="panel lower-panel project-desk" data-file="preparation"><h2>Preparation</h2><div id="prep-mount"><div id="film-work"><div id="film-notices" aria-live="polite"></div><div id="film-pitch"></div><div id="film-projects" class="production-projects"></div></div></div></section>
+    <section hidden data-desk="film-production" id="film-production" class="panel lower-panel project-desk" data-file="production"><h2>Film Production</h2><a href="#production">Discussion studio</a><div id="film-mount"></div></section>
     <section hidden data-desk="rights-market" id="rights-market" class="panel lower-panel" aria-labelledby="rights-market-title">
       <div class="panel-heading"><h2 id="rights-market-title">Rights market</h2></div>
       <p class="muted">Buy finished titles to air as often as you like, or sell the rights when you are done with them.</p>
@@ -65,11 +109,14 @@
       <div id="rights-catalogue" class="rights-catalogue"></div>
     </section>
     <section hidden data-desk="results" id="results" class="panel lower-panel"><div class="panel-heading"><h2>Broadcast results</h2><span class="tag">PROVISIONAL REPORTING</span></div><div class="desk-actions"><a href="#planning">← Schedule</a><button id="review-airing" hidden>Show airing on schedule</button><button id="review-future" hidden></button></div><div id="selected-result"></div><details id="results-index" open><summary>Completed airings</summary><div id="results-list"></div></details></section>
-    <section hidden data-desk="finances" id="finances" class="panel lower-panel"><div class="panel-heading"><h2>Station finances</h2><span class="tag">INTEGER CREDITS</span></div><div id="finance-summary" class="finance-summary"></div><div id="ledger"></div></section>
+    <section hidden data-desk="finances" id="finances" class="panel lower-panel"><div class="panel-heading"><h2>Station finances</h2><span class="tag">FUNDS</span></div><div id="finance-summary" class="finance-summary"></div><div id="ledger"></div></section>
     <footer><p id="reporting"></p><p>Publication, promotion and save/load are deferred. No developer inspector. Client-side observation filtering is not a security guarantee.</p></footer>
   </main>
 </div>
-<dialog id="pause-screen" aria-labelledby="pause-title"><div class="pause-card"><span aria-hidden="true">Ⅱ</span><h1 id="pause-title">Station paused</h1><button id="continue-play">▶ Continue</button></div></dialog>
+<dialog id="tape-record" aria-labelledby="tape-record-title"><div class="panel-heading"><h2 id="tape-record-title"></h2><button id="close-tape-record" type="button" class="quiet">Close record</button></div><div id="tape-paper-tabs" role="group" aria-label="Station file papers"></div><div id="tape-record-content" class="station-paper"></div></dialog>
+<dialog id="desk-notebook" aria-labelledby="notebook-title"><header><h2 id="notebook-title">Desk notebook</h2><form method="dialog"><button>Close notebook</button></form></header><div id="notebook-pages"></div></dialog>
+<dialog id="character-dossier" aria-label="Character dossier"></dialog>
+<dialog id="pause-screen" aria-labelledby="pause-title"><div class="pause-card"><div class="test-card-grid" aria-hidden="true"><i></i><b></b></div><h1 id="pause-title">OFF AIR</h1><button id="continue-play">▶ Continue</button></div></dialog>
 <svg class="pause-effects" aria-hidden="true" width="0" height="0"><defs><filter id="paused-pixels" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
 <feGaussianBlur stdDeviation="3" result="soft"/>
 <feImage x="0" y="0" width="10" height="10" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Crect width='2' height='2' fill='white'/%3E%3C/svg%3E" result="sample"/>

@@ -214,15 +214,16 @@ impl Planner {
 
     fn rival_start(&self, title: &Title, after: SimTick) -> Option<SimTick> {
         let rival = self.rights.as_ref()?.rival;
-        let duration = u32::from(title.seed.programme.duration_minutes) / 15;
+        let duration = u32::from(title.seed.programme.duration_minutes);
         (after.0 + 1..self.end.0)
             .filter(|tick| matches!(tick % 96, 56 | 60 | 72 | 84))
             .find(|&tick| {
-                tick + duration <= self.end.0
+                let minute = tick * 15;
+                minute + duration <= self.end.0 * 15
                     && !self.airings.values().any(|airing| {
                         airing.station == rival
-                            && tick < airing.end.0
-                            && tick + duration > airing.start.0
+                            && minute < airing.end.0
+                            && minute + duration > airing.start.0
                     })
             })
             .map(SimTick)
@@ -306,7 +307,9 @@ impl Planner {
     pub fn resale_blocker(&self, id: ProgrammeId) -> Option<AiringId> {
         self.airings()
             .find(|airing| {
-                airing.programme == id && airing.station == self.player && airing.end > self.now()
+                airing.programme == id
+                    && airing.station == self.player
+                    && airing.end > self.now_minute()
             })
             .map(|a| a.id)
     }
@@ -388,6 +391,7 @@ impl Planner {
         if high_id <= self.next_id {
             return Err(error("capacity", "Airing identifiers exhausted."));
         }
+        let start = AirMinute::from_tick(start);
         let end = self.validate_placement(station, programme, start, None, 0)?;
         self.bump()?;
         self.rights.as_mut().unwrap().next_rival_airing -= 1;
@@ -403,6 +407,8 @@ impl Planner {
                 advertiser: None,
                 ad_minutes: 0,
                 weekly: None,
+                filler: None,
+                teaser_played: None,
                 contract: None,
                 result: None,
                 snapshot: None,
@@ -444,7 +450,7 @@ impl Planner {
         self.engine
             .state
             .economy
-            .transfer_rights(now, id, buyer, seller, price)
+            .transfer_rights(AirMinute::from_tick(now), id, buyer, seller, price)
             .map_err(engine_error)?;
         if let Some(seller) = seller {
             self.libraries.get_mut(&seller).unwrap().remove(&id);

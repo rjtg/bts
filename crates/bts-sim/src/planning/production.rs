@@ -512,7 +512,7 @@ impl Planner {
                 "Production completion exceeds the scenario.",
             )
         })?);
-        if c.record_at < self.now() || ready_at > self.end {
+        if AirMinute::from_tick(c.record_at) < self.now_minute() || ready_at > self.end {
             return Err(error("invalid_recording_time","Book future recording time with room for one hour recording and two hours post-production before scenario end."));
         }
         Ok((c, Money(fees), recording_end, ready_at))
@@ -688,7 +688,7 @@ impl Planner {
             .engine
             .state
             .economy
-            .reserve_production(self.now(), self.player, id, p.concept.budget)
+            .reserve_production(self.now_minute(), self.player, id, p.concept.budget)
             .map_err(engine_error)?;
         candidate.bump()?;
         candidate.production.next_programme = following;
@@ -818,7 +818,7 @@ impl Planner {
             self.engine
                 .state
                 .economy
-                .spend_production(at, id)
+                .spend_production(AirMinute::from_tick(at), id)
                 .map_err(engine_error)?;
             self.production.projects.get_mut(&id).unwrap().phase = Phase::Recording;
         }

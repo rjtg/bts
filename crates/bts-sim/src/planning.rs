@@ -43,16 +43,27 @@ pub struct AiringResult {
     /// One shared audience snapshot at this airing's start, not cumulative reach.
     pub allocations: Vec<Allocation>,
 }
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Filler {
+    Ident,
+    Teaser {
+        airing: AiringId,
+        expected_start: AirMinute,
+    },
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Airing {
     pub id: AiringId,
     pub station: StationId,
     pub programme: ProgrammeId,
-    pub start: SimTick,
-    pub end: SimTick,
+    pub start: AirMinute,
+    pub end: AirMinute,
     pub advertiser: Option<BrandId>,
     pub ad_minutes: u8,
     pub weekly: Option<AiringId>,
+    pub filler: Option<Filler>,
+    pub teaser_played: Option<bool>,
     pub contract: Option<ContractId>,
     pub result: Option<AiringResult>,
     snapshot: Option<AiringResult>,
@@ -68,7 +79,7 @@ impl Airing {
 #[derive(Clone, Debug, PartialEq)]
 pub struct PlanningOffer {
     pub airing_id: AiringId,
-    pub offer: Offer<SimTick>,
+    pub offer: Offer<AirMinute>,
     revision: u64,
 }
 #[derive(Clone, Copy, Debug)]
@@ -90,7 +101,7 @@ pub struct StationResources {
 /// Owns the schedule, active reception samples and the shared numerical/accounting engine.
 #[derive(Clone, Debug)]
 pub struct Planner {
-    engine: Engine<SimTick>,
+    engine: Engine<AirMinute>,
     player: StationId,
     end: SimTick,
     airings: BTreeMap<AiringId, Airing>,
@@ -103,6 +114,8 @@ pub struct Planner {
     libraries: BTreeMap<StationId, BTreeSet<ProgrammeId>>,
     staff: BTreeMap<StationId, BTreeSet<production::PersonId>>,
     studio_counts: BTreeMap<StationId, u16>,
+    filler_programme: Option<ProgrammeId>,
+    spot_delivery: BTreeMap<ad_market::MinuteSaleId, f64>,
 }
 impl Planner {
     pub fn new(
@@ -147,6 +160,8 @@ impl Planner {
             libraries,
             staff: BTreeMap::new(),
             studio_counts,
+            filler_programme: None,
+            spot_delivery: BTreeMap::new(),
         };
         for c in competitors {
             if c.station == player
@@ -162,7 +177,13 @@ impl Planner {
                     "Competitor schedules must reference another existing station.",
                 ));
             }
-            planner.insert(c.station, c.programme, c.start, None)?;
+            planner.insert(
+                c.station,
+                c.programme,
+                AirMinute::from_tick(c.start),
+                None,
+                0,
+            )?;
         }
         Ok(planner)
     }
@@ -257,10 +278,13 @@ impl Planner {
     pub fn world(&self) -> &World {
         self.engine.world()
     }
-    pub fn state(&self) -> &State<SimTick> {
+    pub fn state(&self) -> &State<AirMinute> {
         self.engine.state()
     }
     pub fn now(&self) -> SimTick {
+        self.now_minute().tick_floor()
+    }
+    pub fn now_minute(&self) -> AirMinute {
         self.engine.state.now
     }
     pub fn end(&self) -> SimTick {
@@ -296,10 +320,10 @@ impl Planner {
         &self,
         station: StationId,
         programme: ProgrammeId,
-        start: SimTick,
+        start: AirMinute,
         except: Option<AiringId>,
         ad_minutes: u8,
-    ) -> Result<SimTick, PlanError> {
+    ) -> Result<AirMinute, PlanError> {
         if self.production.unfinished_programme(programme) {
             return Err(error("production_not_ready", "This original programme is not complete. Advance through post-production before scheduling it."));
         }
@@ -321,15 +345,13 @@ impl Planner {
                 "This station does not have this programme in its library.",
             ));
         }
-        let end = SimTick(
+        let end = AirMinute(
             start
                 .0
-                .checked_add(
-                    (u32::from(programme.duration_minutes) + u32::from(ad_minutes)).div_ceil(15),
-                )
+                .checked_add(u32::from(programme.duration_minutes) + u32::from(ad_minutes))
                 .ok_or_else(|| error("invalid_time", "The broadcast time exceeds the scenario."))?,
         );
-        if start < self.now() || end > self.end {
+        if start < self.now_minute() || end > AirMinute::from_tick(self.end) {
             return Err(error(
                 "invalid_time",
                 "Place the whole programme in unplayed time within the scenario schedule.",
@@ -357,10 +379,11 @@ impl Planner {
         &mut self,
         station: StationId,
         programme: ProgrammeId,
-        start: SimTick,
+        start: AirMinute,
         advertiser: Option<BrandId>,
+        ad_minutes: u8,
     ) -> Result<AiringId, PlanError> {
-        let end = self.validate_placement(station, programme, start, None, 0)?;
+        let end = self.validate_placement(station, programme, start, None, ad_minutes)?;
         self.validate_advertiser(advertiser)?;
         let id = AiringId(self.next_id);
         let next_id = self
@@ -377,8 +400,10 @@ impl Planner {
                 start,
                 end,
                 advertiser,
-                ad_minutes: 0,
+                ad_minutes,
                 weekly: None,
+                filler: None,
+                teaser_played: None,
                 contract: None,
                 result: None,
                 snapshot: None,
@@ -393,8 +418,105 @@ impl Planner {
         start: SimTick,
         advertiser: Option<BrandId>,
     ) -> Result<AiringId, PlanError> {
-        self.insert(self.player, programme, start, advertiser)
+        if self.filler_programme == Some(programme) {
+            return Err(error(
+                "filler_inventory",
+                "Use the filler action for the station ident.",
+            ));
+        }
+        self.insert(
+            self.player,
+            programme,
+            AirMinute::from_tick(start),
+            advertiser,
+            0,
+        )
     }
+    pub fn place_exact(
+        &mut self,
+        programme: ProgrammeId,
+        start: AirMinute,
+        ad_minutes: u8,
+    ) -> Result<AiringId, PlanError> {
+        if self.filler_programme == Some(programme) {
+            return Err(error(
+                "filler_inventory",
+                "Use the filler action for the station ident.",
+            ));
+        }
+        if ad_minutes > ad_market::MAX_AD_MINUTES {
+            return Err(error("ad_inventory", "Choose up to 30 ad minutes."));
+        }
+        self.insert(self.player, programme, start, None, ad_minutes)
+    }
+
+    pub fn configure_filler(&mut self, programme: ProgrammeId) -> Result<(), PlanError> {
+        if self.now_minute().0 != 0
+            || self.filler_programme.is_some()
+            || !self.owns_programme(self.player, programme)
+            || !self.world().programmes.iter().any(|work| {
+                work.id == programme
+                    && work.duration_minutes == 1
+                    && work.broadcast_cost == Money(0)
+            })
+        {
+            return Err(error(
+                "filler_configuration",
+                "Use an owned, free one-minute station ident before play.",
+            ));
+        }
+        self.filler_programme = Some(programme);
+        Ok(())
+    }
+
+    pub fn filler_programme(&self) -> Option<ProgrammeId> {
+        self.filler_programme
+    }
+
+    pub fn place_filler(
+        &mut self,
+        start: AirMinute,
+        target: Option<AiringId>,
+    ) -> Result<AiringId, PlanError> {
+        let programme = self
+            .filler_programme
+            .ok_or_else(|| error("filler_unavailable", "No station ident is available."))?;
+        let filler = if let Some(id) = target {
+            let airing = self.upcoming(id)?;
+            if airing.filler.is_some() || airing.start <= start {
+                return Err(error(
+                    "teaser_target",
+                    "Choose a later programme on your channel.",
+                ));
+            }
+            Filler::Teaser {
+                airing: id,
+                expected_start: airing.start,
+            }
+        } else {
+            Filler::Ident
+        };
+        let id = self.insert(self.player, programme, start, None, 0)?;
+        self.airings.get_mut(&id).unwrap().filler = Some(filler);
+        Ok(id)
+    }
+
+    pub fn teaser_is_current(&self, airing: &Airing) -> bool {
+        if let Some(played) = airing.teaser_played {
+            return played;
+        }
+        match airing.filler {
+            Some(Filler::Teaser {
+                airing: id,
+                expected_start,
+            }) => self
+                .airings
+                .get(&id)
+                .is_some_and(|target| target.start == expected_start && target.start >= airing.end),
+            _ => false,
+        }
+    }
+
     fn upcoming(&self, id: AiringId) -> Result<&Airing, PlanError> {
         let airing = self.airing(id)?;
         if airing.station != self.player {
@@ -403,7 +525,7 @@ impl Planner {
                 "The competitor schedule is fixed for this experiment.",
             ));
         }
-        if airing.started() || airing.start < self.now() {
+        if airing.started() || airing.start < self.now_minute() {
             return Err(error(
                 "already_started",
                 "An airing that has started or finished cannot be edited.",
@@ -419,6 +541,9 @@ impl Planner {
         Ok(airing)
     }
     pub fn move_airing(&mut self, id: AiringId, start: SimTick) -> Result<(), PlanError> {
+        self.move_exact(id, AirMinute::from_tick(start))
+    }
+    pub fn move_exact(&mut self, id: AiringId, start: AirMinute) -> Result<(), PlanError> {
         let airing = self.editable(id)?;
         let end = self.validate_placement(
             self.player,
@@ -444,7 +569,14 @@ impl Planner {
         id: AiringId,
         advertiser: Option<BrandId>,
     ) -> Result<(), PlanError> {
-        if self.editable(id)?.ad_minutes > 0 && advertiser.is_some() {
+        let airing = self.editable(id)?;
+        if airing.filler.is_some() && advertiser.is_some() {
+            return Err(error(
+                "filler_inventory",
+                "Station fillers cannot sell advertising.",
+            ));
+        }
+        if airing.ad_minutes > 0 && advertiser.is_some() {
             return Err(error(
                 "minute_inventory",
                 "Close the ad-minute block first.",
@@ -457,9 +589,9 @@ impl Planner {
     }
     fn interval_action(
         &self,
-        start: SimTick,
+        start: AirMinute,
         quoted: Option<(AiringId, BrandId)>,
-    ) -> (Slot<SimTick>, BTreeSet<StationId>) {
+    ) -> (Slot<AirMinute>, BTreeSet<StationId>) {
         let active = self
             .airings
             .values()
@@ -487,7 +619,7 @@ impl Planner {
             .collect();
         (
             Slot {
-                at: SimTick(start.0 + 1),
+                at: AirMinute(start.0 + 1),
                 broadcasts,
             },
             starts,
@@ -549,8 +681,15 @@ impl Planner {
         Ok(contract)
     }
     /// Atomic advancement through *every* intervening interval. Returned evidence is developer-only.
-    pub fn advance_to(&mut self, target: SimTick) -> Result<Vec<SlotEvent<SimTick>>, PlanError> {
-        if target <= self.now() || target > self.end {
+    pub fn advance_to(&mut self, target: SimTick) -> Result<Vec<SlotEvent<AirMinute>>, PlanError> {
+        self.advance_exact(AirMinute::from_tick(target))
+    }
+
+    pub fn advance_exact(
+        &mut self,
+        target: AirMinute,
+    ) -> Result<Vec<SlotEvent<AirMinute>>, PlanError> {
+        if target <= self.now_minute() || target > AirMinute::from_tick(self.end) {
             return Err(error(
                 "invalid_advance",
                 "Advance to a later tick within the scenario.",
@@ -558,31 +697,55 @@ impl Planner {
         }
         let mut candidate = self.clone();
         let mut events = Vec::new();
-        while candidate.now() < target {
-            events.push(candidate.tick()?);
+        while candidate.now_minute() < target {
+            events.push(candidate.tick(target)?);
         }
         candidate.bump()?;
         *self = candidate;
         Ok(events)
     }
-    fn tick(&mut self) -> Result<SlotEvent<SimTick>, PlanError> {
-        let start = self.now();
-        self.start_recordings(start)?;
-        let (action, starts) = self.interval_action(start, None);
+    fn tick(&mut self, target: AirMinute) -> Result<SlotEvent<AirMinute>, PlanError> {
+        let start = self.now_minute();
+        if start.0.is_multiple_of(15) {
+            self.start_recordings(start.tick_floor())?;
+        }
+        let (mut action, starts) = self.interval_action(start, None);
+        let next_tick = AirMinute((start.0 / 15 + 1) * 15);
+        action.at = self.next_airtime_change(start).min(next_tick).min(target);
         let (mut next, mut event) = self
             .engine
             .evaluate_with_minute_campaigns(
                 &action,
                 Some(&starts),
                 start.availability_index(),
-                &self.minute_campaigns(start),
+                &self.minute_campaigns(start, action.at),
             )
             .map_err(engine_error)?;
         event.financial = economy::apply_slot(&self.engine.world, &mut next.economy, &event)
             .map_err(engine_error)?;
         next.economy.advance_revision().map_err(engine_error)?;
+        for (sale, station, _, begin, finish) in self.spots() {
+            if begin <= start && action.at <= finish {
+                let viewers = event
+                    .allocations
+                    .iter()
+                    .flat_map(|a| &a.viewing)
+                    .filter(|v| v.station == station)
+                    .map(|v| v.viewers)
+                    .sum::<f64>();
+                *self.spot_delivery.entry(sale).or_default() +=
+                    viewers * f64::from(action.at.0 - start.0);
+            }
+        }
         self.engine.state = next;
+        let teaser_status: BTreeMap<_, _> = self
+            .airings
+            .values()
+            .filter(|a| a.start == start && a.filler.is_some())
+            .map(|a| (a.id, self.teaser_is_current(a)))
+            .collect();
         for airing in self.airings.values_mut().filter(|a| a.start == start) {
+            airing.teaser_played = teaser_status.get(&airing.id).copied();
             let off_air = !event
                 .aired
                 .broadcasts
@@ -616,7 +779,7 @@ impl Planner {
         let mut completion = event.allocations.clone();
         for allocation in &mut completion {
             allocation.viewing.clear();
-            for airing in &ending {
+            for airing in ending.iter().filter(|a| a.filler.is_none()) {
                 if let Some(snapshot) = &airing.snapshot {
                     if let Some(viewing) = snapshot
                         .allocations
@@ -652,7 +815,7 @@ impl Planner {
             .update_programme_history(&mut completed_state, &mut completion)
             .map_err(engine_error)?;
         for airing in ending {
-            if !airing.cancelled() {
+            if !airing.cancelled() && airing.filler.is_none() {
                 completed_state
                     .broadcasts
                     .push(programmes::BroadcastRecord {
@@ -661,20 +824,19 @@ impl Planner {
                         programme: airing.programme,
                     });
             }
-            let sampled_viewers = airing.snapshot.as_ref().map_or(0.0, |snapshot| {
-                snapshot
-                    .allocations
-                    .iter()
-                    .flat_map(|a| &a.viewing)
-                    .filter(|v| v.station == airing.station)
-                    .map(|v| v.viewers)
-                    .sum()
-            });
             let before = completed_state.economy.ledger().len();
             let sales = completed_state
                 .economy
-                .settle_minutes(action.at, airing.id, !airing.cancelled(), sampled_viewers)
+                .settle_minutes(
+                    action.at,
+                    airing.id,
+                    !airing.cancelled(),
+                    &self.spot_delivery,
+                )
                 .map_err(engine_error)?;
+            for sale in &sales {
+                self.spot_delivery.remove(&sale.id);
+            }
             event.financial.minute_sales.extend(sales);
             event
                 .financial
@@ -687,11 +849,15 @@ impl Planner {
             self.airings.get_mut(&airing.id).unwrap().result = result;
         }
         self.engine.state = completed_state;
-        self.finish_productions(action.at)?;
-        self.advance_films(action.at)?;
-        self.poll_boundary(action.at)?;
+        if !action.at.0.is_multiple_of(15) {
+            return Ok(event);
+        }
+        let boundary = action.at.tick_floor();
+        self.finish_productions(boundary)?;
+        self.advance_films(boundary)?;
+        self.poll_boundary(boundary)?;
         let ledger_before_rights = self.state().economy().ledger().len();
-        self.advance_rights(action.at)?;
+        self.advance_rights(boundary)?;
         event
             .financial
             .ledger

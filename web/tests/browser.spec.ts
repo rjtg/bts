@@ -1,3 +1,4 @@
+import { pickTime } from './planner-helpers';
 import { expect, test } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
@@ -7,33 +8,34 @@ const root = resolve(import.meta.dirname, '../..');
 test('plan a varied evening, move/remove broadcasts, book a selected future airing, run and review', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   const failures: string[] = []; page.on('pageerror', error => failures.push(error.message));
-  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.goto('/#planning'); await expect(page.locator('#status')).toContainText('WASM READY');
   await expect(page.locator('#cash')).toHaveText('20,000');
   await expect(page.locator('#timeline [data-station]')).toHaveCount(2);
   await expect(page.locator('.timeline-cell')).toHaveCount(96);
   await expect(page.locator('#next-airing')).toContainText('Nothing else planned');
   // 30-minute comedy at 18:00; explicit dimensions come from Rust's returned interval.
-  await page.locator('[data-programme="1"]').click(); await page.locator('#place-time').selectOption('72'); await page.locator('#place').click();
+  await page.locator('.series-box > summary').click();
+  await page.locator('[data-programme="1"]').click(); await pickTime(page, 72); await page.locator('#place').click();
   const first = await page.locator('#selected-id').textContent(); const firstId = Number(first!.match(/#(\d+)/)![1]);
   const firstBlock = page.locator(`[data-airing="${firstId}"]`);
   await expect(firstBlock).toHaveAttribute('data-start', '72'); await expect(firstBlock).toHaveAttribute('data-end', '74');
   await expect(page.locator('#next-airing')).toContainText(`#${firstId}`);
   // A 45-minute science programme follows; placement time advances to the returned end.
-  await page.locator('[data-programme="2"]').click(); await expect(page.locator('#place-time')).toHaveValue('74'); await page.locator('#place').click();
+  await page.locator('[data-programme="2"]').click(); await expect(page.locator('#place')).toHaveText('Place at 18:30'); await page.locator('#place').click();
   const secondId = Number((await page.locator('#selected-id').textContent())!.match(/#(\d+)/)![1]);
   await expect(page.locator('#selected-window')).toContainText('18:30–19:15 · 45 min');
   await expect(page.locator('#known-details')).toContainText('Information depth');
   await expect(page.locator('#known-details')).not.toContainText('Editorial rigour');
-  await page.locator('#move-time').selectOption('73'); await page.locator('#move').click();
+  await page.locator('#move-time').fill('18:15'); await page.locator('#move').click();
   await expect(page.getByRole('alert')).toContainText('overlap');
   await expect(page.locator(`[data-airing="${secondId}"]`)).toHaveAttribute('data-start', '74');
-  await page.locator('#move-time').selectOption('78'); await page.locator('#move').click();
+  await page.locator('#move-time').fill('19:30'); await page.locator('#move').click();
   await expect(page.locator(`[data-airing="${secondId}"]`)).toHaveAttribute('data-start', '78');
   await page.locator('#remove').click(); await expect(page.locator(`[data-airing="${secondId}"]`)).toHaveCount(0);
-  await page.locator('#place-time').selectOption('74'); await page.locator('#place').click();
+  await pickTime(page, 74); await page.locator('#place').click();
   const replacementId = Number((await page.locator('#selected-id').textContent())!.match(/#(\d+)/)![1]); expect(replacementId).not.toBe(secondId);
   // Film leaves a visible 45-minute off-air gap and occupies 90 minutes.
-  await page.locator('[data-programme="5"]').click(); await page.locator('#place-time').selectOption('80'); await page.locator('#place').click();
+  await page.locator('[data-programme="5"]').click(); await pickTime(page, 80); await page.locator('#place').click();
   const movieId = Number((await page.locator('#selected-id').textContent())!.match(/#(\d+)/)![1]);
   await expect(page.locator('#selected-window')).toContainText('20:00–21:30 · 90 min');
   expect((await page.locator(`[data-airing="${movieId}"]`).boundingBox())!.width).toBeGreaterThan((await firstBlock.boundingBox())!.width * 2.8);
@@ -77,23 +79,23 @@ test('plan a varied evening, move/remove broadcasts, book a selected future airi
   await page.locator('#advance-day').click(); await expect(page.locator('#clock')).toContainText('Day 2 · 00:00');
   await expect(page.locator('#finance-summary')).toContainText('300');
   await page.locator('#reset').click(); await expect(page.locator('#cash')).toHaveText('20,000'); await expect(page.locator('#clock')).toContainText('Day 1 · 00:00');
-  await expect(page.locator('#results-list')).toContainText('No completed broadcasts'); await page.getByRole('link', { name: '▦ Schedule', exact: true }).click(); await expect(page.locator('#selection-empty')).toBeVisible();
+  await expect(page.locator('#results-list')).toContainText('No completed broadcasts'); await page.getByRole('link', { name: '▦ Schedule', exact: true }).click(); await expect(page.locator('#desk-tape')).toBeVisible();
   expect(failures).toEqual([]);
 });
 
 test('day navigation, gap placement, on-air progression and mobile controls', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.goto('/#planning'); await expect(page.locator('#status')).toContainText('WASM READY');
   await page.locator('#day').selectOption('1'); await page.locator('#jump-evening').click();
   await page.getByRole('button', { name: 'Choose placement Day 2 · 18:00', exact: true }).click();
-  await expect(page.locator('#place-day')).toHaveValue('1'); await expect(page.locator('#place-time')).toHaveValue('72');
+  await expect(page.locator('#place')).toHaveText('Place at 18:00');
   await page.locator('#place').click(); await expect(page.locator('#selected-window')).toContainText('Day 2 · 18:00–18:30');
-  await page.getByRole('button', { name: 'Open tape shelf' }).click();
-  await page.locator('#place-day').selectOption('0'); await page.locator('#place-time').selectOption('0'); await page.locator('#place').click();
+  await pickTime(page, 0, 0); await page.locator('#place').click();
   await page.locator('#advance-tick').click(); await expect(page.locator('#clock')).toContainText('Day 1 · 00:15');
   await expect(page.locator('#selected-status')).toContainText('ON AIR'); await expect(page.locator('#open-review')).toBeHidden();
   await expect(page.locator('#move')).toBeDisabled();
   await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toContainText('Day 1 · 00:30');
+  await page.locator('#day-agenda').getByRole('button', { name: /00:00 · Your channel/ }).click();
   await page.locator('#open-review').click();
   await expect(page.locator('#selected-result')).toContainText('Completed.');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -105,7 +107,7 @@ test('actual Wasm protocol matches native planning, booking, tick accounting and
   await page.route('**/__test__/bts_web_bg.wasm', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web_bg.wasm'), contentType: 'application/wasm' }));
   const wasmAsset = readdirSync(resolve(root, 'web/dist/assets')).find(file => file.endsWith('.wasm'))!;
   expect(readFileSync(resolve(root, `web/dist/assets/${wasmAsset}`))).toEqual(readFileSync(resolve(root, 'web/pkg/bts_web_bg.wasm')));
-  await page.goto('/'); await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.goto('/#planning'); await expect(page.locator('#status')).toContainText('WASM READY');
   const result = await page.evaluate(async () => {
     // @ts-expect-error test-only routes serve generated bindings, not a product inspector
     const { default: init, WebSession } = await import('/__test__/bts_web.js'); await init();
@@ -170,6 +172,6 @@ test('actual Wasm protocol matches native planning, booking, tick accounting and
 });
 
 test('initialization failure is visible and planning controls stay unavailable', async ({ page }) => {
-  await page.route('**/*.wasm', route => route.abort()); await page.goto('/');
+  await page.route('**/*.wasm', route => route.abort()); await page.goto('/#planning');
   await expect(page.locator('#status')).toContainText('initialization failed'); await expect(page.getByRole('alert')).toContainText('Reload to retry'); await expect(page.locator('#controls')).toBeHidden();
 });

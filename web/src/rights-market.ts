@@ -58,7 +58,7 @@ export function initialiseRightsMarket(ui: {
       const art = node('div', '', `rights-art rights-art-${title.art}`);
       art.setAttribute('aria-hidden', 'true');
       card.append(art, node('h3', title.name), node('p', title.evidence),
-        node('p', `${title.duration} min · ${ui.money(title.broadcast_cost)} credits per airing`),
+        node('p', `${title.duration} min · ${ui.money(title.broadcast_cost)} Funds per airing`),
         node('p', `About ${title.expected_viewers.toLocaleString('en')} viewers at 18:00 · ${title.uncertainty}`, 'rights-forecast'),
         titleFacts(title));
       if (title.assessment_at !== null) card.append(node('p', `Assessment delivered ${ui.stamp(title.assessment_at)}`));
@@ -84,7 +84,7 @@ export function initialiseRightsMarket(ui: {
       }
       if (title.acquisition) {
         const offer = title.acquisition;
-        const buy = action(`Buy rights · ${ui.money(offer.price)} credits`, () =>
+        const buy = action(`Buy rights · ${ui.money(offer.price)} Funds`, () =>
           ui.send({ type: 'buy_rights', programme: id, token: offer.token }));
         buy.disabled = cash < BigInt(offer.price);
         card.append(node('p', `Available until ${ui.stamp(offer.deadline)}`), buy);
@@ -93,7 +93,7 @@ export function initialiseRightsMarket(ui: {
         if (title.blocker !== null) card.append(action(`Review blocking airing #${title.blocker}`, () => ui.showAiring(title.blocker!)));
         if (title.resale) {
           const offer = title.resale;
-          const accept = action(`Sell rights · ${ui.money(offer.price)} credits`, () =>
+          const accept = action(`Sell rights · ${ui.money(offer.price)} Funds`, () =>
             ui.send({ type: 'accept_resale', programme: id, token: offer.token }));
           accept.disabled = title.blocker !== null;
           card.append(node('p', `Rival offer expires ${ui.stamp(offer.deadline)}`), accept);

@@ -63,7 +63,7 @@ fn acquisition_and_resale_are_exclusive_and_protect_scheduled_sales() {
         "rights_airing_conflict"
     );
     assert_eq!(format!("{p:?}"), before);
-    p.advance_to(p.airing(airing).unwrap().end).unwrap();
+    p.advance_exact(p.airing(airing).unwrap().end).unwrap();
     let history = p.airing(airing).unwrap().result.clone();
     p.accept_resale(TITLE, bid.token).unwrap();
     assert_eq!(p.airing(airing).unwrap().result, history);

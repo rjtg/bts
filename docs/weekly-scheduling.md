@@ -8,10 +8,10 @@ airing identity and player-information boundary still apply.
 ## Recurring slots
 
 The browser calendar starts on Saturday and spans three weeks. Give an owned
-library title a weekday, grid time, default ad minutes and one to three dates.
-The first date is the next matching time at or after the current tick.
+library title a weekday, minute of day, default ad minutes and one to three dates.
+The first date is the next matching time at or after the current minute.
 Subsequent dates advance by seven days. The review shows exact programme-plus-ad
-runtime, rounded occupancy, overlapping airings and out-of-calendar dates.
+runtime, occupied interval, overlapping airings and out-of-calendar dates.
 Before confirming, skip a date or give it a different day and time.
 
 Confirming inserts the whole valid plan atomically. Each occurrence keeps its
@@ -24,7 +24,7 @@ ad minutes stay as they were. Protected and past airings retain their terms.
 When an editable date conflicts, the entire edit is rejected.
 
 Recurring slots are internal plans for a fixed library title. Automatic episode
-selection and published listings remain future work.
+selection, monthly recurrence and published listings remain future work.
 
 ## Optional autosell (proposal)
 
@@ -33,7 +33,7 @@ The policy uses the existing minute market on each eligible airing. Manual
 bookings remain protected and count against its available minutes. Show what
 sold, at what price and what stayed open before broadcast. Unsold time remains
 listed unless the player chooses an explicit trim policy. Never shorten below
-accepted sales. Runtime rounding and all escrow, budget, settlement and ad
+accepted sales. Exact occupancy and all escrow, budget, settlement and ad
 exposure rules still apply.
 
 Choose a predictable quote and acceptance time so players have a chance to

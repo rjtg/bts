@@ -1,3 +1,4 @@
+import { pickTime } from './planner-helpers';
 import { expect, test } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
@@ -6,16 +7,17 @@ const root = resolve(import.meta.dirname, '../..');
 
 test('sell one block to two brands, trim it and settle on air', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('/');
+  await page.goto('/#planning');
   await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.locator('.series-box > summary').click();
   await page.locator('[data-programme="1"]').click();
-  await page.locator('#place-time').selectOption('72');
+  await pickTime(page, 72);
   await page.locator('#place').click();
   await page.locator('#open-ad-sales').click();
   const market = page.locator('#ad-minute-market');
   await market.getByRole('spinbutton', { name: 'Minutes to list' }).fill('16');
   await market.getByRole('button', { name: 'Set ad block' }).click();
-  await expect(market).toContainText('46 min runtime · 60 min reserved');
+  await expect(market).toContainText('46 min runtime · until 18:46');
   await market.getByRole('button', { name: 'Find offers' }).click();
   await expect(market.locator('.minute-offer')).toHaveCount(2);
   if (process.env.BTS_MARKET_SCREENSHOTS) await market.screenshot({ path: '../contrib/ad-minute-market/offers.png' });
@@ -27,7 +29,7 @@ test('sell one block to two brands, trim it and settle on air', async ({ page })
   await expect(market.locator('.minute-sold')).toHaveCount(2);
   await market.getByRole('button', { name: 'Remove unsold minutes' }).click();
   await expect(market).toContainText('0 min available');
-  await expect(market).toContainText('45 min reserved');
+  await expect(market).toContainText('min runtime · until 18:');
   await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
   await page.locator('#advance-selected').click();
   await page.locator('#open-review').click();
@@ -41,7 +43,7 @@ test('minute offers and settlements match the native protocol', async ({ page })
   const native = JSON.parse(execFileSync('cargo', ['run', '--locked', '--quiet', '-p', 'bts-web', '--example', 'ad_minute_market', '--', '--replay'], { cwd: root, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 }));
   await page.route('**/__test__/bts_web.js', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web.js'), contentType: 'text/javascript' }));
   await page.route('**/__test__/bts_web_bg.wasm', route => route.fulfill({ path: resolve(root, 'web/pkg/bts_web_bg.wasm'), contentType: 'application/wasm' }));
-  await page.goto('/');
+  await page.goto('/#planning');
   const actual = await page.evaluate(async requests => {
     // @ts-expect-error generated bindings are only served by test routes
     const { default: init, WebSession } = await import('/__test__/bts_web.js');

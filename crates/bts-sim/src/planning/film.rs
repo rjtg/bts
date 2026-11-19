@@ -359,10 +359,12 @@ impl Planner {
             ));
         }
         economy
-            .reserve_production(now, self.player, id, price)
+            .reserve_production(AirMinute::from_tick(now), self.player, id, price)
             .map_err(engine_error)?;
         if immediately {
-            economy.spend_production(now, id).map_err(engine_error)?;
+            economy
+                .spend_production(AirMinute::from_tick(now), id)
+                .map_err(engine_error)?;
         }
         self.bump()
     }
@@ -490,7 +492,7 @@ impl Planner {
                     self.engine
                         .state
                         .economy
-                        .spend_production(at, film.id)
+                        .spend_production(AirMinute::from_tick(at), film.id)
                         .map_err(engine_error)?;
                     film.phase = FilmPhase::Recording;
                 }

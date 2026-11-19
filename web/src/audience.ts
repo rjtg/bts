@@ -11,8 +11,8 @@ const portraits: Partial<Record<number, string>> = {
 
 const tiers: { id: Polling; icon: string; title: string; cost: string }[] = [
   { id: 'off', icon: 'Ⅱ', title: 'Off', cost: 'No charge' },
-  { id: 'daily', icon: '▥', title: 'Daily', cost: '60 credits per survey' },
-  { id: 'every_three_days', icon: '▦', title: 'Every 3 days', cost: '90 credits per survey' },
+  { id: 'daily', icon: '▥', title: 'Daily', cost: '60 Funds per survey' },
+  { id: 'every_three_days', icon: '▦', title: 'Every 3 days', cost: '90 Funds per survey' },
 ];
 
 function symbol(glyph: string): HTMLElement {
