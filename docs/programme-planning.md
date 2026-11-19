@@ -7,7 +7,7 @@ This planning milestone added a playable scheduling workflow. The subsequent
 [original-production milestone](original-production.md) adds one studio format;
 a complete season game remains deferred.
 
-The [Control Desk weekly planner](weekly-scheduling.md) now extends the browser calendar to three weeks, adds recurring slots and enables weekday viewing preferences. The original seven-day implementation below is the baseline.
+The [Control Desk weekly planner](weekly-scheduling.md) now extends the browser calendar to three weeks, adds recurring slots and enables weekday viewing preferences. The [focused Control Desk](../contrib/focused-desks/README.md) separates Schedule, Weekly Run, Ad Sales and Broadcast Review. The original seven-day implementation below is the baseline.
 
 For minute sales, the planner reserves the programme plus listed ad time rounded
 up to full ticks. See [ad-minute market](ad-minute-market.md) for schedule edits,

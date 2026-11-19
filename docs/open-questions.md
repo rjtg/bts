@@ -28,6 +28,9 @@ Status: unresolved unless explicitly stated. Proposed defaults are starting poin
   notifications, a dashed current-time line, simulated daylight and later
   resource-sensitive office visuals; thresholds and interruption policies remain open.
 - [Weekly scheduling and audience flow](weekly-scheduling.md): the bounded recurrence, exception and weekday rules are implemented. Assess autosell timing and ordering, habit buildup and decay, and a conserved lead-in carryover model.
+- [Station time and action capacity](#station-time-and-action-capacity): explore
+  whether consequential work should occupy simulated time and delay competing
+  commitments.
 - Advance publication and airing-specific anticipation: choose buildup, delays,
   rescheduling consequences and readable evidence.
 - [Ad-minute market](ad-minute-market.md): tune how limited
@@ -140,3 +143,40 @@ Experiment only after structured concepts produce interesting play. Preserve a n
 ## Process
 
 Resolve a question by recording the decision and evidence in the relevant design section, then remove or update its entry here. Keep exact balance values with future configuration and experiment results rather than treating early guesses as design commitments.
+
+## Station time and action capacity
+
+The clock should create choices about what the station has time to do before
+airtime. Explore work that stays pending until a visible simulated due time,
+for example preparing an ad listing or arranging a booking. Compare one shared
+station workload with capacity local to the relevant desk. A global lock can
+make high-pressure decisions matter, but can also leave the player waiting
+without anything useful to do. Start the design experiment with one action and
+compare a no-delay baseline, a shared queue and a desk-specific queue.
+
+Reading, navigation, drafting and accessibility interactions should stay
+responsive. Consider charging time for a consequential commitment rather than
+for individual input gestures. Show the duration, which work would be blocked,
+and the deadline before committing. Decide when terms and funds are reserved,
+what happens if an offer expires while work is pending, whether cancellation
+is possible, and how due work is ordered against broadcasts on the same tick.
+Use explicit simulated ticks so speed and control method do not change outcomes.
+Test a deadline conflict and a quiet stretch to see whether the delay creates
+a decision or idle waiting. Timing, scope and duration remain proposals.
+
+See the [ad listing playtest](station-time-experiment.md) for a concrete
+deadline, capacity comparison, and due-tick cases.
+
+## Exact airtime and quarter-hour simulation
+
+Proposed follow-up to the focused-screen slice. Allow start and end times to
+the minute, and render programme and variable-length advertising as exact
+airtime in Schedule. Keep the quarter-hour audience update cadence. Explore
+allocating each quarter-hour's expected viewing over its intersecting airtime
+segments in proportion to occupied minutes. A partial tick cannot contribute
+a full interval to each of two sequential shows. Validate simultaneous
+competition, midnight boundaries and short ad blocks. Schedule overlap,
+accepted inventory, cost and settlement should use exact airing identities
+and boundaries. Define how ads are positioned or attributed within that
+interval, and test that adding an ad minute cannot create a whole extra
+quarter-hour of delivery. The current browser still reserves whole ticks.

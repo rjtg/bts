@@ -12,6 +12,10 @@ export function renderAdMarket(
   money: (value: string) => string,
 ) {
   const root = element('ad-minute-market');
+  const inventory = `${airing.airing_id}:${airing.ad_minutes}:${airing.sold_minutes}`;
+  const draft = root.dataset.inventory === inventory
+    ? root.querySelector<HTMLInputElement>('.minute-settings input')?.value : undefined;
+  root.dataset.inventory = inventory;
   root.replaceChildren();
   if (!report.stations.some(station => station.is_player && station.id === airing.station)) return;
   if (airing.proposed_advertiser !== null) return;
@@ -43,7 +47,7 @@ export function renderAdMarket(
     const settings = node('form', '', 'minute-settings');
     const amount = node('input');
     amount.type = 'number'; amount.min = String(airing.sold_minutes); amount.max = '30';
-    amount.step = '1'; amount.required = true; amount.value = String(airing.ad_minutes || 15);
+    amount.step = '1'; amount.required = true; amount.value = draft ?? String(airing.ad_minutes || 15);
     const label = node('label', 'Minutes to list'); label.append(amount);
     settings.append(label, node('button', 'Set ad block'));
     settings.addEventListener('submit', event => {

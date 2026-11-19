@@ -11,6 +11,7 @@ test('sell one block to two brands, trim it and settle on air', async ({ page })
   await page.locator('[data-programme="1"]').click();
   await page.locator('#place-time').selectOption('72');
   await page.locator('#place').click();
+  await page.locator('#open-ad-sales').click();
   const market = page.locator('#ad-minute-market');
   await market.getByRole('spinbutton', { name: 'Minutes to list' }).fill('16');
   await market.getByRole('button', { name: 'Set ad block' }).click();
@@ -27,7 +28,9 @@ test('sell one block to two brands, trim it and settle on air', async ({ page })
   await market.getByRole('button', { name: 'Remove unsold minutes' }).click();
   await expect(market).toContainText('0 min available');
   await expect(market).toContainText('45 min reserved');
+  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
   await page.locator('#advance-selected').click();
+  await page.locator('#open-review').click();
   const result = page.locator('#selected-result');
   await expect(result).toContainText('Minute sale settlement');
   await expect(result).toContainText(/(\d+) sold · \1 aired · [1-9]/);

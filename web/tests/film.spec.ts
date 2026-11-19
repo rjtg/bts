@@ -4,6 +4,7 @@ test('pitch, revise, cast, book, advertise and air a film', async ({ page }) => 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
   await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.getByRole('link', { name: /Film desk/ }).click();
   await page.getByRole('button', { name: 'Big-city thriller' }).click();
   await page.getByRole('button', { name: 'Save free pitch' }).click();
   const film = page.locator('.film-project');
@@ -30,11 +31,14 @@ test('pitch, revise, cast, book, advertise and air a film', async ({ page }) => 
   await page.locator('#place-day').selectOption('1');
   await page.locator('#place-time').selectOption('72');
   await page.locator('#place').click();
+  await page.locator('#open-ad-sales').click();
   await page.locator('#advertiser').selectOption('1');
   await page.locator('#set-advertiser').click();
   await page.locator('#quote').click();
   await page.locator('#accept').click();
+  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
   await page.locator('#advance-selected').click();
+  await page.locator('#open-review').click();
   const result = page.locator('#selected-result');
   await expect(result).toContainText('Film investment: 2,920 credits');
   await expect(result).toContainText('Provisional audience reception');

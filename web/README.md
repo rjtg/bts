@@ -24,9 +24,12 @@ npm run preview
 
 Serve the generated `dist/` directory over HTTP. No deployment is performed.
 Rebuild Wasm after Rust changes. `WASM_BINDGEN` can select a non-PATH CLI.
-Playwright starts/stops the preview server itself on 127.0.0.1:4174; a manual
+Playwright starts/stops the preview server itself on 127.0.0.1:4186; a manual
 preview on port 4173 may remain running. `PLAYWRIGHT_BROWSERS_PATH` may select a
 custom browser cache directory.
+
+See the [Control Desk walkthrough](../contrib/focused-desks/README.md) for
+focused views, the tape shelf and manual pause.
 
 See [programme planning](../docs/programme-planning.md) for controls, stable
 airing IDs, quarter-hour cadence, provisional reporting and implemented limits.

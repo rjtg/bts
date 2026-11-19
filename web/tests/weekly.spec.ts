@@ -9,11 +9,14 @@ test('three Saturdays with a moved exception, sold ad minutes and a completed fi
   await page.goto('/');
   await expect(page.locator('#status')).toContainText('WASM READY');
   await expect(page.locator('#clock')).toContainText('Saturday');
+  await page.getByRole('link', { name: /Audience/ }).click();
   await expect(page.locator('#audience .watch-time-note').first()).toContainText('Weekend evenings');
+  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
   await page.locator('[data-programme="2"]').click();
   await page.locator('#place-day').selectOption('7');
   await page.locator('#place-time').selectOption('72');
   await page.locator('#place').click();
+  await page.getByRole('link', { name: 'Give a show a weekly slot' }).click();
   const weekly = page.locator('#weekly-planner');
   await weekly.getByRole('button', { name: 'Preview weekly slots' }).click();
   await expect(weekly.locator('.weekly-date')).toHaveCount(3);
@@ -27,13 +30,16 @@ test('three Saturdays with a moved exception, sold ad minutes and a completed fi
   await conflict.getByRole('combobox', { name: 'New time', exact: true }).selectOption('80');
   await conflict.getByRole('button', { name: 'Update preview' }).click();
   await expect(weekly).toContainText('Moved to Saturday · Day 8 · 20:00');
+  if (process.env.BTS_DESK_SCREENSHOTS) await page.screenshot({ path: '../contrib/focused-desks/weekly-run.png', fullPage: true });
   await weekly.getByRole('button', { name: 'Confirm weekly schedule' }).click();
-  await expect(weekly).toContainText('Weekly slots added');
+  await expect(weekly).toBeHidden();
+  await expect(page.locator('#selected-status')).toContainText('WEEKLY SLOT');
   await page.locator('#day').selectOption('7');
   await expect(page.locator('[data-station="1"] [data-start="752"]')).toHaveCount(1);
   await page.locator('#day').selectOption('0');
   await page.locator('[data-station="1"] [data-start="72"]').click();
   await expect(page.locator('#selected-status')).toContainText('WEEKLY SLOT');
+  await page.locator('#open-ad-sales').click();
   const ads = page.locator('#ad-minute-market');
   await expect(ads).toContainText('10 min ad block');
   await ads.getByRole('button', { name: 'Find offers' }).click();
@@ -42,14 +48,27 @@ test('three Saturdays with a moved exception, sold ad minutes and a completed fi
     await ads.getByRole('button', { name: `Accept ${brand} offer` }).click();
   }
   await expect(ads.locator('.minute-sold')).toHaveCount(2);
-  if (process.env.BTS_WEEKLY_SCREENSHOTS) await page.locator('.workspace').screenshot({ path: '../contrib/weekly-planner/booking.png' });
+  if (process.env.BTS_DESK_SCREENSHOTS) await page.screenshot({ path: '../contrib/focused-desks/ad-sales.png', fullPage: true });
+  await page.clock.install();
+  const before = await page.locator('#clock').textContent();
+  await page.getByRole('button', { name: 'Play', exact: true }).click();
+  await page.getByRole('button', { name: 'Pause', exact: true }).click();
+  await page.clock.runFor(5000);
+  await expect(page.locator('#clock')).toHaveText(before!);
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(ads.locator('.minute-sold')).toHaveCount(2);
+  if (process.env.BTS_WEEKLY_SCREENSHOTS) await page.locator('#ad-sales').screenshot({ path: '../contrib/weekly-planner/booking.png' });
+  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
   await page.locator('#advance-selected').click();
+  await page.locator('#open-review').click();
   await expect(page.locator('#selected-result')).toContainText('Minute sale settlement');
   await expect(page.locator('#selected-result')).toContainText('Young viewers');
+  if (process.env.BTS_DESK_SCREENSHOTS) await page.screenshot({ path: '../contrib/focused-desks/review.png', fullPage: true });
   if (process.env.BTS_WEEKLY_SCREENSHOTS) await page.locator('#selected-result').screenshot({ path: '../contrib/weekly-planner/receipt.png' });
 });
 
 test('drag onto the grid, move a draft and preserve its interval after a conflicting drop', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1100 });
   await page.goto('/');
   await expect(page.locator('#status')).toContainText('WASM READY');
   const lane = page.locator('[data-station="1"]');
@@ -74,6 +93,7 @@ test('narrow agenda supports placing via the slot picker without dragging', asyn
   await page.setViewportSize({ width: 420, height: 850 });
   await page.goto('/');
   await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.getByRole('button', { name: 'Open tape shelf' }).click();
   await page.locator('[data-programme="1"]').press('Enter');
   await page.locator('#place-time').selectOption('72');
   await page.locator('#place').press('Enter');

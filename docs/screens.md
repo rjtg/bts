@@ -150,6 +150,50 @@ ghost and conflict hint are provisional. A drop or form submission still runs
 through Rust, and the selected airing remains distinct from Up Next.
 See [weekly scheduling](weekly-scheduling.md).
 
+#### Focused Control Desk screens
+
+The focused Control Desk gives each job its own view. Schedule shows both
+channels, direct placement, and a compact selection with links to the relevant
+tasks. Weekly Run owns recurrence, date previews and exceptions. Ad Sales opens
+for one airing and owns inventory, offers and confirmed bookings. Broadcast
+Review shows provisional audience delivery, receipts and costs, and links back
+to the schedule. Returning preserves the viewed day, selection and scroll
+position. Schedule distinguishes actual programme-plus-ad runtime from the
+remaining reserved minutes with a shaded tail and exact minute labels. The
+clock, transport and distinct On Air / Up Next readouts stay in
+the shared shell while playing. On narrow screens each task gets the full view.
+
+#### Programme library in Schedule
+
+Treat the library as a station's tape shelf. Use existing artwork on compact
+spine or sleeve cards and a consistent illustrated fallback for titles without
+art. Keep the title, programme type and runtime visible on every card. Put a
+short synopsis and additional evidence in the selected title's details.
+
+The shelf should answer two quick questions: what can I air, and what fits
+this gap? Provide title search and a **Fits this gap** filter once a gap is
+selected. Explain when a title fits on its own but the proposed ad minutes
+take it past the gap, using the reserved quarter-hour interval. Preserve the
+search and filter when returning from another task. Keep the shelf collapsible
+on desktop and give it a focused picker on narrow screens. Use the same cards
+for dragging and for selecting a title before opening the keyboard/touch slot
+picker. Rust validates placement as usual.
+
+#### Playback and pause
+
+On manual pause, a still pixelated treatment covers the station workspace and
+a clear **Continue** button remains sharp. The underlying controls are inert.
+The pause screen supports keyboard and touch, restores focus when resumed,
+and offers an equivalent static dim treatment for reduced motion or constrained
+devices. Preserve the open task and any draft through pause. The station initializes in standby so planning is available before the clock
+starts. A tab hidden during playback holds the clock until the player presses
+Play. The calendar ends with transport disabled and the desks available for
+review. Committing a command or editing a form holds automatic playback in
+standby; only an explicit Pause opens the pause screen.
+
+Action duration is a separate [design experiment](station-time-experiment.md).
+See the [browser walkthrough](../contrib/focused-desks/README.md).
+
 ### Production and people
 The [Film desk](original-film.md) provides project cards, script delivery links,
 portrait casting and a booking review for standalone fiction.
