@@ -2,7 +2,7 @@
 use super::*;
 use serde::Deserialize;
 
-pub const MAX_DAYS: u32 = 21;
+pub const MAX_DAYS: u32 = 42;
 const DAY: u32 = 96;
 const WEEK: u32 = 7 * DAY;
 

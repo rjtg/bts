@@ -286,6 +286,30 @@ impl Session {
                     .resize_ad_block(AiringId(airing_id), minutes)
                     .map_err(player_error)?;
             }
+            Command::SetAutosell { airing_id, policy } => {
+                let policy = policy
+                    .map(|input| {
+                        let floor = input
+                            .floor
+                            .parse::<u64>()
+                            .ok()
+                            .filter(|_| input.floor.bytes().all(|b| b.is_ascii_digit()))
+                            .ok_or_else(|| {
+                                PlayerError::new(
+                                    "invalid_autosell_policy",
+                                    "Use whole Funds for the price floor.",
+                                )
+                            })?;
+                        Ok::<_, PlayerError>(bts_sim::planning::autosell::AutosellPolicy {
+                            minimum_per_minute: bts_sim::economy::Money(floor),
+                            max_minutes: input.max_minutes,
+                        })
+                    })
+                    .transpose()?;
+                self.planner
+                    .set_autosell(AiringId(airing_id), policy)
+                    .map_err(player_error)?;
+            }
             Command::RequestMinuteOffers { airing_id } => {
                 return self.issue_minute_offers(AiringId(airing_id));
             }
@@ -842,6 +866,11 @@ impl Session {
                 ad_minutes: a.ad_minutes,
                 sold_minutes: self.planner.sold_minutes(a.id),
                 weekly_id: a.weekly.map(|id| id.0),
+                autosell_eligible: self.planner.autosell_eligible(a),
+                autosell: self.planner.autosell_policy(a).map(|policy| AutosellView {
+                    floor: policy.minimum_per_minute.0.to_string(),
+                    max_minutes: policy.max_minutes,
+                }),
                 booked: a.contract.is_some() || self.planner.sold_minutes(a.id) > 0,
                 status: if a.cancelled() {
                     "off_air"
@@ -1029,7 +1058,45 @@ impl Session {
             })
             .collect::<Vec<_>>();
         results.sort_by_key(|r| (r.end_tick, r.airing_id));
+        let transmitted = self.planner.airings().filter(|airing| {
+            airing.station == PLAYER
+                && airing.filler.is_none()
+                && airing.result.is_some()
+                && !airing.cancelled()
+        });
+        let mut active_weeks = std::collections::BTreeSet::new();
+        let mut recurring = 0;
+        for airing in transmitted {
+            active_weeks.insert(airing.start.0 / (7 * 1440));
+            recurring += u32::from(self.planner.autosell_eligible(airing));
+        }
+        let settled_blocks = economy
+            .minute_sales()
+            .filter(|sale| {
+                sale.offer.station == PLAYER
+                    && sale.settlement.as_ref().is_some_and(|s| s.payment.0 > 0)
+            })
+            .map(|sale| sale.offer.airing)
+            .collect::<std::collections::BTreeSet<_>>()
+            .len() as u32;
         PlayerReport {
+            station_goals: vec![
+                StationGoal {
+                    label: "Broadcast in four different weeks",
+                    progress: active_weeks.len() as u32,
+                    target: 4,
+                },
+                StationGoal {
+                    label: "Air three recurring programmes",
+                    progress: recurring,
+                    target: 3,
+                },
+                StationGoal {
+                    label: "Earn paid ad-minute sales on three airings",
+                    progress: settled_blocks,
+                    target: 3,
+                },
+            ],
             minute_offers: self
                 .minute_pending
                 .as_ref()
@@ -1049,6 +1116,7 @@ impl Session {
             minute_sales: economy
                 .minute_sales()
                 .map(|sale| MinuteBooking {
+                    automatic: self.planner.is_automatic_sale(sale.id),
                     airing_id: sale.offer.airing.0,
                     advertiser: sale.offer.brand.0,
                     minutes: sale.offer.minutes,

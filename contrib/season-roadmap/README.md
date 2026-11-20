@@ -24,9 +24,9 @@ Open port 4173 on the preview host. The existing network address is
 
 ## Progress checkpoint
 
-- Active slice: longer station loop and scoped autosell.
-- Verified milestone: Add playable weekly discussion runs.
-- Next: extend the scenario and connect per-run autosell to the minute market.
+- Active slice: brand evolution.
+- Verified milestones: `7313d17` and Extend the station season and add scoped autosell.
+- Next: implement weekly brand review without changing cash or signed terms.
 - Runtime token refresh schedule: unavailable.
 
 ## 1. Recurring discussion editions
@@ -55,3 +55,29 @@ intact. It does not establish that the new brief improves reception.
 [Chromium capture of the binder](discussion-binder.png). Workspace tests and
 doctests, strict Clippy and rustdoc, formatting, isolated fuzzy tests,
 Wasm/browser build and all 41 Chromium tests passed.
+
+## 2. Six-week station goals and scoped autosell
+
+Find this slice with `git log --oneline --grep='Extend the station season and add scoped autosell'`.
+See [weekly scheduling](../../docs/weekly-scheduling.md#optional-autosell)
+for the check time and ranking rules.
+
+1. Open the office notebook to see three season goals. Open Programming
+   and make a weekly run with a 15-minute ad block.
+2. Open the first Airing file and expand **Autosell this run**. Choose a
+   minimum of 1 Fund per minute and a maximum of 10 sold minutes.
+3. Run the airing and open Broadcast Review. Look for **Autosell** on the
+   signed receipt. Minutes beyond the limit stay available for manual sale
+   or trimming before air.
+4. Use Week or Month in Programming to browse the extended calendar.
+
+[Autosell policy capture](autosell-policy.png). The native comparison starts
+with the same manually signed deal in both runs. The 9,000 Funds floor
+leaves only that deal, while the 1 Fund floor fills another three minutes.
+The ordinary airing remains unsold. Both paths preserve escrow and normal
+settlement. The comparison does not establish that either floor is a good
+long-run station strategy.
+
+Workspace tests and doctests, strict Clippy and rustdoc, formatting,
+Wasm/browser build and all 42 Chromium tests passed, including native/Wasm
+parity and the autosell walkthrough.

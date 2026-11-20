@@ -67,13 +67,29 @@ fn comparison(entertainment: bool) -> Value {
         json!({"type":"book_production","production_id":1,"exceptional_person":null,"cooperation_sway":0}),
     );
     send(json!({"type":"advance","to_tick":52}));
-    send(json!({"type":"place","start_tick":72,"programme":12,"advertiser":1}));
-    let quote = send(json!({"type":"request_offer","airing_id":169}));
+    let placed = send(json!({"type":"place","start_tick":72,"programme":12,"advertiser":1}));
+    let id = airing_id(&placed, 12, 72);
+    let quote = send(json!({"type":"request_offer","airing_id":id}));
     let token = quote["report"]["offer"]["offer_id"].clone();
-    send(json!({"type":"accept_offer","airing_id":169,"offer_id":token}));
+    assert!(token.is_string());
+    send(json!({"type":"accept_offer","airing_id":id,"offer_id":token}));
     let final_report = send(json!({"type":"advance","to_tick":75}));
     assert_eq!(final_report["status"], "ok");
     json!({"case":if entertainment { "popular_culture" } else { "technical_science" },"report":final_report["report"]})
+}
+fn airing_id(response: &Value, programme: u16, start_tick: u32) -> u64 {
+    response["report"]["schedule"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|airing| {
+            airing["station"] == 1
+                && airing["programme"] == programme
+                && airing["start_tick"] == start_tick
+        })
+        .unwrap()["airing_id"]
+        .as_u64()
+        .unwrap()
 }
 fn main() {
     let comparisons = vec![comparison(false), comparison(true)];
@@ -92,10 +108,12 @@ fn main() {
     let early = send(json!({"type":"place","start_tick":72,"programme":12,"advertiser":null}));
     assert_eq!(early["error"]["code"], "production_not_ready");
     send(json!({"type":"advance","to_tick":52}));
-    send(json!({"type":"place","start_tick":72,"programme":12,"advertiser":2}));
-    let quote = send(json!({"type":"request_offer","airing_id":169}));
+    let placed = send(json!({"type":"place","start_tick":72,"programme":12,"advertiser":2}));
+    let id = airing_id(&placed, 12, 72);
+    let quote = send(json!({"type":"request_offer","airing_id":id}));
     let token = quote["report"]["offer"]["offer_id"].clone();
-    send(json!({"type":"accept_offer","airing_id":169,"offer_id":token}));
+    assert!(token.is_string());
+    send(json!({"type":"accept_offer","airing_id":id,"offer_id":token}));
     send(json!({"type":"advance","to_tick":75}));
     send(
         json!({"type":"create_production","concept":concept("Neighbourhood Conversations",2,[5,6],"everyday_life","conversational","1000",232)}),
@@ -111,10 +129,12 @@ fn main() {
         json!({"type":"book_production","production_id":2,"exceptional_person":5,"cooperation_sway":2}),
     );
     send(json!({"type":"advance","to_tick":244}));
-    send(json!({"type":"place","start_tick":264,"programme":13,"advertiser":1}));
-    let quote = send(json!({"type":"request_offer","airing_id":170}));
+    let placed = send(json!({"type":"place","start_tick":264,"programme":13,"advertiser":1}));
+    let id = airing_id(&placed, 13, 264);
+    let quote = send(json!({"type":"request_offer","airing_id":id}));
     let token = quote["report"]["offer"]["offer_id"].clone();
-    send(json!({"type":"accept_offer","airing_id":170,"offer_id":token}));
+    assert!(token.is_string());
+    send(json!({"type":"accept_offer","airing_id":id,"offer_id":token}));
     send(json!({"type":"advance","to_tick":267}));
     send(json!({"type":"accept_request","request_id":2}));
     send(

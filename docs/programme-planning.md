@@ -7,7 +7,7 @@ This planning milestone added a playable scheduling workflow. The subsequent
 [original-production milestone](original-production.md) adds one studio format;
 a complete season game remains deferred.
 
-The [Control Desk weekly planner](weekly-scheduling.md) now extends the browser calendar to three weeks, adds recurring slots and enables weekday viewing preferences. The [focused Control Desk](../contrib/focused-desks/README.md) separates Schedule, Weekly Run, Ad Sales and Broadcast Review. The original seven-day implementation below is the baseline.
+The [Control Desk weekly planner](weekly-scheduling.md) now extends the browser calendar to six weeks, adds recurring slots and enables weekday viewing preferences. The [focused Control Desk](../contrib/focused-desks/README.md) separates Schedule, Weekly Run, Ad Sales and Broadcast Review. The original seven-day implementation below is the baseline.
 
 The current planner reserves the programme plus listed ad time to the minute.
 See [minute airtime](minute-airtime.md) and [ad-minute market](ad-minute-market.md)
@@ -287,7 +287,7 @@ ordered payment-rounding bias and fixed fixture parameters remain provisional.
 
 Publication/listings promises, promotion, campaign shares/ad breaks,
 research, broader society, save/load and a wall-clock-continuous simulation are deferred; browser Play/×2 now drives explicit ticks.
-The Control Desk now provides three-week navigation, a narrow agenda and a weekly placement form. See [weekly scheduling](weekly-scheduling.md) for recurring slots and occurrence-level protections. A separate full-week grid remains open. History is in memory; advancement copies bounded
+The Control Desk now provides six-week navigation, a narrow agenda and a weekly placement form. See [weekly scheduling](weekly-scheduling.md) for recurring slots and occurrence-level protections. A separate full-week grid remains open. History is in memory; advancement copies bounded
 state for atomicity. Chromium desktop/narrow-screen smoke tests are not full
 cross-browser, mobile-device or assistive-technology validation. No deployment
 is performed. Next UI work should use human planning sessions to improve the

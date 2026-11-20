@@ -1,4 +1,4 @@
-//! Fixed seven-day content. Timing and durations belong to Rust, not the UI.
+//! Fixed six-week content. Timing and durations belong to Rust, not the UI.
 use bts_sim::planning::{CompetitorAiring, PlanError, Planner, StationResources};
 use bts_sim::{demo, Parameters, ProgrammeId, ProgrammeKind, SimTick, World};
 

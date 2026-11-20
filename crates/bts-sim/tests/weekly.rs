@@ -132,3 +132,90 @@ fn local_day_and_preference_change_watch_choice_without_creating_availability() 
     assert_eq!(run(96 + 95), saturday);
     assert_eq!(run(192), monday);
 }
+
+#[test]
+fn autosell_respects_run_scope_floor_and_manual_sales() {
+    use bts_sim::economy::Money;
+    use bts_sim::planning::autosell::AutosellPolicy;
+
+    let mut p = planner();
+    let ids = p
+        .place_weekly(&WeeklyPlan {
+            programme: ProgrammeId(1),
+            weekday: Weekday::SATURDAY,
+            time: 1081,
+            count: 2,
+            ad_minutes: 15,
+            exceptions: vec![],
+        })
+        .unwrap();
+    let ordinary = p
+        .place_exact(ProgrammeId(2), bts_sim::AirMinute(1200), 15)
+        .unwrap();
+    let offer = p.minute_offers(ids[0]).unwrap().remove(0);
+    let manual = p.accept_minutes(&offer).unwrap();
+    let mut expensive = p.clone();
+    expensive
+        .set_autosell(
+            ids[0],
+            Some(AutosellPolicy {
+                minimum_per_minute: Money(9_000),
+                max_minutes: 15,
+            }),
+        )
+        .unwrap();
+    expensive.advance_to(SimTick(80)).unwrap();
+    assert_eq!(expensive.sold_minutes(ids[0]), offer.minutes);
+
+    let total = p.state().economy().total_money();
+    p.set_autosell(
+        ids[0],
+        Some(AutosellPolicy {
+            minimum_per_minute: Money(1),
+            max_minutes: 12,
+        }),
+    )
+    .unwrap();
+    let mut chunks = p.clone();
+    chunks.advance_to(SimTick(67)).unwrap();
+    chunks.advance_to(SimTick(69)).unwrap();
+    chunks.advance_to(SimTick(82)).unwrap();
+    p.advance_to(SimTick(82)).unwrap();
+    assert!(!p.is_automatic_sale(manual));
+    assert!(p.sold_minutes(ids[0]) > offer.minutes);
+    assert!(p.sold_minutes(ids[0]) <= 12);
+    assert_eq!(p.sold_minutes(ordinary), 0);
+    assert_eq!(p.state().economy().total_money(), total);
+    let terms = |planner: &Planner| {
+        planner
+            .state()
+            .economy()
+            .minute_sales()
+            .map(|sale| {
+                (
+                    sale.id,
+                    sale.offer.brand,
+                    sale.offer.airing,
+                    sale.offer.minutes,
+                    sale.offer.payment,
+                    sale.accepted_at,
+                    sale.settlement.clone(),
+                )
+            })
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(terms(&p), terms(&chunks));
+    assert_eq!(
+        p.state().economy().ledger(),
+        chunks.state().economy().ledger()
+    );
+    assert!(p
+        .state()
+        .economy()
+        .minute_sales()
+        .any(|sale| p.is_automatic_sale(sale.id)
+            && sale
+                .settlement
+                .as_ref()
+                .is_some_and(|settlement| settlement.payment == sale.offer.payment)));
+}

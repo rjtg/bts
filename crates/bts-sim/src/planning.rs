@@ -1,6 +1,7 @@
 //! Bounded duration-aware planning. See docs/programme-planning.md for provisional cadence.
 //! No presentation, player observations, filesystem or wall clock.
 pub mod ad_market;
+pub mod autosell;
 pub mod discussion_run;
 pub mod film;
 pub mod production;
@@ -106,6 +107,9 @@ pub struct Planner {
     player: StationId,
     end: SimTick,
     airings: BTreeMap<AiringId, Airing>,
+    autosell: BTreeMap<autosell::RunKey, autosell::AutosellPolicy>,
+    autosell_checked: BTreeSet<AiringId>,
+    automatic_sales: BTreeSet<ad_market::MinuteSaleId>,
     next_id: u32,
     revision: u64,
     production: production::ProductionState,
@@ -130,7 +134,7 @@ impl Planner {
         if end.0 == 0 || end.0 > weekly::MAX_DAYS * 96 {
             return Err(error(
                 "invalid_horizon",
-                "The planner supports up to three weeks.",
+                "The planner supports up to six weeks.",
             ));
         }
         if !world.stations.iter().any(|s| s.id == player) {
@@ -153,6 +157,9 @@ impl Planner {
             player,
             end,
             airings: BTreeMap::new(),
+            autosell: BTreeMap::new(),
+            autosell_checked: BTreeSet::new(),
+            automatic_sales: BTreeSet::new(),
             next_id: 1,
             revision: 0,
             production: production::ProductionState::default(),
@@ -711,6 +718,7 @@ impl Planner {
         let start = self.now_minute();
         if start.0.is_multiple_of(15) {
             self.start_recordings(start.tick_floor())?;
+            self.run_autosell(start)?;
         }
         let (mut action, starts) = self.interval_action(start, None);
         let next_tick = AirMinute((start.0 / 15 + 1) * 15);

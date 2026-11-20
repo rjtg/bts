@@ -544,7 +544,7 @@ function resultPanel(result: BroadcastResult): HTMLElement {
     const aired = minuteSales.reduce((total, sale) => total + (sale.settlement?.aired_minutes ?? 0), 0);
     panel.append(node('p', `Ad minutes · ${sold} sold · ${aired} aired · ${money(String(minuteRevenue(minuteSales)))} Funds paid.`));
     panel.append(table('Minute sale settlement', ['Advertiser', 'Minutes aired', 'Paid', 'Returned'], minuteSales.map(sale => [
-      advertiserName(sale.advertiser), String(sale.settlement?.aired_minutes ?? 0), money(sale.settlement?.payment ?? '0'), money(sale.settlement?.refund ?? '0'),
+      advertiserName(sale.advertiser) + (sale.automatic ? ' · Autosell' : ''), String(sale.settlement?.aired_minutes ?? 0), money(sale.settlement?.payment ?? '0'), money(sale.settlement?.refund ?? '0'),
     ])));
   }
   const scheduled = report.schedule.find(airing => airing.airing_id === result.airing_id);
@@ -834,6 +834,13 @@ function renderOffice() {
       chooseAiring(unsold.airing_id);
     });
     schedule.append(note);
+  }
+  schedule.append(node('h4', 'Season goals'));
+  for (const goal of report.station_goals) {
+    const line = node('p');
+    line.append(node(goal.progress >= goal.target ? 's' : 'span', goal.label),
+      node('small', `${Math.min(goal.progress, goal.target)} / ${goal.target}`));
+    schedule.append(line);
   }
   const quests = leaf('Sway requests');
   const accepted = report.production.requests.filter(request => request.acceptance !== null);

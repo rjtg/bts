@@ -12,6 +12,7 @@ export type Command =
   | { type: 'assess_title'; programme: number; insight: number }
   | { type: 'list_resale'; programme: number }
   | { type: 'resize_ad_block'; airing_id: number; minutes: number }
+  | { type: 'set_autosell'; airing_id: number; policy: AutosellPolicy | null }
   | { type: 'request_minute_offers'; airing_id: number }
   | { type: 'accept_minute_offer'; airing_id: number; advertiser: number; token: string }
   | { type: 'pitch_film'; title: string; subject: Subject; ambition: number[] }
@@ -41,6 +42,7 @@ export interface Programme {
   broadcast_cost: string; duration_minutes: number;
 }
 export interface Airing {
+  autosell_eligible: boolean; autosell: AutosellPolicy | null;
   airing_id: number; station: number; programme: number; programme_name: string; genre:string; duration_minutes:number; start_tick: number; end_tick: number; start_minute: number; end_minute: number;
   filler: boolean; teaser_for: number | null; teaser_current: boolean; ad_minutes: number; sold_minutes: number; weekly_id: number | null; proposed_advertiser: number | null; booked: boolean; status: 'planned' | 'on_air' | 'completed' | 'off_air'; editable: boolean;
 }
@@ -75,6 +77,7 @@ export interface Research {
   }[];
 }
 export interface Report {
+  station_goals: { label: string; progress: number; target: number }[];
   research: Research | null;
   film_desk: FilmDesk;
   rights_market: RightsMarket;
@@ -139,6 +142,7 @@ export type FilmDesk = {
 };
 
 export type MinuteBooking = {
+  automatic: boolean;
   airing_id: number; advertiser: number; minutes: number; price: string;
   settlement: { aired_minutes: number; payment: string; refund: string; viewer_minutes: number } | null;
 };
@@ -177,3 +181,5 @@ export interface DiscussionEdition {
   airing_id: number | null;
   missed: boolean;
 }
+
+export interface AutosellPolicy { floor: string; max_minutes: number }

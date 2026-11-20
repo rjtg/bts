@@ -1,13 +1,13 @@
 # Weekly scheduling and audience flow
 
-The Control Desk slice implements a 21-day browser calendar, recurring placement,
-and weekday-aware viewing preference. Ads remain manual and viewing continues
-to sample at the start of an airing. The 15-minute clock, exact accounting,
+The browser calendar covers six weeks and supports recurring placement,
+weekday-aware viewing preferences and optional autosell. Viewing continues to
+sample at the start of an airing. The 15-minute clock, exact accounting,
 airing identity and player-information boundary still apply.
 
 ## Recurring slots
 
-The browser calendar starts on Saturday and spans three weeks. Give an owned
+The browser calendar starts on Saturday and spans six weeks. Give an owned
 library title a weekday, minute of day, default ad minutes and one to three dates.
 The first date is the next matching time at or after the current minute.
 Subsequent dates advance by seven days. The review shows exact programme-plus-ad
@@ -26,21 +26,35 @@ When an editable date conflicts, the entire edit is rejected.
 Recurring slots are internal plans for a fixed library title. Automatic episode
 selection, monthly recurrence and published listings remain future work.
 
-## Optional autosell (proposal)
+## Optional autosell
 
-A recurring slot can opt into automatic sales with a minimum price per minute.
-The policy uses the existing minute market on each eligible airing. Manual
-bookings remain protected and count against its available minutes. Show what
-sold, at what price and what stayed open before broadcast. Unsold time remains
-listed unless the player chooses an explicit trim policy. Never shorten below
-accepted sales. Exact occupancy and all escrow, budget, settlement and ad
-exposure rules still apply.
+A fixed-title weekly run or a produced discussion run can opt in from any of
+its Airing files. The player chooses a positive whole-Funds floor per minute
+and a cap on total sold minutes per airing, including manual sales. Turning
+the policy off affects future decisions and preserves signed deals.
 
-Choose a predictable quote and acceptance time so players have a chance to
-make manual deals. Fix the offer ordering and tie break for reproducible runs.
-Keep weak offers visible for manual consideration where practical. Selling
-automatically should leave the same ledger evidence as a manual sale. Timing,
-sort policy and price floor units still need a bounded experiment.
+Each eligible airing gets one check at the first processed quarter-hour
+boundary within the final hour before airtime. An exact quarter-hour start
+can use that boundary if it is the first opportunity. If a tape is not yet
+published, it becomes eligible after delivery. At a check, the engine
+quotes the ordinary minute market. It takes whole offers with sufficient
+price and room under the cap, selecting highest price per minute first and
+breaking ties by brand ID. Each accepted deal triggers a fresh quote.
+The policy applies independently to each airing. A resize or move after an
+unsuccessful check does not retry the sale.
+
+The ordinary price, cash, escrow and settlement rules apply. The Airing
+file labels automatically signed deals. Unsold time remains available for
+manual selling or trimming.
+
+## Station goals
+
+The office notebook tracks three six-week goals using completed,
+successfully aired items: broadcast in four different weeks, air three
+recurring programmes, and earn paid ad-minute sales on three distinct
+airings. These goals are progress markers and carry no reward or automatic
+season-ending condition. The initial fixture's programming and finances
+extend under the same rules. Persistence is planned for a later slice.
 
 ## Preferred viewing times and habit
 

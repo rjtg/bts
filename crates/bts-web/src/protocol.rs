@@ -62,6 +62,10 @@ pub enum Command {
         airing_id: u32,
         minutes: u8,
     },
+    SetAutosell {
+        airing_id: u32,
+        policy: Option<AutosellInput>,
+    },
     RequestMinuteOffers {
         airing_id: u32,
     },
@@ -201,6 +205,7 @@ pub struct PlayerReport {
     pub stations: Vec<StationInfo>,
     pub gaps: Vec<Gap>,
     pub finances: Finances,
+    pub station_goals: Vec<StationGoal>,
     pub cash: String,
     pub research: Option<bts_sim::planning::research::ResearchView>,
     pub production: ProductionView,
@@ -262,6 +267,8 @@ pub struct ScheduleEntry {
     pub ad_minutes: u8,
     pub sold_minutes: u8,
     pub weekly_id: Option<u32>,
+    pub autosell_eligible: bool,
+    pub autosell: Option<AutosellView>,
     pub booked: bool,
     pub status: &'static str,
     pub editable: bool,
@@ -601,6 +608,7 @@ pub struct MinuteOfferView {
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct MinuteBooking {
+    pub automatic: bool,
     pub airing_id: u32,
     pub advertiser: u16,
     pub minutes: u8,
@@ -690,4 +698,22 @@ pub struct WeeklyExceptionInput {
 pub struct WeeklyReview {
     pub edition: bool,
     pub rows: Vec<bts_sim::planning::weekly::Placement>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutosellInput {
+    pub floor: String,
+    pub max_minutes: u8,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct AutosellView {
+    pub floor: String,
+    pub max_minutes: u8,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct StationGoal {
+    pub label: &'static str,
+    pub progress: u32,
+    pub target: u32,
 }

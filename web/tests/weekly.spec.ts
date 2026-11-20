@@ -141,3 +141,29 @@ test('weekly preview, exceptions and placement replay in native Rust and Wasm', 
   }, native.requests);
   expect(actual).toEqual(native.responses);
 });
+
+test('set a recurring autosell limit and see the signed sales after broadcast', async ({ page }, testInfo) => {
+  await page.goto('/#planning');
+  await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.getByRole('link', { name: 'Regular slot' }).click();
+  const weekly = page.locator('#weekly-planner');
+  await weekly.getByLabel('Weekly programme').selectOption('1');
+  await weekly.getByLabel('Regular airtime').fill('18:00');
+  await weekly.getByLabel('Default ad minutes').fill('15');
+  await weekly.getByRole('button', { name: 'Preview weekly slots' }).click();
+  await weekly.getByRole('button', { name: 'Confirm weekly schedule' }).click();
+  await page.locator('#open-ad-sales').click();
+  const ads = page.locator('#ad-minute-market');
+  await ads.getByText('Autosell this run').click();
+  await ads.getByLabel('Minimum Funds per minute').fill('1');
+  await ads.getByLabel('Maximum minutes sold').fill('10');
+  await ads.getByRole('button', { name: 'Save autosell limits' }).click();
+  await expect(ads).toContainText('Autosell on for this run');
+  await ads.screenshot({ path: testInfo.outputPath('autosell-policy.png') });
+  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await page.locator('#advance-selected').click();
+  await page.locator('#open-review').click();
+  await expect(page.locator('#selected-result')).toContainText('Minute sale settlement');
+  await expect(page.locator('#selected-result')).toContainText('Autosell');
+  await expect(page.locator('#selected-result')).toContainText(/· ([1-9]|10) sold ·/);
+});

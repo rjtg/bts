@@ -63,6 +63,10 @@ test('office, exact planning, calendars and test-card pause', async ({ page }) =
   await page.getByRole('button', { name: 'Today', exact: true }).click();
   await capture(page, 'week');
   await page.getByRole('button', { name: 'Month', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Month 1', exact: true })).toBeVisible();
+  await expect(page.locator('#calendar-summary')).not.toContainText('Outside playable window');
+  await page.getByRole('button', { name: 'Next period' }).click();
+  await expect(page.getByRole('heading', { name: 'Month 2', exact: true })).toBeVisible();
   await expect(page.locator('#calendar-summary')).toContainText('Outside playable window');
   await page.getByRole('button', { name: 'Today', exact: true }).click();
   await expect(page.locator('#calendar-position')).toHaveText('Following the clock');

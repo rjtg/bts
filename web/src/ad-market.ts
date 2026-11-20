@@ -62,9 +62,36 @@ export function renderAdMarket(
     panel.append(settings);
     if (sales.length) panel.append(node('p', 'Sales hold this airing in place. You can still resize the block around sold minutes.'));
   }
+  if (airing.autosell_eligible) {
+    const autofill = node('details');
+    autofill.open = airing.autosell !== null;
+    autofill.append(node('summary', airing.autosell ? 'Autosell on for this run' : 'Autosell this run'));
+    autofill.append(node('p', 'Checks once during the hour before air. Manual sales count toward the limit. Unsold minutes stay open.', 'small'));
+    const form = node('form', '', 'minute-settings');
+    const fields = [
+      { label: 'Minimum Funds per minute', value: airing.autosell?.floor ?? '10', max: '' },
+      { label: 'Maximum minutes sold', value: String(airing.autosell?.max_minutes ?? 10), max: '30' },
+    ].map(spec => {
+      const label = node('label', spec.label);
+      const input = node('input');
+      input.type = 'number'; input.min = '1'; input.max = spec.max; input.required = true;
+      input.value = spec.value;
+      label.append(input);
+      form.append(label);
+      return input;
+    });
+    form.append(node('button', 'Save autosell limits'));
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      send({ type: 'set_autosell', airing_id: id, policy: { floor: fields[0].value, max_minutes: fields[1].valueAsNumber } });
+    });
+    if (airing.autosell) form.append(action('Turn off autosell', () => send({ type: 'set_autosell', airing_id: id, policy: null })));
+    autofill.append(form);
+    panel.append(autofill);
+  }
   if (sales.length) {
     const confirmed = node('ul', '', 'minute-confirmed');
-    for (const sale of sales) confirmed.append(node('li', `${brandName(sale.advertiser)} · ${sale.minutes} min · ${money(sale.price)} Funds agreed`));
+    for (const sale of sales) confirmed.append(node('li', `${brandName(sale.advertiser)} · ${sale.minutes} min · ${money(sale.price)} Funds agreed${sale.automatic ? ' · Autosell' : ''}`));
     panel.append(confirmed);
   }
   const batch = report.minute_offers;
