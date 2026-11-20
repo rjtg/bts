@@ -117,6 +117,11 @@ impl Session {
     }
     fn apply(&mut self, command: Command) -> Result<(), PlayerError> {
         match command {
+            Command::PublishAiring { airing_id } => {
+                self.planner
+                    .publish_airing(AiringId(airing_id))
+                    .map_err(player_error)?;
+            }
             Command::PlaceFiller {
                 start_minute,
                 teaser_for,
@@ -950,6 +955,17 @@ impl Session {
                 .collect(),
         }
     }
+    fn visible_airing(&self, airing: &bts_sim::planning::Airing) -> bool {
+        const LISTING_WINDOW_MINUTES: u32 = 1440;
+        airing.station == PLAYER
+            || airing.start.0
+                < self
+                    .planner
+                    .now_minute()
+                    .0
+                    .saturating_add(LISTING_WINDOW_MINUTES)
+    }
+
     pub fn report(&self) -> PlayerReport {
         let world = self.planner.world();
         let now = self.planner.now().0;
@@ -957,6 +973,7 @@ impl Session {
         let mut schedule = self
             .planner
             .airings()
+            .filter(|a| self.visible_airing(a))
             .map(|a| ScheduleEntry {
                 airing_id: a.id.0,
                 station: a.station.0,
@@ -994,6 +1011,7 @@ impl Session {
                 end_tick: a.end.tick_ceil().0,
                 start_minute: a.start.0,
                 end_minute: a.end.0,
+                public_listing: a.published_at.is_some() || a.station != PLAYER,
                 filler: a.filler.is_some(),
                 teaser_for: match a.filler {
                     Some(bts_sim::planning::Filler::Teaser { airing, .. }) => Some(airing.0),
@@ -1786,6 +1804,7 @@ impl Session {
                             a.programme == id
                                 && a.station != PLAYER
                                 && a.end > self.planner.now_minute()
+                                && self.visible_airing(a)
                         })
                         .map(|a| a.id.0),
                     assessment_due: title.assessment_due.map(|at| at.0),

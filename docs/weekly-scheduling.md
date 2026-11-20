@@ -127,3 +127,28 @@ Use several simulated Saturdays to isolate habit from series loyalty and
 repeat fatigue. Use the same following programme at the same time with
 different lead-ins and gaps to isolate carryover. Check conservation and
 reproducibility across those matched runs.
+
+## Public listing pilot
+
+A future owned non-filler showing starts as an internal plan. Open the
+Airing file and select **Publish showing** to list that exact airing.
+One listing is allowed per scheduled start. Moving the start withdraws
+the listing and forfeits the accumulated notice. A later publication
+starts fresh. Removing the showing removes the listing. Signed terms keep
+their existing protections and conditions.
+
+A listing adds up to 8% to opening viewing utility, growing linearly with
+advance notice over six hours. The effect is applied only at the opening.
+It shares the normal audience-choice denominator and does not change
+programme quality, audience availability or signed payments. Placement
+advice and advertiser quotes still use their existing preview models.
+Teaser exposure has no new effect in this pilot.
+
+The competitor's public listings show starts within the next 24 hours and
+retain past airings. More distant rival plans stay inside the simulation.
+Missing public listings therefore leave an unknown future, while the
+simulation still processes the rival's actual broadcasts. This is an
+observation convention for the authored rival, with no rival planning AI.
+
+Publication is opt-in and replays as a normal journal command. Existing
+journals without it keep their original anticipation and accounting.

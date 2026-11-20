@@ -409,6 +409,7 @@ impl Planner {
                 weekly: None,
                 filler: None,
                 teaser_played: None,
+                published_at: None,
                 contract: None,
                 result: None,
                 snapshot: None,

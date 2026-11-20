@@ -313,7 +313,11 @@ impl Planner {
         candidate.bump()?;
         for row in rows.into_iter().filter(|row| !row.protected) {
             let changed = candidate.airings.get_mut(&row.airing.unwrap()).unwrap();
-            changed.start = AirMinute(row.start_minute.unwrap());
+            let start = AirMinute(row.start_minute.unwrap());
+            if changed.start != start {
+                changed.published_at = None;
+            }
+            changed.start = start;
             changed.end = AirMinute(row.end_minute.unwrap());
         }
         *self = candidate;

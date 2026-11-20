@@ -833,6 +833,67 @@ fn open_quests_deadlines_and_production_hints_are_player_observations() {
 }
 
 #[test]
+fn listings_are_public_within_the_rival_window_and_round_trip_in_station_saves() {
+    let mut session = Session::new().unwrap();
+    let unannounced = session
+        .planner
+        .airings()
+        .find(|a| a.station != PLAYER && a.start.0 >= 1440)
+        .unwrap()
+        .id
+        .0;
+    assert!(!session
+        .report()
+        .schedule
+        .iter()
+        .any(|a| a.airing_id == unannounced));
+    let placed = session
+        .execute(Command::PlaceExact {
+            programme: 1,
+            start_minute: 1080,
+            ad_minutes: Some(0),
+        })
+        .unwrap();
+    let id = placed
+        .schedule
+        .iter()
+        .find(|a| a.station == PLAYER.0 && a.start_minute == 1080)
+        .unwrap()
+        .airing_id;
+    let advertised = session
+        .execute(Command::PublishAiring { airing_id: id })
+        .unwrap();
+    assert!(
+        advertised
+            .schedule
+            .iter()
+            .find(|a| a.airing_id == id)
+            .unwrap()
+            .public_listing
+    );
+    let save = session.save_game().unwrap();
+    let mut restored = Session::new().unwrap();
+    assert_eq!(
+        restored.restore_game(&save).unwrap().schedule,
+        advertised.schedule
+    );
+    let moved = restored
+        .execute(Command::MoveExact {
+            airing_id: id,
+            start_minute: 1095,
+        })
+        .unwrap();
+    assert!(
+        !moved
+            .schedule
+            .iter()
+            .find(|a| a.airing_id == id)
+            .unwrap()
+            .public_listing
+    );
+}
+
+#[test]
 fn browser_station_libraries_and_staff_are_distinct_and_enforced_by_rust() {
     let mut s = Session::new().unwrap();
     let report = s.report();

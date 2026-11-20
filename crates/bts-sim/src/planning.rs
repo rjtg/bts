@@ -9,6 +9,7 @@ pub mod hiring;
 mod lead_ins;
 pub mod newsroom;
 pub mod production;
+mod publicity;
 pub mod research;
 pub mod rights;
 pub mod scripted_run;
@@ -72,6 +73,7 @@ pub struct Airing {
     pub weekly: Option<AiringId>,
     pub filler: Option<Filler>,
     pub teaser_played: Option<bool>,
+    pub published_at: Option<AirMinute>,
     pub contract: Option<ContractId>,
     pub result: Option<AiringResult>,
     snapshot: Option<AiringResult>,
@@ -467,6 +469,7 @@ impl Planner {
                 weekly: None,
                 filler: None,
                 teaser_played: None,
+                published_at: None,
                 contract: None,
                 result: None,
                 snapshot: None,
@@ -617,6 +620,9 @@ impl Planner {
         )?;
         self.bump()?;
         let airing = self.airings.get_mut(&id).unwrap();
+        if airing.start != start {
+            airing.published_at = None;
+        }
         airing.start = start;
         airing.end = end;
         Ok(())
@@ -783,7 +789,7 @@ impl Planner {
                 Some(&starts),
                 start.availability_index(),
                 &self.minute_campaigns(start, action.at),
-                &self.slot_habit_modifiers(start),
+                &self.viewer_modifiers(start),
                 &self.lead_in_cohorts(start),
             )
             .map_err(engine_error)?;

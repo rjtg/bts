@@ -13,6 +13,9 @@ test('place a 45-minute tape with 9 ad minutes and place the next tape at 18:54'
   await page.getByRole('button', { name: 'Place at 18:00' }).click();
   const first = page.locator('[data-station="1"] [data-start-minute="1080"]');
   await expect(first).toHaveAttribute('data-end-minute', '1134');
+  await page.getByRole('button', { name: 'Publish showing' }).click();
+  await expect(page.locator('#airing-listing')).toContainText('Public listing');
+  await expect(first).toContainText('LISTED');
   await page.locator('#desk-notes').getByRole('button', { name: '18:00 · 9 ad min unsold' }).click();
   const market = page.locator('#planner-airing-mount #ad-minute-market');
   await market.getByRole('button', { name: 'Find offers' }).click();

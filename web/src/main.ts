@@ -615,7 +615,7 @@ function renderTimeline(): void {
   }
   for (const station of report.stations) {
     const row = node('div', '', 'timeline-row');
-    const label = node('div', station.is_player ? 'Your channel' : station.name, 'lane-label'); label.append(node('small', station.is_player ? 'INTERNAL DRAFT' : 'FIXED COMPETITOR')); row.append(label);
+    const label = node('div', station.is_player ? 'Your channel' : station.name, 'lane-label'); label.append(node('small', station.is_player ? 'STATION PLAN' : 'PUBLIC LISTINGS')); row.append(label);
     const lane = node('div', '', 'lane-track'); lane.dataset.station = String(station.id);
     if (station.is_player) {
       plannerDrag?.bindLane(lane, dayStart);
@@ -669,7 +669,7 @@ function renderTimeline(): void {
       const runtime = p.duration_minutes + airing.ad_minutes;
       block.title = `#${airing.airing_id} · ${p.name} · ${windowText(airing)} · ${airing.status} · ${runtime} min airtime`;
       block.setAttribute('aria-label', block.title); block.setAttribute('aria-pressed', String(selected === airing.airing_id));
-      block.append(node('span', p.name, 'block-title'), node('span', `${displayTime(airing.start_minute)}–${airing.end_minute === dayStart + DAY_MINUTES ? '24:00' : displayTime(airing.end_minute)}`, 'block-time'), node('span', `#${airing.airing_id} · ${airing.booked ? 'BOOKED' : airing.status.replace('_', ' ').toUpperCase()}`, 'block-meta'));
+      block.append(node('span', p.name, 'block-title'), node('span', `${displayTime(airing.start_minute)}–${airing.end_minute === dayStart + DAY_MINUTES ? '24:00' : displayTime(airing.end_minute)}`, 'block-time'), node('span', `#${airing.airing_id} · ${airing.booked ? 'BOOKED' : airing.public_listing && airing.status === 'planned' ? 'LISTED' : airing.status.replace('_', ' ').toUpperCase()}`, 'block-meta'));
       if (airing.editable) plannerDrag?.bindSource(block, () => ({ programme: airing.programme, airing: airing.airing_id, minutes: p.duration_minutes + airing.ad_minutes }));
       block.addEventListener('click', () => chooseAiring(airing.airing_id)); lane.append(block);
     }
@@ -867,6 +867,13 @@ function renderDetails(): void {
   element('selected-runtime').textContent = airtime !== reserved || a.ad_minutes
     ? `${airtime} min airtime` : '';
   element('selected-status').textContent = `${a.status.replace('_', ' ').toUpperCase()}${a.booked ? ' · BOOKED' : own && a.editable ? ' · INTERNAL DRAFT' : ''}`;
+  const listing = element('airing-listing');
+  listing.replaceChildren();
+  if (a.public_listing) listing.append(node('p', 'Public listing', 'receipt-stamp'));
+  else if (own && !a.filler && a.start_minute > report.now_minute) {
+    listing.append(node('p', 'Internal plan. Moving a published showing withdraws its listing.', 'paper-footnote'),
+      action('Publish showing', () => send({ type: 'publish_airing', airing_id: a.airing_id })));
+  }
   const owned = own ? report.catalogue.find(work => work.id === a.programme) : null;
   element('known-details').textContent = owned ? `${owned.genre} · ${owned.kind}${owned.episode ? ` ${owned.episode}` : ''} · ${owned.production_type}. ${owned.qualities.map(q => `${q.name} · ${q.level}`).join(", ")}. Cost per airing: ${money(owned.broadcast_cost)} Funds. Execution is unknown.` : `${p.genre} · ${own ? 'previously owned programme' : 'competitor programme'}. This work is outside your library. Its execution is unknown.`;
   if (a.filler) {

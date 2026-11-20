@@ -119,3 +119,14 @@ capacity both constrained the second listing and let the independent studio
 booking proceed. In a quiet spell both timed variants imposed the same
 wait. Commands stay immediate pending evidence from playtesting.
 Two focused Rust tests passed. See the [decision](../../docs/station-time-experiment.md).
+
+## Public listings
+
+Select **Publish showing** in a future airing's file. The programme is now
+a public listing for that start time. A move withdraws it. A rival's
+unannounced schedule remains internal beyond the next 24 hours.
+
+With otherwise identical schedules, the matched [fixture](publicity.txt)
+drew approximately 12,991 opening viewers for an internal plan and 13,238
+with a full-notice listing. Withdrawing the listing returned the outcome
+to baseline. See the provisional [rules](../../docs/weekly-scheduling.md#public-listing-pilot).

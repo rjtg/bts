@@ -34,6 +34,9 @@ pub enum Command {
         start_minute: u32,
         teaser_for: Option<u32>,
     },
+    PublishAiring {
+        airing_id: u32,
+    },
     PreviewWeekly {
         plan: WeeklyInput,
     },
@@ -289,6 +292,7 @@ pub struct ScheduleEntry {
     pub start_minute: u32,
     pub end_minute: u32,
     pub filler: bool,
+    pub public_listing: bool,
     pub teaser_for: Option<u32>,
     pub teaser_current: bool,
     pub proposed_advertiser: Option<u16>,

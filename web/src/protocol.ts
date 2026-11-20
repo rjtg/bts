@@ -36,6 +36,7 @@ export type Command =
   | { type: 'book_production'; production_id: number; exceptional_person: number | null; cooperation_sway: number }
   | { type: 'place'; start_tick: number; programme: number; advertiser: number | null }
   | { type: 'move'; airing_id: number; start_tick: number }
+  | { type: 'publish_airing'; airing_id: number }
   | { type: 'remove'; airing_id: number }
   | { type: 'set_advertiser'; airing_id: number; advertiser: number | null }
   | { type: 'request_offer'; airing_id: number }
@@ -47,6 +48,7 @@ export interface Programme {
   broadcast_cost: string; duration_minutes: number;
 }
 export interface Airing {
+  public_listing: boolean;
   prior_slot_airing: boolean;
   lead_in_airing_id: number | null;
   autosell_eligible: boolean; autosell: AutosellPolicy | null;
