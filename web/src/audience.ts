@@ -1,7 +1,8 @@
 import type { Command, Polling, Report } from './protocol';
-import { action, element, node } from './ui/dom';
+import { element, node } from './ui/dom';
 import { rotaryDial } from './ui/dial';
 import { dossier as officeFile, leaf, spread } from './ui/dossier';
+import { paperIndex } from './ui/paper-index';
 import { starRating } from './ui/stars';
 
 const portraits: Partial<Record<number, string>> = {
@@ -31,29 +32,18 @@ export function renderAudience(report: Report, stamp: (tick: number) => string, 
   const index = node('nav', '', 'binder-index');
   index.setAttribute('aria-label', 'Research binder contents');
   const leaves = node('div', '', 'binder-leaves');
-  function show(key: string, focus = true) {
-    for (const tab of index.querySelectorAll<HTMLButtonElement>('[data-survey-file]')) {
-      tab.setAttribute('aria-pressed', String(tab.dataset.surveyFile === key));
-    }
-    for (const file of leaves.children) {
-      if (file instanceof HTMLElement) file.hidden = file.dataset.surveyPage !== key;
-    }
-    if (focus) leaves.querySelector<HTMLElement>(':scope > :not([hidden])')?.focus({ preventScroll: true });
-  }
+  const papers = paperIndex<string>(index);
   function add(key: string, label: string, page: HTMLElement, art?: string) {
-    const tab = action(label, () => show(key), 'binder-tab');
-    tab.dataset.surveyFile = key;
-    page.dataset.surveyPage = key;
     page.id = `survey-page-${key}`;
     page.tabIndex = -1;
-    tab.setAttribute('aria-controls', page.id);
+    const tab = papers.add(key, label, page);
+    tab.dataset.surveyFile = key;
     if (art) {
       const image = node('img');
       image.src = `${import.meta.env.BASE_URL}audiences/${art}.webp`;
       image.alt = '';
       tab.prepend(image);
     }
-    index.append(tab);
     leaves.append(page);
   }
   const desk = leaf();
@@ -164,6 +154,5 @@ export function renderAudience(report: Report, stamp: (tick: number) => string, 
     card.append(officeFile('Research', [{ label: group.name, content: spread(profile, investigation) }]));
     add(String(group.id), group.name, card, portrait);
   }
-  show(Array.from(index.children).some(tab => tab instanceof HTMLElement && tab.dataset.surveyFile === selected)
-    ? selected : 'survey', false);
+  if (!papers.show(selected)) papers.show('survey');
 }
