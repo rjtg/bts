@@ -30,6 +30,8 @@ export function officePapers(tape: Programme, report: Report, history: Broadcast
     node('p', details.recommendation(next ?? details.start), 'handwritten'));
 
   const previous = sheet('Last transmission');
+  const regular = report.schedule.find(airing => airing.programme === tape.id
+    && airing.status === 'planned' && airing.prior_slot_airing);
   const last = history[0];
   if (last) {
     const labels = last.audiences.map(group => group.audience);
@@ -43,6 +45,7 @@ export function officePapers(tape: Programme, report: Report, history: Broadcast
   } else previous.append(node('p', 'We haven’t aired this tape yet.', 'handwritten'));
 
   const expected = sheet('Before it airs');
+  if (regular) expected.append(node('p', 'One planned airing returns to a slot this run has used before.', 'small'));
   const forecast = node('div');
   const time = node('input'); time.type = 'time'; time.step = '60';
   const date = node('select');

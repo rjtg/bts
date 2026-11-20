@@ -8,6 +8,7 @@ pub mod film;
 pub mod production;
 pub mod research;
 pub mod rights;
+mod slot_habits;
 pub mod weekly;
 
 use crate::economy::{ContractId, Offer};
@@ -112,6 +113,7 @@ pub struct Planner {
     autosell_checked: BTreeSet<AiringId>,
     automatic_sales: BTreeSet<ad_market::MinuteSaleId>,
     brand_reviews: Vec<brand_review::BrandReview>,
+    slot_habits: BTreeMap<(slot_habits::HabitSlot, AudienceId), slot_habits::Habit>,
     next_id: u32,
     revision: u64,
     production: production::ProductionState,
@@ -163,6 +165,7 @@ impl Planner {
             autosell_checked: BTreeSet::new(),
             automatic_sales: BTreeSet::new(),
             brand_reviews: Vec::new(),
+            slot_habits: BTreeMap::new(),
             next_id: 1,
             revision: 0,
             production: production::ProductionState::default(),
@@ -733,6 +736,7 @@ impl Planner {
                 Some(&starts),
                 start.availability_index(),
                 &self.minute_campaigns(start, action.at),
+                &self.slot_habit_modifiers(start),
             )
             .map_err(engine_error)?;
         event.financial = economy::apply_slot(&self.engine.world, &mut next.economy, &event)
@@ -828,7 +832,7 @@ impl Planner {
         self.engine
             .update_programme_history(&mut completed_state, &mut completion)
             .map_err(engine_error)?;
-        for airing in ending {
+        for mut airing in ending {
             if !airing.cancelled() && airing.filler.is_none() {
                 completed_state
                     .broadcasts
@@ -856,10 +860,11 @@ impl Planner {
                 .financial
                 .ledger
                 .extend_from_slice(&completed_state.economy.ledger()[before..]);
-            let mut result = airing.snapshot;
+            let mut result = airing.snapshot.take();
             if let Some(r) = &mut result {
                 r.cash_after = completed_state.economy.cash(airing.station).unwrap();
             }
+            self.learn_slot_habit(&airing, result.as_ref());
             self.airings.get_mut(&airing.id).unwrap().result = result;
         }
         self.engine.state = completed_state;

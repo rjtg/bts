@@ -553,7 +553,13 @@ impl<T: Clock> Engine<T> {
         starts: Option<&BTreeSet<StationId>>,
         period: usize,
     ) -> Result<(State<T>, SlotEvent<T>), Error> {
-        self.evaluate_with_minute_campaigns(action, starts, period, &BTreeMap::new())
+        self.evaluate_with_minute_campaigns(
+            action,
+            starts,
+            period,
+            &BTreeMap::new(),
+            &BTreeMap::new(),
+        )
     }
 
     fn evaluate_with_minute_campaigns(
@@ -562,6 +568,7 @@ impl<T: Clock> Engine<T> {
         starts: Option<&BTreeSet<StationId>>,
         period: usize,
         campaigns: &BTreeMap<(StationId, BrandId), u8>,
+        slot_modifiers: &BTreeMap<(StationId, AudienceId), f64>,
     ) -> Result<(State<T>, SlotEvent<T>), Error> {
         if action.at <= self.state.now {
             return Err(Error::Invalid("slot time must strictly increase".into()));
@@ -673,7 +680,11 @@ impl<T: Clock> Engine<T> {
                     * history.attachment_factor
                     * history.reception_factor
                     * history.continuity_factor
-                    * history.repeat_factor;
+                    * history.repeat_factor
+                    * slot_modifiers
+                        .get(&(station.id, audience.id))
+                        .copied()
+                        .unwrap_or(1.0);
                 bounded(utility, 0.0, 3.0, "programme selection utility")?;
                 viewing.push(Viewing {
                     station: station.id,

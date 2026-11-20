@@ -15,7 +15,7 @@ pub struct AutosellPolicy {
 }
 
 impl Planner {
-    fn autosell_key(&self, airing: &Airing) -> Option<RunKey> {
+    pub(super) fn recurring_key(&self, airing: &Airing) -> Option<RunKey> {
         if let Some(weekly) = airing.weekly {
             return Some(RunKey::Weekly(weekly));
         }
@@ -25,11 +25,11 @@ impl Planner {
     }
 
     pub fn autosell_policy(&self, airing: &Airing) -> Option<AutosellPolicy> {
-        self.autosell.get(&self.autosell_key(airing)?).copied()
+        self.autosell.get(&self.recurring_key(airing)?).copied()
     }
 
     pub fn autosell_eligible(&self, airing: &Airing) -> bool {
-        airing.station == self.player && self.autosell_key(airing).is_some()
+        airing.station == self.player && self.recurring_key(airing).is_some()
     }
 
     pub fn is_automatic_sale(&self, id: MinuteSaleId) -> bool {
@@ -43,7 +43,7 @@ impl Planner {
     ) -> Result<(), PlanError> {
         let airing = self.airing(id)?;
         let key = self
-            .autosell_key(airing)
+            .recurring_key(airing)
             .filter(|_| airing.station == self.player)
             .ok_or_else(|| {
                 error(

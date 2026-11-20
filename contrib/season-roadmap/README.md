@@ -24,9 +24,9 @@ Open port 4173 on the preview host. The existing network address is
 
 ## Progress checkpoint
 
-- Active slice: viewing habits.
-- Verified milestones: `7313d17`, `c6b68e4`, and Review brand bids after weekly campaign results.
-- Next: implement slot-specific habit, verify stable versus moved, and commit before lead-ins.
+- Active slice: lead-in carryover.
+- Verified milestones: `7313d17`, `c6b68e4`, `bf42a8f`, and Learn audience habits for recurring slots.
+- Next: implement bounded lead-in cohorts and controlled gap and mismatch tests.
 - Runtime token refresh schedule: unavailable.
 
 ## 1. Recurring discussion editions
@@ -105,3 +105,24 @@ profit.
 [Browser capture of the industry wire](brand-review-wire.png). Workspace tests
 and doctests, strict Clippy and rustdoc, formatting, the Wasm/browser build,
 native/Wasm parity and all 43 Chromium tests passed.
+
+## 4a. Weekly viewing habits
+
+Find this slice with `git log --oneline --grep='Learn audience habits for recurring slots'`.
+The [habit rules](../../docs/weekly-scheduling.md#slot-habits) describe the
+quarter-hour slot key, decay and why the UI presents scheduling evidence
+without revealing the learned strength.
+
+Create a three-occurrence run in Programming, move the middle occurrence to
+another time and air the first. Inspect the moved and unchanged future
+airings. Only the unchanged time shows **Returning to regular slot**. The
+Tape file's Reception section also notes a matching planned airing.
+
+The controlled native fixture holds availability and competition fixed.
+The unchanged second airing has 3,864.2 young viewers versus 3,812.2 after
+moving by 15 minutes. Population remains conserved. The multiplier models
+one possible habit, and forecasts still use published research instead.
+
+[Chromium capture of the returning slot](returning-slot.png). Workspace
+tests and doctests, strict Clippy and rustdoc, formatting, the Wasm/browser
+build, native/Wasm parity and all 43 Chromium tests passed.

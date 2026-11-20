@@ -269,6 +269,7 @@ pub struct ScheduleEntry {
     pub sold_minutes: u8,
     pub weekly_id: Option<u32>,
     pub autosell_eligible: bool,
+    pub prior_slot_airing: bool,
     pub autosell: Option<AutosellView>,
     pub booked: bool,
     pub status: &'static str,

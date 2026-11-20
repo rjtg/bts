@@ -17,7 +17,7 @@ async function dragAcrossConsole(page: Page, source: Locator, target: Locator) {
   await page.mouse.up();
 }
 
-test('three Saturdays with a moved exception, sold ad minutes and a completed first airing', async ({ page }) => {
+test('three Saturdays with a moved exception, sold ad minutes and a completed first airing', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/#planning');
   await expect(page.locator('#status')).toContainText('WASM READY');
@@ -80,6 +80,14 @@ test('three Saturdays with a moved exception, sold ad minutes and a completed fi
   await expect(page.locator('#selected-result')).toContainText('Young viewers');
   if (process.env.BTS_DESK_SCREENSHOTS) await page.screenshot({ path: '../contrib/focused-desks/review.png', fullPage: true });
   if (process.env.BTS_WEEKLY_SCREENSHOTS) await page.locator('#selected-result').screenshot({ path: '../contrib/weekly-planner/receipt.png' });
+  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await page.locator('#day').selectOption('7');
+  await page.locator('[data-station="1"] [data-start-minute="11287"]').click();
+  await expect(page.locator('#selected-status')).not.toContainText('RETURNING TO REGULAR SLOT');
+  await page.locator('#day').selectOption('14');
+  await page.locator('[data-station="1"] [data-start-minute="21240"]').click();
+  await expect(page.locator('#selected-status')).toContainText('RETURNING TO REGULAR SLOT');
+  await page.screenshot({ path: testInfo.outputPath('returning-slot.png') });
 });
 
 test('drag onto the grid, move a draft and preserve its interval after a conflicting drop', async ({ page }) => {

@@ -548,6 +548,7 @@ function resultPanel(result: BroadcastResult): HTMLElement {
     ])));
   }
   const scheduled = report.schedule.find(airing => airing.airing_id === result.airing_id);
+  if (scheduled?.prior_slot_airing) panel.append(node('p', 'This run has aired in this slot before.', 'small'));
   const film = report.film_desk.projects.find(project => project.programme === scheduled?.programme);
   const discussion = report.production.projects.find(project => project.programme === scheduled?.programme);
   if (legacy) panel.append(contractPanel(legacy));
@@ -668,6 +669,7 @@ function renderDetails(): void {
   button('quote').textContent = `Request offer for #${a.airing_id}`;
   button('move').textContent = `Move this airing #${a.airing_id}`;
   element('weekly-edit-controls').hidden = a.weekly_id === null || !own;
+  if (a.prior_slot_airing) element('selected-status').append(document.createTextNode(' · RETURNING TO REGULAR SLOT'));
   if (a.weekly_id !== null) element('selected-status').append(document.createTextNode(' · WEEKLY SLOT')); button('remove').textContent = `Remove #${a.airing_id}`;
   element('open-ad-sales').hidden = !own || a.filler || !!completed;
   element('open-review').hidden = !completed;

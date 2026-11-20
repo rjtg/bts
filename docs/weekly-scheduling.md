@@ -76,15 +76,26 @@ estimated strongest band when the spread is at least 0.15. Raw values stay
 inside Rust. [Controlled results](../contrib/weekly-planner/README.md)
 compare the same 18:00 programme and competition with fresh histories.
 
-### Slot habits (proposal)
+### Slot habits
 
-A weekly habit belongs to an audience group, station, recurring show and
-slot. Let it build gradually from actual viewing and good reception in that
-slot. Missed weeks or disappointing airings weaken it. A habit helps explain
-why players protect a regular appointment. Separate it from loyalty to a show,
-which may follow the work to another time. Specify the tolerance for moves,
-rate of buildup and decay, and how missed or skipped occurrences count before
-implementation.
+A weekly appointment belongs to a group, station, recurring run and
+15-minute weekly slot. Moves within the same slot retain the appointment.
+Crossing its boundary uses the destination slot's own history. A different
+run of the same programme has its own appointments.
+
+At completion, a funded airing updates strength to 55% of prior strength
+and 45% of sampled audience share of total population times satisfaction.
+For each week without a successful edition in that slot, multiply the
+stored contribution by 0.75 before reuse. Starting utility is multiplied
+by `1 + 0.30 × strength` throughout the airing. All choices share the
+same allocation denominator and remain subject to audience availability.
+
+The tracker is internal. Programming and Reception indicate a prior
+successful airing of the same run in the slot. They do not imply a
+measured increase. Quote forecasts omit the realized habit multiplier.
+In a controlled fixture with constant all-day availability, the stable
+second airing draws about 3,864 young viewers versus 3,812 one quarter
+later. The comparison does not calibrate actual viewing behaviour.
 
 ## Audience carryover between airings (proposal)
 
@@ -106,7 +117,7 @@ it with slot habit and decay it across gaps remains open.
 ## Suggested validation
 
 The implemented fixture tests recurring placement, exceptions, protected airings
-and weekday-aware preference. Autosell remains a separate follow-up.
+and weekday-aware preference. Autosell and slot habits have separate controlled tests.
 Use several simulated Saturdays to isolate habit from series loyalty and
 repeat fatigue. Use the same following programme at the same time with
 different lead-ins and gaps to isolate carryover. Check conservation and

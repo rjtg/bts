@@ -42,6 +42,7 @@ export interface Programme {
   broadcast_cost: string; duration_minutes: number;
 }
 export interface Airing {
+  prior_slot_airing: boolean;
   autosell_eligible: boolean; autosell: AutosellPolicy | null;
   airing_id: number; station: number; programme: number; programme_name: string; genre:string; duration_minutes:number; start_tick: number; end_tick: number; start_minute: number; end_minute: number;
   filler: boolean; teaser_for: number | null; teaser_current: boolean; ad_minutes: number; sold_minutes: number; weekly_id: number | null; proposed_advertiser: number | null; booked: boolean; status: 'planned' | 'on_air' | 'completed' | 'off_air'; editable: boolean;
