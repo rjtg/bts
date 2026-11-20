@@ -6,6 +6,7 @@ pub mod brand_review;
 pub mod discussion_run;
 pub mod film;
 mod lead_ins;
+pub mod newsroom;
 pub mod production;
 pub mod research;
 pub mod rights;
@@ -118,6 +119,7 @@ pub struct Planner {
     next_id: u32,
     revision: u64,
     production: production::ProductionState,
+    newsroom: Option<newsroom::Newsroom>,
     discussion_runs: BTreeMap<SeriesId, discussion_run::DiscussionRun>,
     films: BTreeMap<production::ProductionId, film::Film>,
     research: Option<research::Research>,
@@ -170,6 +172,7 @@ impl Planner {
             next_id: 1,
             revision: 0,
             production: production::ProductionState::default(),
+            newsroom: None,
             discussion_runs: BTreeMap::new(),
             films: BTreeMap::new(),
             research: None,
@@ -238,6 +241,7 @@ impl Planner {
     ) -> Result<(), PlanError> {
         if self.now().0 != 0
             || self.rights.is_some()
+            || self.newsroom().is_some()
             || self.airings.values().any(|a| a.station == self.player)
             || self.production.projects().next().is_some()
             || self.production.requests().any(|r| r.acceptance.is_some())
@@ -333,6 +337,33 @@ impl Planner {
             .ok_or_else(|| error("capacity", "Schedule revision capacity exhausted."))?;
         Ok(())
     }
+    fn register_series(
+        &mut self,
+        name: String,
+        continuity_strength: f64,
+    ) -> Result<SeriesId, PlanError> {
+        let id = self
+            .world()
+            .series
+            .iter()
+            .map(|series| series.id.0)
+            .max()
+            .unwrap_or(0)
+            .checked_add(1)
+            .map(SeriesId)
+            .ok_or_else(|| error("capacity", "Series identifiers exhausted."))?;
+        self.engine.world.series.push(Series {
+            id,
+            name,
+            continuity_strength,
+        });
+        for audience in &self.engine.world.audiences {
+            self.engine.state.loyalty.insert((audience.id, id), 0.5);
+            self.engine.state.progress.insert((audience.id, id), 0);
+        }
+        Ok(id)
+    }
+
     fn validate_placement(
         &self,
         station: StationId,
@@ -374,7 +405,16 @@ impl Planner {
                 "Place the whole programme in unplayed time within the scenario schedule.",
             ));
         }
+        self.validate_news_freshness(programme.id, start, end)?;
         if self.overlaps_reserved_edition(station, start, end)
+            || (station == self.player
+                && self.newsroom().is_some_and(|news| {
+                    news.editions.iter().any(|edition| {
+                        edition.reserved_end().is_some_and(|reserved_end| {
+                            start < reserved_end && end > edition.air_at
+                        })
+                    })
+                }))
             || self.airings.values().any(|a| {
                 a.station == station && Some(a.id) != except && start < a.end && end > a.start
             })
@@ -876,6 +916,7 @@ impl Planner {
         self.review_brand_bidding(action.at);
         let boundary = action.at.tick_floor();
         self.finish_productions(boundary)?;
+        self.advance_newsroom(boundary)?;
         self.advance_films(boundary)?;
         self.poll_boundary(boundary)?;
         let ledger_before_rights = self.state().economy().ledger().len();

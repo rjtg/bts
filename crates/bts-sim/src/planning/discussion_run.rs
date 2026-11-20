@@ -44,17 +44,8 @@ impl Planner {
         if ad_minutes > ad_market::MAX_AD_MINUTES {
             return Err(error("ad_inventory", "Choose up to 30 ad minutes."));
         }
-        let id = self
-            .world()
-            .series
-            .iter()
-            .map(|series| series.id.0)
-            .max()
-            .unwrap_or(0)
-            .checked_add(1)
-            .map(SeriesId)
-            .ok_or_else(|| error("capacity", "Series identifiers exhausted."))?;
         let mut candidate = self.clone();
+        let id = candidate.register_series(brief.title.trim().to_owned(), 0.0)?;
         let mut editions = Vec::new();
         for index in 0..EDITIONS {
             let repeat = index * WEEK_TICKS;
@@ -83,19 +74,6 @@ impl Planner {
             };
             candidate.validate_edition_time(&edition)?;
             editions.push(edition);
-        }
-        candidate.engine.world.series.push(Series {
-            id,
-            name: brief.title.trim().to_owned(),
-            continuity_strength: 0.0,
-        });
-        for audience in &candidate.engine.world.audiences {
-            candidate
-                .engine
-                .state
-                .loyalty
-                .insert((audience.id, id), 0.5);
-            candidate.engine.state.progress.insert((audience.id, id), 0);
         }
         candidate.discussion_runs.insert(
             id,
@@ -185,6 +163,13 @@ impl Planner {
         self.validate_edition_time(edition)?;
         let end = self.edition_end(edition)?;
         if self.overlaps_reserved_edition(self.player, edition.air_at, end)
+            || self.newsroom().is_some_and(|news| {
+                news.editions.iter().any(|bulletin| {
+                    bulletin.reserved_end().is_some_and(|reserved_end| {
+                        edition.air_at < reserved_end && end > bulletin.air_at
+                    })
+                })
+            })
             || self.airings().any(|airing| {
                 airing.station == self.player && edition.air_at < airing.end && end > airing.start
             })

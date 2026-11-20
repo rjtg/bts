@@ -97,7 +97,8 @@ export function officePapers(tape: Programme, report: Report, history: Broadcast
   const rights = report.finances.ledger.filter(entry => entry.rights_title === tape.id);
   const rightsTotal = (kind: string) => rights.filter(entry => entry.kind === kind)
     .reduce((sum, entry) => sum + BigInt(entry.amount), 0n);
-  const productionCost = film?.committed ?? discussion?.budget;
+  const bulletin = report.newsroom?.editions.find(edition => edition.programme === tape.id);
+  const productionCost = film?.committed ?? discussion?.budget ?? bulletin?.cost;
   const fundsText = (value: bigint) => `${money(String(value))} Funds`;
   funds.append(node('p', `Ad receipts · ${fundsText(details.receipts)}`), node('p', `Airing costs · ${fundsText(details.costs)}`));
   if (productionCost !== undefined) funds.append(node('p', `Production · ${fundsText(BigInt(productionCost))}`));

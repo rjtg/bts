@@ -24,9 +24,9 @@ Open port 4173 on the preview host. The existing network address is
 
 ## Progress checkpoint
 
-- Active slice: recurring newsroom.
-- Verified milestones: `7313d17`, `c6b68e4`, `bf42a8f`, `ed2f906` and Model bounded lead-ins between programmes.
-- Next: implement the clock-driven five-edition newsroom and same-day freshness.
+- Active slice: talent contracts.
+- Verified milestones: `7313d17`, `c6b68e4`, `bf42a8f`, `ed2f906`, `656746d`, and Run same-day news editions from Production.
+- Next: add date-specific prepaid host agreements and connect them to booking.
 - Runtime token refresh schedule: unavailable.
 
 ## 1. Recurring discussion editions
@@ -147,3 +147,26 @@ estimate based on the predecessor's opening audience.
 [Chromium capture of the potential lead-in](lead-in.png). Workspace tests
 and doctests, strict Clippy and rustdoc, formatting, Wasm/browser build,
 native/Wasm parity and all 43 Chromium tests passed.
+
+## 5a. Recurring newsroom
+
+Find this slice with `git log --oneline --grep='Run same-day news editions from Production'`.
+The [newsroom rules](../../docs/recurring-newsroom.md) give the daily
+timeline, financial commitments, and scope of the bulletin fixture.
+
+Open Preparation, choose **Open daily newsroom**, and start five editions
+using the default Evening Bulletin brief. Advance through the first tape
+delivery. Replace Iris Bell with Tomas Avery for the unstarted editions,
+then use the first card to open its airing and run it. The first card and
+Tape file retain Iris's credit.
+
+The controlled native replay deliberately blocks edition two with another
+airing. Four delivered bulletins cost 1,400 Funds, including studio work.
+The second edition is missed and charges nothing. A conflicting studio
+booking and an attempt to move a bulletin into the next day both fail.
+
+[Chromium capture of the newsroom board](newsroom-board.png). Workspace
+tests and doctests, strict Clippy and rustdoc, formatting, Wasm/browser build
+and native/Wasm parity passed. The full run passed 43 existing browser
+tests. The new newsroom walkthrough passed on rerun after correcting
+the staff selectors' accessible names.

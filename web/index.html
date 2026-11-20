@@ -83,6 +83,26 @@
     <section hidden data-desk="production" id="production" class="panel lower-panel" aria-labelledby="production-title">
       <div class="panel-heading"><div><p class="overline">ORIGINAL PROGRAMMING</p><h2 id="production-title">Studio production</h2></div><span class="tag">STANDALONE DISCUSSION · 45 MIN</span></div>
       <p class="muted">Choose a host, two guests and a creative direction. Book one hour to record, then allow two hours for post-production. Completed shows join your programme library.</p>
+      <details id="newsroom-board" class="production-card">
+        <summary>Daily newsroom</summary>
+        <p>Report at 09:00, record at 13:00 and deliver a 30-minute bulletin at 14:00 each day.
+          Staff and the 100 Funds studio charge are committed when reporting starts.</p>
+        <form id="newsroom-form" class="production-form">
+          <fieldset id="newsroom-first-plan"><legend>First edition</legend>
+            <div class="form-row"><label>Bulletin title<input id="newsroom-title" value="Evening Bulletin" maxlength="45" required></label>
+              <label>Start day<select id="newsroom-day"></select></label>
+              <label>Bulletin airtime<input id="newsroom-airtime" type="time" value="18:00" required></label>
+              <label>Ad minutes<input id="newsroom-ads" type="number" value="5" min="0" max="30" step="1" required></label></div>
+          </fieldset>
+          <div class="form-row">
+            <label>Reporter<select id="newsroom-reporter" aria-label="Reporter"></select></label>
+            <label>Anchor<select id="newsroom-anchor" aria-label="Anchor"></select></label>
+            <label>Studio<select id="newsroom-studio" aria-label="Studio"></select></label>
+            <button id="newsroom-start">Start five daily editions</button>
+          </div>
+        </form>
+        <div id="newsroom-editions" class="news-edition-board"></div>
+      </details>
       <div id="station-teams" class="station-teams" aria-label="Station teams and facilities"></div>
       <div class="production-layout">
         <form id="production-form" class="production-form"><h3 id="production-editor-title">New concept</h3>
@@ -106,7 +126,7 @@
         <div><section id="sway-panel" class="sway-panel" aria-label="Pooled Sway and production requests"></section><div id="discussion-run-binders" class="production-projects"></div><div id="production-projects" class="production-projects"></div></div>
       </div>
     </section>
-    <section hidden data-desk="film-desk" id="film-desk" class="panel lower-panel project-desk" data-file="preparation"><h2>Preparation</h2><div id="prep-mount"><div id="film-work"><div id="film-notices" aria-live="polite"></div><div id="film-pitch"></div><div id="film-projects" class="production-projects"></div></div></div></section>
+    <section hidden data-desk="film-desk" id="film-desk" class="panel lower-panel project-desk" data-file="preparation"><h2>Preparation</h2><a id="prep-newsroom" href="#production">Open daily newsroom</a><div id="prep-mount"><div id="film-work"><div id="film-notices" aria-live="polite"></div><div id="film-pitch"></div><div id="film-projects" class="production-projects"></div></div></div></section>
     <section hidden data-desk="film-production" id="film-production" class="panel lower-panel project-desk" data-file="production"><h2>Film Production</h2><a href="#production">Discussion studio</a><div id="film-mount"></div></section>
     <section hidden data-desk="rights-market" id="rights-market" class="panel lower-panel" aria-labelledby="rights-market-title">
       <div class="panel-heading"><h2 id="rights-market-title">Rights market</h2></div>

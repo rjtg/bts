@@ -6,6 +6,7 @@ use super::*;
 pub(super) enum RunKey {
     Weekly(AiringId),
     Discussion(SeriesId),
+    Newsroom(SeriesId),
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
@@ -18,6 +19,12 @@ impl Planner {
     pub(super) fn recurring_key(&self, airing: &Airing) -> Option<RunKey> {
         if let Some(weekly) = airing.weekly {
             return Some(RunKey::Weekly(weekly));
+        }
+        if let Some(news) = self
+            .newsroom()
+            .filter(|news| news.editions.iter().any(|e| e.airing == Some(airing.id)))
+        {
+            return Some(RunKey::Newsroom(news.series));
         }
         self.discussion_runs()
             .find(|run| run.editions.iter().any(|e| e.airing == Some(airing.id)))

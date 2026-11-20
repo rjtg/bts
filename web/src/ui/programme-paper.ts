@@ -102,6 +102,13 @@ export function programmeCredits(tape: Programme, report: Report, stamp?: (minut
     if (portrait) pick.prepend(portrait);
     list.append(pick);
   }
+  const bulletin = report.newsroom?.editions.find(edition => edition.programme === tape.id);
+  if (bulletin) {
+    for (const [role, id] of [['Reporter', bulletin.reporter], ['Anchor', bulletin.anchor]] as const) {
+      const person = report.production.people.find(person => person.id === id);
+      if (person) entry(role, person.name, person.description, personPortrait(id, person.name));
+    }
+  }
   const discussion = report.production.projects.find(project => project.programme === tape.id);
   if (discussion) {
     for (const [role, id] of [['Host', discussion.host] as const, ...discussion.guests.map(id => ['Guest', id] as const)]) {

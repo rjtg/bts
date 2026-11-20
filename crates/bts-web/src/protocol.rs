@@ -106,6 +106,16 @@ pub enum Command {
     AcceptRequest {
         request_id: u16,
     },
+    StartNewsroom {
+        title: String,
+        first_day: u32,
+        minute_of_day: u16,
+        ad_minutes: u8,
+        staff: NewsroomStaffInput,
+    },
+    UpdateNewsroomStaff {
+        staff: NewsroomStaffInput,
+    },
     CreateDiscussionRun {
         brief: ProductionConceptInput,
         first_air_minute: u32,
@@ -209,6 +219,7 @@ pub struct PlayerReport {
     pub cash: String,
     pub research: Option<bts_sim::planning::research::ResearchView>,
     pub production: ProductionView,
+    pub newsroom: Option<NewsroomView>,
     pub film_desk: FilmDesk,
     pub rights_market: RightsMarket,
     pub film_review: Option<FilmReview>,
@@ -726,4 +737,36 @@ pub struct BrandNews {
     pub advertiser: u16,
     pub tick: u32,
     pub direction: bts_sim::planning::brand_review::BidDirection,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct NewsroomStaffInput {
+    pub reporter: u16,
+    pub anchor: u16,
+    pub studio: u16,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct NewsroomView {
+    pub title: String,
+    pub editions: Vec<NewsEditionView>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct NewsEditionView {
+    pub id: u32,
+    pub reporting_tick: u32,
+    pub recording_tick: u32,
+    pub recording_end_tick: u32,
+    pub delivery_tick: u32,
+    pub reporter: u16,
+    pub anchor: u16,
+    pub studio: u16,
+    pub air_minute: u32,
+    pub reserved_end_minute: Option<u32>,
+    pub ad_minutes: u8,
+    pub cost: String,
+    pub phase: bts_sim::planning::newsroom::NewsPhase,
+    pub programme: Option<u16>,
+    pub airing_id: Option<u32>,
+    pub exception: Option<&'static str>,
 }

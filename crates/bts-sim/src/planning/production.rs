@@ -328,6 +328,7 @@ impl Planner {
         requests: Vec<ProductionRequest>,
     ) -> Result<(), PlanError> {
         if self.now().0 != 0
+            || self.newsroom().is_some()
             || !self.production.projects.is_empty()
             || self
                 .production
@@ -672,6 +673,7 @@ impl Planner {
             .map(StudioId)
             .find(|number| {
                 requested_studio.is_none_or(|selected| selected == *number)
+                    && !self.newsroom_holds_studio(*number, p.concept.record_at, p.recording_end)
                     && !self.production.projects.values().any(|other| {
                         other.studio == Some(*number)
                             && p.concept.record_at < other.recording_end

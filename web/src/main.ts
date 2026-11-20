@@ -6,6 +6,7 @@ import { renderAdMarket, salesFor, minuteRevenue } from './ad-market';
 import { initialiseRightsMarket } from './rights-market';
 import { renderAudience } from './audience';
 import { initialiseFilmDesk, preparing } from './film';
+import { initialiseNewsroom } from './newsroom';
 import { initialiseProduction } from './production';
 import './style.css';
 import { element, select, button, node, option } from './ui/dom';
@@ -33,6 +34,7 @@ let weeklyUi: ReturnType<typeof initialiseWeeklyPlanner> | undefined;
 let plannerDrag: ReturnType<typeof initialisePlannerDrag> | undefined;
 let rightsUi: ReturnType<typeof initialiseRightsMarket> | undefined;
 let filmUi: ReturnType<typeof initialiseFilmDesk> | undefined;
+let newsroomUi: ReturnType<typeof initialiseNewsroom> | undefined;
 let productionUi: ReturnType<typeof initialiseProduction> | undefined;
 let selected: number | null = null;
 let libraryProgramme = 1;
@@ -455,19 +457,24 @@ function renderTimeline(): void {
         cell.addEventListener('click', () => pickGap(Math.max(report.now_minute, minute)));
         lane.append(cell);
       }
+      function reserveBlock(title: string, start: number, end: number | null, open: () => void) {
+        if (end === null || end <= dayStart || start >= dayStart + DAY_MINUTES) return;
+        const block = node('button', `${title} · In production`, 'airing-block booked');
+        Object.assign(block.style, position(start, end));
+        block.title = `${title} · ${airStamp(start)} · Airtime held for production`;
+        block.addEventListener('click', () => { desks.navigate('production'); open(); });
+        lane.append(block);
+      }
       for (const run of report.production.discussion_runs) {
-        for (const edition of run.editions) {
-          const start = edition.planned_air_minute;
-          const end = edition.reserved_end_minute;
-          if (end === null || end <= dayStart || start >= dayStart + DAY_MINUTES) continue;
-          const block = node('button', `${run.title} · In production`, 'airing-block booked');
-          Object.assign(block.style, position(start, end));
-          block.title = `${run.title} · ${airStamp(start)} · Airtime held for production`;
-          block.addEventListener('click', () => {
-            desks.navigate('production');
-            productionUi?.showProject(edition.production_id);
+        for (const edition of run.editions) reserveBlock(run.title, edition.planned_air_minute, edition.reserved_end_minute,
+          () => productionUi?.showProject(edition.production_id));
+      }
+      if (report.newsroom) {
+        for (const [index, edition] of report.newsroom.editions.entries()) {
+          reserveBlock(report.newsroom.title, edition.air_minute, edition.reserved_end_minute, () => {
+            element<HTMLDetailsElement>('newsroom-board').open = true;
+            element(`news-edition-${index + 1}`).scrollIntoView({ block: 'center' });
           });
-          lane.append(block);
         }
       }
       for (const gap of report.gaps.filter(g => g.start_minute < dayStart + DAY_MINUTES && g.end_minute > dayStart)) {
@@ -557,6 +564,8 @@ function resultPanel(result: BroadcastResult): HTMLElement {
   if (scheduled?.prior_slot_airing) panel.append(node('p', 'This run has aired in this slot before.', 'small'));
   const film = report.film_desk.projects.find(project => project.programme === scheduled?.programme);
   const discussion = report.production.projects.find(project => project.programme === scheduled?.programme);
+  const bulletin = report.newsroom?.editions.find(edition => edition.programme === scheduled?.programme);
+  if (bulletin) panel.append(node('p', `News production · ${money(bulletin.cost)} Funds.`));
   if (legacy) panel.append(contractPanel(legacy));
   if (discussion) panel.append(node('p', `Production investment: ${money(discussion.budget)} Funds.`));
   if (film) {
@@ -764,7 +773,7 @@ function render(next: Report): void {
   calendar.followClock();
   calendar.render();
   renderOffice();
-  renderAudience(report, stamp, send); renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report); filmUi?.render(report); rightsUi?.render(report); weeklyUi?.render(report);
+  renderAudience(report, stamp, send); renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report); newsroomUi?.render(report); filmUi?.render(report); rightsUi?.render(report); weeklyUi?.render(report);
 
 }
 function send(command: Command, automatic = false): void {
@@ -950,6 +959,14 @@ async function start(): Promise<void> {
       renderCatalogue(); element('library-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
       document.querySelector<HTMLElement>(`[data-programme="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
+    newsroomUi = initialiseNewsroom({ report: () => report, send, stamp: exactStamp, money, showAiring: id => chooseAiring(id, true) });
+    element('prep-newsroom').addEventListener('click', event => {
+      event.preventDefault();
+      desks.navigate('production');
+      const board = element<HTMLDetailsElement>('newsroom-board');
+      board.open = true;
+      board.querySelector('summary')?.focus();
+    });
     productionUi = initialiseProduction({ report: () => report, send, stamp, money, showProgramme, showAiring: id => chooseAiring(id, true) });
     filmUi = initialiseFilmDesk({ send, stamp, money, showProgramme,
       openProject: film => {

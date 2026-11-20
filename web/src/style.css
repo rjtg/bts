@@ -2559,3 +2559,11 @@ body[data-station-view="office"] .rail #reset { margin-left:0; }
 }
 .discussion-binder > h3, .discussion-binder > p { margin: 0; }
 .discussion-binder .production-card .muted { color: inherit; }
+
+.news-edition-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: .65rem;
+}
+.news-edition-board > h4 { grid-column: 1 / -1; }
+.news-edition-board h5 { margin-top: 0; }

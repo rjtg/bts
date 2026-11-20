@@ -382,6 +382,26 @@ impl Session {
                 .planner
                 .accept_request(RequestId(request_id))
                 .map_err(player_error)?,
+            Command::StartNewsroom {
+                title,
+                first_day,
+                minute_of_day,
+                ad_minutes,
+                staff,
+            } => self
+                .planner
+                .start_newsroom(
+                    title,
+                    first_day,
+                    minute_of_day,
+                    ad_minutes,
+                    news_staff(staff),
+                )
+                .map_err(player_error)?,
+            Command::UpdateNewsroomStaff { staff } => self
+                .planner
+                .update_newsroom_staff(news_staff(staff))
+                .map_err(player_error)?,
             Command::CreateDiscussionRun {
                 brief,
                 first_air_minute,
@@ -702,6 +722,27 @@ impl Session {
                             start_tick: project.concept.record_at.0,
                             end_tick: project.recording_end.0,
                         })
+                        .chain(self.planner.newsroom().into_iter().flat_map(|room| {
+                            room.editions.iter().filter_map(move |edition| {
+                                use bts_sim::planning::newsroom::NewsPhase;
+                                if matches!(edition.phase, NewsPhase::Planned | NewsPhase::Missed) {
+                                    return None;
+                                }
+                                let (start, end) = if edition.reporter == p.id {
+                                    (edition.reporting_at(), edition.recording_at())
+                                } else if edition.anchor == p.id {
+                                    (edition.recording_at(), edition.recording_end())
+                                } else {
+                                    return None;
+                                };
+                                Some(TalentCommitment {
+                                    production_id: edition.id.0,
+                                    title: room.title.clone(),
+                                    start_tick: start.0,
+                                    end_tick: end.0,
+                                })
+                            })
+                        }))
                         .collect(),
                 })
                 .collect(),
@@ -916,6 +957,15 @@ impl Session {
                 self.planner
                     .discussion_runs()
                     .flat_map(|run| &run.editions)
+                    .filter_map(|edition| {
+                        edition.reserved_end().map(|end| (edition.air_at.0, end.0))
+                    }),
+            )
+            .chain(
+                self.planner
+                    .newsroom()
+                    .into_iter()
+                    .flat_map(|news| &news.editions)
                     .filter_map(|edition| {
                         edition.reserved_end().map(|end| (edition.air_at.0, end.0))
                     }),
@@ -1151,6 +1201,34 @@ impl Session {
             cash: economy.cash(PLAYER).unwrap().0.to_string(),
             research: self.planner.research_view(),
             production: self.production_view(),
+            newsroom: self.planner.newsroom().map(|news| NewsroomView {
+                title: news.title.clone(),
+                editions: news
+                    .editions
+                    .iter()
+                    .map(|edition| NewsEditionView {
+                        id: edition.id.0,
+                        reporting_tick: edition.reporting_at().0,
+                        recording_tick: edition.recording_at().0,
+                        recording_end_tick: edition.recording_end().0,
+                        delivery_tick: edition.delivery_at().0,
+                        reporter: edition.reporter.0,
+                        anchor: edition.anchor.0,
+                        studio: edition.studio.0,
+                        air_minute: edition.air_at.0,
+                        reserved_end_minute: edition.reserved_end().map(|m| m.0),
+                        ad_minutes: edition.ad_minutes,
+                        cost: edition.cost.0.to_string(),
+                        phase: edition.phase,
+                        programme: edition.programme.map(|id| id.0),
+                        airing_id: edition
+                            .airing
+                            .filter(|id| self.planner.airing(*id).is_ok())
+                            .map(|id| id.0),
+                        exception: edition.exception,
+                    })
+                    .collect(),
+            }),
             film_desk: film_desk(&self.planner),
             rights_market: self.rights_market(),
             film_review: self.film_review.clone(),
@@ -1342,6 +1420,14 @@ mod wasm {
 }
 #[cfg(test)]
 mod tests;
+
+fn news_staff(input: NewsroomStaffInput) -> bts_sim::planning::newsroom::NewsStaff {
+    bts_sim::planning::newsroom::NewsStaff {
+        reporter: PersonId(input.reporter),
+        anchor: PersonId(input.anchor),
+        studio: StudioId(input.studio),
+    }
+}
 
 fn concept_input(input: ProductionConceptInput) -> Result<Concept, PlayerError> {
     if input.budget.is_empty() || !input.budget.bytes().all(|b| b.is_ascii_digit()) {

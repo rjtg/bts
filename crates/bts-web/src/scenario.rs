@@ -197,6 +197,61 @@ pub fn production_roster() -> (
     rival.name = "Vera Quinn".into();
     rival.description = "Channel Two's regular studio host.".into();
     people.push(rival);
+    for (id, name, role, fee, craft, recognition, depth, rigour) in [
+        (20, "Iris Bell", Role::Reporter, 130, 0.84, 0.35, 0.86, 0.91),
+        (
+            21,
+            "Tomas Avery",
+            Role::Reporter,
+            110,
+            0.72,
+            0.40,
+            0.64,
+            0.67,
+        ),
+        (22, "Cleo Finch", Role::Anchor, 120, 0.76, 0.66, 0.54, 0.70),
+        (
+            23,
+            "Adrian Locke",
+            Role::Anchor,
+            140,
+            0.88,
+            0.72,
+            0.65,
+            0.79,
+        ),
+    ] {
+        people.push(Talent {
+            id: PersonId(id),
+            name: name.into(),
+            role,
+            fee: bts_sim::economy::Money(fee),
+            description: if role == Role::Reporter {
+                "Reports on local events."
+            } else {
+                "Presents the evening bulletin."
+            }
+            .into(),
+            craft,
+            recognition,
+            subject_fit: [0.6; 3],
+            capabilities: bts_sim::Capabilities([
+                None,
+                Some(0.2),
+                None,
+                Some(0.5),
+                None,
+                None,
+                Some(0.6),
+                Some(depth),
+                Some(0.9),
+                Some(rigour),
+            ]),
+            normal_until: SimTick(END_TICK),
+            negotiable_from: None,
+        });
+    }
+
     (people, requests)
 }
 

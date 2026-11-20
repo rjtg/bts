@@ -52,6 +52,7 @@ or equivalent linked views, retaining the originating schedule or task.
 Prefer a shared production-detail structure with format-specific controls.
 
 ## News is produced television
+The [daily newsroom pilot](recurring-newsroom.md) implements the five-edition evening bulletin subset through Production.
 
 There is no separate Newsroom destination. A news bulletin, current-affairs
 magazine, political panel or topical late-night show is created and managed

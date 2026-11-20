@@ -22,6 +22,8 @@ export type Command =
   | { type: 'set_polling'; polling: Polling }
   | { type: 'spend_insight'; audience: number; amount: number }
   | { type: 'accept_request'; request_id: number }
+  | { type: 'start_newsroom'; title: string; first_day: number; minute_of_day: number; ad_minutes: number; staff: NewsroomStaff }
+  | { type: 'update_newsroom_staff'; staff: NewsroomStaff }
   | { type: 'create_discussion_run'; brief: ProductionConcept; first_air_minute: number; ad_minutes: number }
   | { type: 'book_discussion_edition'; production_id: number; studio: number }
   | { type: 'create_production'; concept: ProductionConcept }
@@ -86,6 +88,7 @@ export interface Report {
   rights_market: RightsMarket;
   film_review: FilmReview | null;
   production: ProductionView;
+  newsroom: Newsroom | null;
   booking_review: { production_id: number; exceptional_person: number | null; cooperation_sway: number; studio:number; total_sway: number; sway_remaining: number; budget: string; cash_remaining: string } | null;
   reporting: string; now_tick: number; now_minute: number; ad_load_percent: number; end_tick: number; first_weekday: number; weekly_review: WeeklyReview | null; tick_minutes: number; next_airing: number | null; active_airing: number | null; cash: string;
   stations: { id: number; name: string; is_player: boolean; staff:string[]; owned_studios:number|null }[];
@@ -188,3 +191,15 @@ export interface DiscussionEdition {
 export interface AutosellPolicy { floor: string; max_minutes: number }
 
 export interface BrandNews { advertiser: number; tick: number; direction: 'more_competitive' | 'more_cautious' }
+
+export interface NewsroomStaff { reporter: number; anchor: number; studio: number }
+export interface Newsroom {
+  title: string;
+  editions: {
+    id: number; reporter: number; anchor: number; studio: number; cost: string;
+    reporting_tick: number; recording_tick: number; recording_end_tick: number; delivery_tick: number;
+    air_minute: number; reserved_end_minute: number | null; ad_minutes: number;
+    phase: 'planned' | 'reporting' | 'recording' | 'editing' | 'delivered' | 'missed';
+    programme: number | null; airing_id: number | null; exception: string | null;
+  }[];
+}
