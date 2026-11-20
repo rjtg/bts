@@ -1,3 +1,4 @@
+import { openStationDirectory } from './station-directory';
 import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 
@@ -181,7 +182,7 @@ test('idle poses persist until their subject is drawn again and only one pose ch
   const frozen = await office.getAttribute('data-idle-subject');
   await page.clock.runFor(1800);
   await expect(office).toHaveAttribute('data-idle-subject', frozen!);
-  const choice = page.getByLabel('Room motion');
+  const choice = (await openStationDirectory(page)).getByLabel('Room motion');
   await choice.selectOption('on');
   await expect(steam).toHaveCSS('animation-name', 'coffee-steam');
   await page.clock.runFor(1800);

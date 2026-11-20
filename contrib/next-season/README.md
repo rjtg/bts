@@ -9,7 +9,7 @@ Verified slice: tape rack, dated Reception advice and the calendar handoff
 (#6 and #18). The season branch includes the implementation commit and
 [Chromium capture](tape-fit.webp). Rights, Research, Ledger and Airing workspaces (#5 and #8) have a first
 verified pass. Production filing (#7) is verified through the pilot formats.
-Active next: the station strip and accessible directory (#1), then outside
+The station strip and Directory (#1) are implemented. Active next: outside
 dismissal (#2) and the prop changes (#3–#4). Simulation pilots (#12–#17)
 and atmosphere (#9–#11) are pending. Code health (#19) continues at each boundary.
 
@@ -79,3 +79,12 @@ reuse the existing portrait, studio, and booking controls.
 The production build, all 55 Chromium tests including native/Wasm parity,
 Rust workspace tests and doctests, and formatting passed. Chromium used a
 temporary configuration with port 4191 because 4186 was occupied.
+
+## Station strip
+
+At desktop widths, simulated time and the station identity sit above one
+line of mechanical controls, the Today tuner, essential resources and
+Directory. On narrow displays the tuner wraps below the keys. The Directory
+provides the old destinations, station files, room motion and reset. It
+opens with the keyboard or by tapping and closes after navigation.
+[Station strip capture](station-strip.webp).

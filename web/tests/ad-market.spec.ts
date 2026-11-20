@@ -1,3 +1,4 @@
+import { goToDesk } from './station-directory';
 import { pickTime } from './planner-helpers';
 import { expect, test } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
@@ -30,7 +31,7 @@ test('sell one block to two brands, trim it and settle on air', async ({ page })
   await market.getByRole('button', { name: 'Remove unsold minutes' }).click();
   await expect(market).toContainText('0 min available');
   await expect(market).toContainText('min runtime · until 18:');
-  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await goToDesk(page, '▦ Schedule');
   await page.locator('#advance-selected').click();
   await page.locator('#open-review').click();
   const result = page.locator('#selected-result');
@@ -84,12 +85,12 @@ test('two paid campaigns reach the industry wire at the weekly review', async ({
     const offer = ads.locator('.minute-offer').filter({ hasText: 'Everyday Snacks' });
     await offer.locator('summary').click();
     await offer.getByRole('button', { name: 'Accept Everyday Snacks offer' }).click();
-    await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+    await goToDesk(page, '▦ Schedule');
     await page.locator('#advance-selected').click();
   }
   for (let day = 1; day < 7; day++) await page.locator('#advance-day').click();
   await expect(page.locator('#clock')).toContainText('Day 8');
-  await page.getByRole('link', { name: '▱ Rights market', exact: true }).click();
+  await goToDesk(page, '▱ Rights market');
   const wire = page.locator('#rights-news');
   await expect(wire).toContainText(/Everyday Snacks · Bidding more (competitively|cautiously)/);
   await wire.screenshot({ path: testInfo.outputPath('brand-review-wire.png') });

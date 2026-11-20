@@ -1179,7 +1179,7 @@ async function start(): Promise<void> {
       document.documentElement.style.setProperty('--programming-top', `${Math.ceil(bottom) + 4}px`);
     };
     const observer = new ResizeObserver(positionProgramming);
-    for (const frame of [transport, document.querySelector('.masthead')!, document.querySelector('.rail')!]) observer.observe(frame);
+    for (const frame of [transport, document.querySelector('.masthead')!]) observer.observe(frame);
     element('office-calendar').addEventListener('click', () => calendar.dayMode());
     for (const entry of document.querySelectorAll('a[href="#finances"]')) {
       entry.addEventListener('click', () => { ledgerSelection = null; if (report) renderLedger(); });

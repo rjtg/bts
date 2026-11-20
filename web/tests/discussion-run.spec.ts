@@ -1,3 +1,4 @@
+import { goToDesk } from './station-directory';
 import { expect, test } from '@playwright/test';
 
 test('book a weekly discussion run and change edition two after reviewing edition one', async ({ page }) => {
@@ -23,7 +24,7 @@ test('book a weekly discussion run and change edition two after reviewing editio
   await page.locator('#open-review').click();
   await expect(page.locator('#selected-result')).toContainText('Completed.');
 
-  await page.getByRole('link', { name: '▣ Production', exact: true }).click();
+  await goToDesk(page, '▣ Production');
   const replaceGuest = async (edition: typeof second) => {
     await edition.getByRole('button', { name: 'Edit edition' }).click();
     await page.locator('#seat-1').click();
@@ -47,6 +48,6 @@ test('book a weekly discussion run and change edition two after reviewing editio
     await page.locator('#advance-selected').click();
     await page.locator('#open-review').click();
     await expect(page.locator('#selected-result')).toContainText('Completed.');
-    await page.getByRole('link', { name: '▣ Production', exact: true }).click();
+    await goToDesk(page, '▣ Production');
   }
 });

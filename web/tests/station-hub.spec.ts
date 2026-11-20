@@ -102,6 +102,24 @@ test.describe('touch office', () => {
   test('narrow office through minute sale and settlement', async ({ page }) => airingJourney(page, true));
 });
 
+test('the station strip opens the directory by keyboard and preserves all routes', async ({ page }) => {
+  await page.setViewportSize(desktop);
+  await loadOffice(page);
+  const directory = page.getByRole('navigation', { name: 'Station directory' });
+  const control = page.getByRole('button', { name: 'Directory', exact: true });
+  const strip = page.getByRole('region', { name: 'Time controls' });
+  await expect(strip.getByRole('group', { name: 'Station resources' })).toBeVisible();
+  await expect(strip.getByRole('region', { name: "Today's schedule" })).toBeVisible();
+  await shot(page, 'desktop-station-strip');
+  await expect(directory).toBeHidden();
+  await control.press('Enter');
+  await expect(directory.getByRole('link')).toHaveCount(7);
+  await shot(page, 'desktop-directory');
+  await directory.getByRole('link', { name: /Schedule/ }).press('Enter');
+  await expect(directory).toBeHidden();
+  await expect(page.locator('#planning')).toBeVisible();
+});
+
 test('Preparation prop through idea and script then studio booking and back to office', async ({ page }) => {
   await page.setViewportSize(desktop);
   await loadOffice(page);

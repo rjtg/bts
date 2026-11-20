@@ -1,3 +1,4 @@
+import { goToDesk } from './station-directory';
 import { pickTime } from './planner-helpers';
 import { expect, test } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
@@ -9,7 +10,7 @@ test('assess, acquire, air, resell and see a rival acquisition', async ({ page }
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/#planning');
   await expect(page.locator('#status')).toContainText('WASM READY');
-  await page.getByRole('link', { name: /Rights market/ }).click();
+  await goToDesk(page, /Rights market/);
   const market = page.locator('#rights-market');
   const corner = market.locator('article').filter({ has: page.getByRole('heading', { name: 'The Corner Shop' }) });
   const observatory = market.locator('article').filter({ has: page.getByRole('heading', { name: 'Beyond the Observatory' }) });
@@ -29,7 +30,7 @@ test('assess, acquire, air, resell and see a rival acquisition', async ({ page }
   await tape.getByRole('button', { name: 'Find airtime' }).click();
   await pickTime(page, 72, 0);
   await page.locator('#place').click();
-  await page.getByRole('link', { name: /Rights market/ }).click();
+  await goToDesk(page, /Rights market/);
   await corner.getByRole('button', { name: 'List for resale' }).click();
   await expect(corner.getByRole('button', { name: /Sell rights/ })).toBeDisabled();
   await corner.getByRole('button', { name: /Review blocking airing/ }).click();
@@ -39,11 +40,11 @@ test('assess, acquire, air, resell and see a rival acquisition', async ({ page }
   await ads.getByRole('button', { name: 'Find offers' }).click();
   await ads.locator('.minute-offer').first().locator('summary').click();
   await ads.getByRole('button', { name: /^Accept/ }).click();
-  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await goToDesk(page, '▦ Schedule');
   await page.locator('#advance-selected').click();
   await page.locator('#open-review').click();
   await expect(page.locator('#selected-result')).toContainText('Minute sale settlement');
-  await page.getByRole('link', { name: /Rights market/ }).click();
+  await goToDesk(page, /Rights market/);
   await expect(corner.getByRole('button', { name: /Sell rights/ })).toBeEnabled();
   await corner.getByRole('button', { name: /Sell rights/ }).click();
   await expect(page.locator('#results-list')).toContainText('The Corner Shop');

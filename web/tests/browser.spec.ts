@@ -1,3 +1,4 @@
+import { goToDesk, openStationDirectory } from './station-directory';
 import { pickTime } from './planner-helpers';
 import { expect, test } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
@@ -45,12 +46,12 @@ test('plan a varied evening, move/remove broadcasts, book a selected future airi
   await page.locator('#advertiser').selectOption('1'); await page.locator('#set-advertiser').click(); await page.locator('#quote').click();
   await expect(page.locator('#offer')).toContainText(`Offer for airing #${movieId}`);
   await expect(page.locator('#offer')).toContainText('Forecast from published audience estimates');
-  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await goToDesk(page, '▦ Schedule');
   await firstBlock.click();
   await page.locator('#open-ad-sales').click();
   await expect(page.locator('#offer')).toContainText('pending offer belongs to another airing');
   await expect(page.locator('#accept')).toHaveCount(0);
-  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await goToDesk(page, '▦ Schedule');
   await page.locator(`[data-airing="${movieId}"]`).click();
   await page.locator('#open-ad-sales').click();
   await expect(page.locator('#offer')).toContainText(`Offer for airing #${movieId}`);
@@ -66,7 +67,7 @@ test('plan a varied evening, move/remove broadcasts, book a selected future airi
   await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toContainText('Day 1 · 19:15');
   await page.locator('#advance-next').click(); await expect(page.locator('#clock')).toContainText('Day 1 · 21:30');
   await expect(page.locator('#selected-contract')).toContainText('Settled: paid');
-  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await goToDesk(page, '▦ Schedule');
   await page.locator('#open-review').click();
   await expect(page.locator('#office-paper-mount > #results').getByRole('region', { name: 'Airing dossier' })).toBeVisible();
   await expect(page.locator('#selected-result')).toContainText(`Broadcast result · airing #${movieId}`);
@@ -80,8 +81,8 @@ test('plan a varied evening, move/remove broadcasts, book a selected future airi
   await expect(page.locator('#selected-result')).toContainText('Cost 150');
   await page.locator('#advance-day').click(); await expect(page.locator('#clock')).toContainText('Day 2 · 00:00');
   await expect(page.locator('#finance-summary')).toContainText('300');
-  await page.locator('#reset').click(); await expect(page.locator('#cash')).toHaveText('20,000'); await expect(page.locator('#clock')).toContainText('Day 1 · 00:00');
-  await expect(page.locator('#results-list')).toContainText('No completed broadcasts'); await page.getByRole('link', { name: '▦ Schedule', exact: true }).click(); await expect(page.locator('#desk-tape')).toBeVisible();
+  await (await openStationDirectory(page)).getByRole('button', { name: 'Start over' }).click(); await expect(page.locator('#cash')).toHaveText('20,000'); await expect(page.locator('#clock')).toContainText('Day 1 · 00:00');
+  await expect(page.locator('#results-list')).toContainText('No completed broadcasts'); await goToDesk(page, '▦ Schedule'); await expect(page.locator('#desk-tape')).toBeVisible();
   expect(failures).toEqual([]);
 });
 

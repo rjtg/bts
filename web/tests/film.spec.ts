@@ -1,3 +1,4 @@
+import { goToDesk } from './station-directory';
 import { choosePhoto } from './casting-helpers';
 import { pickTime } from './planner-helpers';
 import { expect, test } from '@playwright/test';
@@ -94,7 +95,7 @@ test('pitch, revise, cast, book, advertise and air a film', async ({ page }, tes
   await page.locator('#set-advertiser').click();
   await page.locator('#quote').click();
   await page.locator('#accept').click();
-  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await goToDesk(page, '▦ Schedule');
   await page.locator('#advance-selected').click();
   await page.locator('#open-review').click();
   const result = page.locator('#selected-result');

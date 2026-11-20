@@ -1,3 +1,4 @@
+import { goToDesk, openStationDirectory } from './station-directory';
 import { pickTime } from './planner-helpers';
 import { expect, test, type Page } from '@playwright/test';
 async function ready(page: Page) {
@@ -23,7 +24,7 @@ test('play, pause, double speed and background pause send bounded explicit ticks
   await expect(page.locator('#play-pause')).toBeFocused();
   await page.locator('#library-search').focus();
   await expect(page.locator('#playback-state')).toHaveText('STANDBY'); await page.clock.runFor(2000); await expect(page.locator('#clock')).toContainText('Day 1 · 00:30');
-  await page.locator('#reset').click(); await expect(page.locator('#double-speed')).toHaveAttribute('aria-pressed','false');
+  await (await openStationDirectory(page)).getByRole('button', { name: 'Start over' }).click(); await expect(page.locator('#double-speed')).toHaveAttribute('aria-pressed','false');
   await page.getByRole('button', { name: 'Play', exact: true }).click();
   await page.evaluate(() => { Object.defineProperty(document,'hidden',{ configurable:true,get:()=>true }); document.dispatchEvent(new Event('visibilitychange')); });
   await expect(page.locator('#playback-state')).toHaveText('HELD · PRESS PLAY'); await page.clock.runFor(5000); await expect(page.locator('#clock')).toContainText('Day 1 · 00:00');
@@ -38,7 +39,7 @@ test('automatic tick processing charges a whole programme once, just like manual
   await page.locator('#open-review').click();
   await expect(page.locator('#selected-result')).toContainText('Completed. Cost 150');
   const viewers=await page.locator('#selected-result tbody').innerText();
-  await page.locator('#reset').click(); await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await (await openStationDirectory(page)).getByRole('button', { name: 'Start over' }).click(); await goToDesk(page, '▦ Schedule');
   await pickTime(page, 0); await page.locator('#place').click();
   for(let i=0;i<4;i++)await page.locator('#advance-tick').click();
   await page.locator('#open-review').click();

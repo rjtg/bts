@@ -91,6 +91,7 @@ export function initialiseDesks(closeShelf: () => void, onChange: (desk: string)
     const name = link?.hash.slice(1);
     if (!name || !views.some(view => view.dataset.desk === name)) return;
     event.preventDefault();
+    link?.closest<HTMLElement>('#station-directory')?.hidePopover();
     navigate(name);
   });
   window.addEventListener('popstate', () => show(location.hash.slice(1)));

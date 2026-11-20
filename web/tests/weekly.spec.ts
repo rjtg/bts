@@ -1,3 +1,4 @@
+import { goToDesk } from './station-directory';
 import { pickTime } from './planner-helpers';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
@@ -22,9 +23,9 @@ test('three Saturdays with a moved exception, sold ad minutes and a completed fi
   await page.goto('/#planning');
   await expect(page.locator('#status')).toContainText('WASM READY');
   await expect(page.locator('#clock')).toContainText('Saturday');
-  await page.getByRole('link', { name: /Audience/ }).click();
+  await goToDesk(page, /Audience/);
   await expect(page.locator('#audience .watch-time-note').first()).toContainText('Weekend evenings');
-  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await goToDesk(page, '▦ Schedule');
   await page.locator('[data-programme="2"]').click();
   await pickTime(page, 72, 7);
   await page.locator('#place').click();
@@ -73,14 +74,14 @@ test('three Saturdays with a moved exception, sold ad minutes and a completed fi
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(ads.locator('.minute-sold')).toHaveCount(2);
   if (process.env.BTS_WEEKLY_SCREENSHOTS) await page.locator('#ad-sales').screenshot({ path: '../contrib/weekly-planner/booking.png' });
-  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await goToDesk(page, '▦ Schedule');
   await page.locator('#advance-selected').click();
   await page.locator('#open-review').click();
   await expect(page.locator('#selected-result')).toContainText('Minute sale settlement');
   await expect(page.locator('#selected-result')).toContainText('Young viewers');
   if (process.env.BTS_DESK_SCREENSHOTS) await page.screenshot({ path: '../contrib/focused-desks/review.png', fullPage: true });
   if (process.env.BTS_WEEKLY_SCREENSHOTS) await page.locator('#selected-result').screenshot({ path: '../contrib/weekly-planner/receipt.png' });
-  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await goToDesk(page, '▦ Schedule');
   await page.locator('#day').selectOption('7');
   await page.locator('[data-station="1"] [data-start-minute="11287"]').click();
   await expect(page.locator('#selected-status')).not.toContainText('RETURNING TO REGULAR SLOT');
@@ -168,7 +169,7 @@ test('set a recurring autosell limit and see the signed sales after broadcast', 
   await ads.getByRole('button', { name: 'Save autosell limits' }).click();
   await expect(ads).toContainText('Autosell on for this run');
   await ads.screenshot({ path: testInfo.outputPath('autosell-policy.png') });
-  await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+  await goToDesk(page, '▦ Schedule');
   await page.locator('#advance-selected').click();
   await page.locator('#open-review').click();
   await expect(page.locator('#selected-result')).toContainText('Minute sale settlement');
