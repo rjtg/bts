@@ -13,8 +13,9 @@ Future entries follow their own gameplay milestones.
   perspective. Keep the shelf stocked and the room visible during work.
 - Let an object suggest what it opens. On hover or keyboard focus, give it
   a small physical reaction and a short label. On activation, bring the prop
-  to the blotter and open its workspace. The monitors are the entry to
-  Programming. The people and equipment behind the glass provide atmosphere.
+  to the blotter and open its workspace. The desk calendar opens Programming.
+  The wall monitors and the people and equipment behind the glass provide
+  atmosphere.
 - Use desk-sized spreads for a single decision and near-full-screen overlays
   for timelines, casting, and other work that needs room. Only the focused
   workspace takes input. Closing it returns focus to the entry prop and
@@ -22,9 +23,137 @@ Future entries follow their own gameplay milestones.
   provides the same routes by keyboard and touch.
 - Keep the slim Today strip and physical transport buttons in reach. The
   strip is an at-a-glance channel readout with tape drops and airing files.
-  Use the monitor workspace for moving blocks, comparing channels and
+  Use the calendar workspace for moving blocks, comparing channels and
   planning across dates. Manual pause brings up the OFF AIR card with a
   sharp Continue control.
+
+## Interaction model: prop, choice, work surface
+
+The office should connect game actions through a consistent sequence:
+
+1. **Choose a prop or an object already on the desk.** The prop establishes
+   the context: the shelf means owned works, the calendar means airings and
+   time, and the script file means preparation.
+2. **Choose a short branch of actions or categories.** A radial menu may
+   appear near the activated prop or selected object. It is a navigation and
+   action control, not the visual style of the whole interface.
+3. **Bring the relevant work surface forward.** Use a tape collection,
+   dossier, calendar, project board or ledger according to the task. Do not
+   force detailed content into radial sectors.
+4. **Preview and commit.** Show the affected title, dates, runtime, price and
+   conflicts before a consequential action. Confirmation leaves a visible
+   trace such as a scheduled block, signed offer, dated paper or result sheet.
+
+The interaction pattern is intended to remain separate from presentation.
+For example, the same category choice could be presented as a radial control
+while drawn as a CRT selector, rotary index or physical filing device. Keep
+the interface legible and game-like without requiring every control to look
+like a literal wheel.
+
+### Where radial menus fit
+
+Use a radial for a short set of context-specific choices, usually no more
+than four to six. It should stay near its prop, remain within the viewport,
+show a clear Back/Cancel path, and support pointer, keyboard and touch. A
+radial should not contain tiny title labels or replace a timeline, roster,
+slider, dossier tabs or other controls better suited to detailed choices.
+
+When a branch contains many works or people, transition to a readable sorted
+collection in the same work area. Selecting an item should return to the
+originating context with the item selected; it must not silently commit an
+action. The context (such as a selected calendar gap) remains visible or is
+clearly summarized during this handoff.
+
+### Owned works and scheduling journeys
+
+The shelf and calendar support two equivalent routes. The player may begin
+with a work or with a time:
+
+```text
+Shelf → Owned works → Fiction / Nonfiction → format → title or series
+     → episode or series binder → Tape dossier
+     → Schedule → One-shot / Regular (where applicable)
+         ├─ One-shot → Next gap / Recommended slot / Choose on planner
+         └─ Regular → Recommended run / Choose days and time
+             → review preview → confirm
+
+Calendar → choose date and gap → Choose programme
+     → Tape Shelf selector → choose work and episode
+     → return to the same gap with placement preview
+     → adjust ad load or time → confirm
+```
+
+“Selected tape” means a work the player has explicitly chosen and whose
+identity is carried forward during the current scheduling task. The calendar
+must not assume one is selected. In the time-first route, choosing a gap opens
+the owned-work selector; after selection, the player returns to that exact gap
+with a provisional preview. Nothing is placed until the player confirms.
+Likewise, moving an airing means choosing a destination, reviewing the
+resulting time and conflicts, then confirming. A rejected placement preserves
+the original airing.
+
+The Tape dossier keeps its information tabs. Its Schedule action offers:
+
+- **One-shot:** Next gap, Recommended slot, or Choose on planner.
+- **Regular:** Recommended run or Choose days and time; show this only for
+  recurring works or formats that support a regular run.
+
+Recommendations are proposals, not automatic bookings. Show the selected
+date or pattern, runtime, ad load and occupied interval before confirmation.
+For regular runs, preview each occurrence and resolve date-specific conflicts
+before the atomic confirmation.
+
+### Other prop and dossier flows
+
+```text
+Incoming Portfolio → available-title collection → select listing
+    → Market dossier → Investigate / Buy → acquired work enters Tape Shelf
+
+Calendar airing → Airing dossier → ad offer → Accept / Decline
+    → signed term or crossed-out offer → after airing, reception and settlement
+
+Preparation prop → project collection → project dossier
+    → Brief / Commission script / Review delivery / Revise or accept
+    → Production dossier when ready
+
+Production prop → active-project board → project dossier
+    → choose role or seat → eligible-person roster
+    → choose studio and support → review obligations → Book
+
+Research Binder → Audience dossiers
+Notebook → station notes and active requests
+Ledger → finances and links to related projects or airings
+```
+
+The Incoming Portfolio follows the same browse-and-select pattern as the Tape
+Shelf, but its selected title opens a Market dossier. It becomes an owned tape
+only after purchase succeeds. Research Binder, Notebook and Ledger each open
+their single clear workspace directly; they do not need radial menus.
+
+Dossier tabs remain the way to browse information. Contextual actions belong
+on the relevant page or selected item: for example, an offer slip in an Airing
+dossier offers Accept and Decline, while selecting a cast seat opens an
+eligible-person roster. Keep controls matched to the decision: a roster for
+casting, a calendar for dates, and an exact-value slider for Sway. Radials may
+choose a short task branch, but should not compress those detailed decisions.
+
+The browser implements contextual wheels for the Tape Shelf, Tape scheduling
+and the New project action in Preparation. The wheel opens beside its trigger
+and uses labelled tile controls for small viewports. Arrow keys move between
+choices, Enter activates them, and Escape closes the wheel. Browse all tapes
+and the planner's direct shelf controls are available as shorter routes.
+
+The placement slip supports editing the start minute and ad minutes. A
+recommended weekly run prefills the weekday and time from the survey-based
+suggested slot. Its dated occurrences still require the regular Rust preview
+and confirmation. Market titles open a selected file from the portfolio
+index. Research, Notebook and Ledger open directly.
+
+Open design questions include how the wheel scales to more formats, whether
+to add a separate series binder entry from the shelf, and how to make
+programme recommendations broader than a particular date and time. The
+[route audit and browser replay](../contrib/office-interactions/README.md)
+describe the current treatment.
 
 ## Shared visual language
 
@@ -43,7 +172,7 @@ Future entries follow their own gameplay milestones.
 | Player task | Entry and widget | What the player can decide or see |
 | --- | --- | --- |
 | Find and place a programme | **Shelf → tape tray and taupe file.** Box episodes together and give cassettes readable spine labels. | Filter by runtime or production type. Pull one tape and browse Brief, Reception, Members and Bottom Line. Use Next Gap or the planning controls. Show title and runtime on the tape itself. |
-| Arrange a day or weekly run | **Wall monitors → Programming overlay.** Give the timeline the full width, with Day, Week, Month and Today. | Move or place at exact minutes, compare an available rival schedule, and preview recurring dates and clashes before confirming. Keep the selected airing and Up Next separate. |
+| Arrange a day or weekly run | **Desk calendar → Programming overlay.** Give the timeline the full width, with Day, Week, Month and Today. | Move or place at exact minutes, compare an available rival schedule, and preview recurring dates and clashes before confirming. Keep the selected airing and Up Next separate. |
 | Sell ads or inspect a broadcast | **Airing block or notebook reminder → teal Airing file.** Use an inventory strip and offer slips. | Set ad load and see occupied airtime, sign an offer, or leave space unsold. After air, show dated outlook, provisional turnout, settlement and airing cost in the same file. |
 | Pitch, commission or revise | **Script file under the lamp → pink Preparation spread.** Put the brief and script notes side by side. | Compare writer cards, fees and delivery dates. On return, read what the script achieved, what it demands, and what a paid revision would address. |
 | Cast and book | **Clapper clipboard → blue Production board.** Pin role cards and place portraits in their seats. | Compare known strengths and availability, select a studio, set cooperation support, and review exact obligations before booking. |

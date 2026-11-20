@@ -19,7 +19,7 @@ test('find a title for a 45-minute gap and keep the shelf and timeline place acr
   await page.locator('[data-programme="1"]').press('Enter');
   await expect(page.locator('#slot-picker')).toHaveCount(0);
   await expect(page.locator('.shelf-slot-preview')).toContainText('Neighbourhood Laughs');
-  await expect(page.locator('.desk-paper-tabs')).toBeVisible();
+  await expect(page.locator('#paper-on-desk .desk-paper-tabs')).toBeVisible();
   await expect(page.locator('#desk-tape')).toContainText('Episode 1 · 30 min');
   await expect(page.locator('[data-programme="1"]')).toHaveClass(/fits-selected-gap/);
   if (process.env.BTS_DESK_SCREENSHOTS) await page.screenshot({ path: '/tmp/bts-live-console.png', fullPage: true });

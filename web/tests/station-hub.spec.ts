@@ -30,6 +30,7 @@ async function airingJourney(page: Page, small: boolean) {
   await expect(page.locator('#desk-notebook')).toContainText('Next gap');
   await page.locator('#desk-notebook').getByRole('button', { name: 'Close notebook' }).click();
   await page.locator('#pull-tapes').click();
+  await page.getByRole('button', { name: 'Browse all tapes' }).click();
   await page.locator('.series-box summary').click();
   const tape = page.locator('[data-programme="1"]');
   small ? await tape.tap() : await tape.press('Enter');
@@ -126,6 +127,7 @@ test('Today strip accepts a tape drop and reopens the completed airing', async (
   const lane = page.locator('.today-lane');
   await expect(lane.getByRole('button')).toHaveCount(0);
   await page.locator('#pull-tapes').click();
+  await page.getByRole('button', { name: 'Browse all tapes' }).click();
   await page.locator('.series-box summary').click();
   const box = (await lane.boundingBox())!;
   await page.locator('[data-programme="1"]').dragTo(lane, {

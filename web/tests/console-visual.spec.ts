@@ -27,7 +27,7 @@ async function capture(page: Page, name: string) {
 test('replay the reference evening and open its Audience paper', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await stageEvening(page);
-  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.locator('[data-desk="planning"]').evaluate(workspace => workspace.scrollTop = 0);
   await capture(page, 'schedule');
   for (const id of ['clock', 'play-pause', 'timeline-scroller']) {
     await expect(page.locator('#' + id)).toBeInViewport({ ratio: 1 });

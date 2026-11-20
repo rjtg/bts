@@ -11,7 +11,12 @@ subset: seven full days of quarter-hour planning, explicit runtimes, competitor
 lane, catalogue, contextual contracts/results and station finances. Other screens
 and publication/promotion/ad-share controls below remain proposals.
 
-See the [Station Office widget guide](office-widget-style.md) for the visual language and prop-to-workspace map.
+The Station Office is the player entry point. Desk props, directory links and
+contextual shortcuts open the same workspaces over the room. The calendar
+opens Programming, and the wall monitors provide atmosphere. Shelf categories,
+Tape scheduling and New project use contextual wheels. Airing decisions stay
+with the teal Airing file. See the [Station Office widget guide](office-widget-style.md)
+and [browser route audit](../contrib/office-interactions/README.md).
 
 ## Main workspaces
 

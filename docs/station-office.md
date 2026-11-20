@@ -9,10 +9,10 @@ cassette, open paperwork, a telephone, a small stack of files, and actionable
 sticky notes. Behind the glass, quiet studio movement can add atmosphere.
 Reduced motion uses a still scene.
 
-The office is for current decisions. Its CRT shows On Air, Up Next, and the
-next opening. Open the CRT to enter the Planning Room with the same schedule
-position and selection. The room has a minute-accurate Day surface and more
-compact Week and Month summaries. The summaries include first remaining gap,
+The Today strip shows On Air and Up Next. The calendar on the desk opens the
+Planning Room with the current schedule position and selection. The wall
+monitors are part of the room scenery. The Planning Room has a minute-accurate
+Day surface and more compact Week and Month summaries. The summaries include first remaining gap,
 occupied share, unsold advertising, and the last scheduled episode of each
 recurring run. Show where playable dates end. Deliberate paging holds the
 period. Today resumes following the clock. A summary month does not imply
@@ -54,7 +54,7 @@ are separate states.
 
 ## Browser implementation
 
-The office is the starting screen. Its CRT opens Day in the Planning Room.
+The office is the starting screen. Its calendar opens Day in the Planning Room.
 Both views share the selected tape, airing and date in the session. The Day
 timeline supports pointer placement, touch and the existing keyboard
 placement controls. Week and Month use seven-day and 30-day blocks from
@@ -94,10 +94,10 @@ office without losing the selected tape, project, airing, or calendar position.
 
 | Office object | Opens |
 | --- | --- |
-| CRT | Planning. Bring the screen forward into the interactive timeline for placing and moving airings. Keep the same date, scroll position, and selection when returning. |
+| Calendar | Planning. Bring the calendar forward into the interactive timeline for placing and moving airings. Keep the same date, scroll position, and selection when returning. |
 | Tape shelf | Tape dossier beside the selected cassette. |
-| Staff tables | Preparation. Pitch a project, commission writing or reporting where supported, and review what comes back. |
-| Studio behind the glass | Production. Cast prepared work, book the studio, and check recording and completion. |
+| Script folder | Preparation. Pitch a project, commission writing or reporting where supported, and review what comes back. |
+| Clapper clipboard | Production. Cast prepared work, book the studio, and check recording and completion. |
 | Incoming files | Rights market and arrivals, assessments, and deadlines. |
 | Research folder | Audience dossiers, polling, and Insight. |
 | Ledger | Station finances and recent broadcast reviews. |
@@ -119,7 +119,7 @@ Put the previous airing on the left and the next-gap outlook on the right,
 with the suggested time as an annotation. **Try another time** reveals the
 date and time controls.
 
-Selecting an airing block in the focused CRT opens that exact airing's
+Selecting an airing block in Programming opens that exact airing's
 dossier. Closing it returns to the same point on the timeline. Set or review
 the ad-block length during placement, including when a default sets it.
 Manage offered minutes, compare offers, and sign terms in the airing's file.
@@ -145,16 +145,16 @@ Print the dossier type on the folder so it can also be identified by text.
 This section records the agreed design. The current coverage is described below.
 Player files continue to use legitimately available evidence.
 
-The [Station Office widget guide](office-widget-style.md) defines the shared visual language and maps player tasks to their desk props.
+The [Station Office widget guide](office-widget-style.md) defines the shared visual language, maps player tasks to their desk props, and describes the contextual radial menus and scheduling handoff. See the [route audit and replay](../contrib/office-interactions/README.md) for the focused workspaces and browser evidence.
 
 ## Playable office hub
 
-The room now starts with the tape file closed. The CRT opens the existing
-minute planner. Shelf selections open a closable Tape file, and the room
+The room starts with the tape file closed. The calendar opens the minute
+planner. Shelf selections open a closable Tape file, and the room
 objects link to Preparation, Film Production, Rights, Audience, Finances,
 and Broadcast Review. Discussion production is reachable from the production
 desk and directory. The keyboard directory is also available on touch.
-The film's project ID persists from the staff tables through script
+The film's project ID persists from the script folder through script
 acceptance, casting, and studio booking.
 
 A per-placement ad-minute field starts at the station default and previews
@@ -191,8 +191,8 @@ because the scenario has no separate selectable objective.
 The slim Today readout follows the current day and the player's channel.
 Gaps are visual. A tape drop uses the existing exact placement validation,
 and a completed block opens its airing file. The tape tray still provides the
-next-gap action for pointer, keyboard, and touch. Background monitors open
-the scrollable Programming overlay over the office. Moving airings, rival
+next-gap action for pointer, keyboard, and touch. The desk calendar opens the
+scrollable Programming overlay over the office. Moving airings, rival
 comparison, and calendar controls stay together there.
 
 The resting room uses a bound notebook sprite and recoloured folder-stack
@@ -260,5 +260,5 @@ browser timer and have no effect on the station clock or simulation. The
 next cue waits for the current movement to finish, then waits 40–120 ms. Cues are drawn without replacement until each visible subject has had a turn, including six desk staff, both camera operators, the floor assistant beside the left camera, and both interview participants. The distant figure behind the office window also has a cue.
 
 Preparation and Production open from the desk props. Background people
-have no hover targets or actions. The wall monitors remain the background
-entry to Programming.
+have no hover targets or actions. The wall monitors are decorative. The desk
+calendar is the entry to Programming.

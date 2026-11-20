@@ -1,6 +1,6 @@
 import { action, node } from './dom';
 
-export type FileType = 'Tape' | 'Airing' | 'Preparation' | 'Production' | 'Character';
+export type FileType = 'Tape' | 'Airing' | 'Preparation' | 'Production' | 'Character' | 'Market';
 
 export function leaf(title?: string) {
   const paper = node('section', '', 'office-leaf');

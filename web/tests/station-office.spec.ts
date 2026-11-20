@@ -19,6 +19,7 @@ async function evening(page: Page) {
   if (await page.locator('#library-picker').isVisible()) await page.locator('#close-library').click();
   await page.locator('#back-office').click();
   await page.locator('#pull-tapes').click();
+  await page.getByRole('button', { name: 'Browse all tapes' }).click();
   await page.locator('.series-box summary').click();
   await page.locator('[data-programme="1"]').press('Enter');
   await expect(page.getByRole('img', { name: /Programme quality radar/ })).toBeVisible();
@@ -75,6 +76,7 @@ test('office, exact planning, calendars and test-card pause', async ({ page }) =
   await page.locator('#back-office').click();
   await expect(page.locator('#office-calendar')).toBeVisible();
   await page.locator('#pull-tapes').click();
+  await page.getByRole('button', { name: 'Browse all tapes' }).click();
   await page.locator('[data-programme="1"]').click();
   await expect(page.getByRole('img', { name: /Programme quality radar/ })).toBeVisible();
 });

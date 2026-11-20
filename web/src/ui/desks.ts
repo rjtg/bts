@@ -1,6 +1,18 @@
 import { element, node } from './dom';
 
-export function initialiseDesks(closeShelf: () => void, onChange: (desk: string) => void, keepOffice: () => boolean) {
+const folders: Record<string, { label: string; prop: string }> = {
+  planning: { label: 'Programming calendar', prop: 'calendar' },
+  'weekly-planner': { label: 'Regular bookings', prop: 'calendar' },
+  'film-desk': { label: 'Preparation', prop: 'script' },
+  'film-production': { label: 'Film production', prop: 'production' },
+  production: { label: 'Studio book', prop: 'production' },
+  'rights-market': { label: 'Incoming portfolio', prop: 'rights' },
+  audience: { label: 'Research binder', prop: 'research' },
+  results: { label: 'Transmission reviews', prop: 'reviews' },
+  finances: { label: 'Station ledger', prop: 'ledger' },
+};
+
+export function initialiseDesks(closeShelf: () => void, onChange: (desk: string) => void) {
   const views = Array.from(document.querySelectorAll<HTMLElement>('[data-desk]'));
   const rail = Array.from(document.querySelectorAll<HTMLAnchorElement>('.rail a'));
   const offsets = new Map<string, number>();
@@ -11,10 +23,15 @@ export function initialiseDesks(closeShelf: () => void, onChange: (desk: string)
 
   history.scrollRestoration = 'manual';
   for (const view of views) {
-    if (view.dataset.desk === 'office' || view.querySelector('#back-office')) continue;
-    const back = node('a', '← Back to Office', 'desk-back');
+    const folder = folders[view.dataset.desk ?? ''];
+    if (!folder) continue;
+    view.classList.add('office-job');
+    view.dataset.job = folder.prop;
+    const cover = node('header', '', 'office-job-cover');
+    const back = view.querySelector<HTMLAnchorElement>('#back-office') ?? node('a', '← Back to Office', 'desk-back');
     back.href = '#office';
-    view.prepend(back);
+    cover.append(node('h2', folder.label), back);
+    view.prepend(cover);
   }
 
   function show(name: string, focus = true) {
@@ -30,10 +47,10 @@ export function initialiseDesks(closeShelf: () => void, onChange: (desk: string)
       if (previous) workspaceOffsets.set(active, previous.scrollTop);
     }
     active = next.dataset.desk!;
-    const alongsideOffice = active !== 'office' && keepOffice();
+    const alongsideOffice = active !== 'office';
     document.body.classList.toggle('prop-workspace', alongsideOffice);
     for (const view of views) {
-      const background = view.dataset.desk === 'office' && (active === 'planning' || alongsideOffice);
+      const background = view.dataset.desk === 'office' && alongsideOffice;
       view.hidden = view !== next && !background;
       view.inert = background;
     }

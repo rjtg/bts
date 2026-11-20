@@ -13,6 +13,7 @@ test('assess, acquire, air, resell and see a rival acquisition', async ({ page }
   const market = page.locator('#rights-market');
   const corner = market.locator('article').filter({ has: page.getByRole('heading', { name: 'The Corner Shop' }) });
   const observatory = market.locator('article').filter({ has: page.getByRole('heading', { name: 'Beyond the Observatory' }) });
+  await market.getByRole('button', { name: /The Corner Shop/ }).first().click();
   const baseline = await corner.locator('.rights-forecast').textContent();
   await corner.getByRole('spinbutton', { name: 'Insight for assessment' }).fill('6');
   await corner.getByRole('button', { name: 'Commission assessment' }).click();
@@ -48,6 +49,7 @@ test('assess, acquire, air, resell and see a rival acquisition', async ({ page }
   await expect(page.locator('#ledger')).toContainText('Rights resale');
   for (let day = 0; day < 3; day++) await page.locator('#advance-day').click();
   await expect(market).toContainText('Night Chase');
+  await market.getByRole('navigation', { name: 'Title index' }).getByRole('button', { name: /Beyond the Observatory/ }).click();
   await expect(observatory).toContainText('On the shelf at Channel Two');
   await expect(market.locator('#rights-news')).toContainText('Rival acquired the rights');
   if (process.env.BTS_RIGHTS_SCREENSHOTS) await market.screenshot({ path: '../contrib/rights-market/industry-wire.png' });

@@ -43,7 +43,11 @@ export function initialiseOfficeMotion() {
     if (replaying || !(event.target instanceof Element) || event.ctrlKey || event.shiftKey
       || event.altKey || event.metaKey) return;
     const trigger = event.target.closest<HTMLElement>(sources);
-    if (!trigger || trigger.inert) return;
+    if (!trigger || trigger.closest('[inert]')) return;
+    if (reduced.matches && !pending) {
+      origin = trigger;
+      return;
+    }
     event.preventDefault();
     event.stopImmediatePropagation();
     if (pending) return;
@@ -82,7 +86,6 @@ export function initialiseOfficeMotion() {
   }, { capture: true });
 
   return {
-    get launched() { return origin !== null; },
     restore() {
       if (!origin) return;
       const source = origin;

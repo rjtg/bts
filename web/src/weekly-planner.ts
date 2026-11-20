@@ -22,6 +22,12 @@ export function initialiseWeeklyPlanner(ui: {
   const label = (title: string, control: HTMLElement) => { const l = node('label', title); l.append(control); return l; };
   const review = element('weekly-review');
   let draft: WeeklyPlan | null = null;
+  let reviewKind: 'new' | 'edit' | null = null;
+  function clearReview() {
+    draft = null;
+    reviewKind = null;
+    review.replaceChildren();
+  }
   const title = node('h3', 'Review the dates');
   const ask = () => { if (draft) ui.send({ type: 'preview_weekly', plan: draft }); };
   const preview = node('button', 'Preview weekly slots');
@@ -29,11 +35,13 @@ export function initialiseWeeklyPlanner(ui: {
   form.append(label('Weekly programme', programme), label('Weekday', weekday), label('Regular airtime', time),
     label('Weeks', count), label('Default ad minutes', ads), preview);
   element('weekly-form').append(form, lastResult);
-  form.addEventListener('change', () => review.replaceChildren());
+  form.addEventListener('input', clearReview);
   form.addEventListener('submit', event => {
     event.preventDefault();
     draft = { programme: Number(programme.value), weekday: Number(weekday.value),
       minute_of_day: parseTime(time.value), count: Number(count.value), ad_minutes: ads.valueAsNumber, exceptions: [] };
+    review.replaceChildren();
+    reviewKind = 'new';
     lastResult.textContent = '';
     ask();
   });
@@ -44,10 +52,18 @@ export function initialiseWeeklyPlanner(ui: {
     ask();
   }
   return {
-    choose(id: number, slot: number, minutes: number) {
+    choose(id: number, slot: number, minutes: number, day?: number) {
+      clearReview();
+      lastResult.textContent = '';
       programme.value = String(id);
+      if (day !== undefined) weekday.value = String(day);
       time.value = displayTime(slot);
       ads.value = String(minutes);
+    },
+    startEdit() {
+      clearReview();
+      reviewKind = 'edit';
+      lastResult.textContent = '';
     },
     render(report: Report) {
       const selected = programme.value;
@@ -58,7 +74,7 @@ export function initialiseWeeklyPlanner(ui: {
       preview.disabled = report.now_tick >= report.end_tick || programme.options.length === 0;
       review.replaceChildren();
       const model = report.weekly_review;
-      if (!model) return;
+      if (!model || reviewKind !== (model.edition ? 'edit' : 'new')) return;
       review.append(title);
       const list = node('ol', '', 'weekly-dates');
       for (const row of model.rows) {
@@ -95,8 +111,9 @@ export function initialiseWeeklyPlanner(ui: {
       review.append(list, confirm);
     },
     confirmed(edited: boolean) {
+      clearReview();
       lastResult.textContent = edited ? 'Future drafts moved. Protected airings kept their time.' : 'Weekly slots added. Each airing can sell its own ads.';
     },
-    reset() { lastResult.textContent = ''; draft = null; },
+    reset() { lastResult.textContent = ''; clearReview(); },
   };
 }
