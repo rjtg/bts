@@ -8,6 +8,19 @@ async function capture(page: Page, name: string) {
   await page.screenshot({ path: `${dir}/${name}.png`, animations: 'disabled' });
 }
 
+async function outsidePoint(page: Page, selector: string) {
+  return page.evaluate(target => {
+    const surface = document.querySelector(target)!;
+    for (let y = 8; y < innerHeight - 8; y += 16) {
+      for (let x = 8; x < innerWidth - 8; x += 16) {
+        const hit = document.elementFromPoint(x, y);
+        if (hit && !hit.closest('.transport, .masthead') && !surface.contains(hit)) return { x, y };
+      }
+    }
+    throw new Error('No visible room around the active surface');
+  }, selector);
+}
+
 test('work first with keyboard, editable preview, ad sale and review', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -140,8 +153,53 @@ test('clicking outside a film can dismisses it without activating the office', a
   await expect(page.locator('#planning')).toBeHidden();
 });
 
+test('closing a rack or office file by clicking outside consumes the click', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const shelf = page.locator('#pull-tapes');
+  const clock = page.locator('#office-calendar');
+  await shelf.click();
+  await page.getByRole('button', { name: 'Browse all tapes' }).click();
+  await expect(page.locator('#office .shelf-bay')).toBeVisible();
+  const calendar = await clock.boundingBox();
+  await page.mouse.click(calendar!.x + calendar!.width / 2, calendar!.y + calendar!.height / 2);
+  await expect(page.locator('#office .shelf-bay')).toBeHidden();
+  await expect(page.locator('#planning')).toBeHidden();
+  await expect(shelf).toBeFocused();
+  await shelf.click();
+  await page.getByRole('button', { name: 'Browse all tapes' }).click();
+  await page.locator('.series-box summary').first().click();
+  await page.locator('[data-programme="1"]').click();
+  const point = await outsidePoint(page, '#paper-on-desk');
+  await page.mouse.click(point.x, point.y);
+  await expect(page.getByRole('region', { name: 'Tape dossier' })).toBeHidden();
+  await expect(page.locator('#planning')).toBeHidden();
+  await expect(shelf).toBeFocused();
+  const research = page.locator('[data-prop="research"]');
+  await research.click();
+  await expect(page.locator('#audience')).toBeVisible();
+  const besideBinder = await outsidePoint(page, '#audience');
+  await page.mouse.click(besideBinder.x, besideBinder.y);
+  await expect(page.locator('#audience')).toBeHidden();
+  await expect(research).toBeFocused();
+});
+
 test.describe('time first on touch', () => {
   test.use({ hasTouch: true, viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  test('a tap outside the rack returns focus to the shelf', async ({ page }) => {
+    await page.goto('/');
+    const shelf = page.locator('#pull-tapes');
+    await shelf.tap();
+    await page.getByRole('button', { name: 'Browse all tapes' }).tap();
+    const rack = page.locator('#office .shelf-bay');
+    await expect(rack).toBeVisible();
+    const point = await outsidePoint(page, '#office .shelf-bay');
+    await page.touchscreen.tap(point.x, point.y);
+    await expect(page.locator('#office .shelf-bay')).toBeHidden();
+    await expect(shelf).toBeFocused();
+  });
+
   test('retains the exact time across catalogue browsing and rejects a conflict', async ({ page }) => {
     await page.goto('/');
     await page.locator('#office-calendar').tap();

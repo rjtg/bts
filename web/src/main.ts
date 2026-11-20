@@ -27,6 +27,7 @@ import { dossier, leaf, spread } from './ui/dossier';
 import { officePapers } from './ui/office-dossier';
 import { initialiseOfficeIdle } from './ui/office-idle';
 import { initialiseOfficeMotion } from './ui/office-motion';
+import { bindOutsideDismissal } from './ui/outside-dismissal';
 import { renderToday } from './ui/today-strip';
 import { fundsMark } from './ui/funds';
 import { createResourceHud } from './ui/resources';
@@ -1172,6 +1173,17 @@ async function start(): Promise<void> {
         restoreAdPaper();
       }
       if (desk === 'office') requestAnimationFrame(() => { if (activeDesk === 'office') officeMotion.restore(); });
+    });
+    bindOutsideDismissal(() => {
+      if (activeDesk === 'office') {
+        if (!officeTrayOpen && !officeTapeOpen && !showingAiring) return null;
+        const surface = officeTapeOpen || showingAiring
+          ? element('paper-on-desk') : document.querySelector<HTMLElement>('#office .shelf-bay');
+        return surface?.getClientRects().length ? { surface, close: closeDeskFile } : null;
+      }
+      const surface = Array.from(document.querySelectorAll<HTMLElement>('[data-desk]'))
+        .find(view => view.dataset.desk === activeDesk);
+      return surface?.getClientRects().length ? { surface, close: () => desks.navigate('office') } : null;
     });
     const transport = document.querySelector<HTMLElement>('main > .transport')!;
     const positionProgramming = () => {
