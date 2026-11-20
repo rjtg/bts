@@ -3126,3 +3126,14 @@ body.ready #station-directory:popover-open { display:grid; gap:.25rem; }
   #station-resources { justify-content:flex-start; }
   #open-directory { margin-inline-start:auto; }
 }
+
+#office .office-phone { aspect-ratio:600/422; }
+#office .desk-files [data-prop="reviews"] span {
+  color:#31423a; background:none; text-transform:uppercase;
+  font:700 clamp(.52rem,.76vw,.7rem)/1 'Courier New',monospace;
+  transform:translate(-.8rem,-.95rem) rotate(-10deg); text-shadow:1px 1px #c9dac4;
+}
+@media (min-width:861px) {
+  #office .office-phone { transform:none; top:52.5%; right:20.4%; width:11%; }
+  #office-calendar > strong { visibility:hidden; }
+}

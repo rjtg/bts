@@ -88,3 +88,18 @@ Directory. On narrow displays the tuner wraps below the keys. The Directory
 provides the old destinations, station files, room motion and reset. It
 opens with the keyboard or by tapping and closes after navigation.
 [Station strip capture](station-strip.webp).
+
+## Office dismissal and props
+
+Click or tap beside the tape rack, Tape file or office-framed workspace to
+close it and return focus. The closing pointer event cannot activate an
+underlying prop. The station strip remains usable, and confirmation
+dialogs retain their own explicit controls.
+
+The desk telephone is a newly drawn static sprite. Reviews has a printed
+label and the desk calendar retains its accessible name without a hover
+tooltip. [Resting office capture](new-phone.webp) and
+[asset generation record](telephone-art.md).
+
+The strip passed the full 56-test Chromium suite. Dismissal and the prop
+pass passed the final set of 18 targeted Chromium tests.

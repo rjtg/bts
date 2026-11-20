@@ -197,6 +197,8 @@ test('office props react to hover and respect reduced motion', async ({ page }) 
   const calendar = page.locator('#office-calendar');
   await calendar.hover();
   await expect(calendar).toHaveAccessibleName('Open Programming calendar');
+  await expect(calendar).not.toHaveAttribute('title');
+  await expect(page.locator('.office-phone')).toHaveAttribute('src', /telephone-rest\.webp$/);
   await expect(page.locator('.monitor-reel')).toHaveAttribute('aria-hidden', 'true');
   for (const name of ['script', 'rights', 'ledger', 'reviews']) {
     const prop = page.locator(`#desk-file-piles [data-prop="${name}"]`);
