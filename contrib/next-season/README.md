@@ -10,8 +10,9 @@ Verified slice: tape rack, dated Reception advice and the calendar handoff
 [Chromium capture](tape-fit.webp). Rights, Research, Ledger and Airing workspaces (#5 and #8) have a first
 verified pass. Production filing (#7) is verified through the pilot formats.
 The station strip, Directory, outside dismissal and desk props (#1–#4)
-are verified. Active next: simulation pilots (#12–#17), starting with action
-timing. Atmosphere (#9–#11) follows. Code health (#19) continues at each boundary.
+are verified. Action timing (#12) is documented with a tested experiment.
+Active next: public listing and teaser evidence (#13), then #14–#17 and
+atmosphere (#9–#11). Code health (#19) continues at each boundary.
 
 ## Launch
 
@@ -109,3 +110,12 @@ available gap, an unsold-inventory reminder when applicable, and access to
 Sway requests. The blotter no longer has a notebook prop. The full suite
 passed all 58 Chromium tests at this boundary, including native/Wasm parity.
 [Resting desk with the new Notes control](station-notes.webp).
+
+## Action timing comparison
+
+The reproducible [timing output](action-timing.txt) compares immediate,
+station-wide and desk-local capacity on identical fixtures. Only desk-local
+capacity both constrained the second listing and let the independent studio
+booking proceed. In a quiet spell both timed variants imposed the same
+wait. Commands stay immediate pending evidence from playtesting.
+Two focused Rust tests passed. See the [decision](../../docs/station-time-experiment.md).

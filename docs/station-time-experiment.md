@@ -54,3 +54,28 @@ then show pending work in the affected desk and notify once when it finishes.
 
 The 30-minute duration and selected work item are provisional controls for
 comparison. No queue or cooldown is implemented here.
+
+## Controlled comparison
+
+Run `cargo run --locked -p bts-sim --example action_timing` for a fixed
+comparison. All three policies see the same request order and deadlines.
+In the two timed policies, listings take 30 minutes and a studio reservation
+takes 15. Requests use first-come capacity and release it at completion,
+cancellation or the deadline. A studio request closing at 17:40 represents
+one competing commitment. These are exact simulated minutes. No transactions
+or changes to booked contracts occur in this comparison.
+
+| Fixture | Immediate | Shared station | Desk-local |
+| --- | --- | --- | --- |
+| One listing requested at 17:15, closes 18:00 | Ready 17:15 | Ready 17:45 | Ready 17:45 |
+| Two listings and a competing studio reservation | All ready | One ready, two missed | First listing and studio ready, second listing missed |
+| Cancel first listing at 17:30 | First already ready | Second ready 18:00 | Second ready 18:00 |
+| Listing ready exactly at its 18:00 closing time | Ready at request time | Missed | Missed |
+
+The [full output](../contrib/next-season/action-timing.txt) shows starts
+and releases. Desk-local capacity preserves the independent studio job and
+still creates competition within Sales. Both timed policies add 30 minutes
+to a quiet afternoon. This controls deadline interactions without measuring
+player attention or engagement. Keep commands immediate in the playable
+build. If a later playtest justifies a timed pilot, use desk-local capacity
+for a single Ads action and retain the half-open selling boundary.

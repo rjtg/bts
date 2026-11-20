@@ -1,0 +1,30 @@
+All times are minutes after 17:00. Offers use a half-open selling window.
+
+Quiet afternoon
+Immediate	Prepare early listing	start Some(15)	release 15	Ready
+Shared	Prepare early listing	start Some(15)	release 45	Ready
+ByDesk	Prepare early listing	start Some(15)	release 45	Ready
+
+Three competing commitments
+Immediate	Prepare early listing	start Some(15)	release 15	Ready
+Immediate	Reserve studio	start Some(15)	release 15	Ready
+Immediate	Prepare second listing	start Some(30)	release 30	Ready
+Shared	Prepare early listing	start Some(15)	release 45	Ready
+Shared	Reserve studio	start None	release 40	Missed
+Shared	Prepare second listing	start Some(45)	release 75	Missed
+ByDesk	Prepare early listing	start Some(15)	release 45	Ready
+ByDesk	Reserve studio	start Some(15)	release 30	Ready
+ByDesk	Prepare second listing	start Some(45)	release 75	Missed
+
+Cancellation frees Sales
+Immediate	Prepare early listing	start Some(15)	release 15	Ready
+Immediate	Prepare second listing	start Some(30)	release 30	Ready
+Shared	Prepare early listing	start Some(15)	release 30	Cancelled
+Shared	Prepare second listing	start Some(30)	release 60	Ready
+ByDesk	Prepare early listing	start Some(15)	release 30	Cancelled
+ByDesk	Prepare second listing	start Some(30)	release 60	Ready
+
+Completion exactly at airtime
+Immediate	Prepare early listing	start Some(30)	release 30	Ready
+Shared	Prepare early listing	start Some(30)	release 60	Missed
+ByDesk	Prepare early listing	start Some(30)	release 60	Missed
