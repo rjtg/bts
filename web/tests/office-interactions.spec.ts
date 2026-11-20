@@ -93,6 +93,35 @@ test('regular recommendation opens an editable weekly review', async ({ page }) 
   await expect(page.locator('.today-lane .today-block')).toHaveCount(0);
 });
 
+test('Reception carries a tape into a labelled, editable calendar comparison', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await page.locator('#pull-tapes').click();
+  await page.getByRole('button', { name: 'Browse all tapes' }).click();
+  await page.locator('.series-box summary').first().click();
+  await page.locator('[data-programme="1"]').click();
+  const record = page.getByRole('region', { name: 'Tape dossier' });
+  await record.getByRole('button', { name: 'Reception', exact: true }).click();
+  await expect(record).toContainText('Best aired');
+  await expect(record).toContainText('Survey evidence');
+  await record.getByRole('button', { name: 'Find airtime' }).press('Enter');
+  const board = page.locator('#tape-fit');
+  await expect(board).toContainText('Neighbourhood Laughs');
+  await expect(board).toBeFocused();
+  await capture(page, 'desktop-tape-fit');
+  await board.getByRole('button', { name: /^18:00 · (Good|OK|Weak)$/ }).click();
+  const slip = page.getByRole('dialog', { name: 'Airtime booking' });
+  await expect(slip.getByLabel('Start time')).toHaveValue('18:00');
+  await expect(page.locator('.today-lane .today-block')).toHaveCount(0);
+  await slip.getByRole('button', { name: 'Confirm placement' }).click();
+  await page.getByRole('region', { name: 'Airing dossier' }).getByRole('button', { name: 'Close file' }).click();
+  await board.getByRole('button', { name: '18:00 · Clash' }).click();
+  await expect(slip).toContainText('Conflicts with');
+  await slip.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.locator('.today-lane .today-block')).toHaveCount(1);
+});
+
 test('clicking outside a film can dismisses it without activating the office', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/');

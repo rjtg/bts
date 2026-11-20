@@ -1,5 +1,5 @@
 import type { BroadcastResult, Programme, Report } from '../protocol';
-import { audienceOpportunities, bestOpening, DAY_MINUTES, displayTime, turnout } from './airtime';
+import { audienceOpportunities, bestOpening, daypartOutlook, DAY_MINUTES, displayTime, turnout } from './airtime';
 import { leaf as sheet, spread } from './dossier';
 import { node, option } from './dom';
 import { programmeChart, programmeCredits, radar } from './programme-paper';
@@ -46,6 +46,14 @@ export function officePapers(tape: Programme, report: Report, history: Broadcast
   } else previous.append(node('p', 'We haven’t aired this tape yet.', 'handwritten'));
 
   const expected = sheet('Before it airs');
+  const outlook = daypartOutlook(tape, report);
+  if (outlook) {
+    expected.append(node('p', `Best aired · ${outlook.best}`, 'handwritten airtime-advice'));
+    if (outlook.also) expected.append(node('p', `Also works · ${outlook.also}`, 'handwritten'));
+    expected.append(node('p', `Survey evidence · ${stamp(outlook.surveyed)}`, 'paper-footnote'));
+  } else {
+    expected.append(node('p', 'Watch-time fit unknown · no clear published preference for this tape.', 'paper-footnote'));
+  }
   const withLeadIn = report.schedule.find(airing => airing.programme === tape.id
     && airing.status === 'planned' && airing.lead_in_airing_id !== null);
   const leadIn = report.schedule.find(airing => airing.airing_id === withLeadIn?.lead_in_airing_id);

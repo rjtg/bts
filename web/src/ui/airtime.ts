@@ -14,6 +14,18 @@ export const airStamp = (minute: number) => `Day ${Math.floor(minute / DAY_MINUT
 export const adMinutes = (tape: Programme, percent: number) =>
   Math.min(30, Math.round(tape.duration_minutes * percent / 100));
 
+const watchBands = ['mornings', 'afternoons', 'evenings'];
+const watchHours = [9, 15, 20];
+function daypart(report: Report, minute: number) {
+  const day = (report.first_weekday + Math.floor(minute / DAY_MINUTES)) % 7;
+  const hour = Math.floor(minute % DAY_MINUTES / 60);
+  return (day >= 5 ? 3 : 0) + (hour < 12 ? 0 : hour < 18 ? 1 : 2);
+}
+
+function bandName(index: number) {
+  return `${index >= 3 ? 'Weekend' : 'Weekday'} ${watchBands[index % 3]}`;
+}
+
 export function opening(report: Report, anchor: number, limit: number) {
   for (const gap of report.gaps) {
     const start = Math.max(anchor, gap.start_minute, report.now_minute);
@@ -25,10 +37,7 @@ export function opening(report: Report, anchor: number, limit: number) {
 
 /** A comparative estimate from published survey tastes and dated times, in estimated audience opportunity units. */
 export function audienceOpportunities(tape: Programme, report: Report, minute: number) {
-  const weekday = (report.first_weekday + Math.floor(minute / DAY_MINUTES)) % 7;
-  const hour = Math.floor(minute % DAY_MINUTES / 60);
-  const band = hour < 12 ? 'mornings' : hour < 18 ? 'afternoons' : 'evenings';
-  const watchTime = `${weekday >= 5 ? 'Weekend' : 'Weekday'} ${band}`;
+  const watchTime = bandName(daypart(report, minute));
   const groups = surveyEvidence(tape, report);
   return groups.map(group => {
     const timing = group.estimate.watch_time_note?.startsWith(watchTime) ? 1 : .65;
@@ -40,6 +49,30 @@ export function audienceOpportunities(tape: Programme, report: Report, minute: n
 export function turnout(tape: Programme, report: Report, minute: number): number | null {
   const groups = audienceOpportunities(tape, report, minute);
   return groups.length ? groups.reduce((total, group) => total + group.viewers, 0) : null;
+}
+
+/** Relative daypart guidance only. Rust owns placement and advertising forecasts. */
+export function daypartOutlook(tape: Programme, report: Report) {
+  const evidence = surveyEvidence(tape, report);
+  if (!evidence.some(group => group.estimate.watch_time_note?.endsWith('look promising.'))) return null;
+  const scores = Array.from({ length: 6 }, (_, index) => {
+    const day = ((index >= 3 ? 5 : 0) - report.first_weekday + 7) % 7;
+    const sample = day * DAY_MINUTES + watchHours[index % 3] * 60;
+    return turnout(tape, report, sample) ?? 0;
+  });
+  const order = scores.map((_, index) => index).sort((a, b) => scores[b] - scores[a] || a - b);
+  const strongest = scores[order[0]];
+  if (strongest <= 0 || strongest === scores[order[5]]) return null;
+  const alternate = order.slice(1).find(index => scores[index] > scores[order[5]]);
+  return {
+    best: bandName(order[0]),
+    also: alternate === undefined ? null : bandName(alternate),
+    surveyed: Math.min(...evidence.map(group => group.estimate.tick)) * 15,
+    fit(minute: number): 'Good' | 'OK' | 'Weak' {
+      const relative = scores[daypart(report, minute)] / strongest;
+      return relative >= .9 ? 'Good' : relative >= .75 ? 'OK' : 'Weak';
+    },
+  };
 }
 
 export function bestOpening(tape: Programme, report: Report, anchor: number) {
