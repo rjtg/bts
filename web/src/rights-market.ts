@@ -111,7 +111,8 @@ export function initialiseRightsMarket(ui: {
         buy.disabled = cash < BigInt(offer.price);
         decisions.append(node('p', `Available until ${ui.stamp(offer.deadline)}`), buy);
       } else if (owned) {
-        decisions.append(node('p', 'In your library'), action('Open in programme library', () => ui.showProgramme(id)));
+        decisions.append(node('p', 'In your library', 'receipt-stamp'),
+          action('Pull tape', () => ui.showProgramme(id)));
         if (title.blocker !== null) decisions.append(action(`Review blocking airing #${title.blocker}`, () => ui.showAiring(title.blocker!)));
         if (title.resale) {
           const offer = title.resale;

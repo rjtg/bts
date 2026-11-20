@@ -23,7 +23,10 @@ test('assess, acquire, air, resell and see a rival acquisition', async ({ page }
   if (process.env.BTS_RIGHTS_SCREENSHOTS) await market.screenshot({ path: '../contrib/rights-market/market.png' });
   await corner.getByRole('button', { name: /Buy rights/ }).click();
   await expect(corner).toContainText('In your library');
-  await corner.getByRole('button', { name: 'Open in programme library' }).click();
+  await corner.getByRole('button', { name: 'Pull tape' }).click();
+  const tape = page.getByRole('region', { name: 'Tape dossier' });
+  await tape.getByRole('button', { name: 'Reception', exact: true }).click();
+  await tape.getByRole('button', { name: 'Find airtime' }).click();
   await pickTime(page, 72, 0);
   await page.locator('#place').click();
   await page.getByRole('link', { name: /Rights market/ }).click();

@@ -65,6 +65,7 @@ let desks: ReturnType<typeof initialiseDesks>;
 let officeMotion: ReturnType<typeof initialiseOfficeMotion>;
 let moveFieldsFor: number | null = null;
 let reviewSelection: number | null | undefined;
+let ledgerSelection: { id: number; back: string; filtered: boolean } | null = null;
 let playback: ReturnType<typeof initialisePlayback> | undefined;
 const money = (text: string) => BigInt(text).toLocaleString('en'); // Formatting only.
 const count = (value: number) => value.toLocaleString('en', { maximumFractionDigits: 2 });
@@ -156,7 +157,7 @@ function tapeNote(tape: Programme, start: number, ads: number): string {
   return assistantNote(tape, report, freeMinutes(start), ads, start / 15, history.length, coveredCosts);
 }
 
-function showTapeDetails(tape: Programme, inline = false): void {
+function showTapeDetails(tape: Programme, inline = false, initialPaper = 0): void {
   const history = played(tape.id);
   const total = history.reduce((sum, result) => sum + airingReceipts(result.airing_id), 0n);
   const costs = history.reduce((sum, result) => sum + BigInt(result.broadcast_cost), 0n);
@@ -246,7 +247,7 @@ function showTapeDetails(tape: Programme, inline = false): void {
     buttons.forEach((tab, i) => tab.setAttribute('aria-pressed', String(i === index)));
   }
   tabs.replaceChildren(...buttons);
-  switchPaper(0);
+  switchPaper(initialPaper);
   if (inline) {
     const desk = element('paper-on-desk');
     const chosen = desk.querySelector('button[aria-pressed="true"]')?.textContent;
@@ -748,8 +749,30 @@ function resultPanel(result: BroadcastResult): HTMLElement {
     const reception = result.audiences.filter(row => row.film_reception);
     if (reception.length) panel.append(table('Provisional audience reception', ['Audience', 'Reception'], reception.map(row => [row.audience, row.film_reception!])));
   }
+  const tape = report.catalogue.find(work => work.id === scheduled?.programme);
+  const links = node('div', '', 'receipt-links');
+  const ledger = action('Open Ledger', () => {
+    ledgerSelection = { id: result.airing_id, back: activeDesk, filtered: true };
+    desks.navigate('finances');
+  });
+  ledger.dataset.ledgerEntry = '';
+  links.append(ledger);
+  if (tape) links.append(action('Tape bottom line', () => showTapeDetails(tape, false, 2)));
+  panel.append(links);
   return panel;
 }
+
+function preAirOutlook(airing: Airing, completed: boolean) {
+  const estimate = airingForecasts.get(airing.airing_id);
+  const forecast = node('div', '', 'airing-forecast');
+  if (estimate?.start === airing.start_minute) forecast.append(
+    node('h3', completed ? 'Pre-air outlook' : 'Audience outlook'),
+    node('p', `About ${Math.round(estimate.viewers / 100) * 100} potential viewers · survey ${weekdayStamp(estimate.surveyed)}`),
+    node('p', 'Survey screening estimate. Competition and repeat viewing can change turnout.', 'paper-footnote'));
+  else if (completed) forecast.append(node('h3', 'Pre-air outlook'), node('p', 'No outlook filed.', 'handwritten'));
+  return forecast;
+}
+
 function restoreAdPaper() {
   element('ad-content-home').after(element('ad-content'));
 }
@@ -783,12 +806,8 @@ function displayAiringFile(airing: Airing, result: BroadcastResult | undefined) 
     if (viewers !== null) airingForecasts.set(airing.airing_id,
       { start: airing.start_minute, surveyed: Math.max(...estimates.map(group => group.estimate.tick)), viewers });
   }
-  const estimate = airingForecasts.get(airing.airing_id);
-  const forecast = node('div', '', 'airing-forecast');
-  if (estimate?.start === airing.start_minute) forecast.append(
-    node('h3', result ? 'Pre-air outlook' : 'Audience outlook'),
-    node('p', `About ${Math.round(estimate.viewers / 100) * 100} potential viewers · survey ${weekdayStamp(estimate.surveyed)}`),
-    node('p', 'Survey screening estimate. Competition and repeat viewing can change turnout.', 'paper-footnote'));
+  const forecast = preAirOutlook(airing, !!result);
+  element('inline-airing-outlook').replaceChildren();
   const leadIn = airingFor(airing.lead_in_airing_id);
   if (leadIn && !result) {
     const note = node('p', 'Possible lead-in · ', 'paper-footnote');
@@ -797,7 +816,8 @@ function displayAiringFile(airing: Airing, result: BroadcastResult | undefined) 
   }
   if (result) {
     restoreAdPaper();
-    sheet.replaceChildren(forecast, resultPanel(result));
+    element('inline-airing-outlook').append(forecast);
+    sheet.replaceChildren(resultPanel(result));
   } else if (owned && !airing.filler) {
     sheet.replaceChildren(forecast, element('ad-content'));
   } else {
@@ -810,6 +830,7 @@ function renderDetails(): void {
   const a = airingFor(selected);
   const completed = report.results.find(r => r.airing_id === selected);
   const result = element('selected-result'); result.replaceChildren();
+  const reviewedOutlook = element('review-outlook'); reviewedOutlook.replaceChildren();
   const index = element<HTMLDetailsElement>('results-index');
   const reviewed = completed?.airing_id ?? null;
   if (reviewSelection !== reviewed) index.open = !completed;
@@ -817,6 +838,7 @@ function renderDetails(): void {
   const reviewAiring = button('review-airing'), future = button('review-future');
   reviewAiring.hidden = !completed; future.hidden = true;
   if (completed && a) {
+    reviewedOutlook.append(preAirOutlook(a, true));
     result.append(node('h3', a.programme_name), node('p', exactStamp(a.start_minute)), resultPanel(completed));
     const next = report.schedule.filter(item => item.station === a.station && item.programme === a.programme
       && item.status === 'planned' && item.start_tick > a.start_tick)
@@ -834,6 +856,8 @@ function renderDetails(): void {
   if (!a) return;
   const p = { name: a.programme_name, genre: a.genre, duration_minutes: a.duration_minutes };
   const own = a.station === playerStation();
+  element('edit-controls').hidden = !!completed;
+  element('lock-note').hidden = !!completed;
   element('selected-genre').textContent = p.genre.slice(0, 2).toUpperCase();
   element('selected-id').textContent = `AIRING #${a.airing_id} · ${own ? 'YOUR CHANNEL' : 'COMPETITOR'}`;
   element('selected-name').textContent = p.name; element('selected-window').textContent = `${windowText(a)} · ${p.duration_minutes} min`;
@@ -864,7 +888,7 @@ function renderDetails(): void {
   button('quote').disabled = !a.editable || a.proposed_advertiser === null;
   button('quote').textContent = `Request offer for #${a.airing_id}`;
   button('move').textContent = `Move this airing #${a.airing_id}`;
-  element('weekly-edit-controls').hidden = a.weekly_id === null || !own;
+  element('weekly-edit-controls').hidden = a.weekly_id === null || !own || !!completed;
   if (a.prior_slot_airing) element('selected-status').append(document.createTextNode(' · RETURNING TO REGULAR SLOT'));
   if (a.weekly_id !== null) element('selected-status').append(document.createTextNode(' · WEEKLY SLOT')); button('remove').textContent = `Remove #${a.airing_id}`;
   element('open-ad-sales').hidden = !own || a.filler || !!completed;
@@ -892,6 +916,7 @@ function renderDetails(): void {
   const contracts = element('selected-contract'); contracts.replaceChildren();
   const booking = report.contracts.find(c => c.airing_id === a.airing_id); if (booking) contracts.append(contractPanel(booking));
   button('advance-selected').textContent = `Run through selected airing #${a.airing_id} · to ${airStamp(a.end_minute)}`;
+  button('advance-selected').hidden = !!completed;
   button('advance-selected').disabled = !own || a.end_minute <= report.now_minute;
   displayAiringFile(a, completed);
 }
@@ -902,13 +927,37 @@ function renderReports(): void {
     const a = airingFor(r.airing_id)!;
     return [airingLink(r.airing_id, `#${r.airing_id} · ${a.programme_name}`, 'results'), windowText(a)];
   })));
+  renderLedger();
+}
+
+function renderLedger() {
   const summary = element('finance-summary'); summary.replaceChildren();
   for (const [label, value] of [['Opening cash', report.finances.opening_cash], ['Broadcast costs', report.finances.costs_paid], ['Production committed', report.finances.production_committed], ['Ad receipts', report.finances.revenue], ['Rights purchases', report.finances.rights_spent], ['Rights resale', report.finances.resale_receipts], ['Current cash', report.cash]]) { const stat = node('div', '', 'finance-stat'); stat.append(node('span', label), node('strong', money(value))); summary.append(stat); }
   summary.append(node('p', `Production budget remaining in escrow: ${money(report.finances.production_in_escrow)} · spent on recording: ${money(report.finances.production_spent)}. Reservation reduces cash once; spending transfers those reserved funds.`, 'production-reserve-note'));
   const ledger = element('ledger'); ledger.replaceChildren();
+  const commands = element('ledger-actions');
+  commands.replaceChildren();
+  const from = ledgerSelection ? airingFor(ledgerSelection.id) : undefined;
+  const filtered = ledgerSelection?.filtered ? from : undefined;
+  if (from && ledgerSelection) {
+    const selection = ledgerSelection;
+    commands.append(node('p', filtered ? `${from.programme_name} · ${windowText(from)}` : 'All station entries'),
+      action('Return to airing', () => {
+        desks.navigate(selection.back);
+        chooseAiring(selection.id);
+        Array.from(document.querySelectorAll<HTMLButtonElement>('button[data-ledger-entry]'))
+          .find(button => button.getClientRects().length)?.focus({ preventScroll: true });
+      }),
+      action(filtered ? 'All entries' : 'Only this airing', () => {
+        selection.filtered = !selection.filtered;
+        renderLedger();
+        element('ledger').focus({ preventScroll: true });
+      }));
+  }
+  const postings = report.finances.ledger.filter(entry => !filtered || entry.airing_id === filtered.airing_id);
   const amountHeading = node('span');
   amountHeading.append(fundsMark(), document.createTextNode(' Funds'));
-  if (report.finances.ledger.length) ledger.append(table('Station ledger · exact integer Funds', ['Time', 'Airing / production', 'Transaction', amountHeading], report.finances.ledger.map(l => {
+  if (postings.length) ledger.append(table('Station ledger · exact integer Funds', ['Time', 'Airing / production', 'Transaction', amountHeading], postings.map(l => {
     const kinds: Record<string, string> = { broadcast_cost: 'Broadcast cost', audience_poll: 'Audience poll', advertising_payment: 'Advertising receipt', production_reserve: 'Production budget reserved (cash)', production_spend: 'Recording expense (from escrow)', rights_purchase: 'Rights purchase', rights_resale: 'Rights resale' };
     let link: string | HTMLButtonElement = l.airing_id === null ? '—' : airingLink(l.airing_id, `Airing #${l.airing_id}`);
     if (l.rights_title !== null) link = report.rights_market.titles.find(title => title.programme === l.rights_title)?.name ?? 'Programme rights';
@@ -920,7 +969,7 @@ function renderReports(): void {
     }); }
     return [stamp(l.tick), link, kinds[l.kind] ?? l.kind, money(l.amount)];
   })));
-  else ledger.append(node('p', 'No station transactions yet. Advertiser escrow is separate from your station cash.', 'muted'));
+  else ledger.append(node('p', filtered ? 'No station transactions for this airing.' : 'No station transactions yet. Advertiser escrow is separate from your station cash.', 'muted'));
 }
 function render(next: Report): void {
   report = next;
@@ -974,7 +1023,7 @@ function send(command: Command, automatic = false): boolean {
     }
     if (command.type === 'reset') {
       filmUi?.resetView();
-      airingForecasts.clear(); officeTapeOpen = false; officeTrayOpen = false; placementOverride = null; comparingTape = false;
+      airingForecasts.clear(); officeTapeOpen = false; officeTrayOpen = false; placementOverride = null; comparingTape = false; ledgerSelection = null;
       calendar.reset();
       pickedGap = null; plannerAnchor = 1080; showingAiring = false; weeklyUi?.reset(); playback?.reset();
       libraryProgramme = 1; select('genre-filter').value = 'all'; selected = null; viewedDay = 0; select('day').value = '0';
@@ -1095,10 +1144,15 @@ async function start(): Promise<void> {
     officeMotion = initialiseOfficeMotion();
     studioBook = initialiseStudioBook();
     const reviewIndex = leaf('Transmission log');
-    reviewIndex.append(element('results-index'));
+    reviewIndex.append(element('review-outlook'), element('results-index'));
     const review = leaf();
     review.append(element('selected-result'), element('review-actions'));
     element('review-papers').append(dossier('Airing', [{ label: 'Review', content: spread(reviewIndex, review) }]));
+    const balances = leaf('Station balances');
+    balances.append(element('finance-summary'));
+    const transactions = leaf('Transaction book');
+    transactions.append(element('ledger-actions'), element('ledger'));
+    element('ledger-papers').append(dossier('Ledger', [{ label: 'Accounts', content: spread(balances, transactions) }]));
     initialiseOfficeIdle();
     select('room-motion').addEventListener('change', event => {
       element('office').dataset.ambientMotion = (event.currentTarget as HTMLSelectElement).value;
@@ -1107,6 +1161,7 @@ async function start(): Promise<void> {
       activeDesk = desk;
       collectionGap = null;
       document.body.dataset.stationView = desk;
+      if (report && desk === 'finances') renderLedger();
       if (isDesk()) {
         const mount = element(desk === 'office' ? 'office-workspace' : 'planning-workspace');
         mount.append(element('station-workspace'));
@@ -1126,6 +1181,9 @@ async function start(): Promise<void> {
     const observer = new ResizeObserver(positionProgramming);
     for (const frame of [transport, document.querySelector('.masthead')!, document.querySelector('.rail')!]) observer.observe(frame);
     element('office-calendar').addEventListener('click', () => calendar.dayMode());
+    for (const entry of document.querySelectorAll('a[href="#finances"]')) {
+      entry.addEventListener('click', () => { ledgerSelection = null; if (report) renderLedger(); });
+    }
     button('pull-tapes').addEventListener('click', event => browseTapes(event.currentTarget as HTMLElement));
     element('exact-gap-form').addEventListener('submit', event => {
       event.preventDefault();
@@ -1190,7 +1248,15 @@ async function start(): Promise<void> {
       previewBooking: (id, booking) => JSON.parse(session.preview_film_booking(id, JSON.stringify(booking))),
       close: () => desks.navigate('office') });
     if (location.hash === '#film-desk') filmUi.newPitch();
-    rightsUi = initialiseRightsMarket({ send, stamp, money, showProgramme, showAiring: id => chooseAiring(id, true) });
+    rightsUi = initialiseRightsMarket({ send, stamp, money, showProgramme: id => {
+      libraryProgramme = id;
+      placementOverride = null;
+      officeTapeOpen = true;
+      officeTrayOpen = true;
+      showingAiring = false;
+      desks.navigate('office');
+      element('paper-on-desk').querySelector<HTMLButtonElement>('button[aria-pressed="true"]')?.focus();
+    }, showAiring: id => chooseAiring(id, true) });
     weeklyUi = initialiseWeeklyPlanner({ send, stamp: exactStamp, dayLabel, showAiring: id => chooseAiring(id, true) });
     plannerDrag = initialisePlannerDrag({ report: () => report, player: playerStation, send, stamp: airStamp, time: displayTime, pause: () => playback?.pause() });
     plannerDrag.bindSource(element('desk-tape'), () => {

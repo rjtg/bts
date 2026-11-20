@@ -3043,3 +3043,25 @@ body[data-station-view="planning"] main > [data-desk="planning"].office-job:not(
     top:17%; left:14%; width:74%; height:78%;
   }
 }
+
+/* Ledger postings and forecast receipts sit on their own leaves. */
+[data-file="ledger"] { --folder:#75654b; --marker:#d6c49a; }
+#ledger-papers .finance-summary { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
+#ledger-papers :is(.finance-summary,.scroll) { margin-top:.5rem; }
+#ledger-actions, .receipt-links { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; }
+#ledger-actions p { flex-basis:100%; }
+.receipt-links { margin-top:.65rem; }
+#inline-airing-outlook, #review-outlook { margin-bottom:.7rem; }
+:is(#inline-airing-outlook,#review-outlook):empty { display:none; }
+.receipt-stamp, .research-receipt {
+  border-left:3px solid #668978; color:#244f42; padding:.4rem .6rem; background:#f1e3b6;
+}
+#office-paper-mount > #finances { background:#685738; }
+@media (min-width:861px) {
+  #office-paper-mount:has(> :is(#audience,#results,#rights-market,#finances):not([hidden])) {
+    inset:7% 6% 2% 6%;
+  }
+}
+@media (max-width:860px) {
+  #office-paper-mount:has(> :is(#audience,#finances):not([hidden])) { inset:12% .4rem .65rem; }
+}

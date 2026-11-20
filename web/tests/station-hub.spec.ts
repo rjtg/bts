@@ -75,6 +75,21 @@ async function airingJourney(page: Page, small: boolean) {
   await expect(airing).toContainText('Pre-air outlook');
   await airing.locator(small ? '.airing-forecast' : '.dossier-cover').evaluate(el => el.scrollIntoView({ block: 'start' }));
   await shot(page, `${name}-airing-completed`);
+  if (!small) {
+    await airing.getByRole('button', { name: 'Open Ledger' }).click();
+    const ledger = page.getByRole('region', { name: 'Ledger dossier' });
+    await expect(ledger).toContainText('Neighbourhood Laughs');
+    await expect(ledger.locator('#ledger tbody tr')).toHaveCount(2);
+    await shot(page, 'desktop-airing-ledger');
+    await ledger.getByRole('button', { name: 'All entries' }).click();
+    await expect(ledger).toContainText('All station entries');
+    await ledger.getByRole('button', { name: 'Return to airing' }).click();
+    await expect(airing.getByRole('button', { name: 'Open Ledger' })).toBeFocused();
+    await airing.getByRole('button', { name: 'Tape bottom line' }).click();
+    const tape = page.getByRole('dialog').filter({ has: page.getByRole('button', { name: 'Close record' }) });
+    await expect(tape).toContainText('Ad receipts to date');
+    await tape.getByRole('button', { name: 'Close record' }).click();
+  }
   await airing.getByRole('button', { name: 'Close file' }).click();
   await expect(airing).toHaveCount(0);
   await page.locator('#back-office').click();

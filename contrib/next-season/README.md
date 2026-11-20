@@ -7,8 +7,8 @@ Integration branch: `season/office-integration`. Starting point:
 
 Verified slice: tape rack, dated Reception advice and the calendar handoff
 (#6 and #18). The season branch includes the implementation commit and
-[Chromium capture](tape-fit.webp). Active next: Rights, Research, Ledger
-and Airing workspaces (#5 and #8), followed by production filing (#7).
+[Chromium capture](tape-fit.webp). Rights, Research, Ledger and Airing workspaces (#5 and #8) have a first
+verified pass. Active next: production filing and workspace scale (#7).
 Office controls (#1–#4), simulation pilots (#12–#17) and atmosphere
 (#9–#11) are pending. Code health (#19) continues at each boundary.
 
@@ -46,3 +46,21 @@ validates the placement and supplies actual viewing and contractual outcomes.
 
 The Wasm and TypeScript production build and 13 targeted Chromium tests
 passed. The TypeScript language server was unavailable locally.
+
+## Rights, Research and airing receipts
+
+Acquire The Corner Shop in Rights and return to the office through **Pull
+tape**. Open Reception to compare times. In Research, a posted Insight
+receipt identifies the group, dated investment and when a fresh survey can
+show the effect. The current estimate stays as published.
+
+After transmission, the dated outlook or **No outlook filed** faces the
+actual provisional count and signed settlement. **Tape bottom line** opens
+the lifetime airing ledger. **Open Ledger** filters exact postings to that
+showing. **All entries** opens the general book while retaining a route back
+to the same airing. See the [settled airing](airing-receipt.webp) and
+[filtered Ledger](airing-ledger.webp).
+
+The production build and 15 targeted Chromium tests passed, including the
+rights handoff, rights native/Wasm parity, and the Ledger return and focus
+check.

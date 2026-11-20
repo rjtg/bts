@@ -151,6 +151,15 @@ export function renderAudience(report: Report, stamp: (tick: number) => string, 
       else next?.focus();
     });
     investigation.append(node('p', `Insight available: ${research.insight}`, 'insight-stock'), form);
+    const receipt = [...research.spending].reverse().find(entry => entry.audience === group.id);
+    if (receipt) {
+      const note = node('section', '', 'research-receipt');
+      note.append(node('strong', `${receipt.spent} Insight committed · ${stamp(receipt.tick)}`),
+        node('p', receipt.tick < snapshot.tick ? 'This survey follows the investigation.'
+          : research.next_tick === null ? 'The estimate stays dated until polling resumes.'
+          : `Check the next successful survey · ${stamp(research.next_tick)}.`));
+      investigation.append(note);
+    }
     card.append(officeFile('Research', [{ label: group.name, content: spread(profile, investigation) }]));
     add(String(group.id), group.name, card, portrait);
   }

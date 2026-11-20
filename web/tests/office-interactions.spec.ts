@@ -186,7 +186,7 @@ test('office props and directory share one workspace per task', async ({ page },
     const work = page.locator(`#${job}.office-job`);
     await expect(work).toBeVisible();
     await expect(page.locator('#office')).toBeVisible();
-    const deskPaper = ['audience', 'production', 'results', 'rights-market'].includes(job);
+    const deskPaper = ['audience', 'production', 'results', 'rights-market', 'finances'].includes(job);
     await expect(page.locator(deskPaper ? '#office .office-room' : '#office')).toHaveAttribute('inert', '');
     if (deskPaper) await expect(page.locator(`#office-paper-mount > #${job}`)).toBeVisible();
     if (prop === 'reviews') {
