@@ -13,6 +13,19 @@ export const shelfLabels: Record<ProjectShelf, string> = {
   completed: 'Completed films',
 };
 
+export const filmPhaseLabels: Record<FilmCard['phase'], string> = {
+  developing_idea: 'Idea in development', pitch: 'Find a writer', writing: 'Script in progress',
+  script_review: 'Script ready', revising: 'Revision in progress', casting: 'Cast and book',
+  booked: 'Filming booked', recording: 'On the set', post: 'In the edit', complete: 'Film ready',
+};
+
+const nextDecisions: Record<FilmCard['phase'], string> = {
+  developing_idea: 'Check brief at delivery', pitch: 'Commission a script', writing: 'Review at delivery',
+  script_review: 'Read and accept or revise', revising: 'Review the revision at delivery',
+  casting: 'Confirm cast and studio', booked: 'Follow the recording', recording: 'Follow the recording',
+  post: 'Return for the finished tape', complete: 'Pull the finished tape',
+};
+
 export function shelfFor(phase: FilmCard['phase']): ProjectShelf[] {
   switch (phase) {
     case 'developing_idea': return ['ideas'];
@@ -26,7 +39,7 @@ export function shelfFor(phase: FilmCard['phase']): ProjectShelf[] {
 }
 
 export function projectBox(desk: Report['film_desk'], filter: ProjectShelf | null, series: number | null,
-  selected: number | null, ui: { open: (id: number) => void; browseSeries: (id: number | null) => void; newPitch: (series: boolean) => void; close: () => void }) {
+  selected: number | null, ui: { open: (id: number) => void; browseSeries: (id: number | null) => void; newPitch: (series: boolean) => void; close: () => void; stamp: (tick: number) => string }) {
   const box = node('section', '', 'script-file-box');
   const run = desk.scripted_runs.find(item => item.series === series);
   const entries = desk.projects.filter(film => !filter || shelfFor(film.phase).includes(filter));
@@ -40,6 +53,16 @@ export function projectBox(desk: Report['film_desk'], filter: ProjectShelf | nul
     if (id !== undefined) button.setAttribute('aria-current', String(selected === id));
     return button;
   };
+  function openFile(film: FilmCard, title: string) {
+    const due = film.due ?? (film.phase === 'booked' ? film.booking?.start : film.booking?.ready);
+    const readyIdea = filter === 'ideas' && film.phase === 'pitch' && film.description !== null;
+    const label = readyIdea ? 'Idea ready' : filmPhaseLabels[film.phase];
+    const decision = readyIdea ? 'Open the writing file' : nextDecisions[film.phase];
+    const description = due == null || film.phase === 'complete' ? label : `${label} · ${ui.stamp(due)}`;
+    const file = tab(title, description, () => ui.open(film.id), film.id);
+    file.append(node('span', decision, 'project-next-decision'));
+    return file;
+  }
   if (run) {
     box.prepend(action('← Show folders', () => ui.browseSeries(null)));
     if (run.brief.length) {
@@ -48,7 +71,7 @@ export function projectBox(desk: Report['film_desk'], filter: ProjectShelf | nul
       box.append(brief);
     }
     for (const film of entries.filter(film => film.episode?.series === series).sort((a, b) => a.episode!.sequence - b.episode!.sequence)) {
-      rows.append(tab(`Episode ${film.episode!.sequence}`, shelfLabels[shelfFor(film.phase)[0]], () => ui.open(film.id), film.id));
+      rows.append(openFile(film, `Episode ${film.episode!.sequence}`));
     }
   } else {
     const folders = new Map<number, FilmCard[]>();
@@ -57,7 +80,7 @@ export function projectBox(desk: Report['film_desk'], filter: ProjectShelf | nul
         const group = folders.get(film.episode.series) ?? [];
         group.push(film);
         folders.set(film.episode.series, group);
-      } else rows.append(tab(film.title, shelfLabels[shelfFor(film.phase)[0]], () => ui.open(film.id), film.id));
+      } else rows.append(openFile(film, film.title));
     }
     for (const [id, episodes] of folders) {
       const show = desk.scripted_runs.find(item => item.series === id);

@@ -1,7 +1,7 @@
 import type { Command, FilmBooking, FilmBookingPreview, FilmCard, FilmPerson, PitchPace, Report, Subject } from './protocol';
 import { dossier, leaf, spread } from './ui/dossier';
 import { action, element, node, option } from './ui/dom';
-import { projectBox, type ProjectShelf } from './ui/project-box';
+import { filmPhaseLabels, projectBox, type ProjectShelf } from './ui/project-box';
 import { photoSpot, studioSpot } from './ui/casting-gallery';
 import { bindDateClock } from './ui/date-clock';
 
@@ -10,12 +10,6 @@ type FilmDraft = Omit<FilmBooking, 'cast' | 'director'> & { cast: [number | null
 const qualities = ['Humour', 'Playfulness', 'Tension', 'Warmth', 'Intimacy', 'Spectacle', 'Pace'];
 const startingRatings = [3, 3, 2, 4, 4, 2, 3];
 const preparing = (film: FilmCard) => ['developing_idea', 'pitch', 'writing', 'script_review', 'revising'].includes(film.phase);
-
-const phases: Record<FilmCard['phase'], string> = {
-  developing_idea: 'Idea in development', pitch: 'Find a writer', writing: 'Script in progress', script_review: 'Script ready',
-  revising: 'Revision in progress', casting: 'Cast and book', booked: 'Filming booked',
-  recording: 'On the set', post: 'In the edit', complete: 'Film ready',
-};
 
 export function initialiseFilmDesk(ui: {
   send: (command: Command) => void; stamp: (tick: number) => string;
@@ -144,7 +138,7 @@ export function initialiseFilmDesk(ui: {
     const film = desk.projects.find(project => project.id === selectedProject);
     if (view === 'box' || !film) {
       root.replaceChildren(projectBox(desk, filter, series, selectedProject, {
-        open, newPitch, close: ui.close, browseSeries: id => { series = id; chooseView('box'); },
+        open, newPitch, close: ui.close, stamp: ui.stamp, browseSeries: id => { series = id; chooseView('box'); },
       }));
       return;
     }
@@ -154,7 +148,7 @@ export function initialiseFilmDesk(ui: {
       card.id = `film-${film.id}`; card.tabIndex = -1;
       const readyIdea = film.phase === 'pitch' && film.description !== null && filter === 'ideas';
       const summary = leaf(film.title);
-      summary.append(node('p', `${readyIdea ? 'Idea ready' : phases[film.phase]} · ${funds(film.committed)} committed${film.due !== null ? ` · ${ui.stamp(film.due)}` : ''}`));
+      summary.append(node('p', `${readyIdea ? 'Idea ready' : filmPhaseLabels[film.phase]} · ${funds(film.committed)} committed${film.due !== null ? ` · ${ui.stamp(film.due)}` : ''}`));
       if (film.description) summary.append(node('p', film.description, 'film-logline'));
       if (film.episode) {
         const episode = film.episode;

@@ -89,6 +89,8 @@ export function initialiseNewsroom(ui: {
         node('p', `Reporting ${ui.stamp(edition.reporting_tick * 15)} · Studio ${ui.stamp(edition.recording_tick * 15)}–${ui.stamp(edition.recording_end_tick * 15)}`),
         node('p', `Tape ready ${ui.stamp(edition.delivery_tick * 15)} · Air ${ui.stamp(airing?.start_minute ?? edition.air_minute)} · ${ui.money(edition.cost)} Funds`));
       if (edition.exception) card.append(node('p', `${edition.exception}. No production charge.`, 'small'));
+      else card.append(node('p', edition.airing_id !== null ? 'Open the airing file'
+        : 'Check the tape at delivery', 'project-next-decision'));
       if (edition.airing_id !== null) {
         const id = edition.airing_id;
         card.append(action('Open bulletin airing', () => ui.showAiring(id)));

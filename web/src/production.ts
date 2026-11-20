@@ -150,11 +150,11 @@ export function initialiseProduction(ui: Callbacks) {
       for (const e of report.production.sway_history) history.append(node('li', `${ui.stamp(e.tick)} · ${e.kind.replaceAll('_', ' ')}${e.person_id === null ? '' : `: ${personName(e.person_id)}`} · ${e.change > 0 ? '+' : ''}${e.change} Sway · balance ${e.balance}`)); pool.append(history);
     }
     const binders = element('discussion-run-binders'); binders.replaceChildren();
-    const editionCards = new Map<number, { edition: DiscussionEdition; binder: HTMLElement }>();
+    const editionCards = new Map<number, { edition: DiscussionEdition; binder: HTMLElement; number: number }>();
     for (const run of report.production.discussion_runs) {
       const binder = node('section', '', 'discussion-binder');
       binder.append(node('h3', run.title), node('p', `Weekly discussion · ${personName(run.host)} · Three editions`, 'small'));
-      for (const edition of run.editions) editionCards.set(edition.production_id, { edition, binder });
+      for (const [index, edition] of run.editions.entries()) editionCards.set(edition.production_id, { edition, binder, number: index + 1 });
       binders.append(binder);
     }
     const projects = element('production-projects'); projects.replaceChildren();
@@ -184,7 +184,11 @@ export function initialiseProduction(ui: Callbacks) {
         const airing = report.schedule.find(item => item.airing_id === run.edition.airing_id);
         const minute = airing?.start_minute ?? run.edition.planned_air_minute;
         const time = `${String(Math.floor(minute / 60) % 24).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')}`;
-        card.append(node('p', `Airtime · Day ${Math.floor(minute / 1440) + 1} at ${time} · ${airing?.ad_minutes ?? run.edition.ad_minutes} ad minutes`, 'small'));
+        const next = airing ? 'Open the airing file'
+          : run.edition.missed ? 'Review the missed recording'
+          : p.phase === 'draft' ? 'Confirm studio before recording' : 'Check tape delivery';
+        card.append(node('p', `Edition ${run.number} · ${next}`, 'project-next-decision'),
+          node('p', `Airtime · Day ${Math.floor(minute / 1440) + 1} at ${time} · ${airing?.ad_minutes ?? run.edition.ad_minutes} ad minutes`, 'small'));
         if (airing) buttons.append(action('Open airing file', () => ui.showAiring(airing.airing_id)));
         else if (run.edition.missed) card.append(node('p', 'Recording time passed without a booking. No cost or airing.', 'small'));
         else if (p.phase === 'draft') {

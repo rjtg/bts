@@ -3065,3 +3065,10 @@ body[data-station-view="planning"] main > [data-desk="planning"].office-job:not(
 @media (max-width:860px) {
   #office-paper-mount:has(> :is(#audience,#finances):not([hidden])) { inset:12% .4rem .65rem; }
 }
+.project-next-decision {
+  display:block; flex-basis:100%; font-weight:400; font-style:italic; color:#584126;
+}
+@media (min-width:861px) {
+  #office-paper-mount:has(> :is(#film-dossier,#production):not([hidden])) { inset:7% 6% 2% 6%; }
+  #film-dossier .script-file-box { width:min(100%,56rem); }
+}

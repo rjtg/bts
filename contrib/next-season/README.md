@@ -8,9 +8,10 @@ Integration branch: `season/office-integration`. Starting point:
 Verified slice: tape rack, dated Reception advice and the calendar handoff
 (#6 and #18). The season branch includes the implementation commit and
 [Chromium capture](tape-fit.webp). Rights, Research, Ledger and Airing workspaces (#5 and #8) have a first
-verified pass. Active next: production filing and workspace scale (#7).
-Office controls (#1–#4), simulation pilots (#12–#17) and atmosphere
-(#9–#11) are pending. Code health (#19) continues at each boundary.
+verified pass. Production filing (#7) is verified through the pilot formats.
+Active next: the station strip and accessible directory (#1), then outside
+dismissal (#2) and the prop changes (#3–#4). Simulation pilots (#12–#17)
+and atmosphere (#9–#11) are pending. Code health (#19) continues at each boundary.
 
 ## Launch
 
@@ -64,3 +65,17 @@ to the same airing. See the [settled airing](airing-receipt.webp) and
 The production build and 15 targeted Chromium tests passed, including the
 rights handoff, rights native/Wasm parity, and the Ledger return and focus
 check.
+
+## Production filing
+
+Open the script prop, select a stage and choose the Harbour Lights folder.
+Episode entries show the action for their stage and a date when one exists.
+The review, casting and booking papers keep the same episode. Discussion
+work orders show edition numbers, next actions and airtime. Newsroom leaves
+show when to check tape delivery or open the linked airing. These additions
+reuse the existing portrait, studio, and booking controls.
+[Show folder capture](show-folder.webp).
+
+The production build, all 55 Chromium tests including native/Wasm parity,
+Rust workspace tests and doctests, and formatting passed. Chromium used a
+temporary configuration with port 4191 because 4186 was occupied.

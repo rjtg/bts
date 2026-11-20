@@ -28,6 +28,7 @@ test('file a scripted run by show and reuse the first episode cast', async ({ pa
   await expect(box.locator('.script-file-tab')).toHaveCount(1);
   await box.getByRole('button', { name: /Harbour Lights/ }).click();
   await expect(box.locator('.script-file-tab')).toHaveCount(3);
+  await expect(box.getByRole('button', { name: /Episode 1/ })).toContainText(/Commission a script|Open the writing file/);
   await page.screenshot({ path: testInfo.outputPath('show-file-box.png'), animations: 'disabled' });
   const episode = (n: number) => box.getByRole('button', { name: new RegExp(`Episode ${n}`) });
   await episode(2).click();
