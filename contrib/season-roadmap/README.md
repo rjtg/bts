@@ -24,9 +24,9 @@ Open port 4173 on the preview host. The existing network address is
 
 ## Progress checkpoint
 
-- Active slice: scripted series.
-- Verified milestones: `7313d17`, `c6b68e4`, `bf42a8f`, `ed2f906`, `656746d`, `2dffc4e` and Reserve prepaid host dates in a hiring desk.
-- Next: implement a three-episode scripted binder, cast continuity and ambition variation.
+- Active slice: persistence and season wrap-up.
+- Verified milestones: `7313d17`, `c6b68e4`, `bf42a8f`, `ed2f906`, `656746d`, `2dffc4e` `41a2095`, and Produce a short scripted series with recurring roles.
+- Next: implement versioned save journals and verify a full season.
 - Runtime token refresh schedule: unavailable.
 
 ## 1. Recurring discussion editions
@@ -192,3 +192,27 @@ This desk covers hosting dates rather than a general contract market.
 [Capture of the signed agreement](host-agreement.png). Workspace tests and
 doctests, strict Clippy and rustdoc, formatting, the Wasm/browser build,
 native/Wasm parity and all 45 Chromium tests passed.
+
+## 5c. Scripted series
+
+Find this slice with `git log --oneline --grep='Produce a short scripted series with recurring roles'`.
+See [scripted-series rules](../../docs/scripted-series-pilot.md) for the
+tension curve and continuity decisions.
+
+In Preparation, choose a standing brief, open **Pitch a three-episode
+series**, and set the three tension targets. Commission and accept the
+first script, then book its cast. In later episodes, the standing actors
+appear in their original role seats. Completed episodes can be placed
+from the tape library.
+
+The controlled fixture uses the same final target and writer in both
+cases. The script reaches 0.594 after a gradual curve and 0.490 after
+abrupt shifts. It also verifies separate episode identities and rejects
+a swap of the two recurring roles. The pilot does not model recasting or
+audience response to every possible curve.
+
+[Chromium capture of the scripted binder](scripted-series-binder.png).
+Workspace tests and doctests, strict Clippy and rustdoc, formatting, the
+Wasm/browser build, native/Wasm parity and 45 existing Chromium tests
+passed. The new scripted-series browser test passed on its rerun with
+normalized slider inputs.

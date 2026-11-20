@@ -11,6 +11,7 @@ pub mod newsroom;
 pub mod production;
 pub mod research;
 pub mod rights;
+pub mod scripted_run;
 mod slot_habits;
 pub mod weekly;
 
@@ -123,6 +124,7 @@ pub struct Planner {
     host_agreements: BTreeMap<production::ProductionId, hiring::HostAgreement>,
     newsroom: Option<newsroom::Newsroom>,
     discussion_runs: BTreeMap<SeriesId, discussion_run::DiscussionRun>,
+    scripted_runs: BTreeMap<SeriesId, scripted_run::ScriptedRun>,
     films: BTreeMap<production::ProductionId, film::Film>,
     research: Option<research::Research>,
     rights: Option<rights::Market>,
@@ -177,6 +179,7 @@ impl Planner {
             host_agreements: BTreeMap::new(),
             newsroom: None,
             discussion_runs: BTreeMap::new(),
+            scripted_runs: BTreeMap::new(),
             films: BTreeMap::new(),
             research: None,
             rights: None,

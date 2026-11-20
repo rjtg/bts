@@ -74,6 +74,12 @@ pub enum Command {
         advertiser: u16,
         token: String,
     },
+    PitchScriptedRun {
+        title: String,
+        subject: Subject,
+        standing: [f64; 7],
+        tension: [f64; 3],
+    },
     PitchFilm {
         title: String,
         subject: Subject,
@@ -564,6 +570,7 @@ pub struct FilmReview {
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct FilmDesk {
     pub projects: Vec<FilmCard>,
+    pub scripted_runs: Vec<ScriptedRunView>,
     pub people: Vec<FilmPerson>,
     pub studios: Vec<FilmStudio>,
     pub roles: [&'static str; 2],
@@ -584,6 +591,7 @@ pub struct FilmCard {
     pub revised: bool,
     pub booking: Option<FilmReview>,
     pub programme: Option<u16>,
+    pub episode: Option<ScriptedEpisodeView>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
@@ -793,4 +801,20 @@ pub struct HostDateView {
     pub end_tick: u32,
     pub fee: String,
     pub status: &'static str,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct ScriptedRunView {
+    pub series: u16,
+    pub title: String,
+    pub brief: Vec<Quality>,
+    pub episodes: [u32; 3],
+    pub cast: Option<[u16; 2]>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct ScriptedEpisodeView {
+    pub series: u16,
+    pub sequence: u32,
+    pub tension: f64,
+    pub demanding_shift: bool,
 }

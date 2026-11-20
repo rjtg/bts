@@ -191,6 +191,7 @@ pub struct Film {
     pub quote: Option<FilmQuote>,
     pub programme: Option<ProgrammeId>,
     pub evidence: Option<FilmEvidence>,
+    pub episode: Option<super::scripted_run::ScriptedEpisode>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -262,6 +263,7 @@ impl Planner {
                 quote: None,
                 programme: None,
                 evidence: None,
+                episode: None,
             },
         );
         Ok(id)
@@ -381,6 +383,9 @@ impl Planner {
                 "Accept the script before booking filming.",
             ));
         }
+        if let Some(episode) = film.episode {
+            self.validate_series_cast(episode, booking.cast)?;
+        }
         let start = booking.start;
         if start <= self.now() || start > self.end {
             return Err(error(
@@ -390,7 +395,8 @@ impl Planner {
         }
         let end = SimTick(start.0 + RECORDING_TICKS);
         let ready = SimTick(end.0 + POST_TICKS);
-        if ready.0 + 6 > self.end.0 {
+        let airtime_ticks = if film.episode.is_some() { 3 } else { 6 };
+        if ready.0 + airtime_ticks > self.end.0 {
             return Err(error(
                 "film_date",
                 "Allow time for filming, post-production and a feature-length airing.",
@@ -476,6 +482,14 @@ impl Planner {
         film.committed = committed;
         film.booking = Some(booking);
         film.quote = Some(quote);
+        if let Some(episode) = film.episode {
+            candidate
+                .scripted_runs
+                .get_mut(&episode.series)
+                .unwrap()
+                .cast
+                .get_or_insert(booking.cast);
+        }
         *self = candidate;
         Ok(())
     }
@@ -554,7 +568,13 @@ fn write_script(film: &Film, writer: &Freelancer) -> Script {
             [0.94, 0.80, 1.0]
         }[film.subject.index()];
         let capacity = 0.30 * writer.craft + 0.60 * writer.capability[i] + 0.10 * subject_fit;
-        baseline + (target - baseline) * (1.0 - 0.8 * (complexity - capacity).max(0.0))
+        let strain = if i == 2 {
+            film.episode.map_or(0.0, |episode| episode.strain)
+        } else {
+            0.0
+        };
+        baseline
+            + (target - baseline) * (1.0 - 0.8 * (complexity - capacity).max(0.0)) * (1.0 - strain)
     });
     let weaknesses = (0..7)
         .filter(|i| (targets[*i] - delivered[*i]).abs() >= 0.075)
@@ -619,7 +639,11 @@ fn film_work(film: &Film, id: ProgrammeId) -> Result<(Programme, FilmEvidence), 
         .filter_map(|(a, b)| a.zip(b).map(|(a, b)| (a - b).abs()))
         .sum::<f64>()
         / 7.0;
-    let execution = (0.20 + 0.65 * craft + 0.15 * equipment) * cooperation * (1.0 - shortfall);
+    let strain = film.episode.map_or(0.0, |episode| episode.strain);
+    let execution = (0.20 + 0.65 * craft + 0.15 * equipment)
+        * cooperation
+        * (1.0 - shortfall)
+        * (1.0 - 0.5 * strain);
     let evidence = FilmEvidence {
         profile,
         craft,
@@ -631,14 +655,19 @@ fn film_work(film: &Film, id: ProgrammeId) -> Result<(Programme, FilmEvidence), 
     Ok((
         Programme {
             id,
-            kind: ProgrammeKind::Standalone,
+            kind: film.episode.map_or(ProgrammeKind::Standalone, |episode| {
+                ProgrammeKind::Episode {
+                    series: episode.series,
+                    sequence: episode.sequence,
+                }
+            }),
             name: film.title.clone(),
             profile,
             awareness: 0.52,
             cast_appeal: 0.6 * lead.recognition + 0.4 * second.recognition,
             execution,
             broadcast_cost: Money(120),
-            duration_minutes: 90,
+            duration_minutes: if film.episode.is_some() { 45 } else { 90 },
         },
         evidence,
     ))

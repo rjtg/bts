@@ -146,6 +146,7 @@ News and talk shows need a preparation cadence tied to their subject matter, not
 fictional season limit solely because the engine requires a count.
 
 ## Procedural ambition across episodes
+The [scripted series pilot](scripted-series-pilot.md) implements a limited three-episode tension curve and locked recurring cast.
 
 A procedural has a stable **show ambition**: its established feature profile
 and typical intensity. Each episode may deliberately vary along those same

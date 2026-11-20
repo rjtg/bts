@@ -333,6 +333,16 @@ impl Session {
                 return self.issue_minute_offers(id);
             }
 
+            Command::PitchScriptedRun {
+                title,
+                subject,
+                standing,
+                tension,
+            } => {
+                self.planner
+                    .pitch_scripted_run(title, subject, standing, tension)
+                    .map_err(player_error)?;
+            }
             Command::PitchFilm {
                 title,
                 subject,
@@ -1577,6 +1587,16 @@ fn film_desk(planner: &Planner) -> FilmDesk {
     use bts_sim::planning::film::*;
     let now = planner.now().0;
     FilmDesk {
+        scripted_runs: planner
+            .scripted_runs()
+            .map(|run| ScriptedRunView {
+                series: run.series.0,
+                title: run.title.clone(),
+                brief: qualities(run.brief),
+                episodes: run.episodes.map(|project| project.0),
+                cast: run.cast.map(|cast| cast.map(|person| person.0)),
+            })
+            .collect(),
         roles: ROLES,
         writing_ticks: WRITING_TICKS,
         revision_ticks: REVISION_TICKS,
@@ -1587,6 +1607,12 @@ fn film_desk(planner: &Planner) -> FilmDesk {
                 title: film.title.clone(),
                 subject: film.subject,
                 phase: film.phase,
+                episode: film.episode.map(|episode| ScriptedEpisodeView {
+                    series: episode.series.0,
+                    sequence: episode.sequence,
+                    tension: film.ambition.values[2].expect("fiction tension target"),
+                    demanding_shift: episode.strain >= 0.10,
+                }),
                 committed: film.committed.0.to_string(),
                 writer: film.writer.map(|w| w.0),
                 due: film.due.map(|tick| tick.0),

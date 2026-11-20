@@ -15,6 +15,7 @@ export type Command =
   | { type: 'set_autosell'; airing_id: number; policy: AutosellPolicy | null }
   | { type: 'request_minute_offers'; airing_id: number }
   | { type: 'accept_minute_offer'; airing_id: number; advertiser: number; token: string }
+  | { type: 'pitch_scripted_run'; title: string; subject: Subject; standing: number[]; tension: number[] }
   | { type: 'pitch_film'; title: string; subject: Subject; ambition: number[] }
   | { type: 'write_film'; film_id: number; writer: number; focus: number | null }
   | { type: 'accept_script'; film_id: number }
@@ -138,6 +139,7 @@ export type FilmPerson = {
   specialty: string; available_until: number; commitments: [string, number, number][];
 };
 export type FilmCard = {
+  episode: { series: number; sequence: number; tension: number; demanding_shift: boolean } | null;
   id: number; title: string; subject: Subject; phase: 'pitch' | 'writing' | 'script_review' |
     'revising' | 'casting' | 'booked' | 'recording' | 'post' | 'complete';
   committed: string; writer: number | null; due: number | null; revised: boolean;
@@ -146,6 +148,7 @@ export type FilmCard = {
 };
 export type FilmDesk = {
   projects: FilmCard[]; people: FilmPerson[];
+  scripted_runs: { series: number; title: string; brief: Quality[]; episodes: [number, number, number]; cast: [number, number] | null }[];
   studios: { id: number; name: string; fee: string; summary: string; commitments: [string, number, number][] }[];
   roles: [string, string]; writing_ticks: number; revision_ticks: number;
 };

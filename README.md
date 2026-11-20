@@ -23,6 +23,7 @@ The world supplies viewers, talent, stories, guests, and advertisers. Its detail
 - [Recurring discussion editions](docs/recurring-discussion.md) links three weekly productions to one stand-alone discussion format.
 - [Daily newsroom pilot](docs/recurring-newsroom.md) describes automated preparation, recording, delivery and same-day airings.
 - [Guaranteed host dates](docs/guaranteed-host-dates.md) describes one-off and multi-edition discussion agreements.
+- [Scripted series pilot](docs/scripted-series-pilot.md) describes the three-episode binder and creative strain.
 - [Weekly advertiser reviews](docs/brand-reviews.md) describes brand bidding changes and industry-wire notices.
 - [Screens and interaction design](docs/screens.md): proposed workspaces, shared production and mockup brief.
 - [UI concept mockups](docs/mockups/README.md): station overview, programme planning and production editorial profile.

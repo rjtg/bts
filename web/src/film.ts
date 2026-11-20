@@ -34,6 +34,29 @@ export function initialiseFilmDesk(ui: {
   const briefs = node('div', '', 'choice-tiles');
   for (const [name, values] of Object.entries(presets)) briefs.append(action(name, () => setPreset(values)));
   pitch.append(node('h3', 'Pitch a film'), label('Film title', title), label('Subject', subject), briefs, brief, node('button', 'Save free pitch'));
+  const serial = node('details');
+  serial.append(node('summary', 'Pitch a three-episode series'),
+    node('p', 'Use the main sliders as the standing brief. Set the tension in each script. Large changes demand more from the crew.'));
+  const curve = node('div', '', 'film-qualities');
+  const tension = [.45, .60, .75].map((target, index) => {
+    const control = node('input');
+    control.type = 'range'; control.min = '0'; control.max = '1'; control.step = '.01';
+    control.value = String(target);
+    const name = `Episode ${index + 1} tension`;
+    control.setAttribute('aria-label', name);
+    const output = node('output', `${Math.round(target * 100)}%`);
+    control.addEventListener('input', () => { output.value = `${Math.round(control.valueAsNumber * 100)}%`; });
+    const wrapper = label(name, control);
+    wrapper.append(output);
+    curve.append(wrapper);
+    return control;
+  });
+  serial.append(curve, action('Open scripted series binder', () => {
+    if (!pitch.reportValidity()) return;
+    ui.send({ type: 'pitch_scripted_run', title: title.value, subject: subject.value as Subject,
+      standing: controls.map(control => control.valueAsNumber), tension: tension.map(control => control.valueAsNumber) });
+  }));
+  pitch.append(serial);
   pitch.addEventListener('submit', event => {
     event.preventDefault();
     ui.send({ type: 'pitch_film', title: title.value, subject: subject.value as Subject, ambition: controls.map(c => c.valueAsNumber) });
@@ -79,7 +102,19 @@ export function initialiseFilmDesk(ui: {
     const notices = element('film-notices');
     root.replaceChildren();
     notices.replaceChildren();
+    const binders = new Map<number, HTMLElement>();
+    for (const run of desk.scripted_runs) {
+      const binder = node('section', '', 'discussion-binder scripted-binder');
+      binder.append(node('h3', run.title), node('p', 'Scripted series · three episode files', 'small'));
+      const briefNotes = node('details');
+      briefNotes.append(node('summary', 'Read the standing brief'),
+        node('p', run.brief.map(quality => `${quality.name} · ${quality.level}`).join(' / ')));
+      binder.append(briefNotes);
+      binders.set(run.series, binder);
+      root.append(binder);
+    }
     for (const film of desk.projects) {
+      const run = desk.scripted_runs.find(item => item.series === film.episode?.series);
       if (preparing(film) !== (mode === 'preparation')) {
         const link = action(`${film.title} · ${phases[film.phase]}`, () => ui.openProject(film));
         notices.append(link);
@@ -95,6 +130,11 @@ export function initialiseFilmDesk(ui: {
       });
       const summary = leaf(film.title);
       summary.append(node('p', `${phases[film.phase]} · ${funds(film.committed)} committed${film.due !== null ? ` · ${ui.stamp(film.due)}` : ''}`));
+      if (film.episode) {
+        const episode = film.episode;
+        summary.append(node('p', `Episode ${episode.sequence} · Tension target ${Math.round(episode.tension * 100)}%`));
+        if (episode.demanding_shift) summary.append(node('p', 'Large shifts in the brief add strain to this episode.', 'small'));
+      }
       const work = leaf(mode === 'preparation' ? 'Script work' : 'Studio work');
       if (film.phase === 'script_review' || film.phase === 'complete') {
         const notice = node('p', film.phase === 'complete' ? '✦ Film ready · ' : '✎ Script ready · ', 'film-notice');
@@ -140,14 +180,20 @@ export function initialiseFilmDesk(ui: {
         const actors = desk.people.filter(p => p.job === 'actor');
         const directors = desk.people.filter(p => p.job === 'director');
         const draft = bookings.get(film.id) ?? {
-          cast: [actors[0].id, actors[1].id], director: directors[0].id,
+          cast: run?.cast ? [...run.cast] : [actors[0].id, actors[1].id], director: directors[0].id,
           studio: desk.studios[0].id, start: Math.min(report.end_tick - 30, report.now_tick + 8),
         };
+        if (run?.cast) {
+          draft.cast = [...run.cast];
+          work.append(node('p', 'The recurring actors keep their established roles.'));
+        } else if (film.episode && film.episode.sequence > 1) {
+          work.append(node('p', 'Book episode one to establish the recurring cast.'));
+        }
         bookings.set(film.id, draft);
         const seats = node('div', '', 'film-seats');
         for (const [index, role] of desk.roles.entries()) {
           const slot = node('section');
-          slot.append(node('h4', role), peopleCards(actors, draft.cast[index], id => { draft.cast[index] = id; render(report); }));
+          slot.append(node('h4', role), peopleCards(run?.cast ? actors.filter(person => person.id === draft.cast[index]) : actors, draft.cast[index], id => { draft.cast[index] = id; render(report); }));
           seats.append(slot);
         }
         const direction = node('section');
@@ -167,7 +213,9 @@ export function initialiseFilmDesk(ui: {
         day.addEventListener('change', date); time.addEventListener('change', date);
         work.append(label('Studio', studio), node('p', room.summary));
         for (const [name, start, end] of room.commitments) work.append(node('p', `Reserved: ${name} · ${ui.stamp(start)}–${ui.stamp(end)}`));
-        work.append(label('Recording day', day), label('Recording time', time), action('Review film booking', () => ui.send({ type: 'review_film', film_id: film.id, booking: draft })));
+        const reviewBooking = action('Review film booking', () => ui.send({ type: 'review_film', film_id: film.id, booking: draft }));
+        reviewBooking.disabled = !!film.episode && film.episode.sequence > 1 && !run?.cast;
+        work.append(label('Recording day', day), label('Recording time', time), reviewBooking);
         const review = report.film_review;
         if (review?.id === film.id && review.cast.every((id, i) => id === draft.cast[i]) &&
             review.director === draft.director && review.studio === draft.studio && review.start === draft.start) {
@@ -185,7 +233,7 @@ export function initialiseFilmDesk(ui: {
       if (film.programme !== null) work.append(action('Open in programme library', () => ui.showProgramme(film.programme!)));
       card.append(dossier(mode === 'preparation' ? 'Preparation' : 'Production',
         [{ label: 'Project', content: spread(summary, work) }]));
-      root.append(card);
+      (film.episode ? binders.get(film.episode.series) ?? root : root).append(card);
     }
   }
   return { render, setMode(next: typeof mode) { mode = next; }, showProject: (id: number) => {
