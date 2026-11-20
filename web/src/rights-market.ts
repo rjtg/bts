@@ -1,4 +1,5 @@
 import type { Command, MarketTitle, Report } from './protocol';
+import { brandHeadline } from './ad-market';
 import { action, element, node } from './ui/dom';
 
 const descriptions: Record<string, string> = {
@@ -41,13 +42,18 @@ export function initialiseRightsMarket(ui: {
     const root = element('rights-catalogue');
     const wires = node('div', '', 'rights-wire');
     wires.append(node('h3', 'Industry wire'), node('p', `${insight} Insight available`));
-    for (const event of market.news.slice(-5).reverse()) {
+    const stories = market.news.map(event => {
       const title = market.titles.find(title => title.programme === event.programme);
-      if (!title) continue;
-      const story = node('p', `${ui.stamp(event.tick)} · ${descriptions[event.kind]} · `);
-      story.append(action(title.name, () => viewTitle(title.programme), 'row-link'));
-      wires.append(story);
+      const line = node('p', `${ui.stamp(event.tick)} · ${descriptions[event.kind]} · `);
+      if (title) line.append(action(title.name, () => viewTitle(title.programme), 'row-link'));
+      return { tick: event.tick, line };
+    });
+    for (const event of report.brand_news) {
+      const brand = report.advertisers.find(item => item.id === event.advertiser);
+      stories.push({ tick: event.tick, line: node('p', `${ui.stamp(event.tick)} · ${brand?.name ?? 'Advertiser'} · ${brandHeadline(event.direction)}`) });
     }
+    stories.sort((a, b) => b.tick - a.tick);
+    wires.append(...stories.slice(0, 6).map(story => story.line));
     news.replaceChildren(wires);
     root.replaceChildren();
     for (const title of market.titles) {

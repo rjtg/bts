@@ -24,9 +24,9 @@ Open port 4173 on the preview host. The existing network address is
 
 ## Progress checkpoint
 
-- Active slice: brand evolution.
-- Verified milestones: `7313d17` and Extend the station season and add scoped autosell.
-- Next: implement weekly brand review without changing cash or signed terms.
+- Active slice: viewing habits.
+- Verified milestones: `7313d17`, `c6b68e4`, and Review brand bids after weekly campaign results.
+- Next: implement slot-specific habit, verify stable versus moved, and commit before lead-ins.
 - Runtime token refresh schedule: unavailable.
 
 ## 1. Recurring discussion editions
@@ -81,3 +81,27 @@ long-run station strategy.
 Workspace tests and doctests, strict Clippy and rustdoc, formatting,
 Wasm/browser build and all 42 Chromium tests passed, including native/Wasm
 parity and the autosell walkthrough.
+
+## 3. Weekly advertiser reviews
+
+Find this slice with `git log --oneline --grep='Review brand bids after weekly campaign results'`.
+The [brand review notes](../../docs/brand-reviews.md) explain the threshold,
+the bid adjustment, and the observation boundary.
+
+1. Place two copies of Neighbourhood Laughs in separate 18:00 slots during
+   the first week. On both Airing files, list ad minutes and sign an offer
+   from Everyday Snacks.
+2. Run both airings and finish the first week. In Rights Market, open the
+   industry wire to read the brand's bidding announcement.
+3. Open a future ad offer from that brand. Its card also carries the most
+   recent public bidding change.
+
+The native comparison uses the same purchases and alters delivery only.
+It records a later quote of 987 Funds versus 808 Funds after equalizing
+other quote inputs. Cash, booked prices and the ledger agree across the
+cases. The sampled delivery proxy does not establish conversion or brand
+profit.
+
+[Browser capture of the industry wire](brand-review-wire.png). Workspace tests
+and doctests, strict Clippy and rustdoc, formatting, the Wasm/browser build,
+native/Wasm parity and all 43 Chromium tests passed.

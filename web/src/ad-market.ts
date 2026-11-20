@@ -1,5 +1,9 @@
-import type { Airing, Command, MinuteBooking, Report } from './protocol';
+import type { Airing, BrandNews, Command, MinuteBooking, Report } from './protocol';
 import { action, element, node } from './ui/dom';
+
+export function brandHeadline(direction: BrandNews['direction']): string {
+  return direction === 'more_competitive' ? 'Bidding more competitively' : 'Bidding more cautiously';
+}
 
 const declined = new Map<number, Set<number>>();
 
@@ -109,6 +113,8 @@ export function renderAdMarket(
       title.prepend(mark);
       card.append(title, node('p', `${offer.minutes} min · ${money(offer.price)} Funds · ${perMinute} / min`),
         node('p', `About ${Math.round(offer.expected_target_viewers).toLocaleString('en')} target viewers · provisional forecast`));
+      const news = [...report.brand_news].reverse().find(item => item.advertiser === offer.advertiser);
+      if (news) card.append(node('small', brandHeadline(news.direction)));
       review.append(node('summary', 'Review offer'),
         node('p', `Sell ${offer.minutes} minutes and leave ${free - offer.minutes} open. Payment is due if the purchased time airs.`),
         action(`Accept ${name} offer`, () => send({

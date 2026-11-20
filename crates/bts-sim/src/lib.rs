@@ -379,6 +379,7 @@ pub struct State<T: Clock = SimHour> {
     loyalty: BTreeMap<(AudienceId, SeriesId), f64>,
     hype: BTreeMap<(BrandId, AudienceId), f64>,
     repetition: BTreeMap<(BrandId, AudienceId), f64>,
+    brand_bid_index: BTreeMap<BrandId, u8>,
     economy: EconomyState<T>,
     familiarity: BTreeMap<(AudienceId, ProgrammeId), f64>,
     reception: BTreeMap<(AudienceId, ProgrammeId), f64>,
@@ -386,6 +387,9 @@ pub struct State<T: Clock = SimHour> {
     broadcasts: Vec<programmes::BroadcastRecord<T>>,
 }
 impl<T: Clock> State<T> {
+    fn bid_index(&self, brand: BrandId) -> u8 {
+        self.brand_bid_index.get(&brand).copied().unwrap_or(100)
+    }
     pub fn economy(&self) -> &EconomyState<T> {
         &self.economy
     }
@@ -492,6 +496,7 @@ impl<T: Clock> Engine<T> {
             loyalty: BTreeMap::new(),
             hype: BTreeMap::new(),
             repetition: BTreeMap::new(),
+            brand_bid_index: BTreeMap::new(),
             economy: EconomyState::new(&world),
             familiarity: BTreeMap::new(),
             reception: BTreeMap::new(),

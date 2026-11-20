@@ -2,6 +2,7 @@
 //! No presentation, player observations, filesystem or wall clock.
 pub mod ad_market;
 pub mod autosell;
+pub mod brand_review;
 pub mod discussion_run;
 pub mod film;
 pub mod production;
@@ -110,6 +111,7 @@ pub struct Planner {
     autosell: BTreeMap<autosell::RunKey, autosell::AutosellPolicy>,
     autosell_checked: BTreeSet<AiringId>,
     automatic_sales: BTreeSet<ad_market::MinuteSaleId>,
+    brand_reviews: Vec<brand_review::BrandReview>,
     next_id: u32,
     revision: u64,
     production: production::ProductionState,
@@ -160,6 +162,7 @@ impl Planner {
             autosell: BTreeMap::new(),
             autosell_checked: BTreeSet::new(),
             automatic_sales: BTreeSet::new(),
+            brand_reviews: Vec::new(),
             next_id: 1,
             revision: 0,
             production: production::ProductionState::default(),
@@ -863,6 +866,7 @@ impl Planner {
         if !action.at.0.is_multiple_of(15) {
             return Ok(event);
         }
+        self.review_brand_bidding(action.at);
         let boundary = action.at.tick_floor();
         self.finish_productions(boundary)?;
         self.advance_films(boundary)?;

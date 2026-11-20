@@ -215,6 +215,7 @@ pub struct PlayerReport {
     pub booking_review: Option<ProductionBookingReview>,
     pub catalogue: Vec<CatalogueEntry>,
     pub advertisers: Vec<Advertiser>,
+    pub brand_news: Vec<BrandNews>,
     pub schedule: Vec<ScheduleEntry>,
     pub offer: Option<Quote>,
     pub minute_offers: Option<MinuteOffers>,
@@ -716,4 +717,11 @@ pub struct StationGoal {
     pub label: &'static str,
     pub progress: u32,
     pub target: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct BrandNews {
+    pub advertiser: u16,
+    pub tick: u32,
+    pub direction: bts_sim::planning::brand_review::BidDirection,
 }

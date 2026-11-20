@@ -66,3 +66,31 @@ test('minute offers and settlements match the native protocol', async ({ page })
   }));
   expect(normalize(actual)).toEqual(normalize(native.results));
 });
+
+test('two paid campaigns reach the industry wire at the weekly review', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  await page.goto('/#planning');
+  await expect(page.locator('#status')).toContainText('WASM READY');
+  await page.locator('.series-box > summary').click();
+  await page.locator('[data-programme="1"]').click();
+  for (const day of [0, 1]) {
+    await pickTime(page, 72, day);
+    await page.locator('#place').click();
+    await page.locator('#open-ad-sales').click();
+    const ads = page.locator('#ad-minute-market');
+    await ads.getByRole('spinbutton', { name: 'Minutes to list' }).fill('15');
+    await ads.getByRole('button', { name: 'Set ad block' }).click();
+    await ads.getByRole('button', { name: 'Find offers' }).click();
+    const offer = ads.locator('.minute-offer').filter({ hasText: 'Everyday Snacks' });
+    await offer.locator('summary').click();
+    await offer.getByRole('button', { name: 'Accept Everyday Snacks offer' }).click();
+    await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
+    await page.locator('#advance-selected').click();
+  }
+  for (let day = 1; day < 7; day++) await page.locator('#advance-day').click();
+  await expect(page.locator('#clock')).toContainText('Day 8');
+  await page.getByRole('link', { name: '▱ Rights market', exact: true }).click();
+  const wire = page.locator('#rights-news');
+  await expect(wire).toContainText(/Everyday Snacks · Bidding more (competitively|cautiously)/);
+  await wire.screenshot({ path: testInfo.outputPath('brand-review-wire.png') });
+});

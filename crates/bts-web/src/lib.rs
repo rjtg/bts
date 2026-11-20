@@ -1257,6 +1257,16 @@ impl Session {
                     duration_minutes: p.duration_minutes,
                 })
                 .collect(),
+            brand_news: self
+                .planner
+                .brand_reviews()
+                .iter()
+                .map(|review| BrandNews {
+                    advertiser: review.brand.0,
+                    tick: review.at.tick_floor().0,
+                    direction: review.direction,
+                })
+                .collect(),
             advertisers: world
                 .brands
                 .iter()

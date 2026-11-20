@@ -758,7 +758,9 @@ impl<T: Clock> Engine<T> {
                     deficit: target.deficit,
                     value_weighted_delivery,
                     uncapped_value: if contractible {
-                        advertiser.rate_per_thousand.0 as f64 / 1000.0 * value_weighted_delivery
+                        advertiser.rate_per_thousand.0 as f64 / 1000.0
+                            * value_weighted_delivery
+                            * (f64::from(self.state.bid_index(brand)) / 100.0)
                     } else {
                         0.0
                     },

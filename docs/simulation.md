@@ -220,6 +220,8 @@ Purchasing power is one targeting dimension. Affordable mass products and niche 
 
 Implemented provisional contract experiment: a fixed maximum payment for weighted relevant target delivery in a booked station/hour, with an inclusive deadline and proportional underdelivery refund. Money is integer credits; offers reserve finite budget in escrow. Per-audience hype deficits value each audience's forecast delivery; brand-wide pressure is diagnostic. Accepted prices are not retrospectively changed by hype. Unfunded programmes go off air independently before allocation, and missed delivery refunds at the deadline. See [economy equations](advertising-economy.md). More detailed contracts, bonuses, renewal negotiations and campaign studies remain open; this experiment is not a permanent commercial design.
 
+The [weekly brand review](brand-reviews.md) can change later willingness to bid after paid delivery while preserving cash, escrow and existing prices.
+
 ### Ad-minute market
 
 The [browser ad-minute experiment](ad-minute-market.md) implements partial offers, schedule occupancy and payment for aired inventory. The wider direction below includes deferred features.

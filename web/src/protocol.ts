@@ -77,6 +77,7 @@ export interface Research {
   }[];
 }
 export interface Report {
+  brand_news: BrandNews[];
   station_goals: { label: string; progress: number; target: number }[];
   research: Research | null;
   film_desk: FilmDesk;
@@ -183,3 +184,5 @@ export interface DiscussionEdition {
 }
 
 export interface AutosellPolicy { floor: string; max_minutes: number }
+
+export interface BrandNews { advertiser: number; tick: number; direction: 'more_competitive' | 'more_cautious' }
