@@ -7,7 +7,7 @@ const poseSelectors = [
   '[data-quiet-pose]',
 ];
 
-const activeProp = ':is(#pull-tapes,#open-notebook,[data-prop]):is(:hover,:focus-visible),.office-phone:hover';
+const activeProp = ':is(#pull-tapes,[data-prop]):is(:hover,:focus-visible),.office-phone:hover';
 
 export function initialiseOfficeIdle() {
   const office = element('office');

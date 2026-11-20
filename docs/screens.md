@@ -12,11 +12,11 @@ guidelines](design-guidelines.md).
 | --- | --- | --- |
 | Pick a programme | Shelf → format branches → tape collection or series case → taupe Tape file | Runtime on the cassette. Qualities, credits, reception and cumulative returns on the papers. Scheduling opens an editable proposal. |
 | Choose or revise airtime | Desk calendar → Programming. Day is the exact-minute timeline; Week and Month summarise the playable calendar. | Selected interval, programme and ads, clashes and protected commitments. Show the station's lane and comparisons with available rival information. |
-| Sell or review an airing | Timeline, Today strip, notebook reminder, or Reviews → teal file for the exact airing | Dated outlook where available, minute inventory and offer slips. Signed terms and actual provisional turnout, settlement and cost stay with the airing. |
+| Sell or review an airing | Timeline, Today strip, Station notes reminder, or Reviews → teal file for the exact airing | Dated outlook where available, minute inventory and offer slips. Signed terms and actual provisional turnout, settlement and cost stay with the airing. |
 | Develop, prepare or shoot | Script file → Ideas, Scripts or Production → collection → project spread | Standing brief or ambition, delivery, people, studio and terms. A film's pink writing and blue production papers keep the same project identity. |
 | Acquire or resell a work | Incoming portfolio → illustrated Market file and industry wire | Public evidence, price and deadline. An Insight assessment may change the decision. Bought rights put a tape in the library. |
 | Understand an audience | Research binder → survey orders or illustrated group file | Dated survey, half-star preferences and uncertainty. Change the shared polling schedule or investigate one group. |
-| Check priorities and commitments | Notebook, ledger, review sheets, or station files | Gap and ad reminders, Sway opportunities, season goals, cash movements, broadcast receipts and local saves. |
+| Check priorities and commitments | Station notes, ledger, review sheets, or station files | Gap and ad reminders, Sway opportunities, season goals, cash movements, broadcast receipts and local saves. |
 
 ## Player-facing interaction direction
 

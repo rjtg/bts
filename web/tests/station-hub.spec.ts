@@ -27,9 +27,11 @@ async function airingJourney(page: Page, small: boolean) {
   await loadOffice(page);
   await shot(page, `${name}-resting`);
   await expect(page.locator('#desk-tape')).toBeHidden();
-  await page.locator('#open-notebook').click();
-  await expect(page.locator('#desk-notebook')).toContainText('Next gap');
-  await page.locator('#desk-notebook').getByRole('button', { name: 'Close notebook' }).click();
+  await page.locator('#open-station-notes').click();
+  await expect(page.locator('#station-notes')).toContainText('Next gap');
+  await expect(page.locator('#station-notes')).toContainText('Season goals');
+  await expect(page.locator('#station-notes').getByRole('link', { name: 'Open request board' })).toBeVisible();
+  await page.locator('#station-notes').getByRole('button', { name: 'Close notes' }).click();
   await page.locator('#pull-tapes').click();
   await page.getByRole('button', { name: 'Browse all tapes' }).click();
   await page.locator('.series-box summary').click();
@@ -54,6 +56,12 @@ async function airingJourney(page: Page, small: boolean) {
   await page.locator('#place').click();
   const airing = page.getByRole('region', { name: 'Airing dossier' });
   await expect(airing).toContainText('18:00–18:46');
+  if (!small) {
+    await page.getByRole('button', { name: 'Station notes' }).click();
+    const notes = page.getByRole('dialog', { name: 'Station notes' });
+    await expect(notes.getByRole('button', { name: /16 ad min unsold/ })).toBeVisible();
+    await notes.getByRole('button', { name: 'Close notes' }).click();
+  }
   await airing.getByRole('button', { name: 'Find offers' }).click();
   const offer = airing.locator('.minute-offer').filter({ hasText: 'Everyday Snacks' });
   await offer.locator('summary').click();

@@ -32,7 +32,7 @@ test('office, exact planning, calendars and test-card pause', async ({ page }, t
   for (const selector of ['#desk-tape', '#paper-on-desk']) {
     await expect(page.locator(selector)).toBeInViewport({ ratio: 0.95 });
   }
-  await expect(page.locator('#notebook-cover')).toContainText('18:00');
+  await expect(page.locator('#station-notes-summary')).toContainText('18:00');
   await capture(page, 'office');
   const dossier = page.locator('#paper-on-desk');
   await dossier.getByRole('button', { name: 'Reception', exact: true }).click();

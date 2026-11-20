@@ -122,7 +122,7 @@ function syncOfficeFile() {
   office.classList.toggle('file-open', open);
   office.classList.toggle('tray-open', officeTrayOpen);
   const occupied = activeDesk === 'office' && (open || officeTrayOpen);
-  for (const id of ['office-job-links', 'open-notebook', 'office-calendar']) element(id).inert = occupied;
+  for (const id of ['office-job-links', 'office-calendar']) element(id).inert = occupied;
   element('pull-tapes').setAttribute('aria-expanded', String(officeTrayOpen));
   element('put-tapes-away').hidden = !officeTrayOpen || open;
   element('office-workspace').hidden = activeDesk === 'office' && !open && !officeTrayOpen;
@@ -1065,13 +1065,13 @@ function renderOffice() {
   const dayStart = Math.min(lastDay(), Math.floor(report.now_minute / DAY_MINUTES)) * DAY_MINUTES;
   const next = opening(report, Math.max(report.now_minute, dayStart + 18 * 60), dayStart + DAY_MINUTES);
   const excerpt = next ? `Next gap · ${displayTime(next.start)}` : 'No evening gap today';
-  element('notebook-cover').textContent = excerpt;
-  const pages = element('notebook-pages');
-  const schedule = leaf('On the desk today');
+  element('station-notes-summary').textContent = excerpt;
+  const pages = element('station-note-pages');
+  const schedule = leaf('Today and season goals');
   if (next) {
     const gap = node('button', `${excerpt} · ${next.end - next.start} min`);
     gap.addEventListener('click', () => {
-      element<HTMLDialogElement>('desk-notebook').close();
+      element<HTMLDialogElement>('station-notes').close();
       desks.navigate('office');
       setPlanningDay(Math.floor(next.start / DAY_MINUTES));
       pickGap(next.start);
@@ -1084,7 +1084,7 @@ function renderOffice() {
   if (unsold) {
     const note = node('button', `${displayTime(unsold.start_minute)} · ${unsold.ad_minutes - unsold.sold_minutes} ad min unsold`);
     note.addEventListener('click', () => {
-      element<HTMLDialogElement>('desk-notebook').close();
+      element<HTMLDialogElement>('station-notes').close();
       desks.navigate('office');
       chooseAiring(unsold.airing_id);
     });
@@ -1112,7 +1112,7 @@ function renderOffice() {
     quests.append(line);
   }
   const openRequests = node('a', 'Open request board'); openRequests.href = '#production';
-  openRequests.addEventListener('click', () => { element<HTMLDialogElement>('desk-notebook').close(); studioBook.show('requests'); });
+  openRequests.addEventListener('click', () => { element<HTMLDialogElement>('station-notes').close(); studioBook.show('requests'); });
   quests.append(openRequests);
   pages.replaceChildren(spread(schedule, quests));
 }
@@ -1210,11 +1210,8 @@ async function start(): Promise<void> {
       if (pickedGap !== null) browseTapes(event.currentTarget as HTMLElement, pickedGap);
     });
     button('put-tapes-away').addEventListener('click', closeDeskFile);
-    const notebook = element<HTMLDialogElement>('desk-notebook');
-    button('open-notebook').addEventListener('click', () => notebook.showModal());
-    notebook.addEventListener('close', () => {
-      if (activeDesk === 'office' && !officeTrayOpen) officeMotion.restore();
-    });
+    const stationNotes = element<HTMLDialogElement>('station-notes');
+    button('open-station-notes').addEventListener('click', () => stationNotes.showModal());
     const showProgramme = (id: number) => {
       desks.navigate('planning'); tapeShelf.open();
       officeTapeOpen = true; officeTrayOpen = true; placementOverride = null;

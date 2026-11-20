@@ -9,9 +9,9 @@ Verified slice: tape rack, dated Reception advice and the calendar handoff
 (#6 and #18). The season branch includes the implementation commit and
 [Chromium capture](tape-fit.webp). Rights, Research, Ledger and Airing workspaces (#5 and #8) have a first
 verified pass. Production filing (#7) is verified through the pilot formats.
-The station strip and Directory (#1) are implemented. Active next: outside
-dismissal (#2) and the prop changes (#3–#4). Simulation pilots (#12–#17)
-and atmosphere (#9–#11) are pending. Code health (#19) continues at each boundary.
+The station strip, Directory, outside dismissal and desk props (#1–#4)
+are verified. Active next: simulation pilots (#12–#17), starting with action
+timing. Atmosphere (#9–#11) follows. Code health (#19) continues at each boundary.
 
 ## Launch
 
@@ -103,3 +103,9 @@ tooltip. [Resting office capture](new-phone.webp) and
 
 The strip passed the full 56-test Chromium suite. Dismissal and the prop
 pass passed the final set of 18 targeted Chromium tests.
+
+Station notes now open from Today. They keep season goals, a link to an
+available gap, an unsold-inventory reminder when applicable, and access to
+Sway requests. The blotter no longer has a notebook prop. The full suite
+passed all 58 Chromium tests at this boundary, including native/Wasm parity.
+[Resting desk with the new Notes control](station-notes.webp).

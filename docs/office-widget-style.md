@@ -7,8 +7,7 @@ reference. See [design guidelines](design-guidelines.md) for the broader rationa
 
 ## The office is the home screen
 
-- Keep the green blotter clear for the current job. At rest, give it the
-  closed notebook and a pencil. Cluster other props naturally around the
+- Keep the green blotter clear for the current job. Cluster props naturally around the
   edges, with distinct silhouettes, warm contact shadows and a shared
   perspective. Keep the shelf stocked and the room visible during work.
 - Let an object suggest what it opens. On hover or keyboard focus, give it
@@ -122,13 +121,13 @@ Preparation prop → Production → active-project board → project dossier
     → choose studio and support → review obligations → Book
 
 Research Binder → Audience dossiers
-Notebook → station notes and active requests
+Today → Station notes → goals and active requests
 Ledger → finances and links to related projects or airings
 ```
 
 The Incoming Portfolio follows the same browse-and-select pattern as the Tape
 Shelf, but its selected title opens a Market dossier. It becomes an owned tape
-only after purchase succeeds. Research Binder, Notebook and Ledger each open
+only after purchase succeeds. Research Binder, Station notes and Ledger each open
 their single clear workspace directly; they do not need radial menus.
 
 Dossier tabs remain the way to browse information. Contextual actions belong
@@ -148,7 +147,7 @@ The placement slip supports editing the start minute and ad minutes. A
 recommended weekly run prefills the weekday and time from the survey-based
 suggested slot. Its dated occurrences still require the regular Rust preview
 and confirmation. Market titles open a selected file from the portfolio
-index. Research, Notebook and Ledger open directly.
+index. Research, Station notes and Ledger open directly.
 
 Open design questions include how the wheel scales to more formats, whether
 to add a separate series binder entry from the shelf, and how to make
@@ -174,14 +173,14 @@ describe the current treatment.
 | --- | --- | --- |
 | Find and place a programme | **Shelf → tape tray and taupe file.** Box episodes together and give cassettes readable spine labels. | Filter by runtime or production type. Pull one tape and browse Brief, Reception, Members and Bottom Line. Use Next Gap or the planning controls. Show title and runtime on the tape itself. |
 | Arrange a day or weekly run | **Desk calendar → Programming calendar.** Use a CRT for Day and calendar paper for Week and Month. Give regular bookings their own file. | Move or place at exact minutes, compare an available rival schedule, and preview recurring dates and clashes before confirming. Keep the selected airing and Up Next separate. |
-| Sell ads or inspect a broadcast | **Airing block or notebook reminder → teal Airing file.** Use an inventory strip and offer slips. | Set ad load and see occupied airtime, sign an offer, or leave space unsold. After air, show dated outlook, provisional turnout, settlement and airing cost in the same file. |
+| Sell ads or inspect a broadcast | **Airing block or Station notes reminder → teal Airing file.** Use an inventory strip and offer slips. | Set ad load and see occupied airtime, sign an offer, or leave space unsold. After air, show dated outlook, provisional turnout, settlement and airing cost in the same file. |
 | Develop an idea | **Script file under the lamp → Ideas → Idea dossier.** Keep the ambition stars on one leaf and the title, description and pace on the other. | Set the project's creative targets and choose how long to develop it. When ready, pass the brief to the writing desk. |
 | Commission or revise | **Script file under the lamp → pink Preparation spread.** Put the brief and script notes side by side. | Compare writer cards, fees and delivery dates. On return, read what the script achieved, what it demands, and what a paid revision would address. |
 | Cast and book | **Preparation → Production → blue Production file.** Place portraits in the role seats and use the studio and time fields on the booking paper. | Compare known strengths and availability, select a studio, set cooperation support where applicable, and review obligations before confirming on the booking paper. |
 | Inspect a person | **Known credit or portrait → yellow Character file.** Keep the portrait, public work and known commitments together. | Return to the same project or tape on close. Future auditions and contracts can open from this file with explicit costs and obligations. |
 | Buy or sell rights | **Incoming portfolio → illustrated title cards and assessment sheet.** | Compare asking prices, deadlines and public evidence. Request an assessment, buy a work or review a resale offer. Link acquisitions to the tape shelf. |
 | Research an audience | **Research binder → illustrated group dossiers.** Use half-star preference marks, a dated survey and an Investigate dial. | Adjust the shared polling schedule or spend Insight on one group. Keep the published snapshot in place until the next poll. |
-| Check priorities and requests | **Notebook on the blotter → open handwritten spread.** | See the next gap, unsold ad reminders, and Sway requests with deadlines and crossed-off completions. Open the relevant airing or job directly. Keep station goals here. |
+| Check priorities and requests | **Today → Station notes → open handwritten spread.** | See the next gap, unsold ad reminders, and Sway requests with deadlines and crossed-off completions. Open the relevant airing or job directly. Keep station goals here. |
 | Understand the money | **Ledger and review sheets → station books and broadcast recap.** | Scan cash and commitments or open a specific airing. Distinguish each airing's costs and receipts from programme investment and lifetime totals. |
 
 ### Assigning people

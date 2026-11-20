@@ -75,11 +75,11 @@ test('prop transition can be cancelled and repeated selection opens one workspac
 
 test('decorative props stay still and Preparation opens Production', async ({ page }) => {
   await openOffice(page);
-  const notebook = page.locator('#open-notebook');
+  const notebook = page.locator('#open-station-notes');
   await notebook.click();
-  const pages = page.getByRole('dialog', { name: 'Desk notebook' });
+  const pages = page.getByRole('dialog', { name: 'Station notes' });
   await expect(pages).toBeVisible();
-  await pages.getByRole('button', { name: 'Close notebook' }).click();
+  await pages.getByRole('button', { name: 'Close notes' }).click();
   await expect(notebook).toBeFocused();
   const phone = page.locator('.office-phone');
   const restingPhone = (await phone.boundingBox())!;

@@ -8,7 +8,7 @@ and [widget guide](office-widget-style.md).
 
 ## Playable office hub
 
-The resting office has a closed notebook on the blotter. The phone, tins,
+The resting office keeps the central blotter clear. The phone, tins,
 wall screens and background personnel provide atmosphere. Desk props and
 the shelf open work. The active prop or workspace comes forward with the
 rest of the room in view.
@@ -22,7 +22,7 @@ rest of the room in view.
 | Incoming portfolio | Rights listings, Market dossier, assessments and industry wire |
 | Ledger and calculator cluster | Station financial records |
 | Review sheets | Transmission log and selected Airing file |
-| Notebook and pencil | Goals, next gap, unsold-ad reminders and timed Sway requests |
+| Notes on the Today strip | Goals, next gap, unsold-ad reminders and timed Sway requests |
 
 **Today** is a small single-channel display alongside the transport. It gives
 a sense of where the station is in the day, takes tape drops and opens airing
@@ -49,7 +49,7 @@ for comparison later. Visiting a completed airing does not invent one.
 
 Preserve the clear central work surface. Keep differently shaped props
 clustered along the edge with contact shadows rather than a uniform row
-of links. The notebook moves aside during other work. Compact files use the
+of links. Compact files use the
 tabletop and dense tools use a larger office-framed overlay. Other props
 remain visible and inert while a job is in focus.
 
@@ -58,8 +58,8 @@ can travel briefly to the blotter on activation, then return on close. Escape
 can cancel during travel. Repeated activation opens one workspace and closing
 restores focus. Reduced motion skips travel. Manual pause instead shows the
 OFF AIR test card. Continue restores the open job and its state. The paused
-clock and an off-air gap in the schedule are separate states. The resource
-HUD uses icons with text tooltips and the fictional barred F for Funds. Keep
+clock and an off-air gap in the schedule are separate states. The station strip combines time controls, Today, the resource HUD and a
+keyboard- and touch-operable Directory. The HUD uses icons with text tooltips and the fictional barred F for Funds. Keep
 that mark recognisable as an F and provide a readable Funds label.
 
 The current broad desktop illustration has local pose layers for office staff,

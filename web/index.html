@@ -8,7 +8,7 @@
   <main>
     <section class="transport" aria-label="Time controls"><div><span class="overline">UP NEXT</span><strong id="next-airing">Nothing planned</strong><span id="on-air" class="desk-on-air"></span></div><div class="transport-buttons"><button id="play-pause" aria-pressed="false" aria-label="Play" title="Advance 15 simulated minutes every two seconds. Editing puts the clock in standby.">▶ Play</button><button id="double-speed" class="quiet" aria-pressed="false" title="Double speed: 15 simulated minutes every second.">×2</button><button id="advance-tick" class="quiet">Next tick</button><button id="advance-next">Run next airing</button><button id="advance-day" class="quiet">Finish current day</button></div>
     <section id="today-strip" aria-label="Today's schedule">
-      <div class="today-readout"><strong>Today</strong><span id="office-on-air"></span><span id="office-up-next"></span></div>
+      <div class="today-readout"><strong>Today</strong><span id="office-on-air"></span><span id="office-up-next"></span><button id="open-station-notes" type="button" aria-label="Station notes">Notes</button><small id="station-notes-summary" class="sr-only"></small></div>
       <div id="today-track" aria-label="Your channel, midnight to midnight"></div>
       <p id="today-preview" role="status" hidden></p>
     </section><div id="station-resources" class="resources" role="group" aria-label="Station resources"></div><button id="open-directory" type="button" popovertarget="station-directory">Directory</button><nav class="rail" id="station-directory" aria-label="Station directory" popover><a href="#office" class="active">▰ Office</a><a href="#planning">▦ Schedule</a><a href="#production">▣ Production</a><a href="#rights-market">▱ Rights market</a><a href="#audience">◉ Audience</a><a href="#results">▤ Broadcast Review</a><a href="#finances">≡ Finances</a><label class="room-motion-control">Room motion <select id="room-motion"><option value="auto">Auto</option><option value="on">On</option><option value="off">Off</option></select></label><details id="station-files"><summary>Station files</summary>
@@ -42,7 +42,6 @@
         <div class="monitor-reel" aria-hidden="true"><i></i><i></i><i></i></div>
         <button id="pull-tapes" type="button" aria-expanded="false" aria-controls="office-workspace"><span>Pull out tapes</span></button>
         <button id="put-tapes-away" type="button" hidden>Put tapes away</button>
-        <button id="open-notebook" type="button" data-tip="Open desk notebook"><span>Desk<br>notebook</span><small id="notebook-cover"></small></button>
         <div id="office-job-links" class="room-links" aria-label="Station work areas">
           <div id="desk-file-piles" class="desk-files" aria-label="Desk folders"><a href="#production" data-prop="script" data-tip="Open Preparation"><span>Preparation</span></a><a href="#audience" data-prop="research" data-tip="Open audience research"><span>Research</span></a><a href="#rights-market" data-prop="rights" data-tip="Open Rights Market"><span>Rights</span></a><a href="#finances" data-prop="ledger" data-tip="Open station ledger"><span>Ledger</span></a><a href="#results" data-prop="reviews" data-tip="Open broadcast reviews"><span>Reviews</span></a></div>
         </div>
@@ -148,7 +147,7 @@
   </main>
 </div>
 <dialog id="tape-record" aria-labelledby="tape-record-title"><div class="panel-heading"><h2 id="tape-record-title"></h2><button id="close-tape-record" type="button" class="quiet">Close record</button></div><div id="tape-paper-tabs" role="group" aria-label="Station file papers"></div><div id="tape-record-content" class="station-paper"></div></dialog>
-<dialog id="desk-notebook" aria-labelledby="notebook-title"><header><h2 id="notebook-title">Desk notebook</h2><form method="dialog"><button>Close notebook</button></form></header><div id="notebook-pages"></div></dialog>
+<dialog id="station-notes" aria-labelledby="station-notes-title"><header><h2 id="station-notes-title">Station notes</h2><form method="dialog"><button>Close notes</button></form></header><div id="station-note-pages"></div></dialog>
 <dialog id="character-dossier" aria-label="Character dossier"></dialog>
 <dialog id="pause-screen" aria-labelledby="pause-title"><div class="pause-card"><div class="test-card-grid" aria-hidden="true"><i></i><b></b></div><h1 id="pause-title">OFF AIR</h1><button id="continue-play">▶ Continue</button></div></dialog>
 <svg class="pause-effects" aria-hidden="true" width="0" height="0"><defs><filter id="paused-pixels" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
