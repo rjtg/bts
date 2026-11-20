@@ -1,6 +1,7 @@
 //! Versioned browser commands and restricted player observations over the Rust planner.
 #![forbid(unsafe_code)]
 pub mod protocol;
+mod save;
 pub mod scenario;
 
 use bts_sim::economy::{Account, AudienceCommitment, Contract, ContractStatus, LedgerReason};
@@ -29,6 +30,7 @@ enum WeeklyDraft {
 #[derive(Clone)]
 pub struct Session {
     planner: Planner,
+    journal: std::sync::Arc<Vec<Command>>,
     namespace: u32,
     ad_load_percent: u8,
     rights_epoch: u64,
@@ -63,6 +65,7 @@ impl Session {
         }
         Ok(Self {
             planner: scenario::planner().map_err(player_error)?,
+            journal: std::sync::Arc::default(),
             rights_epoch: 0,
             ad_load_percent: 0,
             weekly_pending: None,
@@ -75,6 +78,7 @@ impl Session {
         })
     }
     pub fn execute(&mut self, command: Command) -> Result<PlayerReport, PlayerError> {
+        let logged = (!matches!(&command, Command::Inspect {})).then(|| command.clone());
         let mut candidate = self.clone();
         candidate.apply(command)?;
         let report = candidate.report();
@@ -82,6 +86,9 @@ impl Session {
             PlayerError::new("report_error", "Could not construct a player report.")
         })?;
         *self = candidate;
+        if let Some(command) = logged {
+            std::sync::Arc::make_mut(&mut self.journal).push(save::without_session_token(command));
+        }
         Ok(report)
     }
     pub fn dispatch_json(&mut self, json: &str) -> String {
@@ -1496,6 +1503,24 @@ mod wasm {
         }
         pub fn dispatch(&mut self, request: &str) -> String {
             self.session.dispatch_json(request)
+        }
+        pub fn save(&self) -> Result<String, JsValue> {
+            self.session
+                .save_game()
+                .map_err(|error| JsValue::from_str(error.message))
+        }
+        pub fn restore(&mut self, text: &str) -> String {
+            let response = match self.session.restore_game(text) {
+                Ok(report) => Response::Ok {
+                    api_version: API_VERSION,
+                    report: Box::new(report),
+                },
+                Err(error) => Response::Error {
+                    api_version: API_VERSION,
+                    error,
+                },
+            };
+            serde_json::to_string(&response).expect("player DTOs are serializable")
         }
     }
     #[wasm_bindgen]

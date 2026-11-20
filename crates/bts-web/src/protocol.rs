@@ -5,14 +5,14 @@ use serde::{Deserialize, Serialize};
 pub const API_VERSION: u32 = 8;
 pub const REPORTING: &str = "Provisional start-of-airing expected counts, not measured ratings or unique reach. Contract forecasts are provisional. Purchased ad impressions use viewer-minutes; legacy delivery uses the opening sample. Delivery units are millionths of a relevant impression.";
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Request {
     pub api_version: u32,
     pub command: Command,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Command {
     PlaceExact {
@@ -403,7 +403,7 @@ pub struct AudienceReport {
     pub film_reception: Option<&'static str>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ProductionConceptInput {
     pub title: String,
@@ -543,7 +543,7 @@ pub struct QuestHint {
     pub achievement_tick: u32,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct FilmBookingInput {
     pub cast: [u16; 2],
@@ -705,7 +705,7 @@ pub struct MarketSpend {
     pub balance: u32,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct WeeklyInput {
     pub programme: u16,
@@ -716,7 +716,7 @@ pub struct WeeklyInput {
     pub ad_minutes: u8,
     pub exceptions: Vec<WeeklyExceptionInput>,
 }
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct WeeklyExceptionInput {
     pub occurrence: u8,
@@ -729,7 +729,7 @@ pub struct WeeklyReview {
     pub rows: Vec<bts_sim::planning::weekly::Placement>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AutosellInput {
     pub floor: String,
@@ -754,7 +754,7 @@ pub struct BrandNews {
     pub direction: bts_sim::planning::brand_review::BidDirection,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct NewsroomStaffInput {
     pub reporter: u16,

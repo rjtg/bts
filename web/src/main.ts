@@ -860,6 +860,10 @@ function renderOffice() {
     });
     schedule.append(note);
   }
+  if (report.now_tick >= report.end_tick) {
+    const complete = report.station_goals.filter(goal => goal.progress >= goal.target).length;
+    schedule.append(node('p', `Season closed · ${complete} of ${report.station_goals.length} goals complete`, 'handwritten'));
+  }
   schedule.append(node('h4', 'Season goals'));
   for (const goal of report.station_goals) {
     const line = node('p');
@@ -991,6 +995,56 @@ async function start(): Promise<void> {
       state: () => report,
       tick: () => send({ type: 'advance', to_tick: Math.min(report.end_tick, report.now_tick + 1) }, true),
       onPlay: () => { error.hidden = true; },
+    });
+    button('save-station').addEventListener('click', () => {
+      try {
+        const url = URL.createObjectURL(new Blob([session.save()], { type: 'application/json' }));
+        const link = node('a');
+        link.href = url;
+        link.download = 'behind-the-screens.station.json';
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+        error.hidden = true;
+      } catch (failure) {
+        error.textContent = `Save failed · ${String(failure)}`;
+        error.hidden = false;
+      }
+    });
+    const load = element<HTMLInputElement>('load-station');
+    load.addEventListener('change', async () => {
+      const file = load.files?.[0];
+      load.value = '';
+      if (!file) return;
+      playback?.pause();
+      load.disabled = true;
+      try {
+        if (file.size > 8 * 1024 * 1024) throw new Error('The station save exceeds the supported size.');
+        const response: Response = JSON.parse(session.restore(await file.text()));
+        if (response.status === 'error') throw new Error(response.error.message);
+        playback?.reset();
+        airingForecasts.clear();
+        selected = null;
+        reviewSelection = null;
+        showingAiring = false;
+        officeTapeOpen = false;
+        officeTrayOpen = false;
+        pickedGap = null;
+        placementOverride = null;
+        moveFieldsFor = null;
+        libraryProgramme = 1;
+        calendar.reset();
+        tapeShelf.close();
+        productionUi?.commandSucceeded({ type: 'reset' });
+        render(response.report);
+        desks.navigate('office');
+        error.hidden = true;
+        status.textContent = 'Station save restored.';
+      } catch (failure) {
+        error.textContent = `Load failed · ${String(failure)}`;
+        error.hidden = false;
+      } finally {
+        load.disabled = false;
+      }
     });
     element('place-form').addEventListener('submit', event => {
       event.preventDefault();

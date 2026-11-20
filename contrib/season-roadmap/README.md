@@ -15,19 +15,29 @@ These paths describe the local tool installation used for the captures.
 ```sh
 RUSTUP_HOME=/tmp/bts-rust-1100 RUSTUP_TOOLCHAIN=1.100.0 WASM_BINDGEN=/tmp/bts-web-tools/bin/wasm-bindgen npm run build
 RUSTUP_HOME=/tmp/bts-rust-1100 RUSTUP_TOOLCHAIN=1.100.0 PLAYWRIGHT_BROWSERS_PATH=/tmp/bts-playwright npm run test:e2e
+mkdir -p dist/mockups/season-roadmap
+cp -R ../contrib/season-roadmap/. dist/mockups/season-roadmap/
 npm run preview -- --host 0.0.0.0
 ```
 
 Open port 4173 on the preview host. The existing network address is
-`http://100.71.132.116:4173/`. For historical review, use
+`http://100.71.132.116:4173/`. The capture and checkpoint copies are
+under `/mockups/season-roadmap/` in that preview. For historical review, use
 `git worktree add --detach <directory> <commit>` and build there.
 
-## Progress checkpoint
+## Completed roadmap
 
-- Active slice: persistence and season wrap-up.
-- Verified milestones: `7313d17`, `c6b68e4`, `bf42a8f`, `ed2f906`, `656746d`, `2dffc4e` `41a2095`, and Produce a short scripted series with recurring roles.
-- Next: implement versioned save journals and verify a full season.
-- Runtime token refresh schedule: unavailable.
+| Slice | Commit |
+| --- | --- |
+| Recurring discussion editions | `7313d17` |
+| Six-week goals and autosell | `c6b68e4` |
+| Weekly advertiser reviews | `bf42a8f` |
+| Viewing habits | `ed2f906` |
+| Lead-in carryover | `656746d` |
+| Recurring newsroom | `2dffc4e` |
+| Guaranteed host dates | `41a2095` |
+| Scripted series | `aabd684` |
+| Station files and season wrap-up | `git log -1 --grep='Save and restore the six-week station season'` |
 
 ## 1. Recurring discussion editions
 
@@ -216,3 +226,39 @@ Workspace tests and doctests, strict Clippy and rustdoc, formatting, the
 Wasm/browser build, native/Wasm parity and 45 existing Chromium tests
 passed. The new scripted-series browser test passed on its rerun with
 normalized slider inputs.
+
+## 6. Station files and season wrap-up
+
+Find this slice with `git log --oneline --grep='Save and restore the six-week station season'`.
+See the [save format and limits](../../docs/station-saves.md).
+
+Download the [week-two checkpoint](season-checkpoint.json), open **Station
+files** in the office directory, and choose it under **Restore station
+save**. The first Saturday's ad sale is settled. Run the remaining planned
+airings and use **Finish current day** to reach the closing boundary.
+Open the notebook to review the three season goals. The
+[controlled result](season-result.json) reaches 4/4 broadcast weeks,
+3/3 recurring airings and 3/3 paid ad blocks by day 42.
+
+Recreate both artifacts from the repository root.
+
+```sh
+cargo run --locked -p bts-web --example season_review -- --save
+cargo run --locked -p bts-web --example season_review
+```
+
+The native save fixture checks that a booked production and host
+agreement, script commission, newsroom, audience research and a signed ad
+sale survive restore. The fresh session reissues an open offer and rejects
+the old token. The two sessions agree on the next accepted deal and the
+subsequent public reports. Browser files preserve the station through a
+download, reset and reload. Version 1 is local to this scenario and rule
+set.
+
+[Browser capture of the restored station](restored-station.png). The final
+verification passed workspace tests for all targets, doctests, strict
+native and Wasm Clippy, strict rustdoc, formatting, independent fuzzy
+builds and tests, the production Wasm/browser build, native/Wasm parity and
+all 47 Chromium tests. The season replay earned 3,026 Funds from ad sales
+and closed with 22,526 Funds. This fixture demonstrates that the goals
+can be reached.

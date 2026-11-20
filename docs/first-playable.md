@@ -53,7 +53,11 @@ Exit evidence: different audiences produce different outcomes; relevant reach af
 
 ### 2. Complete season loop
 
-Prototype cash and delivery contracts now exist in the bounded economy. The bounded [original-production experiment](original-production.md) now implements standalone discussion concepts, lead times, talent commitments, budget reservation and pooled Sway requests and spending, integrated with the browser planner. Rights acquisition, a research channel and a full season remain unimplemented. These short controlled comparisons do not complete this stage.
+The browser now runs a bounded six-week station season, with notebook goals,
+rights and research, recurring programming and ad sales, and a closed-season
+review. The [season review index](../contrib/season-roadmap/README.md) gives
+replay instructions and controlled evidence. The fixture remains a pilot
+for balance and longer-world mechanics.
 
 Exit evidence: obligations resolve correctly; production tradeoffs matter; at least one useful audience opportunity can be discovered; multiple plausible strategies survive under appropriate conditions.
 
@@ -76,7 +80,7 @@ decay are implemented.
 
 ### 3. Playable interface
 
-Expose only legitimate player information through a browser interface, building on the minimal Rust/Wasm harness. Provide scheduling, production, research, advertiser, and results views. Include save/load and a clear time-advance action.
+Expose only legitimate player information through a browser interface, building on the minimal Rust/Wasm harness. Provide scheduling, production, research, advertiser, and results views. The office has time controls and [versioned local saves](station-saves.md).
 
 Proposed usability follow-up: [direct schedule manipulation and focused panels](screens.md#player-facing-interaction-direction),
 with the [bounded portrait casting desk](casting-desk.md) now implemented for

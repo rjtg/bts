@@ -1,0 +1,63 @@
+{
+  "closed_tick": 4032,
+  "goals": [
+    {
+      "label": "Broadcast in four different weeks",
+      "progress": 4,
+      "target": 4
+    },
+    {
+      "label": "Air three recurring programmes",
+      "progress": 3,
+      "target": 3
+    },
+    {
+      "label": "Earn paid ad-minute sales on three airings",
+      "progress": 3,
+      "target": 3
+    }
+  ],
+  "paid_ad_sales": [
+    {
+      "advertiser": 1,
+      "airing_id": 337,
+      "automatic": true,
+      "minutes": 3,
+      "price": "909",
+      "settlement": {
+        "aired_minutes": 3,
+        "payment": "909",
+        "refund": "0",
+        "viewer_minutes": 25141.682015887814
+      }
+    },
+    {
+      "advertiser": 1,
+      "airing_id": 338,
+      "automatic": true,
+      "minutes": 3,
+      "price": "1072",
+      "settlement": {
+        "aired_minutes": 3,
+        "payment": "1072",
+        "refund": "0",
+        "viewer_minutes": 28902.144685004365
+      }
+    },
+    {
+      "advertiser": 1,
+      "airing_id": 339,
+      "automatic": true,
+      "minutes": 3,
+      "price": "1045",
+      "settlement": {
+        "aired_minutes": 3,
+        "payment": "1045",
+        "refund": "0",
+        "viewer_minutes": 28421.26999969093
+      }
+    }
+  ],
+  "scenario_days": 42,
+  "station_cash": "22526"
+}
