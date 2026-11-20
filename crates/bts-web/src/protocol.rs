@@ -106,6 +106,10 @@ pub enum Command {
     AcceptRequest {
         request_id: u16,
     },
+    SignHost {
+        host: u16,
+        productions: Vec<u32>,
+    },
     StartNewsroom {
         title: String,
         first_day: u32,
@@ -413,6 +417,7 @@ pub struct ProductionView {
     pub people: Vec<PersonInfo>,
     pub projects: Vec<ProductionInfo>,
     pub discussion_runs: Vec<DiscussionRunInfo>,
+    pub host_agreements: Vec<HostAgreementView>,
     pub requests: Vec<RequestInfo>,
     pub sway_balance: u32,
     pub participation_cost: u32,
@@ -457,6 +462,8 @@ pub struct ProductionInfo {
     pub tone: Tone,
     pub ambition: Vec<Quality>,
     pub budget: String,
+    pub host_prepaid: String,
+    pub balance_due: String,
     pub fees: String,
     pub record_at: u32,
     pub recording_end: u32,
@@ -769,4 +776,21 @@ pub struct NewsEditionView {
     pub programme: Option<u16>,
     pub airing_id: Option<u32>,
     pub exception: Option<&'static str>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct HostAgreementView {
+    pub id: u32,
+    pub host: u16,
+    pub total: String,
+    pub dates: Vec<HostDateView>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct HostDateView {
+    pub production: u32,
+    pub title: String,
+    pub start_tick: u32,
+    pub end_tick: u32,
+    pub fee: String,
+    pub status: &'static str,
 }

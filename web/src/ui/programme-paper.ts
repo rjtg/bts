@@ -94,6 +94,15 @@ export function programmeCredits(tape: Programme, report: Report, stamp?: (minut
       bio.append(node('p', role), node('p', description));
       const diary = leaf('Known availability and commitments');
       for (const line of obligations) diary.append(node('p', line));
+      if (role === 'Host') {
+        const hiring = node('a', 'Open hiring desk');
+        hiring.href = '#production';
+        hiring.addEventListener('click', () => {
+          element<HTMLDetailsElement>('hiring-desk').open = true;
+          dialog.close();
+        });
+        diary.append(hiring);
+      }
       if (!obligations.length) diary.append(node('p', 'No commitments on file.'));
       dialog.replaceChildren(dossier('Character', [{ label: 'Public file', content: spread(bio, diary) }],
         { close: () => dialog.close() }));

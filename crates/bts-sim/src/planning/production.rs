@@ -560,6 +560,16 @@ impl Planner {
             ));
         }
         let (mut concept, fees, recording_end, ready_at) = self.validate_concept(concept)?;
+        if let Some(agreement) = self.host_engagement(id) {
+            if self.production.project(id)?.concept.host != concept.host
+                || agreement.start != concept.record_at
+            {
+                return Err(error(
+                    "host_agreement_locked",
+                    "The signed host and recording date are fixed.",
+                ));
+            }
+        }
         if let Some((_, _, edition)) = self.discussion_edition(id) {
             let current = self.production.project(id)?;
             if current.concept.record_at != concept.record_at
@@ -583,6 +593,12 @@ impl Planner {
             return Err(error(
                 "production_locked",
                 "Only unbooked drafts can be discarded.",
+            ));
+        }
+        if self.host_engagement(id).is_some() {
+            return Err(error(
+                "host_agreement_locked",
+                "This draft has a signed host commitment.",
             ));
         }
         if self.discussion_edition(id).is_some() {
@@ -651,17 +667,19 @@ impl Planner {
                     "Select paid Sway negotiation for this participant's exceptional availability.",
                 ));
             }
-            if self.production.projects.values().any(|other| {
-                other.phase != Phase::Draft
-                    && p.concept.record_at < other.recording_end
-                    && p.recording_end > other.concept.record_at
-                    && [
-                        other.concept.host,
-                        other.concept.guests[0],
-                        other.concept.guests[1],
-                    ]
-                    .contains(&person)
-            }) {
+            if self.host_reserved_elsewhere(person, id, p.concept.record_at, p.recording_end)
+                || self.production.projects.values().any(|other| {
+                    other.phase != Phase::Draft
+                        && p.concept.record_at < other.recording_end
+                        && p.recording_end > other.concept.record_at
+                        && [
+                            other.concept.host,
+                            other.concept.guests[0],
+                            other.concept.guests[1],
+                        ]
+                        .contains(&person)
+                })
+            {
                 return Err(error("talent_conflict","A selected participant is already reserved for another recording at that time."));
             }
         }
@@ -699,7 +717,8 @@ impl Planner {
                 "Not enough pooled Sway for all selected uses.",
             ));
         }
-        if self.state().economy().cash(self.player).unwrap() < p.concept.budget {
+        let due = self.production_balance_due(id)?;
+        if self.state().economy().cash(self.player).unwrap() < due {
             return Err(error(
                 "insufficient_production_funds",
                 "Station cash cannot cover the whole production budget.",
@@ -716,12 +735,14 @@ impl Planner {
         let (mut output, outcome) =
             self.make_discussion(&p, ProgrammeId(next_programme), cooperation_sway);
         let mut candidate = self.clone();
-        candidate
-            .engine
-            .state
-            .economy
-            .reserve_production(self.now_minute(), self.player, id, p.concept.budget)
-            .map_err(engine_error)?;
+        if due.0 > 0 {
+            candidate
+                .engine
+                .state
+                .economy
+                .reserve_production(self.now_minute(), self.player, id, due)
+                .map_err(engine_error)?;
+        }
         candidate.bump()?;
         candidate.production.next_programme = following;
         if let Some((series, index, _)) = edition {
@@ -854,11 +875,13 @@ impl Planner {
             .map(|p| p.id)
             .collect::<Vec<_>>();
         for id in starting {
-            self.engine
-                .state
-                .economy
-                .spend_production(AirMinute::from_tick(at), id)
-                .map_err(engine_error)?;
+            if self.production_balance_due(id)?.0 > 0 {
+                self.engine
+                    .state
+                    .economy
+                    .spend_production(AirMinute::from_tick(at), id)
+                    .map_err(engine_error)?;
+            }
             self.production.projects.get_mut(&id).unwrap().phase = Phase::Recording;
         }
         Ok(())

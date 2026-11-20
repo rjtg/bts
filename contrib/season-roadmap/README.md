@@ -24,9 +24,9 @@ Open port 4173 on the preview host. The existing network address is
 
 ## Progress checkpoint
 
-- Active slice: talent contracts.
-- Verified milestones: `7313d17`, `c6b68e4`, `bf42a8f`, `ed2f906`, `656746d`, and Run same-day news editions from Production.
-- Next: add date-specific prepaid host agreements and connect them to booking.
+- Active slice: scripted series.
+- Verified milestones: `7313d17`, `c6b68e4`, `bf42a8f`, `ed2f906`, `656746d`, `2dffc4e` and Reserve prepaid host dates in a hiring desk.
+- Next: implement a three-episode scripted binder, cast continuity and ambition variation.
 - Runtime token refresh schedule: unavailable.
 
 ## 1. Recurring discussion editions
@@ -170,3 +170,25 @@ tests and doctests, strict Clippy and rustdoc, formatting, Wasm/browser build
 and native/Wasm parity passed. The full run passed 43 existing browser
 tests. The new newsroom walkthrough passed on rerun after correcting
 the staff selectors' accessible names.
+
+## 5b. Guaranteed host dates
+
+Find this slice with `git log --oneline --grep='Reserve prepaid host dates in a hiring desk'`.
+The [agreement rules](../../docs/guaranteed-host-dates.md) describe
+availability, exact obligations and the credit against booking.
+
+Draft a weekly discussion binder with Elian North, open Hiring desk in
+Production, choose his portrait card, and select all three dates. Sign for
+660 Funds and inspect the signed dates. Book the first edition for the
+remaining 780 Funds, then run through delivery and see the first date
+marked fulfilled. A standalone draft can be signed by selecting just one
+date.
+
+The native test compares signed reservation conflicts and the existing
+direct booking path. It verifies no duplicate payment, no cancellation
+of a signed draft, cash conservation, and a separate one-date agreement.
+This desk covers hosting dates rather than a general contract market.
+
+[Capture of the signed agreement](host-agreement.png). Workspace tests and
+doctests, strict Clippy and rustdoc, formatting, the Wasm/browser build,
+native/Wasm parity and all 45 Chromium tests passed.

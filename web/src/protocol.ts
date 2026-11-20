@@ -22,6 +22,7 @@ export type Command =
   | { type: 'set_polling'; polling: Polling }
   | { type: 'spend_insight'; audience: number; amount: number }
   | { type: 'accept_request'; request_id: number }
+  | { type: 'sign_host'; host: number; productions: number[] }
   | { type: 'start_newsroom'; title: string; first_day: number; minute_of_day: number; ad_minutes: number; staff: NewsroomStaff }
   | { type: 'update_newsroom_staff'; staff: NewsroomStaff }
   | { type: 'create_discussion_run'; brief: ProductionConcept; first_air_minute: number; ad_minutes: number }
@@ -111,6 +112,7 @@ export interface ProductionConcept {
   title: string; host: number; guests: [number, number]; subject: Subject; tone: ProductionTone; budget: string; record_at: number;
 }
 export interface ProductionInfo extends ProductionConcept {
+  host_prepaid: string; balance_due: string;
   ambition: Quality[];
   id: number; fees: string; recording_end: number; ready_at: number;
   phase: 'draft' | 'booked' | 'recording' | 'post_production' | 'completed';
@@ -120,6 +122,7 @@ export interface ProductionView {
   format: string; duration_minutes: number; recording_ticks: number; post_ticks: number;
   people: { id: number; name: string; role: 'host' | 'guest' | 'actor' | 'director' | 'writer' | 'anchor' | 'reporter'; fee: string; description: string; normal_until_tick: number; negotiable_from_tick: number | null; station_id:number|null; commitments: { production_id: number; title: string; start_tick: number; end_tick: number }[] }[];
   projects: ProductionInfo[];
+  host_agreements: HostAgreement[];
   discussion_runs: { series: number; title: string; host: number; editions: DiscussionEdition[] }[];
   requests: { id: number; proposer: number; reward: number; achievement: 'recording_completed' | 'production_completed'; statement: string; time_limit_ticks: number; status: 'available' | 'open' | 'completed' | 'expired'; acceptance: { production_id: number | null; accepted_at: number; deadline_tick: number; fulfilled_at: number | null } | null }[];
   sway_balance: number; participation_cost: number; known_concerns: { people: [number, number]; note: string }[];
@@ -202,4 +205,10 @@ export interface Newsroom {
     phase: 'planned' | 'reporting' | 'recording' | 'editing' | 'delivered' | 'missed';
     programme: number | null; airing_id: number | null; exception: string | null;
   }[];
+}
+
+export interface HostAgreement {
+  id: number; host: number; total: string;
+  dates: { production: number; title: string; start_tick: number; end_tick: number; fee: string;
+    status: 'reserved' | 'booked' | 'fulfilled' | 'unused' }[];
 }

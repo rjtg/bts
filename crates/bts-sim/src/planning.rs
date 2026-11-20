@@ -5,6 +5,7 @@ pub mod autosell;
 pub mod brand_review;
 pub mod discussion_run;
 pub mod film;
+pub mod hiring;
 mod lead_ins;
 pub mod newsroom;
 pub mod production;
@@ -119,6 +120,7 @@ pub struct Planner {
     next_id: u32,
     revision: u64,
     production: production::ProductionState,
+    host_agreements: BTreeMap<production::ProductionId, hiring::HostAgreement>,
     newsroom: Option<newsroom::Newsroom>,
     discussion_runs: BTreeMap<SeriesId, discussion_run::DiscussionRun>,
     films: BTreeMap<production::ProductionId, film::Film>,
@@ -172,6 +174,7 @@ impl Planner {
             next_id: 1,
             revision: 0,
             production: production::ProductionState::default(),
+            host_agreements: BTreeMap::new(),
             newsroom: None,
             discussion_runs: BTreeMap::new(),
             films: BTreeMap::new(),

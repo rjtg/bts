@@ -382,6 +382,15 @@ impl Session {
                 .planner
                 .accept_request(RequestId(request_id))
                 .map_err(player_error)?,
+            Command::SignHost { host, productions } => {
+                let productions = productions
+                    .into_iter()
+                    .map(ProductionId)
+                    .collect::<Vec<_>>();
+                self.planner
+                    .sign_host(PersonId(host), &productions)
+                    .map_err(player_error)?;
+            }
             Command::StartNewsroom {
                 title,
                 first_day,
@@ -465,12 +474,10 @@ impl Session {
                         .0,
                     total_sway: self.planner.production().sway() - preview.production().sway(),
                     sway_remaining: preview.production().sway(),
-                    budget: preview
-                        .production()
-                        .project(ProductionId(production_id))
+                    budget: self
+                        .planner
+                        .production_balance_due(ProductionId(production_id))
                         .map_err(player_error)?
-                        .concept
-                        .budget
                         .0
                         .to_string(),
                     cash_remaining: preview
@@ -661,6 +668,44 @@ impl Session {
     fn production_view(&self) -> ProductionView {
         let state = self.planner.production();
         ProductionView {
+            host_agreements: self
+                .planner
+                .host_agreements()
+                .map(|agreement| HostAgreementView {
+                    id: agreement.id.0,
+                    host: agreement.host.0,
+                    total: agreement.total.0.to_string(),
+                    dates: agreement
+                        .engagements
+                        .iter()
+                        .map(|date| {
+                            use bts_sim::planning::production::Phase;
+                            let project = state
+                                .project(date.production)
+                                .expect("signed project exists");
+                            let status = match project.phase {
+                                Phase::Draft
+                                    if AirMinute::from_tick(date.start)
+                                        < self.planner.now_minute() =>
+                                {
+                                    "unused"
+                                }
+                                Phase::Draft => "reserved",
+                                Phase::Booked | Phase::Recording => "booked",
+                                _ => "fulfilled",
+                            };
+                            HostDateView {
+                                production: date.production.0,
+                                title: project.concept.title.clone(),
+                                start_tick: date.start.0,
+                                end_tick: date.end.0,
+                                fee: date.fee.0.to_string(),
+                                status,
+                            }
+                        })
+                        .collect(),
+                })
+                .collect(),
             discussion_runs: self
                 .planner
                 .discussion_runs()
@@ -722,6 +767,25 @@ impl Session {
                             start_tick: project.concept.record_at.0,
                             end_tick: project.recording_end.0,
                         })
+                        .chain(
+                            self.planner
+                                .host_agreements()
+                                .filter(|hire| hire.host == p.id)
+                                .flat_map(|hire| {
+                                    hire.engagements.iter().filter_map(|date| {
+                                        let project = state.project(date.production).ok()?;
+                                        project.booked_at.is_none().then(|| TalentCommitment {
+                                            production_id: project.id.0,
+                                            title: format!(
+                                                "{} (host agreement)",
+                                                project.concept.title
+                                            ),
+                                            start_tick: date.start.0,
+                                            end_tick: date.end.0,
+                                        })
+                                    })
+                                }),
+                        )
                         .chain(self.planner.newsroom().into_iter().flat_map(|room| {
                             room.editions.iter().filter_map(move |edition| {
                                 use bts_sim::planning::newsroom::NewsPhase;
@@ -757,6 +821,17 @@ impl Session {
                     tone: p.concept.tone,
                     ambition: qualities(p.concept.ambition()),
                     budget: p.concept.budget.0.to_string(),
+                    host_prepaid: self
+                        .planner
+                        .host_engagement(p.id)
+                        .map_or(0, |date| date.fee.0)
+                        .to_string(),
+                    balance_due: self
+                        .planner
+                        .production_balance_due(p.id)
+                        .expect("existing production")
+                        .0
+                        .to_string(),
                     fees: p.fees.0.to_string(),
                     record_at: p.concept.record_at.0,
                     recording_end: p.recording_end.0,

@@ -31,7 +31,7 @@ export function initialiseProduction(ui: Callbacks) {
   function availability(id: number): { label: string; blocked: boolean } {
     const p = person(id); const start = readConcept().record_at; const end = start + 4;
     if (start < ui.report().now_tick) return { label: 'Choose a future recording time', blocked: true };
-    const commitment = p.commitments.find(c => start < c.end_tick && end > c.start_tick);
+    const commitment = p.commitments.find(c => c.production_id !== editing && start < c.end_tick && end > c.start_tick);
     if (commitment) return { label: `Already recording ${commitment.title} · ${ui.stamp(commitment.start_tick)}–${ui.stamp(commitment.end_tick)}`, blocked: true };
     if (end <= p.normal_until_tick) return { label: 'Available for this recording', blocked: false };
     if (p.negotiable_from_tick !== null && start >= p.negotiable_from_tick) return { label: `Negotiation needed · ${ui.report().production.participation_cost} Sway, plus normal fees`, blocked: false };
@@ -168,6 +168,14 @@ export function initialiseProduction(ui: Callbacks) {
         const quest = report.production.requests.find(r => r.id === hint.request_id)!;
         card.append(node('p', `${personName(quest.proposer)}’s open quest: ${hint.matches_requirements ? hint.can_finish_in_time ? `matches production requirements; could fulfil at ${ui.stamp(hint.achievement_tick)} if completed as planned.` : 'matches the concept, but cannot meet the accepted timing requirements.' : 'this concept does not match the requirements.'} Actual achievement is still required.`, 'quest-hint'));
       }
+      if (p.host_prepaid !== '0') {
+        const line = node('p', `Host agreement · ${ui.money(p.host_prepaid)} Funds prepaid · `);
+        line.append(action('Open hiring desk', () => {
+          const desk = element<HTMLDetailsElement>('hiring-desk');
+          desk.open = true; desk.querySelector('summary')?.focus();
+        }));
+        card.append(line);
+      }
       const notes = node('div'); concerns([p.host, ...p.guests], notes); card.append(notes);
       if(p.studio!==null)card.append(node('p',`Studio ${p.studio} reserved for this recording.`,'small'));
       if (p.exceptional_person !== null) card.append(node('p', `Participation secured: ${personName(p.exceptional_person)}. Normal fees still apply.`, 'small'));
@@ -186,7 +194,7 @@ export function initialiseProduction(ui: Callbacks) {
           const studio = node('select');
           for (let number = 1; number <= studios; number++) studio.append(option(number, `Studio ${number}`));
           label.append(studio);
-          const book = action(`Book edition · ${ui.money(p.budget)} Funds`, () => ui.send({
+          const book = action(`Book edition · ${ui.money(p.balance_due)} Funds`, () => ui.send({
             type: 'book_discussion_edition', production_id: p.id, studio: Number(studio.value),
           }));
           book.disabled = studios === 0;
@@ -194,7 +202,10 @@ export function initialiseProduction(ui: Callbacks) {
           buttons.append(action('Edit edition', () => edit(p)), book);
         }
       }
-      if (p.phase === 'draft' && !run) { bookingControls(p, card); buttons.append(action('Edit concept', () => edit(p)), action('Discard concept', () => ui.send({ type: 'discard_production', production_id: p.id }))); }
+      if (p.phase === 'draft' && !run) { bookingControls(p, card); buttons.append(action('Edit concept', () => edit(p)));
+        if (!report.production.host_agreements.some(agreement => agreement.dates.some(date => date.production === p.id))) {
+          buttons.append(action('Discard concept', () => ui.send({ type: 'discard_production', production_id: p.id })));
+        } }
       else if (p.phase === 'completed') { card.append(node('p', 'Completed and ready for your schedule. Each broadcast has its own airing cost.', 'small muted')); buttons.append(action('Show in programme library', () => { if (p.programme !== null) ui.showProgramme(p.programme); }, '')); }
       else if (p.phase !== 'draft') { card.append(node('p', 'Cast and budget committed. Running to completion also processes all other broadcasts and obligations.', 'small muted')); buttons.append(action(`Finish ${p.title} · ${ui.stamp(p.ready_at)}`, () => ui.send({ type: 'advance', to_tick: p.ready_at }), '')); }
       card.append(buttons); (run?.binder ?? projects).append(card);

@@ -6,6 +6,7 @@ import { renderAdMarket, salesFor, minuteRevenue } from './ad-market';
 import { initialiseRightsMarket } from './rights-market';
 import { renderAudience } from './audience';
 import { initialiseFilmDesk, preparing } from './film';
+import { initialiseHiring } from './hiring';
 import { initialiseNewsroom } from './newsroom';
 import { initialiseProduction } from './production';
 import './style.css';
@@ -34,6 +35,7 @@ let weeklyUi: ReturnType<typeof initialiseWeeklyPlanner> | undefined;
 let plannerDrag: ReturnType<typeof initialisePlannerDrag> | undefined;
 let rightsUi: ReturnType<typeof initialiseRightsMarket> | undefined;
 let filmUi: ReturnType<typeof initialiseFilmDesk> | undefined;
+let hiringUi: ReturnType<typeof initialiseHiring> | undefined;
 let newsroomUi: ReturnType<typeof initialiseNewsroom> | undefined;
 let productionUi: ReturnType<typeof initialiseProduction> | undefined;
 let selected: number | null = null;
@@ -773,7 +775,7 @@ function render(next: Report): void {
   calendar.followClock();
   calendar.render();
   renderOffice();
-  renderAudience(report, stamp, send); renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report); newsroomUi?.render(report); filmUi?.render(report); rightsUi?.render(report); weeklyUi?.render(report);
+  renderAudience(report, stamp, send); renderTimeline(); renderCatalogue(); renderDetails(); renderReports(); productionUi?.render(report); newsroomUi?.render(report); hiringUi?.render(report); filmUi?.render(report); rightsUi?.render(report); weeklyUi?.render(report);
 
 }
 function send(command: Command, automatic = false): void {
@@ -959,6 +961,7 @@ async function start(): Promise<void> {
       renderCatalogue(); element('library-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
       document.querySelector<HTMLElement>(`[data-programme="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
+    hiringUi = initialiseHiring({ send, stamp, money, showProject: id => productionUi?.showProject(id) });
     newsroomUi = initialiseNewsroom({ report: () => report, send, stamp: exactStamp, money, showAiring: id => chooseAiring(id, true) });
     element('prep-newsroom').addEventListener('click', event => {
       event.preventDefault();

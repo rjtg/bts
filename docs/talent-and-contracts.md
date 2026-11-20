@@ -1,4 +1,5 @@
 # Talent market, contracts and recurring roles
+The [guaranteed host dates pilot](guaranteed-host-dates.md) implements one narrow prepaid agreement type.
 
 Status: design direction, November 2026. A dedicated place to find and sign people,
 with meaningful obligations, is intended. Contract structures, negotiation rules,
