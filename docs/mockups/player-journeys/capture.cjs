@@ -72,7 +72,11 @@ async function reviewBoards(browser) {
   for (const key of ['rack', 'reception', 'calendar', 'blocked', 'market', 'acquired',
     'research', 'investigated', 'production', 'booking', 'airing', 'ledger']) {
     await page.goto(board + '#' + key);
-    await expect(page.locator('.file')).toBeVisible();
+    const file = page.locator('.file');
+    await expect(file).toBeVisible();
+    const bounds = await file.boundingBox();
+    assert(bounds.width >= 1280 * .85 && bounds.height >= 900 * .7, key);
+    assert(bounds.y + bounds.height <= 900, key);
     await shot(page, 'mockups', key);
   }
   const narrow = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true,

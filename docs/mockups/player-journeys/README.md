@@ -38,7 +38,11 @@ The boards use static tab labels where the content is outside these paths.
 Use the in-scene Back links or Escape where available. The route links at
 the top are a review aid. In the game, the desk props remain the entry points.
 
-## Decisions for feedback
+## Deferred design decisions
+
+Use most of the viewport for the active workspace. Keep a margin of office
+art around it for orientation. The questions below can wait for their
+respective implementation slices.
 
 - Should **Best aired** and **Also works** always be the first tape evidence,
   or stay inside Reception? Is the proposed fit strip clear enough to choose

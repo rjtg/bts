@@ -9,7 +9,7 @@
 body { margin:0; background:#302015; color:#f9e6ba }
 h1, h2, h3, p { margin:0 }
 p + p { margin-top:.6rem }
-h1 { font: bold 1.55rem/1.1 Georgia, serif }
+h1 { font: bold clamp(1.55rem, 2.7vw, 2.45rem)/1.1 Georgia, serif }
 h2 { font-size:1.04rem; padding-bottom:.3rem; border-bottom:1px solid #95764c }
 h3 { font-size:1rem }
 a, button { color:inherit; font:inherit }
@@ -24,14 +24,16 @@ a { text-underline-offset:.25em }
 .review-bar nav { display:flex; flex-wrap:wrap; gap:.32rem 1.05rem }
 .review-bar nav a { padding:.25rem 0 }
 .office {
-  min-height:calc(100svh - 5rem); display:grid; align-items:end; padding:5rem 1rem 2rem;
+  min-height:calc(100svh - 5rem); display:grid; align-items:center;
+  padding:2rem clamp(1.4rem, 4vw, 5rem);
   background:linear-gradient(#170c0133,#170c0100 42%,#15070444),
     url('baseline/office-backdrop.webp') center bottom / cover no-repeat;
 }
-.workbench { width:min(56rem,100%); margin: auto auto 0 }
+.workbench { width:min(82rem,100%); margin-inline:auto }
 .file {
   --cover:#c1a278;
-  padding:.65rem; color:var(--ink); background:var(--cover);
+  min-height:min(74svh, 55rem); display:flex; flex-direction:column;
+  padding:clamp(.65rem, 1.4vw, 1.3rem); color:var(--ink); background:var(--cover);
   box-shadow:0 5px 0 #493421, 0 16px 26px #160902b8, inset 0 0 0 2px #fff1cb62;
   border:2px solid #392a20; border-radius:.34rem;
 }
@@ -42,13 +44,14 @@ a { text-underline-offset:.25em }
 .file[data-stock="dark"] { --cover:#7d9d89 }
 .file-cover { display:flex; justify-content:space-between; align-items:center; gap:.8rem; margin:.1rem .25rem .65rem }
 .cover-label { display:block; font-size:.76rem; letter-spacing:.06em; text-transform:uppercase }
-.papers { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.4rem }
+.papers { flex:1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.55rem }
 .leaf {
-  min-height:17.6rem; padding:.85rem 1rem;
+  min-height:0; padding:clamp(.85rem, 2.1vw, 1.8rem);
   border:1px solid #957b55; box-shadow:inset 0 0 14px #b3946240, 0 2px 2px #472b20a0;
   background:repeating-linear-gradient(var(--paper) 0 24px,#e5cfa4 24px 25px);
 }
 .leaf > :not(:first-child) { margin-top:.66rem }
+.leaf > p { max-width:54ch }
 .note, .receipt, .card {
   padding:.62rem .75rem; background:#fbebc6; border:1px solid #9d8055;
   box-shadow:1px 2px 0 #a88b62;
@@ -115,10 +118,18 @@ a { text-underline-offset:.25em }
   display:inline-grid; place-items:center; width:2.7rem; height:2.7rem;
   background:#31493e; color:#fff4cc; border-radius:50%; border:.26rem dotted #a2be9a;
 }
+@media(min-width:900px) {
+  .file { font-size:1.12rem }
+  .file h2 { font-size:1.2rem }
+  .leaf > :not(:first-child) { margin-top:1rem }
+  .note, .receipt, .card { padding:.8rem .95rem }
+  .slot { min-height:4.8rem; padding:.65rem }
+}
 @media(max-width:640px) {
   .review-bar { min-height:0; gap:.35rem; padding:.5rem .7rem }
   .review-bar nav { font-size:.76rem; gap:.22rem .8rem }
   .office { min-height:calc(100svh - 6.5rem); padding:1.55rem .45rem 1rem }
+  .file { min-height:0 }
   .papers { grid-template-columns:1fr }
   .leaf { min-height:0; padding:.65rem }
   h1 { font-size:1.24rem }
