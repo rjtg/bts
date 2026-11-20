@@ -1,0 +1,129 @@
+:root {
+  color-scheme: dark;
+  --ink:#362719;
+  --paper:#f1e0b8;
+  --dark:#1b231e;
+  font: 15px/1.42 'Courier New', monospace;
+}
+* { box-sizing:border-box }
+body { margin:0; background:#302015; color:#f9e6ba }
+h1, h2, h3, p { margin:0 }
+p + p { margin-top:.6rem }
+h1 { font: bold 1.55rem/1.1 Georgia, serif }
+h2 { font-size:1.04rem; padding-bottom:.3rem; border-bottom:1px solid #95764c }
+h3 { font-size:1rem }
+a, button { color:inherit; font:inherit }
+a:focus-visible, button:focus-visible, h1:focus-visible { outline:3px solid #feae45; outline-offset:3px }
+a { text-underline-offset:.25em }
+.review-bar {
+  min-height:5rem; background:#211b17; border-bottom:3px double #b39168;
+  display:flex; gap:.8rem 2rem; flex-wrap:wrap; align-items:center; padding:.65rem 1.25rem;
+}
+.review-bar strong { font-family:Georgia,serif; font-size:1.45rem }
+.review-bar span { display:block; font:normal .77rem 'Courier New',monospace; color:#dbc292 }
+.review-bar nav { display:flex; flex-wrap:wrap; gap:.32rem 1.05rem }
+.review-bar nav a { padding:.25rem 0 }
+.office {
+  min-height:calc(100svh - 5rem); display:grid; align-items:end; padding:5rem 1rem 2rem;
+  background:linear-gradient(#170c0133,#170c0100 42%,#15070444),
+    url('baseline/office-backdrop.webp') center bottom / cover no-repeat;
+}
+.workbench { width:min(56rem,100%); margin: auto auto 0 }
+.file {
+  --cover:#c1a278;
+  padding:.65rem; color:var(--ink); background:var(--cover);
+  box-shadow:0 5px 0 #493421, 0 16px 26px #160902b8, inset 0 0 0 2px #fff1cb62;
+  border:2px solid #392a20; border-radius:.34rem;
+}
+.file[data-stock="teal"] { --cover:#82aaa0 }
+.file[data-stock="olive"] { --cover:#aeb080 }
+.file[data-stock="pink"] { --cover:#d6a6a4 }
+.file[data-stock="blue"] { --cover:#a2b5bf }
+.file[data-stock="dark"] { --cover:#7d9d89 }
+.file-cover { display:flex; justify-content:space-between; align-items:center; gap:.8rem; margin:.1rem .25rem .65rem }
+.cover-label { display:block; font-size:.76rem; letter-spacing:.06em; text-transform:uppercase }
+.papers { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.4rem }
+.leaf {
+  min-height:17.6rem; padding:.85rem 1rem;
+  border:1px solid #957b55; box-shadow:inset 0 0 14px #b3946240, 0 2px 2px #472b20a0;
+  background:repeating-linear-gradient(var(--paper) 0 24px,#e5cfa4 24px 25px);
+}
+.leaf > :not(:first-child) { margin-top:.66rem }
+.note, .receipt, .card {
+  padding:.62rem .75rem; background:#fbebc6; border:1px solid #9d8055;
+  box-shadow:1px 2px 0 #a88b62;
+}
+.note { background:#f5dda2; font:italic 1.05rem/1.3 Georgia,serif }
+.receipt { border-left:4px solid #3d6757 }
+.receipt small, .card small { display:block }
+.stamp { display:inline-block; padding:.12rem .42rem; color:#235442; font-weight:bold; border:2px solid; text-transform:uppercase; rotate:-2deg }
+.tabs { display:flex; gap:.32rem; flex-wrap:wrap; margin:0 .25rem .42rem }
+.tabs a, .tabs span { padding:.2rem .55rem; background:#eee0bd; border:1px solid #886849; border-radius:.25rem .25rem 0 0 }
+.tabs [aria-current] { background:#fff3d3; box-shadow:inset 0 -.17rem #ab7135 }
+.btn {
+  display:inline-block; padding:.38rem .62rem; border-radius:.16rem; background:#253c35;
+  color:#fff2d0; border:1px solid #142720; text-decoration:none; font-weight:bold; box-shadow:0 2px 0 #5e5140;
+}
+.btn.alt { color:var(--ink); background:#e9d4a8; border-color:#9d8055 }
+.btn + .btn { margin-left:.35rem }
+.rack {
+  display:grid; gap:.48rem; padding:.75rem; border:5px ridge #8e5834;
+  background:repeating-linear-gradient(3deg,#65452e 0 10px,#684630 11px 14px);
+}
+.tape {
+  display:grid; grid-template-columns:2.3rem 1fr; align-items:center; gap:.55rem; padding:.38rem .55rem;
+  border:3px ridge #514538; border-radius:.3rem; background:#292824; color:#fff1cc;
+}
+.reels { font:normal .77rem monospace; color:#bfaba1 }
+.tape small { color:#ecc999 }
+.calendar { padding:.6rem; color:#f2ebc3; background:#172c26; border:5px ridge #5e6850 }
+.calendar b { display:block; margin-bottom:.48rem }
+.slot-grid { display:grid; grid-template-columns:.75fr 1.1fr 1.1fr 1fr; gap:.32rem }
+.slot { min-height:4.1rem; display:grid; align-content:center; padding:.4rem; border:1px solid #b8a881; border-radius:.15rem }
+.slot strong { display:block }
+.slot.good { background:#315947 }
+.slot.ok { background:#54502b }
+.slot.weak { background:#66482f }
+.slot.clash { background:repeating-linear-gradient(135deg,#302826 0 7px,#58392e 7px 14px) }
+.slot[aria-current] { outline:2px solid #ffe1a1; outline-offset:1px }
+.figures { display:grid; grid-template-columns:1fr auto; gap:.38rem 1rem; margin:0 }
+.figures dt, .figures dd { margin:0; padding-bottom:.18rem; border-bottom:1px dotted #8e7759 }
+.figures dd { text-align:right; font-weight:bold }
+.portrait { display:block; max-width:min(100%,15rem); max-height:8.5rem; object-fit:cover; border:5px solid #fff1d0; box-shadow:0 2px 2px #74614a }
+.market-art {
+  width:10rem; height:6.3rem; border:4px solid #fff0ca;
+  background:url('../../../web/public/portraits/rights-titles.webp') 0 0 / 200% 200%;
+}
+.cast-cards {
+  list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3, 1fr); gap:.4rem;
+}
+.cast-cards li { font-size:.83rem }
+.cast-photo, .studio-photo {
+  display:block; border:3px solid #fff3d2; box-shadow:0 2px 2px #74614a;
+}
+.cast-photo {
+  width:min(100%, 5rem); aspect-ratio:1; margin-bottom:.35rem;
+  background:url('../../../web/public/portraits/film-roster.webp') var(--x) var(--y) / 400% 200%;
+}
+.studio-card { display:flex; gap:.55rem; align-items:center }
+.studio-photo {
+  flex:none; width:3.7rem; aspect-ratio:1;
+  background:url('../../../web/public/office-art/studio-photos.webp') 0 0 / 200% 200%;
+}
+.case-title { padding:.28rem .65rem; background:#443a30; color:#ffebc1; border:1px solid #3d2e24 }
+.dial {
+  display:inline-grid; place-items:center; width:2.7rem; height:2.7rem;
+  background:#31493e; color:#fff4cc; border-radius:50%; border:.26rem dotted #a2be9a;
+}
+@media(max-width:640px) {
+  .review-bar { min-height:0; gap:.35rem; padding:.5rem .7rem }
+  .review-bar nav { font-size:.76rem; gap:.22rem .8rem }
+  .office { min-height:calc(100svh - 6.5rem); padding:1.55rem .45rem 1rem }
+  .papers { grid-template-columns:1fr }
+  .leaf { min-height:0; padding:.65rem }
+  h1 { font-size:1.24rem }
+  .slot-grid { grid-template-columns:1fr 1fr }
+  .slot { min-height:3.38rem }
+  .file-cover { margin:.1rem 0 .5rem }
+  .file-cover .btn { white-space:nowrap }
+}

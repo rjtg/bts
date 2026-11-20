@@ -1,5 +1,9 @@
 # UI concept mockups
 
+The [Station Office journey review](player-journeys/README.md) pairs current
+Chromium captures with connected proposals for scheduling, Rights, Research,
+Production, Airing review, and the Ledger.
+
 Start with the [perspective desk](../../web/public/mockups/perspective-desk.png),
 [tape shelf](../../web/public/mockups/tape-shelf.png), [office radials](office-radials/README.md)
 and [booking desk](booking-desk/README.md) for the current office direction.
