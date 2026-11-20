@@ -111,7 +111,7 @@ function syncOfficeFile() {
   office.classList.toggle('file-open', open);
   office.classList.toggle('tray-open', officeTrayOpen);
   const occupied = activeDesk === 'office' && (open || officeTrayOpen);
-  for (const id of ['office-job-links', 'open-notebook', 'office-crt']) element(id).inert = occupied;
+  for (const id of ['office-job-links', 'open-notebook', 'office-calendar']) element(id).inert = occupied;
   element('pull-tapes').setAttribute('aria-expanded', String(officeTrayOpen));
   element('put-tapes-away').hidden = !officeTrayOpen;
   element('office-workspace').hidden = activeDesk === 'office' && !open && !officeTrayOpen;
@@ -828,6 +828,9 @@ function jump(tickInDay: number): void {
   element('timeline-scroller').scrollLeft = tickInDay * tickWidth;
 }
 function renderOffice() {
+  const minuteOfDay = report.now_minute % DAY_MINUTES;
+  const workingHours = minuteOfDay >= 8 * 60 && minuteOfDay < 18 * 60;
+  element('office').dataset.shift = workingHours ? 'open' : 'closed';
   renderToday(report, playerStation(), id => {
     if (!isDesk()) desks.navigate('office');
     chooseAiring(id);
@@ -938,7 +941,7 @@ async function start(): Promise<void> {
     };
     const observer = new ResizeObserver(positionProgramming);
     for (const frame of [transport, document.querySelector('.masthead')!, document.querySelector('.rail')!]) observer.observe(frame);
-    element('office-crt').addEventListener('click', () => calendar.dayMode());
+    element('office-calendar').addEventListener('click', () => calendar.dayMode());
     button('pull-tapes').addEventListener('click', () => {
       if (officeTrayOpen) { closeDeskFile(); return; }
       officeTrayOpen = true;

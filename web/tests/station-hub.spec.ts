@@ -15,7 +15,7 @@ async function shot(page: Page, name: string) {
 async function loadOffice(page: Page) {
   await page.goto('/');
   await expect(page.locator('#status')).toContainText('WASM READY');
-  await expect(page.locator('#office-crt')).toBeVisible();
+  await expect(page.locator('#office-calendar')).toBeVisible();
   await expect(page.getByRole('region', { name: 'Tape dossier' })).toHaveCount(0);
 }
 
@@ -35,13 +35,13 @@ async function airingJourney(page: Page, small: boolean) {
   small ? await tape.tap() : await tape.press('Enter');
   const file = page.getByRole('region', { name: 'Tape dossier' });
   await expect(file).toBeVisible();
-  await expect(page.locator('#office-crt')).toHaveAttribute('inert', '');
+  await expect(page.locator('#office-calendar')).toHaveAttribute('inert', '');
   await expect(page.locator('#desk-file-piles')).toBeVisible();
   await shot(page, `${name}-tape`);
   if (small) await file.getByRole('button', { name: 'Close file' }).tap();
   else await page.keyboard.press('Escape');
   await expect(page.locator('#pull-tapes')).toBeFocused();
-  await page.locator('#office-crt').click();
+  await page.locator('#office-calendar').click();
   await page.locator('#jump-evening').click();
   await shot(page, `${name}-planner`);
   await pickTime(page, 72);
@@ -76,7 +76,7 @@ async function airingJourney(page: Page, small: boolean) {
   await airing.getByRole('button', { name: 'Close file' }).click();
   await expect(airing).toHaveCount(0);
   await page.locator('#back-office').click();
-  await expect(page.locator('#office-crt')).toBeVisible();
+  await expect(page.locator('#office-calendar')).toBeVisible();
 }
 
 test('desktop office through minute sale and settlement', async ({ page }) => airingJourney(page, false));
@@ -142,17 +142,10 @@ test('Today strip accepts a tape drop and reopens the completed airing', async (
 test('office props react to hover and respect reduced motion', async ({ page }) => {
   await page.setViewportSize(desktop);
   await loadOffice(page);
-  const monitors = page.locator('#office-crt');
-  const reel = page.locator('.monitor-reel');
-  await monitors.hover();
-  await expect(reel).toHaveCSS('opacity', '1');
-  await expect(reel.locator('i').first()).toHaveCSS('animation-name', 'monitor-preview');
-  await shot(page, 'desktop-monitor-previews');
-  const programmes = await reel.locator('i').evaluateAll(screens => screens.map(screen => getComputedStyle(screen).backgroundImage));
-  expect(new Set(programmes).size).toBe(3);
-  const firstScreen = reel.locator('i').first();
-  const position = await firstScreen.evaluate(screen => getComputedStyle(screen).backgroundPosition);
-  await expect.poll(() => firstScreen.evaluate(screen => getComputedStyle(screen).backgroundPosition)).not.toBe(position);
+  const calendar = page.locator('#office-calendar');
+  await calendar.hover();
+  await expect(calendar).toHaveAccessibleName('Open Programming calendar');
+  await expect(page.locator('.monitor-reel')).toHaveAttribute('aria-hidden', 'true');
   for (const name of ['script', 'production', 'rights', 'ledger', 'reviews']) {
     const prop = page.locator(`#desk-file-piles [data-prop="${name}"]`);
     await prop.hover();
@@ -168,7 +161,5 @@ test('office props react to hover and respect reduced motion', async ({ page }) 
   await expect(files).toHaveCSS('animation-name', 'file-shuffle');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(files).toHaveCSS('animation-name', 'none');
-  await monitors.hover();
-  await expect(reel).toHaveCSS('opacity', '1');
-  await expect(reel.locator('i').first()).toHaveCSS('animation-name', 'none');
+  await expect(page.locator('.monitor-reel i').first()).toHaveCSS('animation-name', 'none');
 });

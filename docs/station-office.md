@@ -1,4 +1,5 @@
 # Station office and Planning Room
+See the [office playtest direction](office-playtest-direction.md) for the latest calendar entry, working hours, proposed motion and widget audit.
 
 The approved [perspective desk mockup](../web/public/mockups/perspective-desk.png)
 shows a staffed television station. This is the design reference for the

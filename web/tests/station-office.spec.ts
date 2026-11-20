@@ -12,7 +12,7 @@ async function capture(page: Page, name: string) {
 async function evening(page: Page) {
   await page.goto('/');
   await expect(page.locator('#status')).toContainText('WASM READY');
-  await page.locator('#office-crt').click();
+  await page.locator('#office-calendar').click();
   await pickTime(page, 75);
   await page.locator('#place').click();
   await pickTime(page, 72);
@@ -53,7 +53,7 @@ test('office, exact planning, calendars and test-card pause', async ({ page }) =
   await page.locator('#continue-play').press('Enter');
   await expect(page.getByRole('img', { name: /Programme quality radar/ })).toBeVisible();
   await page.keyboard.press('Escape');
-  await page.locator('#office-crt').click();
+  await page.locator('#office-calendar').click();
   await page.getByRole('button', { name: 'Week', exact: true }).click();
   await expect(page.locator('#calendar-summary')).toContainText('ad min unsold');
   await page.getByRole('button', { name: 'Next period' }).click();
@@ -73,7 +73,7 @@ test('office, exact planning, calendars and test-card pause', async ({ page }) =
   await page.getByRole('button', { name: 'Day', exact: true }).click();
   await capture(page, 'planning');
   await page.locator('#back-office').click();
-  await expect(page.locator('#office-crt')).toBeVisible();
+  await expect(page.locator('#office-calendar')).toBeVisible();
   await page.locator('#pull-tapes').click();
   await page.locator('[data-programme="1"]').click();
   await expect(page.getByRole('img', { name: /Programme quality radar/ })).toBeVisible();
@@ -83,7 +83,7 @@ test('narrow office keeps the CRT and Programme paper accessible with reduced mo
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await evening(page);
-  await expect(page.locator('#office-crt')).toHaveAttribute('inert', '');
+  await expect(page.locator('#office-calendar')).toHaveAttribute('inert', '');
   await expect(page.locator('#desk-file-piles')).toBeVisible();
   await expect(page.getByRole('img', { name: /Programme quality radar/ })).toBeVisible();
   await page.evaluate(() => scrollTo(0, 0));

@@ -1487,7 +1487,7 @@ body.ready[data-station-view="office"] > .load-status {
     to { transform: translateX(12%); opacity: .6; }
   }
 }
-#office-crt {
+#office-calendar {
   position: absolute; left: 30%; top: 12%; width: 33%;
   display: grid; gap: .35rem;
   padding: .65rem 1rem; border: 17px solid transparent;
@@ -1496,8 +1496,8 @@ body.ready[data-station-view="office"] > .load-status {
   box-shadow: 5px 9px 10px #1b0d0aa0; font: .86rem/1.3 monospace;
   text-decoration: none;
 }
-#office-crt > strong { font: bold 1.05rem Georgia, serif; border-bottom: 1px solid #9f864c; padding-bottom: .3rem; }
-#office-crt:hover, #office-crt:focus-visible { background-color: #3e2d12; }
+#office-calendar > strong { font: bold 1.05rem Georgia, serif; border-bottom: 1px solid #9f864c; padding-bottom: .3rem; }
+#office-calendar:hover, #office-calendar:focus-visible { background-color: #3e2d12; }
 #office #station-workspace, #office #library, #office #library .tape-room, #office #place-form { display: contents; }
 #office #library > summary { display: none; }
 #office .shelf-bay {
@@ -1594,7 +1594,7 @@ body.ready[data-station-view="office"] > .load-status {
 @media (max-width: 860px) {
   .office-room { min-height: auto; padding: .7rem; display:grid; gap:.5rem; background-size:auto 100%; }
   .office-room > img, .studio-glass { display:none; }
-  #office-crt, #office .shelf-bay, #office .paper-on-desk, #office #place-form .desk-objects,
+  #office-calendar, #office .shelf-bay, #office .paper-on-desk, #office #place-form .desk-objects,
   #office #place-form .shelf-actions, #office .ad-load-control, #office .desk-notes { position:static; width:auto; transform:none; }
   #office #library .tape-room { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:.5rem; }
   #office .shelf-bay, #office .paper-on-desk { grid-column:1 / -1; }
@@ -1729,7 +1729,7 @@ body.ready[data-station-view="office"] > .load-status {
 }
 
 /* The physical room remains visible around the job in focus. */
-#office .shelf-bay:focus-within, #office .shelf-bay:hover, #office-crt:hover { outline: 2px solid #ffc96b; }
+#office .shelf-bay:focus-within, #office .shelf-bay:hover, #office-calendar:hover { outline: 2px solid #ffc96b; }
 
 #office:not(.file-open) #paper-on-desk { display: none; }
 #paper-on-desk:has(> .dossier) { padding: 0; border: 0; background: transparent; box-shadow: none; }
@@ -1815,13 +1815,13 @@ body.ready[data-station-view="office"] > .load-status {
 }
 
 /* Station furniture at rest, with the programming surface pulled forward. */
-#office-crt,#office.file-open #office-crt {
+#office-calendar,#office.file-open #office-calendar {
   display: flex; align-items: end; left: 29%; top: 10%; width: 19%; height: 18%;
   background: transparent; border: 1px solid transparent; border-image: none;
   box-shadow: none; color: transparent; padding: .4rem; z-index: 1;
 }
-#office-crt strong { border: 0; padding: 0; }
-#office-crt:is(:hover,:focus-visible) {
+#office-calendar strong { border: 0; padding: 0; }
+#office-calendar:is(:hover,:focus-visible) {
   color: #ffe5a6; background: linear-gradient(transparent 50%,#221d18e8);
   outline: 2px solid #ffd785;
 }
@@ -1898,7 +1898,7 @@ body[data-station-view="planning"] #office .office-room { min-height:calc(100dvh
 body[data-station-view="planning"] .rail { position:relative; z-index:6; }
 body[data-station-view="planning"] #error { z-index:8; }
 @media (max-width: 860px) {
-  #office-crt { position:static; height:auto; width:auto; color:#ffe1ac; background:#3b3025; }
+  #office-calendar { position:static; height:auto; width:auto; color:#ffe1ac; background:#3b3025; }
   #office :is(#pull-tapes,#put-tapes-away,#open-notebook,.desk-files) { position:static; width:auto; transform:none; }
   #office .desk-files { display:grid; }
 
@@ -1992,13 +1992,13 @@ body[data-station-view="planning"] main > [data-desk="planning"] { top:min(var(-
 }
 
 /* Interactive scenery reacts within its own sprite bounds. */
-#office-crt:is(:hover,:focus-visible) { background:none; }
-#office-crt:is(:hover,:focus-visible) strong {
+#office-calendar:is(:hover,:focus-visible) { background:none; }
+#office-calendar:is(:hover,:focus-visible) strong {
   background:#291d17f2; color:#ffe5ab; padding:.33rem .55rem; border-radius:.16rem;
 }
-#office :is(#office-crt,#pull-tapes):hover,
+#office :is(#office-calendar,#pull-tapes):hover,
 #office .desk-files a:hover { outline:0; }
-#office :is(#office-crt,#pull-tapes,.desk-files a):focus-visible { outline:2px solid #ffda88; }
+#office :is(#office-calendar,#pull-tapes,.desk-files a):focus-visible { outline:2px solid #ffda88; }
 .monitor-reel {
   position:absolute; left:29.15%; top:14.25%; width:13.3%; height:6.3%;
   display:grid; grid-template-columns:repeat(3,1fr); gap:7%; pointer-events:none;
@@ -2012,14 +2012,10 @@ body[data-station-view="planning"] main > [data-desk="planning"] { top:min(var(-
 .monitor-reel i:nth-child(1) { --monitor-frames:url('/office-art/monitor-drama.webp'); }
 .monitor-reel i:nth-child(2) { --monitor-frames:url('/office-art/monitor-weather.webp'); }
 .monitor-reel i:nth-child(3) { --monitor-frames:url('/office-art/monitor-variety.webp'); }
-#office-crt:is(:hover,:focus-visible) + .monitor-reel { opacity:1; }
 #office .desk-files a:is(:hover,:focus-visible)::before { filter:var(--paper-tint,none) brightness(1.11) drop-shadow(4px 6px 3px #321509a8); }
 #office #open-notebook:hover { outline:0; filter:brightness(1.10) drop-shadow(.24rem .38rem .16rem #2a140e9e); }
 #office:has(#pull-tapes:is(:hover,:focus-visible)) .shelf-stock { filter:brightness(1.25); }
 @media (prefers-reduced-motion: no-preference) {
-  #office-crt:is(:hover,:focus-visible) + .monitor-reel i { animation:monitor-preview 1.28s step-end infinite; }
-  #office-crt:is(:hover,:focus-visible) + .monitor-reel i:nth-child(2) { animation-duration:1.55s; animation-delay:-.37s; }
-  #office-crt:is(:hover,:focus-visible) + .monitor-reel i:nth-child(3) { animation-duration:1s; animation-delay:-.63s; }
   #office .desk-files a:is(:hover,:focus-visible) { animation:file-shuffle .45s ease-out both; }
   #office #open-notebook:is(:hover,:focus-visible) { animation:note-lift .38s ease-out both; }
   #office:has(#pull-tapes:is(:hover,:focus-visible)) .shelf-stock { animation:tape-nudge .38s ease-out both; }
@@ -2187,7 +2183,7 @@ body[data-station-view="planning"] main > [data-desk="planning"] { top:min(var(-
 #office .desk-files [data-prop="ledger"] { --prop-left:2%; --prop-top:72%; --prop-width:13%; }
 #office .desk-files [data-prop="reviews"] { --prop-left:43%; --prop-top:49%; --prop-width:13%; }
 #office .office-phone { right:16%; top:50%; width:10%; }
-#office-crt { --travel-art:url('/console-art/bezel.png'); }
+#office-calendar { --travel-art:url('/office-art/dressing-calendar.webp'); }
 #pull-tapes { --travel-art:url('/console-art/cassette.png'); }
 .office-prop-in-flight {
   position:fixed; display:grid; place-items:center; z-index:12; pointer-events:none;
@@ -2412,7 +2408,6 @@ body[data-station-view="office"] .rail #reset { margin-left:0; }
 }
 .monitor-reel { animation:var(--screens-idle,none); }
 .monitor-reel i { animation:var(--screen-frames,none); }
-#office-crt:is(:hover,:focus-visible) + .monitor-reel { animation:none; }
 .studio-idle-camera {
   left:62.2%; top:21.79%; width:8.97%; height:16.58%;
   background:url('/office-art/camera-operator-left.webp') center / 100% 100% no-repeat;
@@ -2567,3 +2562,14 @@ body[data-station-view="office"] .rail #reset { margin-left:0; }
 }
 .news-edition-board > h4 { grid-column: 1 / -1; }
 .news-edition-board h5 { margin-top: 0; }
+
+@media (min-width:861px) {
+  #office #office-calendar {
+    left:78%; top:55%; width:22%; height:30%;
+  }
+}
+#office[data-shift="closed"] .office-room {
+  background-color:#adb8cc;
+  background-blend-mode:multiply;
+}
+#office[data-shift="closed"] .office-steam { visibility:hidden; }

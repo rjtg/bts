@@ -1,6 +1,6 @@
 import { element, node } from './dom';
 
-const sources = '#office-crt, #pull-tapes, #open-notebook, #office [data-prop]';
+const sources = '#office-calendar, #pull-tapes, #open-notebook, #office [data-prop]';
 
 export function initialiseOfficeMotion() {
   const office = element('office');
