@@ -2546,3 +2546,16 @@ body[data-station-view="office"] .rail #reset { margin-left:0; }
 @media (max-width:860px) {
   [data-quiet-pose] { display:none; }
 }
+
+.discussion-binder {
+  display: grid;
+  gap: .65rem;
+  padding: 1rem;
+  border: 1px solid #665139;
+  border-left: .55rem solid #80634b;
+  border-radius: .2rem .5rem .5rem .2rem;
+  background: #d8c2a2;
+  color: #2d261e;
+}
+.discussion-binder > h3, .discussion-binder > p { margin: 0; }
+.discussion-binder .production-card .muted { color: inherit; }

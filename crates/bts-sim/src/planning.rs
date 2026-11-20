@@ -1,6 +1,7 @@
 //! Bounded duration-aware planning. See docs/programme-planning.md for provisional cadence.
 //! No presentation, player observations, filesystem or wall clock.
 pub mod ad_market;
+pub mod discussion_run;
 pub mod film;
 pub mod production;
 pub mod research;
@@ -108,6 +109,7 @@ pub struct Planner {
     next_id: u32,
     revision: u64,
     production: production::ProductionState,
+    discussion_runs: BTreeMap<SeriesId, discussion_run::DiscussionRun>,
     films: BTreeMap<production::ProductionId, film::Film>,
     research: Option<research::Research>,
     rights: Option<rights::Market>,
@@ -154,6 +156,7 @@ impl Planner {
             next_id: 1,
             revision: 0,
             production: production::ProductionState::default(),
+            discussion_runs: BTreeMap::new(),
             films: BTreeMap::new(),
             research: None,
             rights: None,
@@ -357,10 +360,10 @@ impl Planner {
                 "Place the whole programme in unplayed time within the scenario schedule.",
             ));
         }
-        if self
-            .airings
-            .values()
-            .any(|a| a.station == station && Some(a.id) != except && start < a.end && end > a.start)
+        if self.overlaps_reserved_edition(station, start, end)
+            || self.airings.values().any(|a| {
+                a.station == station && Some(a.id) != except && start < a.end && end > a.start
+            })
         {
             return Err(error("overlap", "This broadcast overlaps another programme on your channel. Choose a gap or move the other airing."));
         }

@@ -93,11 +93,17 @@
           <label for="production-tone">Creative brief · <output id="tone-label">Calm</output></label><input id="production-tone" type="range" min="0" max="2" step="1" value="0"><div class="range-labels"><span>Calm</span><span>Conversational</span><span>Lively</span></div>
           <fieldset><legend>Production budget · includes fees</legend><div class="budget-presets"><label><input type="radio" name="production-budget" value="600">Shoestring<strong>600 Funds</strong></label><label><input type="radio" name="production-budget" value="1000" checked>Standard<strong>1,000 Funds</strong></label><label><input type="radio" name="production-budget" value="1800">Generous<strong>1,800 Funds</strong></label></div></fieldset>
           <div class="form-row"><label>Recording day<select id="production-day"></select></label><label>Recording time<select id="production-time"></select></label></div>
+          <details id="discussion-run-options"><summary>Make this a weekly show</summary>
+            <p class="small">Use this brief for three weekly editions. Book each edition when you are ready to commit.</p>
+            <div class="form-row"><label>Airtime on recording day<input type="time" id="discussion-air-time" value="18:00" required></label>
+              <label>Ad minutes per edition<input type="number" id="discussion-ad-minutes" min="0" max="30" step="1" value="10" required></label></div>
+            <button type="button" id="create-discussion-run">Open a three-edition binder</button>
+          </details>
           <div id="cast-concerns" class="cast-concerns"></div>
           <p class="muted small">Drafts are free. Booking commits the whole budget and the recording time. Team support can ease working friction, but cannot supply missing skills.</p>
           <div class="form-row"><button id="create-production" type="submit">Review concept</button><button id="production-new" type="button" class="quiet">Start new draft</button></div>
         </form>
-        <div><section id="sway-panel" class="sway-panel" aria-label="Pooled Sway and production requests"></section><div id="production-projects" class="production-projects"></div></div>
+        <div><section id="sway-panel" class="sway-panel" aria-label="Pooled Sway and production requests"></section><div id="discussion-run-binders" class="production-projects"></div><div id="production-projects" class="production-projects"></div></div>
       </div>
     </section>
     <section hidden data-desk="film-desk" id="film-desk" class="panel lower-panel project-desk" data-file="preparation"><h2>Preparation</h2><div id="prep-mount"><div id="film-work"><div id="film-notices" aria-live="polite"></div><div id="film-pitch"></div><div id="film-projects" class="production-projects"></div></div></div></section>

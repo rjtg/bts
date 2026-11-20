@@ -102,6 +102,15 @@ pub enum Command {
     AcceptRequest {
         request_id: u16,
     },
+    CreateDiscussionRun {
+        brief: ProductionConceptInput,
+        first_air_minute: u32,
+        ad_minutes: u8,
+    },
+    BookDiscussionEdition {
+        production_id: u32,
+        studio: u16,
+    },
     CreateProduction {
         concept: ProductionConceptInput,
     },
@@ -382,11 +391,28 @@ pub struct ProductionView {
     pub post_ticks: u32,
     pub people: Vec<PersonInfo>,
     pub projects: Vec<ProductionInfo>,
+    pub discussion_runs: Vec<DiscussionRunInfo>,
     pub requests: Vec<RequestInfo>,
     pub sway_balance: u32,
     pub participation_cost: u32,
     pub known_concerns: Vec<KnownConcern>,
     pub sway_history: Vec<SwayHistoryInfo>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct DiscussionRunInfo {
+    pub series: u16,
+    pub title: String,
+    pub host: u16,
+    pub editions: Vec<DiscussionEditionInfo>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct DiscussionEditionInfo {
+    pub production_id: u32,
+    pub planned_air_minute: u32,
+    pub reserved_end_minute: Option<u32>,
+    pub ad_minutes: u8,
+    pub airing_id: Option<u32>,
+    pub missed: bool,
 }
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct PersonInfo {

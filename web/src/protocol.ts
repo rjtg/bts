@@ -21,6 +21,8 @@ export type Command =
   | { type: 'set_polling'; polling: Polling }
   | { type: 'spend_insight'; audience: number; amount: number }
   | { type: 'accept_request'; request_id: number }
+  | { type: 'create_discussion_run'; brief: ProductionConcept; first_air_minute: number; ad_minutes: number }
+  | { type: 'book_discussion_edition'; production_id: number; studio: number }
   | { type: 'create_production'; concept: ProductionConcept }
   | { type: 'revise_production'; production_id: number; concept: ProductionConcept }
   | { type: 'discard_production'; production_id: number }
@@ -109,6 +111,7 @@ export interface ProductionView {
   format: string; duration_minutes: number; recording_ticks: number; post_ticks: number;
   people: { id: number; name: string; role: 'host' | 'guest' | 'actor' | 'director' | 'writer' | 'anchor' | 'reporter'; fee: string; description: string; normal_until_tick: number; negotiable_from_tick: number | null; station_id:number|null; commitments: { production_id: number; title: string; start_tick: number; end_tick: number }[] }[];
   projects: ProductionInfo[];
+  discussion_runs: { series: number; title: string; host: number; editions: DiscussionEdition[] }[];
   requests: { id: number; proposer: number; reward: number; achievement: 'recording_completed' | 'production_completed'; statement: string; time_limit_ticks: number; status: 'available' | 'open' | 'completed' | 'expired'; acceptance: { production_id: number | null; accepted_at: number; deadline_tick: number; fulfilled_at: number | null } | null }[];
   sway_balance: number; participation_cost: number; known_concerns: { people: [number, number]; note: string }[];
   sway_history: { tick: number; production_id: number; change: number; balance: number; kind: string; request_id: number | null; person_id: number | null }[];
@@ -165,3 +168,12 @@ export type WeeklyReview = {
     start_minute: number | null; end_minute: number | null; runtime_minutes: number;
     conflicts: number[]; issue: string | null; protected: boolean }[];
 };
+
+export interface DiscussionEdition {
+  production_id: number;
+  planned_air_minute: number;
+  reserved_end_minute: number | null;
+  ad_minutes: number;
+  airing_id: number | null;
+  missed: boolean;
+}

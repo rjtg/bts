@@ -455,6 +455,21 @@ function renderTimeline(): void {
         cell.addEventListener('click', () => pickGap(Math.max(report.now_minute, minute)));
         lane.append(cell);
       }
+      for (const run of report.production.discussion_runs) {
+        for (const edition of run.editions) {
+          const start = edition.planned_air_minute;
+          const end = edition.reserved_end_minute;
+          if (end === null || end <= dayStart || start >= dayStart + DAY_MINUTES) continue;
+          const block = node('button', `${run.title} · In production`, 'airing-block booked');
+          Object.assign(block.style, position(start, end));
+          block.title = `${run.title} · ${airStamp(start)} · Airtime held for production`;
+          block.addEventListener('click', () => {
+            desks.navigate('production');
+            productionUi?.showProject(edition.production_id);
+          });
+          lane.append(block);
+        }
+      }
       for (const gap of report.gaps.filter(g => g.start_minute < dayStart + DAY_MINUTES && g.end_minute > dayStart)) {
         const marker = node('span', 'OFF AIR / GAP', 'gap-label');
         Object.assign(marker.style, position(gap.start_minute, gap.end_minute));
@@ -914,7 +929,7 @@ async function start(): Promise<void> {
       renderCatalogue(); element('library-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
       document.querySelector<HTMLElement>(`[data-programme="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
-    productionUi = initialiseProduction({ report: () => report, send, stamp, money, showProgramme });
+    productionUi = initialiseProduction({ report: () => report, send, stamp, money, showProgramme, showAiring: id => chooseAiring(id, true) });
     filmUi = initialiseFilmDesk({ send, stamp, money, showProgramme,
       openProject: film => {
         desks.navigate(preparing(film) ? 'film-desk' : 'film-production');

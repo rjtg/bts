@@ -5,7 +5,7 @@ pub mod scenario;
 
 use bts_sim::economy::{Account, AudienceCommitment, Contract, ContractStatus, LedgerReason};
 use bts_sim::planning::production::{
-    Concept, PersonId, ProductionId, RequestId, SwayReason, PARTICIPATION_COST,
+    Concept, PersonId, ProductionId, RequestId, StudioId, SwayReason, PARTICIPATION_COST,
 };
 use bts_sim::planning::{AiringId, PlanError, Planner, PlanningOffer};
 use bts_sim::{AirMinute, BrandId, ProgrammeId, SimTick};
@@ -358,6 +358,27 @@ impl Session {
                 .planner
                 .accept_request(RequestId(request_id))
                 .map_err(player_error)?,
+            Command::CreateDiscussionRun {
+                brief,
+                first_air_minute,
+                ad_minutes,
+            } => {
+                self.planner
+                    .create_discussion_run(
+                        concept_input(brief)?,
+                        AirMinute(first_air_minute),
+                        ad_minutes,
+                    )
+                    .map_err(player_error)?;
+            }
+            Command::BookDiscussionEdition {
+                production_id,
+                studio,
+            } => {
+                self.planner
+                    .book_discussion_edition(ProductionId(production_id), StudioId(studio))
+                    .map_err(player_error)?;
+            }
             Command::CreateProduction { concept } => {
                 self.planner
                     .create_production(concept_input(concept)?)
@@ -596,6 +617,30 @@ impl Session {
     fn production_view(&self) -> ProductionView {
         let state = self.planner.production();
         ProductionView {
+            discussion_runs: self
+                .planner
+                .discussion_runs()
+                .map(|run| DiscussionRunInfo {
+                    series: run.series.0,
+                    title: run.brief.title.clone(),
+                    host: run.brief.host.0,
+                    editions: run
+                        .editions
+                        .iter()
+                        .map(|edition| DiscussionEditionInfo {
+                            production_id: edition.production.0,
+                            planned_air_minute: edition.air_at.0,
+                            reserved_end_minute: edition.reserved_end().map(|end| end.0),
+                            ad_minutes: edition.ad_minutes,
+                            airing_id: edition
+                                .airing
+                                .filter(|id| self.planner.airing(*id).is_ok())
+                                .map(|id| id.0),
+                            missed: self.planner.discussion_edition_missed(edition),
+                        })
+                        .collect(),
+                })
+                .collect(),
             format: "standalone_interview_discussion",
             duration_minutes: 45,
             recording_ticks: 4,
@@ -830,9 +875,21 @@ impl Session {
         let mut gaps = vec![];
         let mut cursor = 0;
         let boundary = self.planner.end().0 * 15;
-        for (start, end) in player
+        let mut occupied: Vec<_> = player
             .iter()
             .map(|a| (a.start_minute, a.end_minute))
+            .chain(
+                self.planner
+                    .discussion_runs()
+                    .flat_map(|run| &run.editions)
+                    .filter_map(|edition| {
+                        edition.reserved_end().map(|end| (edition.air_at.0, end.0))
+                    }),
+            )
+            .collect();
+        occupied.sort_unstable();
+        for (start, end) in occupied
+            .into_iter()
             .chain(std::iter::once((boundary, boundary)))
         {
             if start > cursor {

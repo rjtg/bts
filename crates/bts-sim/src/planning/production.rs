@@ -558,7 +558,17 @@ impl Planner {
                 "Booked productions cannot be revised or cancelled in this experiment.",
             ));
         }
-        let (concept, fees, recording_end, ready_at) = self.validate_concept(concept)?;
+        let (mut concept, fees, recording_end, ready_at) = self.validate_concept(concept)?;
+        if let Some((_, _, edition)) = self.discussion_edition(id) {
+            let current = self.production.project(id)?;
+            if current.concept.record_at != concept.record_at
+                || current.concept.host != concept.host
+                || self.discussion_edition_missed(edition)
+            {
+                return Err(error("edition_locked", "Keep the run’s standing host and recording time. Missed editions cannot be changed."));
+            }
+            concept.title.clone_from(&current.concept.title);
+        }
         self.bump()?;
         let p = self.production.projects.get_mut(&id).unwrap();
         p.concept = concept;
@@ -574,6 +584,12 @@ impl Planner {
                 "Only unbooked drafts can be discarded.",
             ));
         }
+        if self.discussion_edition(id).is_some() {
+            return Err(error(
+                "edition_locked",
+                "Leave the edition unbooked to skip it.",
+            ));
+        }
         self.bump()?;
         self.production.projects.remove(&id);
         Ok(())
@@ -583,6 +599,15 @@ impl Planner {
         id: ProductionId,
         exceptional_person: Option<PersonId>,
         cooperation_sway: u32,
+    ) -> Result<(), PlanError> {
+        self.book_discussion(id, exceptional_person, cooperation_sway, None)
+    }
+    pub(super) fn book_discussion(
+        &mut self,
+        id: ProductionId,
+        exceptional_person: Option<PersonId>,
+        cooperation_sway: u32,
+        requested_studio: Option<StudioId>,
     ) -> Result<(), PlanError> {
         let p = self.production.project(id)?.clone();
         if p.phase != Phase::Draft {
@@ -639,14 +664,19 @@ impl Planner {
                 return Err(error("talent_conflict","A selected participant is already reserved for another recording at that time."));
             }
         }
+        let edition = self.discussion_edition(id);
+        if let Some((_, _, edition)) = edition {
+            self.validate_edition_reservation(edition)?;
+        }
         let studio = (1..=self.studio_count(self.player))
             .map(StudioId)
             .find(|number| {
-                !self.production.projects.values().any(|other| {
-                    other.studio == Some(*number)
-                        && p.concept.record_at < other.recording_end
-                        && p.recording_end > other.concept.record_at
-                })
+                requested_studio.is_none_or(|selected| selected == *number)
+                    && !self.production.projects.values().any(|other| {
+                        other.studio == Some(*number)
+                            && p.concept.record_at < other.recording_end
+                            && p.recording_end > other.concept.record_at
+                    })
             })
             .ok_or_else(|| {
                 error(
@@ -681,7 +711,7 @@ impl Planner {
         let following = next_programme
             .checked_add(1)
             .ok_or_else(|| error("capacity", "Programme identifiers exhausted."))?;
-        let (output, outcome) =
+        let (mut output, outcome) =
             self.make_discussion(&p, ProgrammeId(next_programme), cooperation_sway);
         let mut candidate = self.clone();
         candidate
@@ -692,6 +722,13 @@ impl Planner {
             .map_err(engine_error)?;
         candidate.bump()?;
         candidate.production.next_programme = following;
+        if let Some((series, index, _)) = edition {
+            output.kind = ProgrammeKind::Episode {
+                series,
+                sequence: index as u32 + 1,
+            };
+            candidate.discussion_runs.get_mut(&series).unwrap().editions[index].reserved = true;
+        }
         let booked = candidate.production.projects.get_mut(&id).unwrap();
         booked.phase = Phase::Booked;
         booked.programme = Some(output.id);
@@ -801,7 +838,7 @@ impl Planner {
                 cast_appeal: cast,
                 execution: execution.clamp(0.0, 1.0),
                 broadcast_cost: Money(50),
-                duration_minutes: 45,
+                duration_minutes: super::discussion_run::DISCUSSION_MINUTES,
             },
             outcome,
         )
@@ -858,6 +895,7 @@ impl Planner {
                     .insert((audience.id, output.id), 0.0);
             }
             self.production.projects.get_mut(&id).unwrap().phase = Phase::Completed;
+            self.release_discussion_edition(id, output.id)?;
         }
         self.fulfil_requests(at, true)?;
         Ok(())
