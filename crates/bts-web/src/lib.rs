@@ -866,6 +866,10 @@ impl Session {
                 ad_minutes: a.ad_minutes,
                 sold_minutes: self.planner.sold_minutes(a.id),
                 weekly_id: a.weekly.map(|id| id.0),
+                lead_in_airing_id: (a.station == PLAYER)
+                    .then(|| self.planner.potential_lead_in(a))
+                    .flatten()
+                    .map(|previous| previous.id.0),
                 prior_slot_airing: a.station == PLAYER && self.planner.has_prior_slot_airing(a),
                 autosell_eligible: self.planner.autosell_eligible(a),
                 autosell: self.planner.autosell_policy(a).map(|policy| AutosellView {

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { pickTime, setAdLoad } from './planner-helpers';
 
-test('place a 45-minute tape with 9 ad minutes and place the next tape at 18:54', async ({ page }) => {
+test('place a 45-minute tape with 9 ad minutes and place the next tape at 18:54', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1320, height: 940 });
   await page.goto('/#planning');
   await expect(page.locator('#status')).toContainText('WASM READY');
@@ -28,6 +28,8 @@ test('place a 45-minute tape with 9 ad minutes and place the next tape at 18:54'
   await expect(page.locator('#place')).toHaveText('Place at 18:54');
   await page.locator('#place').press('Enter');
   await expect(page.locator('[data-station="1"] [data-start-minute="1134"]')).toHaveCount(1);
+  await expect(page.locator('#planner-airing-mount')).toContainText('Possible lead-in · Workshop Science');
+  await page.locator('#planner-airing-mount').screenshot({ path: testInfo.outputPath('lead-in.png') });
   await first.click();
   await page.locator('#advance-selected').click();
   await expect(page.locator('#clock')).toContainText('18:54');

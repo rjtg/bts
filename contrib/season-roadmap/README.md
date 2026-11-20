@@ -24,9 +24,9 @@ Open port 4173 on the preview host. The existing network address is
 
 ## Progress checkpoint
 
-- Active slice: lead-in carryover.
-- Verified milestones: `7313d17`, `c6b68e4`, `bf42a8f`, and Learn audience habits for recurring slots.
-- Next: implement bounded lead-in cohorts and controlled gap and mismatch tests.
+- Active slice: recurring newsroom.
+- Verified milestones: `7313d17`, `c6b68e4`, `bf42a8f`, `ed2f906` and Model bounded lead-ins between programmes.
+- Next: implement the clock-driven five-edition newsroom and same-day freshness.
 - Runtime token refresh schedule: unavailable.
 
 ## 1. Recurring discussion editions
@@ -126,3 +126,24 @@ one possible habit, and forecasts still use published research instead.
 [Chromium capture of the returning slot](returning-slot.png). Workspace
 tests and doctests, strict Clippy and rustdoc, formatting, the Wasm/browser
 build, native/Wasm parity and all 43 Chromium tests passed.
+
+## 4b. Lead-in carryover
+
+Find this slice with `git log --oneline --grep='Model bounded lead-ins between programmes'`.
+The [lead-in rules](../../docs/weekly-scheduling.md#audience-carryover-between-airings)
+explain the handoff, the ad-time discount and the allocation cap.
+
+Place Workshop Science at 18:00 with nine ad minutes and Neighbourhood
+Laughs immediately after it at 18:54. Open the second Airing file to see the
+link to its possible lead-in. Leave at least 15 minutes between content end
+and the successor to remove the note.
+
+In the isolated native fixture the opening group carries forward about
+1,039 viewers for an immediate successor with the same appeal, 254 for
+a mismatched profile, and zero with a 15-minute gap. The retained viewers
+are included in the station's allocation. The result is a simulation
+estimate based on the predecessor's opening audience.
+
+[Chromium capture of the potential lead-in](lead-in.png). Workspace tests
+and doctests, strict Clippy and rustdoc, formatting, Wasm/browser build,
+native/Wasm parity and all 43 Chromium tests passed.

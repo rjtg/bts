@@ -5,6 +5,7 @@ pub mod autosell;
 pub mod brand_review;
 pub mod discussion_run;
 pub mod film;
+mod lead_ins;
 pub mod production;
 pub mod research;
 pub mod rights;
@@ -737,6 +738,7 @@ impl Planner {
                 start.availability_index(),
                 &self.minute_campaigns(start, action.at),
                 &self.slot_habit_modifiers(start),
+                &self.lead_in_cohorts(start),
             )
             .map_err(engine_error)?;
         event.financial = economy::apply_slot(&self.engine.world, &mut next.economy, &event)

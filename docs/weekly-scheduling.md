@@ -97,22 +97,27 @@ In a controlled fixture with constant all-day availability, the stable
 second airing draws about 3,864 young viewers versus 3,812 one quarter
 later. The comparison does not calibrate actual viewing behaviour.
 
-## Audience carryover between airings (proposal)
+## Audience carryover between airings
 
-Some viewers already tuned to a station may give its next programme a chance.
-At the handoff, use the prior viewing estimate by group to give staying a
-bounded advantage alongside the choice to switch or stop watching. This should
-be strongest for a short handoff and groups that also find the next programme
-appealing. An off-air gap should weaken it. Extra advertising time should never
-create more carryover just because a block is longer.
+A successor can retain part of the opening audience sampled for its most
+recent funded predecessor on the same station. The handoff is measured
+from the end of the predecessor's content, so preceding ad minutes count
+as part of the gap. At 15 minutes carryover is zero. Below 15 minutes it
+decays linearly. Idents and failed broadcasts supply no cohort.
 
-Combine carryover with new arrivals in one allocation. Cap returning viewers by
-the previous cohort, current availability and resulting allocation. Reallocate
-within each group across stations and not watching so the same viewer is counted
-once. Use a consistent snapshot for simultaneous starts. The start-snapshot
-model can show who gives the next show a chance. Estimating mid-show departures
-requires a later viewing cadence. How to estimate the outgoing cohort, combine
-it with slot habit and decay it across gaps remains open.
+At the opening interval, first scale the predecessor cohort by gap decay
+and cap it at current availability. The station claims 35% of that amount
+multiplied by the new programme's squared attraction for the group. If simultaneous claims exceed
+group availability, scale all claims by the same fraction. Divide the
+remaining audience among channels and the outside option using ordinary
+programme utilities, including slot habits where applicable. The retained
+cohort is part of the successor's allocation.
+
+Airing and Reception files name the recent or possible lead-in based on
+schedule evidence. The player does not see internal cohort sizes.
+The first-playable model uses the predecessor's opening viewers as a
+proxy for end-of-show viewers and does not model individual switching.
+Ordinary quote forecasts omit actual lead-in cohorts.
 
 ## Suggested validation
 

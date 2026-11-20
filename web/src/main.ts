@@ -548,6 +548,12 @@ function resultPanel(result: BroadcastResult): HTMLElement {
     ])));
   }
   const scheduled = report.schedule.find(airing => airing.airing_id === result.airing_id);
+  const leadIn = airingFor(scheduled?.lead_in_airing_id ?? null);
+  if (leadIn) {
+    const note = node('p', 'Recent lead-in · ', 'small');
+    note.append(airingLink(leadIn.airing_id, leadIn.programme_name, 'results'));
+    panel.append(note);
+  }
   if (scheduled?.prior_slot_airing) panel.append(node('p', 'This run has aired in this slot before.', 'small'));
   const film = report.film_desk.projects.find(project => project.programme === scheduled?.programme);
   const discussion = report.production.projects.find(project => project.programme === scheduled?.programme);
@@ -600,6 +606,12 @@ function displayAiringFile(airing: Airing, result: BroadcastResult | undefined) 
     node('h3', result ? 'Pre-air outlook' : 'Audience outlook'),
     node('p', `About ${Math.round(estimate.viewers / 100) * 100} potential viewers · survey ${weekdayStamp(estimate.surveyed)}`),
     node('p', 'Survey screening estimate. Competition and repeat viewing can change turnout.', 'paper-footnote'));
+  const leadIn = airingFor(airing.lead_in_airing_id);
+  if (leadIn && !result) {
+    const note = node('p', 'Possible lead-in · ', 'paper-footnote');
+    note.append(airingLink(leadIn.airing_id, leadIn.programme_name));
+    forecast.append(note);
+  }
   if (result) {
     restoreAdPaper();
     sheet.replaceChildren(forecast, resultPanel(result));

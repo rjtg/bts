@@ -420,6 +420,7 @@ pub struct Viewing {
     pub satisfaction: ModelEvaluation,
     pub utility: f64,
     pub viewers: f64,
+    pub carried_viewers: f64,
     pub loyalty_before: Option<f64>,
     pub loyalty_after: Option<f64>,
 }
@@ -559,6 +560,7 @@ impl<T: Clock> Engine<T> {
             period,
             &BTreeMap::new(),
             &BTreeMap::new(),
+            &BTreeMap::new(),
         )
     }
 
@@ -569,6 +571,7 @@ impl<T: Clock> Engine<T> {
         period: usize,
         campaigns: &BTreeMap<(StationId, BrandId), u8>,
         slot_modifiers: &BTreeMap<(StationId, AudienceId), f64>,
+        lead_in_cohorts: &BTreeMap<(StationId, AudienceId), f64>,
     ) -> Result<(State<T>, SlotEvent<T>), Error> {
         if action.at <= self.state.now {
             return Err(Error::Invalid("slot time must strictly increase".into()));
@@ -686,6 +689,13 @@ impl<T: Clock> Engine<T> {
                         .copied()
                         .unwrap_or(1.0);
                 bounded(utility, 0.0, 3.0, "programme selection utility")?;
+                let carried_viewers = lead_in_cohorts
+                    .get(&(station.id, audience.id))
+                    .copied()
+                    .unwrap_or(0.0)
+                    .min(available)
+                    * 0.35
+                    * attraction.trace.output.powi(2);
                 viewing.push(Viewing {
                     station: station.id,
                     programme: programme.id,
@@ -698,6 +708,7 @@ impl<T: Clock> Engine<T> {
                     satisfaction,
                     utility,
                     viewers: 0.0,
+                    carried_viewers,
                     loyalty_before,
                     loyalty_after: loyalty_before,
                 });
@@ -707,8 +718,16 @@ impl<T: Clock> Engine<T> {
                     .preference(audience.id, action.at, period, starts.is_some());
             let denominator = self.parameters.outside_utility * (1.5 - time_preference)
                 + viewing.iter().map(|v| v.utility).sum::<f64>();
+            let claimed = viewing.iter().map(|v| v.carried_viewers).sum::<f64>();
+            let scale = if claimed > available {
+                available / claimed
+            } else {
+                1.0
+            };
+            let remaining = available - claimed.min(available);
             for v in &mut viewing {
-                v.viewers = available * (v.utility / denominator);
+                v.carried_viewers *= scale;
+                v.viewers = v.carried_viewers + remaining * (v.utility / denominator);
                 v.fresh_viewers = v.viewers * (1.0 - v.history.familiarity);
             }
             let watched = viewing.iter().map(|v| v.viewers).sum::<f64>();

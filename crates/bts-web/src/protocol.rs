@@ -270,6 +270,7 @@ pub struct ScheduleEntry {
     pub weekly_id: Option<u32>,
     pub autosell_eligible: bool,
     pub prior_slot_airing: bool,
+    pub lead_in_airing_id: Option<u32>,
     pub autosell: Option<AutosellView>,
     pub booked: bool,
     pub status: &'static str,

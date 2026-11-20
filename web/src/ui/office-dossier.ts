@@ -45,6 +45,10 @@ export function officePapers(tape: Programme, report: Report, history: Broadcast
   } else previous.append(node('p', 'We haven’t aired this tape yet.', 'handwritten'));
 
   const expected = sheet('Before it airs');
+  const withLeadIn = report.schedule.find(airing => airing.programme === tape.id
+    && airing.status === 'planned' && airing.lead_in_airing_id !== null);
+  const leadIn = report.schedule.find(airing => airing.airing_id === withLeadIn?.lead_in_airing_id);
+  if (leadIn) expected.append(node('p', `Possible lead-in · ${leadIn.programme_name}`, 'small'));
   if (regular) expected.append(node('p', 'One planned airing returns to a slot this run has used before.', 'small'));
   const forecast = node('div');
   const time = node('input'); time.type = 'time'; time.step = '60';
