@@ -1,8 +1,8 @@
 # Weekly scheduling and audience flow
 
 The browser calendar covers six weeks and supports recurring placement,
-weekday-aware viewing preferences and optional autosell. Viewing continues to
-sample at the start of an airing. The 15-minute clock, exact accounting,
+weekday-aware viewing preferences and optional autosell. Airing recaps sample at programme start. Purchased exposure uses minute
+segments with quarter-hour inputs. The 15-minute clock, exact accounting,
 airing identity and player-information boundary still apply.
 
 ## Recurring slots
@@ -54,7 +54,7 @@ successfully aired items: broadcast in four different weeks, air three
 recurring programmes, and earn paid ad-minute sales on three distinct
 airings. These goals are progress markers and carry no reward or automatic
 season-ending condition. The initial fixture's programming and finances
-extend under the same rules. Persistence is planned for a later slice.
+extend under the same rules. The season supports [versioned local saves](station-saves.md).
 
 ## Preferred viewing times and habit
 

@@ -1,6 +1,7 @@
 import type { Command, Report, WeeklyPlan } from './protocol';
 import { DAY_MINUTES, displayTime, parseTime } from './ui/airtime';
 import { action, element, node, option } from './ui/dom';
+import { bindDateClock } from './ui/date-clock';
 
 export const WEEKDAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const reasons: Record<string, string> = {
@@ -16,6 +17,7 @@ export function initialiseWeeklyPlanner(ui: {
   for (const [i, name] of WEEKDAYS.entries()) weekday.append(option(i, name));
   weekday.value = '5';
   time.type = 'time'; time.required = true; time.value = '18:00';
+  bindDateClock({ label: 'Regular slot', day: weekday, time, repeats: true });
   for (let i = 1; i <= 3; i++) count.append(option(i, String(i)));
   count.value = '3';
   ads.type = 'number'; ads.min = '0'; ads.max = '30'; ads.step = '1'; ads.value = '10'; ads.required = true;
@@ -96,6 +98,7 @@ export function initialiseWeeklyPlanner(ui: {
           for (let d = 0; d < Math.ceil(report.end_tick / 96); d++) day.append(option(d, ui.dayLabel(d)));
           day.value = String(Math.floor(start / DAY_MINUTES));
           hour.value = displayTime(start);
+          bindDateClock({ label: 'Move this occurrence', day, time: hour, firstWeekday: () => report.first_weekday });
           move.append(node('summary', 'Move this occurrence'), label('New date', day), label('New time', hour),
             action('Update preview', () => {
               if (hour.value) exception(row.occurrence, Number(day.value) * DAY_MINUTES + parseTime(hour.value));

@@ -1,6 +1,10 @@
 # UI concept mockups
 
-The [Control Desk redesign](control-desk/README.md) is the later connected design package. The three concepts below are earlier references.
+Start with the [perspective desk](../../web/public/mockups/perspective-desk.png),
+[tape shelf](../../web/public/mockups/tape-shelf.png), [office radials](office-radials/README.md)
+and [booking desk](booking-desk/README.md) for the current office direction.
+The [Control Desk redesign](control-desk/README.md) and the three concepts below
+record earlier explorations. See [Screens](../screens.md) for current routes.
 
 Three generated visual concepts for Behind the Screens, added November 2026.
 These are design references, not screenshots of the implemented browser harness.

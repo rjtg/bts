@@ -1,11 +1,11 @@
 # Original film experiment
 
 The browser Film desk supports multiple standalone pitches. Each follows
-pitch → script commission → script review → optional focused revision →
+idea development → script commission → script review → optional focused revision →
 acceptance → cast and room booking → recording → edit → station library.
-The same planner and advertising contracts serve films and discussion shows.
+The same planner and ad-minute market serve films and discussion shows.
 
-The seven-day scenario starts with 20,000 credits. The film roster has two
+The browser season starts with 20,000 Funds. The film roster has two
 writers, two directors and three actors. Scripts use two named role slots,
 The Lead and The Confidant. Freelancers are distinct from the discussion roster.
 Film rooms are two fixed rentals, separate from the station's discussion room.
@@ -13,7 +13,7 @@ Each rental is exclusive during a booked interval. Talent and rooms can be
 reused at the end boundary. The film roster is authored, with fixed availability
 and no employment contracts. Rates, roles and durations are provisional.
 
-## Time and credits
+## Time and Funds
 
 One tick is 15 minutes. Writing starts when commissioned and takes 48 ticks.
 One revision can target a noted weakness and takes 32 ticks. The fee is half
@@ -23,8 +23,31 @@ reserves the full talent and room price, then spends the reserve at the
 recording boundary. Shared production accounts and project IDs preserve exact
 money and prevent simultaneous reservations on one escrow. Rejected commands
 preserve the planner and all balances. A completed film runs for 90 minutes
-and costs 120 credits each time it airs. Airing revenue is settled by the
-existing audience delivery contract.
+and costs 120 Funds each time it airs. Minute sales settle on airing the inventory.
+The legacy audience delivery contract retains its separate rules.
+
+### Idea development
+
+Use Preparation → Ideas to start a standalone film. The title and short description
+travel with the project. The description is a player note for now, and the
+prototype uses the existing Everyday Life subject for new film ideas.
+Automated judgement of the text and its fit with the ambition is future work.
+
+Five stars map to targets 0, 0.25, 0.5, 0.75 and 1 in ascending order. For
+playfulness, demand is twice the distance from neutral. Other features use
+their target as demand. Pressure is the mean of the peak demand and the
+seven-feature average demand, bounded to 0–1. Steady development takes
+`4 + round(12 × pressure)` ticks. Rush takes half that duration and Take your
+time takes one and a half times it, rounded up to whole ticks. The date is
+fixed at creation. Ideas commit no Funds and reserve no talent. At the due
+tick the idea can enter writing, including when the clock advances several
+ticks in one command.
+
+Pace changes the first draft's effective complexity by +0.12 for Rush, 0
+for Steady and −0.12 for Take your time. This modifier stays internal.
+The player sees the development pace, the due date and the delivered script.
+Earlier instant-pitch commands still replay existing saves and scripted
+series continue to use their existing writing flow.
 
 ## Creative model
 
@@ -32,7 +55,7 @@ Each fiction feature has an intended level and a baseline (0.5 for
 playfulness, 0 elsewhere). Complexity is the intended level, or twice the
 distance from neutral for playfulness. Writing capacity is 30% craft, 60%
 feature capability and 10% subject fit. The achieved deviation from baseline
-is the intended deviation multiplied by `1 − 0.8 × max(0, complexity − capacity)`.
+is the intended deviation multiplied by `1 − 0.8 × max(0, complexity + pace modifier − capacity)`.
 A gap of at least 0.075 is flagged in script review. Revision closes
 `0.25 + 0.40 × writer capability` of the selected feature gap.
 Equipment demand is `0.2 + 0.75 × scripted spectacle`.

@@ -5,7 +5,7 @@ import { initialisePlannerDrag } from './planner-drag';
 import { renderAdMarket, salesFor, minuteRevenue } from './ad-market';
 import { initialiseRightsMarket } from './rights-market';
 import { renderAudience } from './audience';
-import { initialiseFilmDesk, preparing } from './film';
+import { initialiseFilmDesk } from './film';
 import { initialiseHiring } from './hiring';
 import { initialiseNewsroom } from './newsroom';
 import { initialiseProduction } from './production';
@@ -16,6 +16,9 @@ import { assistantNote, surveyEvidence } from './ui/programme-assistant';
 import { adMinutes, airStamp, bestOpening, DAY_MINUTES, displayTime, opening, parseTime, turnout } from './ui/airtime';
 import { openRadial, type RadialPage } from './ui/radial-menu';
 import { placementSlip } from './ui/placement-slip';
+import { bindDateClock } from './ui/date-clock';
+import { productionCan, type ProjectDesk } from './ui/production-can';
+import { initialiseStudioBook } from './ui/studio-book';
 import { initialiseTapeShelf } from './ui/tape-shelf';
 import { initialiseDesks } from './ui/desks';
 import { initialiseCalendar } from './ui/planning-calendar';
@@ -39,6 +42,7 @@ let rightsUi: ReturnType<typeof initialiseRightsMarket> | undefined;
 let filmUi: ReturnType<typeof initialiseFilmDesk> | undefined;
 let hiringUi: ReturnType<typeof initialiseHiring> | undefined;
 let newsroomUi: ReturnType<typeof initialiseNewsroom> | undefined;
+let studioBook: ReturnType<typeof initialiseStudioBook>;
 let productionUi: ReturnType<typeof initialiseProduction> | undefined;
 let selected: number | null = null;
 let libraryProgramme = 1;
@@ -117,7 +121,7 @@ function syncOfficeFile() {
   const occupied = activeDesk === 'office' && (open || officeTrayOpen);
   for (const id of ['office-job-links', 'open-notebook', 'office-calendar']) element(id).inert = occupied;
   element('pull-tapes').setAttribute('aria-expanded', String(officeTrayOpen));
-  element('put-tapes-away').hidden = !officeTrayOpen;
+  element('put-tapes-away').hidden = !officeTrayOpen || open;
   element('office-workspace').hidden = activeDesk === 'office' && !open && !officeTrayOpen;
 }
 const minutesFor = (tape: Programme) => placementOverride ?? adMinutes(tape, report.ad_load_percent);
@@ -325,7 +329,11 @@ function renderCatalogue(): void {
         pickedGap = target;
         plannerAnchor = target % DAY_MINUTES;
       }
-      renderCatalogue(); cardFor(p.id)?.focus(); previewSlot();
+      renderCatalogue();
+      if (activeDesk === 'office' && target === null) {
+        element('paper-on-desk').querySelector<HTMLButtonElement>('[aria-pressed="true"]')?.focus({ preventScroll: true });
+      } else cardFor(p.id)?.focus();
+      previewSlot();
       if (target !== null) reviewPlacement(p, target);
     });
     if (!p.series_name || !multiple.has(p.series_name)) { list.append(card); continue; }
@@ -406,7 +414,8 @@ function placeTape(start: number) {
 function reviewPlacement(work: Programme, start: number) {
   const origin = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   placementSlip(work, start, minutesFor(work), {
-    stamp: exactStamp, dateLabel: dayLabel, firstDay: Math.floor(report.now_minute / DAY_MINUTES), lastDay: lastDay(),
+    stamp: exactStamp, dateLabel: dayLabel, firstDay: Math.floor(report.now_minute / DAY_MINUTES),
+    firstWeekday: report.first_weekday, lastDay: lastDay(),
     inspect: (minute, minutes) => freeMinutes(minute) >= minutes && minute >= report.now_minute ? null
       : plannerDrag?.inspect({ programme: work.id, airing: null, minutes }, minute).issue
         || 'The programme and ads do not fit in the available airtime.',
@@ -478,7 +487,7 @@ function browseTapes(trigger: HTMLElement, gap: number | null = null) {
       { label: 'News', icon: 'news', next: () => show('News') },
       { label: 'Magazines', icon: 'magazine', next: () => show('Magazine') },
     ]}},
-  ]}, { label: 'Browse all tapes', run: () => show('') });
+  ]}, { label: 'Browse all tapes', caption: 'All tapes', icon: 'tape', run: () => show('') });
 }
 
 function pickGap(start: number, suggest = false) {
@@ -588,7 +597,7 @@ function renderTimeline(): void {
       if (report.newsroom) {
         for (const [index, edition] of report.newsroom.editions.entries()) {
           reserveBlock(report.newsroom.title, edition.air_minute, edition.reserved_end_minute, () => {
-            element<HTMLDetailsElement>('newsroom-board').open = true;
+            studioBook.show('newsroom');
             element(`news-edition-${index + 1}`).scrollIntoView({ block: 'center' });
           });
         }
@@ -768,7 +777,8 @@ function renderDetails(): void {
       future.hidden = false; future.textContent = `Next showing · ${exactStamp(next.start_minute)}`;
       future.onclick = () => chooseAiring(next.airing_id, true);
     }
-  }
+  } else if (report.results.length) result.append(node('p', 'Pick an airing from the transmission log.', 'handwritten'));
+  else result.append(node('p', 'The first review arrives after an airing finishes.', 'handwritten'));
   element('ad-empty').hidden = !!a && a.station === playerStation() && !a.filler;
   element('ad-content').hidden = !element('ad-empty').hidden;
   element('selection-empty').hidden = !!a; element('selection-content').hidden = !a;
@@ -839,9 +849,9 @@ function renderDetails(): void {
 function renderReports(): void {
   const results = element('results-list'); results.replaceChildren();
   if (!report.results.length) results.append(node('p', 'No completed broadcasts yet. Results arrive at each airing’s scheduled completion.', 'muted'));
-  else results.append(table('Completed airings · select a row for audience counts and contract terms', ['Airing / programme', 'Broadcast window', 'Outcome', 'Cost', 'Cash after'], report.results.map(r => {
+  else results.append(table('Transmission records', ['Airing / programme', 'Broadcast window'], report.results.map(r => {
     const a = airingFor(r.airing_id)!;
-    return [airingLink(r.airing_id, `#${r.airing_id} · ${a.programme_name}`, 'results'), windowText(a), r.off_air ? 'Off air' : 'Completed', money(r.broadcast_cost), money(r.cash_after)];
+    return [airingLink(r.airing_id, `#${r.airing_id} · ${a.programme_name}`, 'results'), windowText(a)];
   })));
   const summary = element('finance-summary'); summary.replaceChildren();
   for (const [label, value] of [['Opening cash', report.finances.opening_cash], ['Broadcast costs', report.finances.costs_paid], ['Production committed', report.finances.production_committed], ['Ad receipts', report.finances.revenue], ['Rights purchases', report.finances.rights_spent], ['Rights resale', report.finances.resale_receipts], ['Current cash', report.cash]]) { const stat = node('div', '', 'finance-stat'); stat.append(node('span', label), node('strong', money(value))); summary.append(stat); }
@@ -855,8 +865,9 @@ function renderReports(): void {
     if (l.rights_title !== null) link = report.rights_market.titles.find(title => title.programme === l.rights_title)?.name ?? 'Programme rights';
     if (l.production_id !== null) { const id = l.production_id; link = node('button', `Production #${id}`, 'row-link'); link.addEventListener('click', () => {
       const film = report.film_desk.projects.find(f => f.id === id);
-      desks.navigate(film ? (preparing(film) ? 'film-desk' : 'film-production') : 'production');
-      if (film) filmUi?.showProject(id); else productionUi?.showProject(id);
+      desks.navigate(film ? 'film-dossier' : 'production');
+      if (film) filmUi?.showProject(id);
+      else productionUi?.showProject(id);
     }); }
     return [stamp(l.tick), link, kinds[l.kind] ?? l.kind, money(l.amount)];
   })));
@@ -913,16 +924,18 @@ function send(command: Command, automatic = false): boolean {
       }
     }
     if (command.type === 'reset') {
+      filmUi?.resetView();
       airingForecasts.clear(); officeTapeOpen = false; officeTrayOpen = false; placementOverride = null;
       calendar.reset();
       pickedGap = null; plannerAnchor = 1080; showingAiring = false; weeklyUi?.reset(); playback?.reset();
       libraryProgramme = 1; select('genre-filter').value = 'all'; selected = null; viewedDay = 0; select('day').value = '0';
     }
     render(response.report);
-    if (command.type === 'accept_script') {
-      desks.navigate('film-production');
-      filmUi?.showProject(command.film_id);
+    if (command.type === 'pitch_film' || command.type === 'develop_film_idea') {
+      const film = report.film_desk.projects.at(-1);
+      if (film) filmUi?.showProject(film.id);
     }
+    if (command.type === 'pitch_scripted_run') filmUi?.showBox('ideas');
     if (command.type === 'set_ad_load') previewSlot();
     if ((command.type === 'place_exact' || command.type === 'place_filler') && selected !== null) {
       element('placement-preview').hidden = true;
@@ -1000,7 +1013,7 @@ function renderOffice() {
     quests.append(line);
   }
   const openRequests = node('a', 'Open request board'); openRequests.href = '#production';
-  openRequests.addEventListener('click', () => element<HTMLDialogElement>('desk-notebook').close());
+  openRequests.addEventListener('click', () => { element<HTMLDialogElement>('desk-notebook').close(); studioBook.show('requests'); });
   quests.append(openRequests);
   pages.replaceChildren(spread(schedule, quests));
 }
@@ -1023,9 +1036,20 @@ async function start(): Promise<void> {
   try {
     await init(); if (api_version() !== 8) throw new Error('Unsupported player protocol version');
     tapeShelf = initialiseTapeShelf();
+    const firstWeekday = () => report.first_weekday;
+    bindDateClock({ label: 'Planning date', day: select('day'), firstWeekday });
+    bindDateClock({ label: 'Placement time', time: element<HTMLInputElement>('choose-placement-time') });
+    bindDateClock({ label: 'Move airing', day: select('move-day'), time: element<HTMLInputElement>('move-time'), firstWeekday });
+    bindDateClock({ label: 'Move future airings', time: element<HTMLInputElement>('weekly-edit-time') });
     button('close-tape-record').addEventListener('click', () => element<HTMLDialogElement>('tape-record').close());
     calendar = initialiseCalendar({ report: () => report, day: () => viewedDay, selectDay: setPlanningDay, dayLabel });
     officeMotion = initialiseOfficeMotion();
+    studioBook = initialiseStudioBook();
+    const reviewIndex = leaf('Transmission log');
+    reviewIndex.append(element('results-index'));
+    const review = leaf();
+    review.append(element('selected-result'), element('review-actions'));
+    element('review-papers').append(dossier('Airing', [{ label: 'Review', content: spread(reviewIndex, review) }]));
     initialiseOfficeIdle();
     select('room-motion').addEventListener('change', event => {
       element('office').dataset.ambientMotion = (event.currentTarget as HTMLSelectElement).value;
@@ -1034,11 +1058,6 @@ async function start(): Promise<void> {
       activeDesk = desk;
       collectionGap = null;
       document.body.dataset.stationView = desk;
-      if (desk === 'film-desk' || desk === 'film-production') {
-        element(desk === 'film-desk' ? 'prep-mount' : 'film-mount').append(element('film-work'));
-        filmUi?.setMode(desk === 'film-desk' ? 'preparation' : 'production');
-        if (report) filmUi?.render(report);
-      }
       if (isDesk()) {
         const mount = element(desk === 'office' ? 'office-workspace' : 'planning-workspace');
         mount.append(element('station-workspace'));
@@ -1091,41 +1110,37 @@ async function start(): Promise<void> {
     };
     hiringUi = initialiseHiring({ send, stamp, money, showProject: id => productionUi?.showProject(id) });
     newsroomUi = initialiseNewsroom({ report: () => report, send, stamp: exactStamp, money, showAiring: id => chooseAiring(id, true) });
-    button('new-project-wheel').addEventListener('click', event => {
-      const focusPitch = (query: string) => element('film-pitch').querySelector<HTMLElement>(query)?.focus();
-      const studio = (section?: string) => {
+    function openProduction(trigger: HTMLElement, desk: ProjectDesk) {
+      playback?.pause();
+      const page = (key: Parameters<typeof studioBook.show>[0], focus = true) => {
         desks.navigate('production');
-        if (section) {
-          const work = element<HTMLDetailsElement>(section);
-          work.open = true;
-          work.querySelector('summary')?.focus();
-        } else element('production-name').focus();
+        studioBook.show(key, focus);
       };
-      openRadial(event.currentTarget as HTMLElement, { label: 'New project', icon: 'script', choices: [
-        { label: 'Film', icon: 'film', next: () => focusPitch('input') },
-        { label: 'Scripted series', icon: 'series', next: () => {
-          const brief = element('film-pitch').querySelector('details');
-          if (brief) { brief.open = true; brief.querySelector('summary')?.focus(); }
-        }},
-        { label: 'Discussion show', icon: 'clapper', next: () => studio() },
-        { label: 'News bulletin', icon: 'news', next: () => studio('newsroom-board') },
-      ]});
-    });
-    element('prep-newsroom').addEventListener('click', event => {
+      productionCan(trigger, desk, {
+        pitch: series => { desks.navigate('film-dossier'); filmUi?.newPitch(series); },
+        browse: shelf => { desks.navigate('film-dossier'); filmUi?.showBox(shelf); },
+        discussion: () => page('concept'),
+        newsroom: () => page('newsroom'),
+        workOrders: () => page('jobs'),
+        resume: () => {
+          if (filmUi?.hasOpenFile()) {
+            desks.navigate('film-dossier');
+            filmUi.resume();
+          } else desks.navigate('production');
+        },
+      });
+    }
+    button('production-menu').addEventListener('click', event => openProduction(event.currentTarget as HTMLElement, 'production'));
+    document.querySelector<HTMLElement>('#office [data-prop="script"]')?.addEventListener('click', event => {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
-      desks.navigate('production');
-      const board = element<HTMLDetailsElement>('newsroom-board');
-      board.open = true;
-      board.querySelector('summary')?.focus();
+      openProduction(event.currentTarget as HTMLElement, 'preparation');
     });
-    productionUi = initialiseProduction({ report: () => report, send, stamp, money, showProgramme, showAiring: id => chooseAiring(id, true) });
+    productionUi = initialiseProduction({ showSheet: studioBook.show, report: () => report, send, stamp, money, showProgramme, showAiring: id => chooseAiring(id, true) });
     filmUi = initialiseFilmDesk({ send, stamp, money, showProgramme,
-      openProject: film => {
-        desks.navigate(preparing(film) ? 'film-desk' : 'film-production');
-        filmUi?.showProject(film.id);
-      },
-    });
-    if (activeDesk === 'film-production') filmUi.setMode('production');
+      previewBooking: (id, booking) => JSON.parse(session.preview_film_booking(id, JSON.stringify(booking))),
+      close: () => desks.navigate('office') });
+    if (location.hash === '#film-desk') filmUi.newPitch();
     rightsUi = initialiseRightsMarket({ send, stamp, money, showProgramme, showAiring: id => chooseAiring(id, true) });
     weeklyUi = initialiseWeeklyPlanner({ send, stamp: exactStamp, dayLabel, showAiring: id => chooseAiring(id, true) });
     plannerDrag = initialisePlannerDrag({ report: () => report, player: playerStation, send, stamp: airStamp, time: displayTime, pause: () => playback?.pause() });
@@ -1179,6 +1194,7 @@ async function start(): Promise<void> {
         calendar.reset();
         tapeShelf.close();
         productionUi?.commandSucceeded({ type: 'reset' });
+        filmUi?.resetView();
         render(response.report);
         desks.navigate('office');
         error.hidden = true;

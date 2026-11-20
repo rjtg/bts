@@ -1,13 +1,10 @@
 # Browser foundation
 
-Status: implemented. The browser is the intended primary player interface;
-the CLI remains a developer tool. The first fourteen-slot integration harness
-has been replaced by the [programme-planning workspace](programme-planning.md).
-That specification documents the current seven-day scenario, explicit runtimes,
-15-minute ticks, processing cadence and observation boundary. [Original production](original-production.md)
-adds the bounded studio workflow. [Programme feature profiles](feature-profiles.md)
-introduced programme profiles in protocol v6. The current protocol v8 reports
-audience preferences in half-star steps. Earlier versions are unsupported.
+The current browser is a six-week [Station Office](station-office.md) using
+[exact-minute airtime](minute-airtime.md), with [timed research](audience-research.md)
+and [versioned local saves](station-saves.md). The CLI remains a developer tool.
+The original [seven-day planner](programme-planning.md) records the integration
+milestone. Browser protocol v8 reports audience preferences in half-star steps.
 
 ## Architecture
 
@@ -21,19 +18,20 @@ enter the simulation.
 `bts-web::Session` owns one Rust planner/simulation per game session. It exposes
 `new`, `execute(Command)`, `dispatch_json(&str)` and `report()`. The wasm-bindgen
 ABI provides `new WebSession()`, `session.dispatch(json)`, `session.free()` and
-`api_version()` (8). Clone/apply/observe/commit keeps rejected commands atomic.
+`api_version()` (8), plus read-only film booking previews and local save/restore. Clone/apply/observe/commit keeps rejected commands atomic.
 TypeScript owns controls and formatting, not simulation or accounting.
 
 Player observations are constructed from a whitelist, separately from developer
 reports. They exclude hidden execution, tastes, hype, repetition and fuzzy traces.
 Quoted target delivery and past start-snapshot counts remain explicitly provisional
-exact expectations, not measured ratings. Research and measurement-based
-settlement remain future work. No developer inspector is exported. All world
+exact expectations. Published research estimates and measured ratings have
+different meanings. Ratings measurement and measurement-based settlement
+remain future work. No developer inspector is exported. All world
 data runs locally; the observation boundary is not a security guarantee.
 
 Financial amounts, contract IDs and integer delivery units are decimal strings.
 Small IDs and tick boundaries are safe integer JSON numbers. There is no backend,
-account service, external AI, save protocol or runtime network dependency.
+account service, external AI or runtime network dependency.
 
 ## Local development and static build
 
@@ -69,7 +67,7 @@ The build compiles release Wasm, generates bindings, checks TypeScript and write
 the static **`web/dist/`** bundle. Serve that directory as a unit over HTTP with
 `.wasm` as `application/wasm`; relative URLs support hosting under a subdirectory.
 Preview normally uses port 4173. Playwright starts/stops its own preview on
-**4174**, so a manual preview can stay open. `PLAYWRIGHT_BROWSERS_PATH` may select
+**4186**, so a manual preview can stay open. `PLAYWRIGHT_BROWSERS_PATH` may select
 a browser cache directory. Generated bindings, node_modules, dist and test
 artifacts are ignored; Cargo.lock and package-lock.json are committed.
 

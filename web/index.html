@@ -4,7 +4,7 @@
 <header class="masthead"><div class="brand"><span class="signal" aria-hidden="true"><i></i><i></i><i></i></span><span>BEHIND <small>THE</small> SCREENS</span></div><div class="clock"><span id="clock">Day 1 · 00:00</span><strong id="playback-state">PAUSED</strong></div><div id="station-resources" class="resources" role="group" aria-label="Station resources"></div></header>
 <p id="status" role="status" class="load-status">Loading WebAssembly…</p><p id="error" role="alert" hidden></p>
 <div id="controls" class="app" hidden>
-  <aside class="rail"><span class="rail-caption">YOUR STATION</span><a href="#office" class="active">▰ Office</a><a href="#planning">▦ Schedule</a><a href="#production">▣ Production</a><a href="#film-desk">▧ Preparation</a><a href="#film-production">▥ Film Production</a><a href="#rights-market">▱ Rights market</a><a href="#audience">◉ Audience</a><a href="#results">▤ Broadcast Review</a><a href="#finances">≡ Finances</a><div class="rail-note">SIX WEEKS<br><strong>Draft schedule</strong><p>Make television.<br>See who watches.</p></div><label class="room-motion-control">Room motion <select id="room-motion"><option value="auto">Auto</option><option value="on">On</option><option value="off">Off</option></select></label><details id="station-files"><summary>Station files</summary>
+  <aside class="rail"><span class="rail-caption">YOUR STATION</span><a href="#office" class="active">▰ Office</a><a href="#planning">▦ Schedule</a><a href="#production">▣ Production</a><a href="#rights-market">▱ Rights market</a><a href="#audience">◉ Audience</a><a href="#results">▤ Broadcast Review</a><a href="#finances">≡ Finances</a><div class="rail-note">SIX WEEKS<br><strong>Draft schedule</strong><p>Make television.<br>See who watches.</p></div><label class="room-motion-control">Room motion <select id="room-motion"><option value="auto">Auto</option><option value="on">On</option><option value="off">Off</option></select></label><details id="station-files"><summary>Station files</summary>
     <button type="button" id="save-station">Download save</button>
     <label>Restore station save<input type="file" id="load-station" accept=".json,application/json"></label>
   </details><button id="reset" class="quiet">Start over</button></aside>
@@ -44,10 +44,11 @@
         <button id="put-tapes-away" type="button" hidden>Put tapes away</button>
         <button id="open-notebook" type="button" data-tip="Open desk notebook"><span>Desk<br>notebook</span><small id="notebook-cover"></small></button>
         <div id="office-job-links" class="room-links" aria-label="Station work areas">
-          <div id="desk-file-piles" class="desk-files" aria-label="Desk folders"><a href="#film-desk" data-prop="script" data-tip="Open Preparation"><span>Preparation</span></a><a href="#film-production" data-prop="production" data-tip="Open Production"><span>Production</span></a><a href="#audience" data-prop="research" data-tip="Open audience research"><span>Research</span></a><a href="#rights-market" data-prop="rights" data-tip="Open Rights Market"><span>Rights</span></a><a href="#finances" data-prop="ledger" data-tip="Open station ledger"><span>Ledger</span></a><a href="#results" data-prop="reviews" data-tip="Open broadcast reviews"><span>Reviews</span></a></div>
+          <div id="desk-file-piles" class="desk-files" aria-label="Desk folders"><a href="#production" data-prop="script" data-tip="Open Preparation"><span>Preparation</span></a><a href="#audience" data-prop="research" data-tip="Open audience research"><span>Research</span></a><a href="#rights-market" data-prop="rights" data-tip="Open Rights Market"><span>Rights</span></a><a href="#finances" data-prop="ledger" data-tip="Open station ledger"><span>Ledger</span></a><a href="#results" data-prop="reviews" data-tip="Open broadcast reviews"><span>Reviews</span></a></div>
         </div>
         <div id="office-workspace"></div>
       </div>
+      <div id="office-paper-mount" hidden></div>
     </section>
     <div data-desk="planning" hidden><div class="calendar-strip">
       <a id="back-office" href="#office">← Back to Office</a>
@@ -82,10 +83,10 @@
       <a href="#planning" class="desk-back">← Schedule</a><div class="panel-heading"><h2 id="weekly-title">Give a show a regular slot</h2></div>
       <div id="weekly-form"></div><div id="weekly-review" aria-live="polite"></div>
     </section>
-    <section hidden data-desk="audience" id="audience" class="panel lower-panel" aria-labelledby="audience-title"><h2 id="audience-title">Audience research</h2><div id="audience-research"></div></section>
+    <section hidden data-desk="audience" id="audience" class="panel lower-panel" aria-labelledby="audience-title"><h2 id="audience-title" class="sr-only">Audience research</h2><div id="audience-research"></div></section>
     <section hidden data-desk="production" id="production" class="panel lower-panel" aria-labelledby="production-title">
-      <div class="panel-heading"><div><p class="overline">ORIGINAL PROGRAMMING</p><h2 id="production-title">Studio production</h2></div><span class="tag">STANDALONE DISCUSSION · 45 MIN</span></div>
-      <p class="muted">Choose a host, two guests and a creative direction. Book one hour to record, then allow two hours for post-production. Completed shows join your programme library.</p>
+      <h2 id="production-title" class="sr-only">Studio production</h2>
+      <div class="studio-book"><nav id="studio-index" class="binder-index" aria-label="Production papers"><button id="production-menu" class="binder-tab" type="button">Studio menu</button><a class="binder-tab" href="#film-dossier">Project files</a></nav><div class="studio-leaves">
       <details id="hiring-desk" class="production-card">
         <summary>Hiring desk</summary>
         <p>Guarantee one date or sign a host for several editions of the same show.
@@ -105,20 +106,17 @@
               <label>Ad minutes<input id="newsroom-ads" type="number" value="5" min="0" max="30" step="1" required></label></div>
           </fieldset>
           <div class="form-row">
-            <label>Reporter<select id="newsroom-reporter" aria-label="Reporter"></select></label>
-            <label>Anchor<select id="newsroom-anchor" aria-label="Anchor"></select></label>
-            <label>Studio<select id="newsroom-studio" aria-label="Studio"></select></label>
+            <div class="casting-seats newsroom-photo-spots" id="newsroom-photo-spots" aria-label="Newsroom cast"></div>
+            <div id="newsroom-studios"></div>
             <button id="newsroom-start">Start five daily editions</button>
           </div>
         </form>
         <div id="newsroom-editions" class="news-edition-board"></div>
       </details>
       <div id="station-teams" class="station-teams" aria-label="Station teams and facilities"></div>
-      <div class="production-layout">
         <form id="production-form" class="production-form"><h3 id="production-editor-title">New concept</h3>
           <label>Programme title<input id="production-name" required maxlength="60" value="Workshop Conversations"></label>
           <div id="casting-seats" class="casting-seats" aria-label="Cast seats"></div>
-          <dialog id="talent-picker" aria-labelledby="talent-picker-title"><div class="panel-heading"><h3 id="talent-picker-title">Choose talent</h3><button id="close-talent-picker" type="button" class="quiet">Close</button></div><p>Fees and existing recording commitments still apply.</p><div id="talent-cards" class="talent-cards"></div></dialog>
           <fieldset><legend>What is the conversation about?</legend><div id="production-subjects" class="choice-tiles"><button type="button" data-subject="science" aria-pressed="true">Science &amp; invention</button><button type="button" data-subject="everyday_life" aria-pressed="false">Everyday life</button><button type="button" data-subject="entertainment" aria-pressed="false">Entertainment &amp; culture</button></div></fieldset>
           <label for="production-tone">Creative brief · <output id="tone-label">Calm</output></label><input id="production-tone" type="range" min="0" max="2" step="1" value="0"><div class="range-labels"><span>Calm</span><span>Conversational</span><span>Lively</span></div>
           <fieldset><legend>Production budget · includes fees</legend><div class="budget-presets"><label><input type="radio" name="production-budget" value="600">Shoestring<strong>600 Funds</strong></label><label><input type="radio" name="production-budget" value="1000" checked>Standard<strong>1,000 Funds</strong></label><label><input type="radio" name="production-budget" value="1800">Generous<strong>1,800 Funds</strong></label></div></fieldset>
@@ -133,17 +131,17 @@
           <p class="muted small">Drafts are free. Booking commits the whole budget and the recording time. Team support can ease working friction, but cannot supply missing skills.</p>
           <div class="form-row"><button id="create-production" type="submit">Review concept</button><button id="production-new" type="button" class="quiet">Start new draft</button></div>
         </form>
-        <div><section id="sway-panel" class="sway-panel" aria-label="Pooled Sway and production requests"></section><div id="discussion-run-binders" class="production-projects"></div><div id="production-projects" class="production-projects"></div></div>
-      </div>
+        <section id="sway-panel" class="sway-panel" aria-label="Pooled Sway and production requests"></section>
+        <section id="studio-jobs" aria-label="Production work orders"><h3>Work orders</h3><div id="discussion-run-binders" class="production-projects"></div><div id="production-projects" class="production-projects"></div></section>
+      </div></div>
     </section>
-    <section hidden data-desk="film-desk" id="film-desk" class="panel lower-panel project-desk" data-file="preparation"><h2>Preparation</h2><button id="new-project-wheel" type="button">New project</button><a id="prep-newsroom" href="#production">Open daily newsroom</a><div id="prep-mount"><div id="film-work"><div id="film-notices" aria-live="polite"></div><div id="film-pitch"></div><div id="film-projects" class="production-projects"></div></div></div></section>
-    <section hidden data-desk="film-production" id="film-production" class="panel lower-panel project-desk" data-file="production"><h2>Film Production</h2><a href="#production">Discussion studio</a><div id="film-mount"></div></section>
+    <section hidden data-desk="film-dossier" id="film-dossier" aria-label="Project files"><div id="film-pitch"></div><div id="film-projects"></div></section>
     <section hidden data-desk="rights-market" id="rights-market" class="panel lower-panel" aria-labelledby="rights-market-title">
       <div class="panel-heading"><h2 id="rights-market-title">Rights market</h2></div>
       <div id="rights-catalogue" class="rights-catalogue"></div>
       <div id="rights-news" aria-live="polite"></div>
     </section>
-    <section hidden data-desk="results" id="results" class="panel lower-panel"><div class="panel-heading"><h2>Broadcast results</h2><span class="tag">PROVISIONAL REPORTING</span></div><div class="desk-actions"><a href="#planning">← Schedule</a><button id="review-airing" hidden>Show airing on schedule</button><button id="review-future" hidden></button></div><div id="selected-result"></div><details id="results-index" open><summary>Completed airings</summary><div id="results-list"></div></details></section>
+    <section hidden data-desk="results" id="results" class="panel lower-panel"><div id="review-papers"></div><div id="review-actions" class="desk-actions"><button id="review-airing" hidden>Show airing on schedule</button><button id="review-future" hidden></button></div><div id="selected-result"></div><details id="results-index" open><summary>Completed airings</summary><div id="results-list"></div></details></section>
     <section hidden data-desk="finances" id="finances" class="panel lower-panel"><div class="panel-heading"><h2>Station finances</h2><span class="tag">FUNDS</span></div><div id="finance-summary" class="finance-summary"></div><div id="ledger"></div></section>
     <footer hidden><p id="reporting"></p></footer>
   </main>

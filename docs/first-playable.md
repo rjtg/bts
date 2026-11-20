@@ -1,112 +1,41 @@
-# First playable proposal
+# Playable season
 
-Status: proposed scope. This bounds implementation; it does not remove later features from the design.
+The browser runs a bounded 42-day station season starting on Saturday. The
+question for playtesting is whether the player can spot an audience
+opportunity, make a programming or production bet, monetize it, and use the
+result to improve the next decision.
 
-The [original film experiment](original-film.md) now exercises one full fiction
-production from pitch through broadcast and advertising settlement.
+## What to try
 
-The [rights market experiment](rights-market.md) adds acquisition, appraisal, and resale as alternatives to original production.
+1. Open the research binder and compare audience preferences and watch-time
+   estimates. Choose a survey frequency or allocate Insight to one group.
+2. Pick a tape, buy a title from the rights portfolio, or develop a film from
+   the script file. The discussion, scripted-series and newsroom pilots each
+   exercise a different recurring production pattern.
+3. Place or move a programme in Programming. Preview exact airtime including
+   ads, or review a weekly run and its date-specific exceptions. Sell minutes
+   from the airing file, or opt eligible runs into autosell with a floor and cap.
+4. Advance the station and review the same airing for turnout and payment.
+   Use the Tape file or ledger to compare the returns with investment.
+5. Check goals and timed Sway requests in the notebook. Download or restore a
+   local station file to continue the season later.
 
-## Question to answer
+The notebook tracks broadcasts across weeks, recurring programmes and paid
+ad-minute sales. Goals are progress markers. The season closes at the calendar
+boundary, with a review of completed objectives and finances. The save is a
+versioned command replay for the authored scenario. See [station files](station-saves.md)
+and the [season replay and evidence](../contrib/season-roadmap/README.md).
 
-Can a player observe an audience opportunity, make a production bet, schedule it effectively, earn advertising revenue, and understand the result well enough to improve?
+## Evidence and limits
 
-## Scenario
+The original headless experiments and the browser pilots isolate the
+difference between attraction and satisfaction, targeted and broad delivery,
+creative ambition and achieved work, and forecasts and actual viewing.
+Use the [design index](README.md) to find the rules and controlled results.
+The browser remains a bounded authored season, so these comparisons establish
+specific mechanics. Solvency across varied strategies, long-run economic
+incentives, and human usability still need broader playtesting.
 
-Run a small station for one season. Remain solvent, fulfil explicit advertising commitments, and launch an original programme that earns returning viewers.
-
-Season length, starting funds, contract thresholds, and the definition of a returning audience must be tuned experimentally. No board review system or universal campaign victory rule is assumed.
-
-## Suggested content budget
-
-- Six audience groups with distinct availability, tastes, purchasing power, and preferences for programme qualities.
-- Four distinct profiles for scripted works.
-- Approximately twenty fictional people covering necessary creative roles and interview guests.
-- One competing station following a simple audience-aware strategy.
-- A small purchased-programme catalogue.
-- One original scripted-series pipeline and a basic topical interview format.
-- A handful of brands targeting different audience attributes.
-- A small influence network, selected talent relationships, and a few topical events.
-
-Counts are working limits, not requirements. Reduce content if necessary to finish a complete causal loop.
-
-## Player actions
-
-Inspect results; commission broad or targeted research; acquire broadcast rights; create a structured production concept; hire available talent; allocate resources; book an interview guest; schedule programmes and advertisements; accept contracts; advance time; review outcomes; renew, revise, or cancel.
-
-Proposal: begin with daily planning and slot-based resolution. Headless models feed a browser interface through WebAssembly; the CLI remains a developer tool. Avoid free-text script interpretation in this milestone.
-
-## Build sequence
-
-### 1. Headless experiments
-
-Implement audience choice and satisfaction, basic programme attributes, brand targeting, hype decay, and developer reports. Compare schedules and campaigns using identical starting states and seeds.
-
-Current implementation: the [bounded broadcasting experiment](headless-experiment.md)
-provides three audience groups, two stations, four programmes, two brands,
-fixed schedules, deterministic expected shares, return willingness, and hype
-traces. The [bounded advertising economy](advertising-economy.md) adds target
-contracts, finite budgets, station cash, simple broadcast costs and a ledger. It supplies initial evidence for this stage, not a completed game or
-balance validation. Randomness and schedule optimisation are not implemented.
-
-Exit evidence: different audiences produce different outcomes; relevant reach affects hype; attraction differs from enjoyment; results are reproducible and explained.
-
-### 2. Complete season loop
-
-The browser now runs a bounded six-week station season, with notebook goals,
-rights and research, recurring programming and ad sales, and a closed-season
-review. The [season review index](../contrib/season-roadmap/README.md) gives
-replay instructions and controlled evidence. The fixture remains a pilot
-for balance and longer-world mechanics.
-
-Exit evidence: obligations resolve correctly; production tradeoffs matter; at least one useful audience opportunity can be discovered; multiple plausible strategies survive under appropriate conditions.
-
-### Production identity and stages — proposed direction
-
-Create a show and its ambition before preparing or producing individual work.
-The show declares one-shot, finite planned episode count, or open-ended run, and
-may explicitly continue an existing original as a sequel or next season. Each
-instalment then gets format-appropriate preparation (writing, reporting research,
-or edition preparation), followed by production with the needed people, studio
-and resources. Preparation has a completion date and a format-specific freshness
-window: same-day for some news, roughly a week or two for a topical discussion
-edition, and longer for films or scripted episodes. These windows and effects
-need controlled experiments before implementation.
-
-The current browser workflow remains a single standalone discussion production.
-This broader show/instalment lifecycle is a proposed next architecture slice; it
-does not imply that writer teams, reporting, series runs, seasons or freshness
-decay are implemented.
-
-### 3. Playable interface
-
-Expose only legitimate player information through a browser interface, building on the minimal Rust/Wasm harness. Provide scheduling, production, research, advertiser, and results views. The office has time controls and [versioned local saves](station-saves.md).
-
-Proposed usability follow-up: [direct schedule manipulation and focused panels](screens.md#player-facing-interaction-direction),
-with the [bounded portrait casting desk](casting-desk.md) now implemented for
-one-off discussion shows; talent-contract mechanics remain future work. A possible
-bounded [host-contract experiment](talent-and-contracts.md) precedes full
-multi-episode scripted casting. These are sequencing proposals, not implemented features.
-
-Exit evidence: someone can play the scenario without developer tools, understand obligations, and explain a reasonable next decision from the reports.
-
-## Scope exclusions
-
-No full elections, awards circuit, demographic splitting/merging, detailed government economy, elaborate gossip publication system, every programme format, multiplayer, animated building, or AI pitch evaluation.
-
-Audience and talent histories, event identities, and relationship types should leave room for those systems without implementing speculative infrastructure.
-
-## Acceptance criteria
-
-- Complete a season with a clear objective outcome and financial record.
-- At least two audiences disagree about a programme in a way consistent with their preferences.
-- A successful premiere can lose return viewers after poor satisfaction.
-- A smaller relevant audience can be more valuable to a brand than a larger poorly matched one.
-- Original-production choices create meaningful cost, timing, or audience tradeoffs.
-- Research can change a sensible decision and improve outcomes across a batch of worlds.
-- Repeating the same successful formula encounters diminishing returns where appropriate.
-- Save/load preserves subsequent outcomes for the same actions.
-- Developer inspection can explain outcomes; normal views do not reveal hidden state.
-- Human playtesting finds the reports actionable, not merely numerically consistent.
-
-Automated experiments establish mechanics; human playtesting establishes whether making these decisions is enjoyable.
+The full awards and editorial economies, audience evolution, politics, wider
+talent careers, and general show/season commissioning remain outside this
+pilot. See [open questions](open-questions.md) for the decisions still needed.

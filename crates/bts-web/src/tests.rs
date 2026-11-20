@@ -1025,6 +1025,120 @@ fn film_reports_keep_delivery_evidence_private_and_invalid_commands_atomic() {
     ] {
         assert!(!serialized.contains(&format!("\"{field}\"")));
     }
+    let film_id = id.as_u64().unwrap() as u32;
+    session.execute(Command::AcceptScript { film_id }).unwrap();
+    let before = session.report();
+    let actions = session.journal.len();
+    let booking = FilmBookingInput {
+        cast: [105, 106],
+        director: 103,
+        studio: 1,
+        start: 80,
+    };
+    let preview = session
+        .preview_film_booking(film_id, booking.clone())
+        .unwrap();
+    assert_eq!(session.report(), before);
+    assert_eq!(session.journal.len(), actions);
+    let booked = session
+        .execute(Command::BookFilm { film_id, booking })
+        .unwrap();
+    assert_eq!(
+        booked.film_desk.projects[0].booking.as_ref(),
+        Some(&preview)
+    );
+}
+
+#[test]
+fn film_idea_time_and_pace_gate_writing_and_change_the_first_draft() {
+    use bts_sim::planning::film::{FilmPhase, PitchPace};
+    let develop = |pace, ambition, description: &str| Command::DevelopFilmIdea {
+        title: "Night Signal".into(),
+        description: description.into(),
+        ambition,
+        pace,
+    };
+    let ambitious = [0.2, 0.25, 0.95, 0.4, 0.6, 0.95, 0.9];
+    let mut steady = Session::new().unwrap();
+    reject(
+        &mut steady,
+        develop(PitchPace::Steady, ambitious, "  "),
+        "film_description",
+    );
+    let mut modest = steady.clone();
+    let modest_due = modest
+        .execute(develop(
+            PitchPace::Steady,
+            [0.15, 0.5, 0.15, 0.15, 0.15, 0.15, 0.15],
+            "Quiet visit",
+        ))
+        .unwrap()
+        .film_desk
+        .projects[0]
+        .due
+        .unwrap();
+    let run = |pace| {
+        let mut session = Session::new().unwrap();
+        let report = session
+            .execute(develop(
+                pace,
+                ambitious,
+                "A night courier overhears a secret.",
+            ))
+            .unwrap();
+        let project = &report.film_desk.projects[0];
+        assert_eq!(project.phase, FilmPhase::DevelopingIdea);
+        assert_eq!(
+            project.description.as_deref(),
+            Some("A night courier overhears a secret.")
+        );
+        assert_eq!(report.cash, "20000");
+        assert!(!serde_json::to_string(&report.film_desk)
+            .unwrap()
+            .contains("\"pace\""));
+        let due = project.due.unwrap();
+        let writing = Command::WriteFilm {
+            film_id: project.id,
+            writer: 101,
+            focus: None,
+        };
+        session
+            .execute(Command::Advance { to_tick: due - 1 })
+            .unwrap();
+        reject(&mut session, writing.clone(), "film_stage");
+        let saved = session.save_game().unwrap();
+        let mut restored = Session::new().unwrap();
+        assert_eq!(
+            restored.restore_game(&saved).unwrap().film_desk,
+            session.report().film_desk
+        );
+        for current in [&mut session, &mut restored] {
+            let report = current.execute(Command::Advance { to_tick: due }).unwrap();
+            assert_eq!(report.film_desk.projects[0].phase, FilmPhase::Pitch);
+            current.execute(writing.clone()).unwrap();
+            current
+                .execute(Command::Advance {
+                    to_tick: due + bts_sim::planning::film::WRITING_TICKS,
+                })
+                .unwrap();
+        }
+        assert_eq!(restored.report().film_desk, session.report().film_desk);
+        let delivered = session
+            .planner
+            .film(ProductionId(project.id))
+            .unwrap()
+            .script
+            .as_ref()
+            .unwrap();
+        (due, delivered.profile.values[5].unwrap())
+    };
+    let (rush_due, rush_spectacle) = run(PitchPace::Rush);
+    let (steady_due, steady_spectacle) = run(PitchPace::Steady);
+    let (slow_due, slow_spectacle) = run(PitchPace::TakeTime);
+    assert!(modest_due < steady_due);
+    assert!(rush_due < steady_due && steady_due < slow_due);
+    assert!(rush_spectacle < steady_spectacle && steady_spectacle < slow_spectacle);
+    assert_eq!(run(PitchPace::Rush), (rush_due, rush_spectacle));
 }
 
 #[test]

@@ -359,6 +359,16 @@ impl Session {
                     .pitch_film(title, subject, ambition)
                     .map_err(player_error)?;
             }
+            Command::DevelopFilmIdea {
+                title,
+                description,
+                ambition,
+                pace,
+            } => {
+                self.planner
+                    .develop_film_idea(title, description, ambition, pace)
+                    .map_err(player_error)?;
+            }
             Command::WriteFilm {
                 film_id,
                 writer,
@@ -373,12 +383,7 @@ impl Session {
                 .accept_script(ProductionId(film_id))
                 .map_err(player_error)?,
             Command::ReviewFilm { film_id, booking } => {
-                let booking = film_booking(booking);
-                let quote = self
-                    .planner
-                    .review_film(ProductionId(film_id), booking)
-                    .map_err(player_error)?;
-                self.film_review = Some(film_review(film_id, booking, &quote));
+                self.film_review = Some(self.preview_film_booking(film_id, booking)?);
                 return Ok(());
             }
             Command::BookFilm { film_id, booking } => {
@@ -1504,6 +1509,17 @@ mod wasm {
         pub fn dispatch(&mut self, request: &str) -> String {
             self.session.dispatch_json(request)
         }
+        pub fn preview_film_booking(&self, film_id: u32, booking: &str) -> String {
+            let result = serde_json::from_str(booking)
+                .map_err(|_| {
+                    PlayerError::new(
+                        "malformed_booking",
+                        "Choose valid cast, studio and recording time.",
+                    )
+                })
+                .and_then(|booking| self.session.preview_film_booking(film_id, booking));
+            serde_json::to_string(&result).expect("film booking preview is serializable")
+        }
         pub fn save(&self) -> Result<String, JsValue> {
             self.session
                 .save_game()
@@ -1589,6 +1605,21 @@ fn film_booking(b: FilmBookingInput) -> bts_sim::planning::film::FilmBooking {
         start: SimTick(b.start),
     }
 }
+
+impl Session {
+    fn preview_film_booking(
+        &self,
+        film_id: u32,
+        booking: FilmBookingInput,
+    ) -> Result<FilmReview, PlayerError> {
+        let booking = film_booking(booking);
+        let quote = self
+            .planner
+            .review_film(ProductionId(film_id), booking)
+            .map_err(player_error)?;
+        Ok(film_review(film_id, booking, &quote))
+    }
+}
 fn film_review(
     id: u32,
     b: bts_sim::planning::film::FilmBooking,
@@ -1630,6 +1661,7 @@ fn film_desk(planner: &Planner) -> FilmDesk {
             .map(|film| FilmCard {
                 id: film.id.0,
                 title: film.title.clone(),
+                description: film.idea.as_ref().map(|idea| idea.description.clone()),
                 subject: film.subject,
                 phase: film.phase,
                 episode: film.episode.map(|episode| ScriptedEpisodeView {

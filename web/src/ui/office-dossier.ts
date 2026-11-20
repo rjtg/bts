@@ -3,6 +3,7 @@ import { audienceOpportunities, bestOpening, DAY_MINUTES, displayTime, turnout }
 import { leaf as sheet, spread } from './dossier';
 import { node, option } from './dom';
 import { programmeChart, programmeCredits, radar } from './programme-paper';
+import { bindDateClock } from './date-clock';
 
 export function officePapers(tape: Programme, report: Report, history: BroadcastResult[], details: {
   next: number | undefined;
@@ -57,6 +58,7 @@ export function officePapers(tape: Programme, report: Report, history: Broadcast
     date.append(option(String(day), `Day ${day + 1}`));
   }
   const dateLabel = node('label', 'Date '); dateLabel.append(date);
+  bindDateClock({ label: 'Forecast date and time', day: date, time, firstWeekday: () => report.first_weekday });
   const timeLabel = node('label', 'Time '); timeLabel.append(time);
   const picker = node('div', '', 'reception-picker'); picker.append(dateLabel, timeLabel);
   function show(minute: number) {

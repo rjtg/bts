@@ -1,83 +1,27 @@
 # Open questions and experiments
 
-Status: unresolved unless explicitly stated. Proposed defaults are starting points, not approved permanent mechanics.
+This file tracks decisions that still need a design choice or experiment.
+See the [playable season](first-playable.md) for current coverage and
+[design guidelines](design-guidelines.md) for settled principles.
 
-## Decisions needed before the first playable
+## Near-term decisions
 
-| Question | Proposed starting point | How to decide |
+| Area | Current baseline | Question or experiment |
 | --- | --- | --- |
-| Player control | Combined broadcaster and commissioning studio, with selected creative decisions | Test whether production and scheduling form one manageable loop |
-| Tick processing | Duration-aware 15-minute planner implemented with provisional start-snapshot viewing | Validate cadence and exposure incentives; see [planning semantics](programme-planning.md) |
-| World setting | Fictional world with an 80s identity | Choose before writing substantial political or historical content |
-| Format depth | Shared production; news is subject matter across formats, with editorial-profile controls | Choose the first producible formats; avoid separate newsroom mechanics |
-| Advertising payment | Provisional delivery contracts implemented with deadline, escrow, capped offers and proportional underdelivery refunds; hype affects demand | Compare clarity, incentives, costs and exploit risks; see [economy experiment](advertising-economy.md). Permanent contract design remains open |
-| Hype versus awareness | Separate fast hype and slower awareness if justified | Test whether one variable makes established brands implausibly vanish |
-| Audience choice | Deterministic expected-share allocation with not-watching implemented as a provisional headless experiment; later stochastic choice remains open | Check accounting, smoothness, and diversity of outcomes; see [experiment](headless-experiment.md) |
-| Fuzzy semantics | Zero-order Sugeno, min/max/complement, explicit fallback, validation, traces and macros implemented | TV rule calibration remains experimental; see [experiment](headless-experiment.md) |
-| Browser UI development | Browser primary; Rust/Wasm adapter and plain TypeScript/HTML/CSS day-planning workspace implemented | Validate schedule/contract/report usability before selecting a larger UI framework or polished retro presentation; see [browser foundation](browser-foundation.md) |
-| Rust architecture | Cargo workspace; independent `bts-fuzzy` crate; simulation independent of interface | See [architecture](architecture.md); select remaining crates and persistence when needed |
+| Office tools | The office, tape and film spreads, shared canister and calendar are playable. Other workspaces have uneven physical treatment. | Review the entire journey for rights, research, review, and the recurring project sheets. Improve one decision at a time using the [widget guide](office-widget-style.md). |
+| Programme discovery | A gap and a tape can each begin a booking. Slot suggestions are provisional. | Test a physical tape rack, broad Best aired and Also works findings, and estimated fit colours in Programming with a second accessible cue. Keep low estimated fit distinct from a clash. |
+| Action capacity | Work and deadlines advance on simulated time. Most station interface actions apply immediately. | Test no delay, a shared queue, and local desk capacity for one consequential action. See [action timing](#station-time-and-action-capacity). |
+| Public schedule and promotion | Exact internal schedules, one rival comparison, fillers and authored teasers are playable. | Decide what rivals publish, when they commit, and how anticipation, promotion, and moved listings change later outcomes. |
+| Advertising | Minute sales and scoped autosell are playable. Weekly brand review can change willingness to bid. | Test long-run incentives around low hype and repeated campaigns. Decide whether brands should revise budgets or priorities, and how future measured guarantees would work. |
+| Research | Shared audience survey cadence, group-specific Insight and title assessments are playable. | Design Insight generation from private preparation and optional auditions. Decide how collaboration and public disclosures affect familiarity and later estimates. |
+| Production logistics | Staff and studio reservations are enforced. Film room choice exposes price and staging trade-offs. | Explore always-available rentals priced by overlap-weighted demand and quality. Low quality should remain bookable. Test batch setup savings and reusable prop stock separately. |
+| Show lifecycle | Film, recurring discussion, scripted-series and newsroom pilots exercise parts of the workflow. | Define a general standing brief, finite and open-ended runs, sequels, format-specific shelf life, and editable episode ambition curves. |
+| Expectations and receipts | Airing files can show a dated pre-air outlook beside provisional turnout, receipts and costs. | Decide how to retain forecasts over time and show earned or spent resources beyond Funds. Keep advertiser expectations, audience reception and station outcomes distinct. |
+| Visual time and feedback | Visual working hours, notices and ambient poses are in the office. | Compare independently timed pose changes, changing office dressing and a day transition. Keep these independent of simulation. See [playtest direction](office-playtest-direction.md). |
 
-## Newly agreed directions needing detailed mechanics
-
-- [Screen organisation](screens.md): eight proposed workspaces and contextual
-  details; compare mockups before building the full UI.
-- [Player-facing interactions](screens.md#player-facing-interaction-direction): direct
-  schedule manipulation, focused panels, casting cards, selective sliders/stars
-  and readable recaps; preserve accessible alternatives and hidden information.
-- [Playful feedback](screens.md#playful-feedback-and-visible-passage-of-time): milestone
-  notifications, a dashed current-time line, simulated daylight and later
-  resource-sensitive office visuals; thresholds and interruption policies remain open.
-- [Weekly scheduling and audience flow](weekly-scheduling.md): the bounded recurrence, exception and weekday rules are implemented. Assess autosell timing and ordering, habit buildup and decay, and a conserved lead-in carryover model.
-- [Station time and action capacity](#station-time-and-action-capacity): explore
-  whether consequential work should occupy simulated time and delay competing
-  commitments.
-- Advance publication and airing-specific anticipation: choose buildup, delays,
-  rescheduling consequences and readable evidence.
-- [Ad-minute market](ad-minute-market.md): tune how limited
-  station-offered minutes and non-exclusive brand offers set per-minute price;
-  decide how advertisers' exposure needs and unsold/self-promotional time work.
-  Delivery thresholds, measurement and refunds are explicitly deferred.
-- Measurement: if delivery-conditioned offers are added later, specify sampling,
-  bias, delay, forecasts and the measurement basis; current prototype settlement
-  still uses internal expected delivery.
-- Keep timing simple: due ticks plus selected state updates; no general effects
-  framework is required.
-- [Production logistics](production-logistics.md): prototype always-available studio
-  rental with overlap-weighted demand pricing, script requirements for a few studio
-  quality dimensions, and a bounded quality star selector. Test price monotonicity,
-  integer settlement, affordability and whether the choice is legible before adding
-  ownership markets, recurring batches or prop inventories.
-- [Show identity and staged production](production-ambition-draft.md): separate a
-  show's ambition/run shape from preparation and each produced instalment. Decide
-  how one-shot, finite and open-ended runs link to sequels, and how prepared work's
-  freshness varies between news, discussion editions and scripted works.
-- Procedural episode ambition: model deviation from the show's promise, local
-  episode-to-episode swings, cumulative strain and recovery separately. Test an
-  isolated dark/action episode, repeated extremes, a return to baseline and a
-  gradual planned arc resolved by a finale before choosing adaptation/recovery
-  rates.
-- [Insight and research](resource-economies-idea.md#insight-and-market-research):
-  decide how paid studies and investigative preparation generate private station
-  knowledge independently of airing, how spending targets one estimate, how
-  reports age, and how diminishing returns preserve uncertainty across audience
-  forecasts, acquisitions, role fit and cast chemistry.
-- Research cadence: audience groups use paid automatic polls up to daily; talent
-  and pair relationships use optional decision-triggered auditions, with Insight
-  allocated immediately beforehand. Blind casting remains possible. Define shared
-  familiarity/noise and persistent-bias drift curves, how working together changes
-  familiarity, and how public disclosures update current knowledge without
-  rewriting old evidence.
-- Ad-market information: use each audience group's latest published poll and
-  uncertainty for offer-time reach/value estimates; the browser experiment uses published point estimates. How advertisers value
-  age and uncertainty directly remains open.
-- [Programme library and acquisition](design.md#programme-library-licensing-and-resale):
-  determine release cadence, price formation from expected performance and solvent
-  competitor demand, acquisition deadlines, and resale offers under perpetual
-  ownership rights.
-- Expectations and airing outcomes: keep prior estimates, contract delivery,
-  audience response and station resource returns distinct. Define how estimates
-  are recorded and updated, and how reports show per-airing versus cumulative show
-  costs/returns without a universal failure score.
+Monthly recurrence, broad rival strategy, commercial-delivery measurement,
+self-promotion within an ad block and outcome-graded Sway rewards all remain
+proposals. Their bounded predecessors are linked in the [design library](README.md).
 
 ## Later design questions
 
@@ -101,8 +45,8 @@ meaningful? How should options, exclusivity, cancellation and release work? How
 can scripts change role requirements while preserving existing obligations?
 What are the consequences of recasting, and what can the player legitimately know?
 
-Suggested experiment: one short host agreement before a full series-casting or
-labour-market system. This is not an implementation commitment.
+Use the [guaranteed host dates pilot](guaranteed-host-dates.md) as the baseline
+for distinguishing contractual commitments from individual assignments.
 
 ### Talent and relationships
 
@@ -169,41 +113,18 @@ deadline, capacity comparison, and due-tick cases.
 
 ## Exact airtime and quarter-hour simulation
 
-Proposed follow-up to the focused-screen slice. Allow start and end times to
-the minute, and render programme and variable-length advertising as exact
-airtime in Schedule. Keep the quarter-hour audience update cadence. Explore
-allocating each quarter-hour's expected viewing over its intersecting airtime
-segments in proportion to occupied minutes. A partial tick cannot contribute
-a full interval to each of two sequential shows. Validate simultaneous
-competition, midnight boundaries and short ad blocks. Schedule overlap,
-accepted inventory, cost and settlement should use exact airing identities
-and boundaries. Define how ads are positioned or attributed within that
-interval, and test that adding an ad minute cannot create a whole extra
-quarter-hour of delivery. The current mechanism is documented in
-[minute airtime](minute-airtime.md).
+Exact-minute placement and weighted exposure across quarter-hour inputs are
+playable. The remaining questions concern refined viewing and reporting:
+calibrate start-of-airing counts against sustained attention, and decide what
+ratings evidence the station and advertiser can know. See [minute airtime](minute-airtime.md).
 
 ### One-minute fillers and teasers
 
-A minute-accurate schedule can leave a small opening before a fixed slot.
-If a programme ends at 17:59 and the regular show starts at 18:00, let the
-player use the intervening minute for a station ident or a teaser. Leave the
-gap off air if the player does nothing. The planner can offer **Fill with
-ident** and **Tease an upcoming show** on short openings. Try authored
-one-minute items first. Keep the regular slot and any signed ad blocks at
-their original times.
-
-A station ident provides continuity with no commercial receipts. A teaser
-points to a specific upcoming airing on the player's channel. It can also
-act as a small promotion once that system exists. Credit any promotional
-effect only for actual teaser exposure during its minute, with a bounded
-response to repeats. A player should be able to see which airing was teased.
-If that airing is moved or cancelled before the teaser plays, flag it for
-review and resolve the uncorrected slot as an ident. Decide later what
-happens to anticipation after a teaser has already aired.
-
-Treat these as explicit airtime intervals. Apply the same overlap checks and
-minute-weighted audience accounting as other broadcasts. The filler earns
-no advertiser delivery and cannot also occupy sold ad inventory. Its viewers
-belong to its own minute and give the next show no automatic viewing credit.
-Placement inside commercial breaks, production of custom trailers, automatic
-gap filling, and lead-in effects remain separate proposals.
+The planner already supports authored idents and teasers in short gaps, using
+their own airtime. A moved or cancelled teaser target falls back to an ident.
+The open question is whether actual exposure should build anticipation for
+the exact teased airing, how repetition should saturate, and what happens
+when a spot already aired before its target moved. Custom trailers, automatic
+gap filling and using unsold ad inventory for self-promotion are separate
+proposals. Preserve signed ad inventory and allocate viewers once per
+overlapping airtime segment.

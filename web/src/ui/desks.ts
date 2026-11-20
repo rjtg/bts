@@ -3,9 +3,7 @@ import { element, node } from './dom';
 const folders: Record<string, { label: string; prop: string }> = {
   planning: { label: 'Programming calendar', prop: 'calendar' },
   'weekly-planner': { label: 'Regular bookings', prop: 'calendar' },
-  'film-desk': { label: 'Preparation', prop: 'script' },
-  'film-production': { label: 'Film production', prop: 'production' },
-  production: { label: 'Studio book', prop: 'production' },
+  production: { label: 'Studio workbooks', prop: 'production' },
   'rights-market': { label: 'Incoming portfolio', prop: 'rights' },
   audience: { label: 'Research binder', prop: 'research' },
   results: { label: 'Transmission reviews', prop: 'reviews' },
@@ -14,6 +12,10 @@ const folders: Record<string, { label: string; prop: string }> = {
 
 export function initialiseDesks(closeShelf: () => void, onChange: (desk: string) => void) {
   const views = Array.from(document.querySelectorAll<HTMLElement>('[data-desk]'));
+  const paperMount = element('office-paper-mount');
+  const office = element('office');
+  const scenery = office.querySelector<HTMLElement>('.office-room')!;
+  const paperViews = new Set(['audience', 'production', 'film-dossier', 'results', 'rights-market', 'weekly-planner']);
   const rail = Array.from(document.querySelectorAll<HTMLAnchorElement>('.rail a'));
   const offsets = new Map<string, number>();
   const workspaceOffsets = new Map<string, number>();
@@ -23,6 +25,7 @@ export function initialiseDesks(closeShelf: () => void, onChange: (desk: string)
 
   history.scrollRestoration = 'manual';
   for (const view of views) {
+    if (paperViews.has(view.dataset.desk!)) paperMount.append(view);
     const folder = folders[view.dataset.desk ?? ''];
     if (!folder) continue;
     view.classList.add('office-job');
@@ -35,7 +38,8 @@ export function initialiseDesks(closeShelf: () => void, onChange: (desk: string)
   }
 
   function show(name: string, focus = true) {
-    const next = views.find(view => view.dataset.desk === name) ?? views[0];
+    const canonical = ['film-desk', 'film-production'].includes(name) ? 'film-dossier' : name;
+    const next = views.find(view => view.dataset.desk === canonical) ?? views[0];
     if (next.dataset.desk === active) return;
     if (active === 'planning') {
       closeShelf();
@@ -48,15 +52,20 @@ export function initialiseDesks(closeShelf: () => void, onChange: (desk: string)
     }
     active = next.dataset.desk!;
     const alongsideOffice = active !== 'office';
+    const paperOpen = paperViews.has(active);
+    paperMount.hidden = !paperOpen;
+    office.classList.toggle('paper-open', paperOpen);
+    scenery.inert = paperOpen;
     document.body.classList.toggle('prop-workspace', alongsideOffice);
     for (const view of views) {
       const background = view.dataset.desk === 'office' && alongsideOffice;
       view.hidden = view !== next && !background;
-      view.inert = background;
+      view.inert = background && !paperOpen;
     }
     for (const link of rail) {
       const current = link.hash === '#' + active;
-      link.classList.toggle('active', current || (link.hash === '#planning' && ['weekly-planner'].includes(active)));
+      link.classList.toggle('active', current || (link.hash === '#planning' && active === 'weekly-planner')
+        || (link.hash === '#production' && active === 'film-dossier'));
       if (current) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     }
@@ -76,7 +85,7 @@ export function initialiseDesks(closeShelf: () => void, onChange: (desk: string)
   }
 
   document.addEventListener('click', event => {
-    if (!(event.target instanceof Element) || !(event instanceof MouseEvent)
+    if (event.defaultPrevented || !(event.target instanceof Element) || !(event instanceof MouseEvent)
       || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const link = event.target.closest<HTMLAnchorElement>('a[href^="#"]');
     const name = link?.hash.slice(1);

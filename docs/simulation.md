@@ -1,17 +1,11 @@
 # Simulation model
 
-Status: causal direction is agreed; algorithms, parameter values, update ordering, and several mechanisms below are proposals to validate. This document is not a final mathematical specification.
-
-The [headless experiment](headless-experiment.md) now implements a bounded
-subset: deterministic expected viewing shares, separate attraction and
-satisfaction, series willingness, and exposure-driven hype with decay. The
-[bounded economy](advertising-economy.md) connects that hype to finite-budget
-offers, target delivery contracts and station cash.
-Its precise equations are provisional experiments; the broader mechanisms
-below remain proposals. Developer reports expose actual state and are not
-player evidence. The separate [browser adapter](browser-foundation.md) now
-constructs a restricted player observation, with explicitly provisional exact
-expected-count delivery reports and quoted contractual forecasts.
+This is the causal design reference. See the [playable season](first-playable.md)
+and the [design library](README.md) for implemented models and controlled
+evidence. Specific equations in the pilots are provisional; later world
+mechanics below are proposals. The browser adapter publishes restricted
+observations. Detailed internal state and fuzzy traces belong in developer
+reports.
 
 ## Purpose
 
@@ -169,8 +163,8 @@ automatic success.
 
 ## Talent obligations and script requirements
 
-Design direction, not implemented: distinguish a person's market availability,
-contractual obligations and assignments to specific productions. Contracts can
+Distinguish a person's market availability, contractual obligations and
+assignments to specific productions. Contracts can
 span editions or episode appearances, with explicit money and time commitments.
 A signed person is not automatically available for every task. See
 [talent and contracts](talent-and-contracts.md) for proposed terms and open questions.
@@ -181,7 +175,8 @@ Rewrites consume work/time and can change creative requirements; they must not
 retroactively erase guaranteed pay, reserved commitments or other obligations.
 Recasting/release consequences need explicit design before implementation.
 Preserve exact accounting, conflict checks, atomic rejection and reproducibility.
-The existing one-off discussion booking remains the implemented baseline.
+The [host agreement pilot](guaranteed-host-dates.md) and [series pilot](scripted-series-pilot.md)
+provide bounded examples. Wider labour-market and role-rewriting rules remain open.
 
 ## Cultural change and relationships
 
@@ -253,10 +248,10 @@ or delayed. The intended commercial direction is settlement against an agreed
 measurement method, not omniscient truth. Forecast, internal delivery, reported
 delivery and contract-credited delivery must stay distinguishable.
 
-Current contracts still settle against internal expected relevant delivery,
-and browser reports explicitly expose provisional exact expected counts.
-Measurement and measurement-based settlement are not implemented. Do not claim
-otherwise or add arbitrary noise without specifying its sampling and timing.
+Legacy contracts use internal expected relevant delivery as their settlement
+basis. Minute sales settle on whether the inventory aired. Browser reports
+label audience counts provisional. Audience measurement and measurement-based
+settlement remain proposals.
 
 The station observes estimated outcomes. Attribution is uncertain when campaigns, competitors, news, and social transmission overlap. Brand health should use a coarse commercial model rather than equating hype directly with revenue.
 
@@ -274,42 +269,22 @@ Later elections: calculate eligible population, turnout, and divided support wit
 
 ## Time, update frequency and delays
 
-Agreed direction: one tick is 15 simulated minutes, four ticks per hour and
-96 per day. No continuously running wall clock is required. Advancing a day
-processes all intervening ticks and scheduled activity rather than resolving
-only its destination. The browser now implements a bounded tick planner; legacy CLI comparisons retain
-whole-hour point snapshots. See [programme-planning cadence](programme-planning.md).
+The browser clock advances by explicit quarter-hour simulation steps and
+processes intervening work and deadlines in order. Airings and ad inventory
+occupy half-open intervals in whole minutes. The engine splits at minute
+boundaries relevant to programme and paid spot changes. Quarter-hour audience
+inputs drive each intersecting lineup, with exposure weighted by its elapsed
+minutes. Research and other periodic updates keep their configured cadence.
+See [minute airtime](minute-airtime.md) for the current browser model and
+[planner history](programme-planning.md#original-processing-cadence-and-units)
+for the earlier single-sample experiment.
 
-A programme occupies its duration across ticks. Tick resolution is not a
-requirement to run every rule on every tick:
-
-| Trigger | Relevant updates |
-| --- | --- |
-| Programme start / competing schedule change | Audience choice and expectations |
-| Watched interval / ad block | Exposure and appropriate viewing/advertising response |
-| Programme completion | Accumulated reception, familiarity and series consequences |
-| Daily boundary | Selected gradual cultural processes and summaries |
-| Due tick | Research/report delivery, completion or settlement |
-
-These triggers remain the broader proposed processing semantics. The implemented
-planner uses a provisional one-start-snapshot cadence, completes reception once
-at the work's end, and advances passive decay/deadlines at every tick. It does
-not integrate interval viewing or ad blocks; see [exact implemented order](programme-planning.md). In particular,
-splitting a work into four ticks must not charge four full broadcast costs,
-treat it as four fresh episodes, or multiply full-viewing satisfaction updates.
-The implemented normalization is one sampled delivery opportunity per airing,
-with no sum of tick audiences. Stored starting reception is applied once at
-completion. Duration-integrated exposure and retention remain future work. Account for interval viewers separately from unique reach.
-
-Use consistent pre-update snapshots for interacting changes and deterministic
-ordering for scheduled actions. Exact phase ordering remains open. Quantities
-with elapsed-time rates must retain their meaning when frequency changes.
-
-Delays can be simple due-tick records: information may arrive later than the
-event it describes; gradual effects can update selected remembered values.
-Fuzzy rules may calculate a target or rate; persistent state supplies memory.
-Do not build a general effects-entity framework or detailed social propagation
-without a concrete gameplay need.
+Recaps use provisional opening viewer counts. They do not sum the counts from
+successive segments as unique viewers. Process broadcast funding, familiarity
+and reception, and ad settlement once at their appropriate boundaries.
+Use deterministic order for scheduled actions and consistent snapshots when
+updates interact. Keep elapsed-time effects independent of clock speed.
+Where information or work takes time to arrive, use explicit due times.
 
 Internal schedule, publication and promotion are distinct. Awareness of a work,
 anticipation for a particular airing and recurring-slot habit have distinct
@@ -320,23 +295,16 @@ Precise buildup, decay, cancellation and habit equations remain open. The [weekl
 
 ## Ad minutes and advertising load
 
-The current provisional market and its explicit delivery refunds are described
-in [advertising economy](advertising-economy.md); this section records the intended
-minute-based direction.
+The [minute market](ad-minute-market.md) is the browser's main path. A station
+chooses minutes on one airing, which lengthen its occupied interval. It can
+sign several partial offers, leave inventory unsold or shorten unsold time.
+Purchased minutes pay the agreed price on transmission. Keep forecast reach,
+actual exposure and settlement distinct. Legacy delivery contracts use
+audience-specific settlement under their own terms.
 
-The proposed market has the station choose total commercial minutes for a
-particular airing. That time extends the show's schedule occupancy; it does not
-consume an interval inside its programme runtime. Detailed break placement and
-individual arrival/departure simulation are out of scope. The station offers that
-inventory to the market, accepts non-exclusive offers for some of it, and may
-leave minutes unsold or use station teasers. See [ad-minute market](#ad-minute-market).
-
-Commercial load may affect viewer annoyance, departures and longer-term station
-expectations, with different audience tolerances. Its effect should depend on total
-ad minutes and programme context, not on a simulated position for every spot.
-Audience reach and ad duration/dose remain distinct measures; do not multiply down
-reach and dose twice. Exact exposure and refund measurement are deferred alongside
-market settlement terms.
+Future viewer tolerance, self-promotion in unsold inventory and measured
+guarantees need explicit models. Do not apply a reduction to both reach and
+dose for the same effect. Detailed break placement remains out of scope.
 
 ## Audience evolution
 

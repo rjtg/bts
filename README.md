@@ -5,7 +5,7 @@ A television station management game about understanding a changing audience and
 ## Direction
 
 - Rust development; simulation mechanics come first.
-- Browser as the primary player interface; Rust/WebAssembly integration first, with an 80s retro / 8-bit identity later. The CLI remains a developer tool.
+- Browser as the primary player interface; Rust/WebAssembly simulation with a late-1980s Station Office. The CLI remains a developer tool.
 - Hidden but learnable audience preferences, cultural trends, and talent careers.
 - Multiple programme formats, original production, scheduling, and brand advertising.
 - Scenario-specific ambitions rather than one universal victory condition; sandbox play is also intended.
@@ -16,51 +16,19 @@ Observe → acquire or produce → schedule and sell advertising → broadcast �
 
 The world supplies viewers, talent, stories, guests, and advertisers. Its detail must support decisions about television.
 
-## Design documents
+## Design and status
 
-- [Game design](docs/design.md): scope, entities, relationships, formats, and scenarios.
-- [Station Office widget guide](docs/office-widget-style.md) maps desk props to current and planned workspaces.
-- [Recurring discussion editions](docs/recurring-discussion.md) links three weekly productions to one stand-alone discussion format.
-- [Daily newsroom pilot](docs/recurring-newsroom.md) describes automated preparation, recording, delivery and same-day airings.
-- [Guaranteed host dates](docs/guaranteed-host-dates.md) describes one-off and multi-edition discussion agreements.
-- [Station saves and season review](docs/station-saves.md) explains local replay files and the final notebook summary.
-- [Scripted series pilot](docs/scripted-series-pilot.md) describes the three-episode binder and creative strain.
-- [Weekly advertiser reviews](docs/brand-reviews.md) describes brand bidding changes and industry-wire notices.
-- [Screens and interaction design](docs/screens.md): proposed workspaces, shared production and mockup brief.
-- [UI concept mockups](docs/mockups/README.md): station overview, programme planning and production editorial profile.
-- [Weekly scheduling](docs/weekly-scheduling.md): recurring slots, weekday preferences and deferred follow-ups.
-- [Minute airtime and the planning desk](docs/minute-airtime.md): exact placement, ad-load defaults, dossiers and one-minute fillers.
-- [Playable Control Desk](contrib/focused-desks/README.md): Schedule, Weekly Run, Ad Sales, Broadcast Review and pause.
-- [Control Desk redesign](docs/mockups/control-desk/README.md): connected UI mockups, audit and visual guide.
-- [Resource economies](docs/resource-economies-idea.md): pooled Sway, award-driven Glamour and the Credibility–Backing–loyalty loop.
-- [Simulation](docs/simulation.md): causal mechanisms, hidden information, and verification principles.
-- [First playable](docs/first-playable.md): a bounded proposal and acceptance criteria.
-- [Open questions](docs/open-questions.md): unresolved decisions and experiments.
-- [Architecture decisions](docs/architecture.md): crate boundaries and extraction plan.
-- [Headless experiment](docs/headless-experiment.md): broadcasting equations and developer reports.
-- [Advertising economy](docs/advertising-economy.md): provisional demand, contracts, accounting, and comparisons.
-- [Advertiser hardening](docs/advertiser-hardening.md): audience-specific value, off-air handling and pricing incentives.
-- [Commitments and episodes](docs/episodes-and-commitments.md): audience-specific settlement, standalone works, familiarity and continuity.
-- [Browser foundation](docs/browser-foundation.md): Wasm sessions, player protocol and local build.
-- [Programme planning](docs/programme-planning.md): playable timeline, airing identities, cadence, controls and evidence.
-- [Character portraits](docs/portraits.md): initial varied fictional roster artwork and generation briefs.
-- [Talent and contracts](docs/talent-and-contracts.md): proposed hiring market, obligations, recurring roles and rewriting boundaries.
-- [Production ambition draft](docs/production-ambition-draft.md): staged work, creative ambition, delivery shortfalls and downstream demands.
-- [Production logistics](docs/production-logistics.md): implemented station ownership/capacity and future setup/prop economies.
-- [Audience research](docs/audience-research.md) covers dated polls, Insight spending and ad forecasts.
-- [Programme feature profiles](docs/feature-profiles.md) covers ambition, achieved qualities, audience fit and catalogue labels.
-- [Programme rights market](docs/rights-market.md) covers acquisitions, assessments, rival purchases, resale and accounting.
-- [Ad-minute market](docs/ad-minute-market.md) covers the sell-by-the-minute workflow, booking and settlement.
-- [Original films](docs/original-film.md) covers script commissions, revisions, casting, studio bookings and airing results.
-- [Casting desk](docs/casting-desk.md): portrait casting, booking reviews and adjustable cooperation support.
-- [Sway quests](docs/quest-opportunities.md): separate acceptance, deadlines and production hints.
-- [Pooled Sway](docs/pooled-sway.md): finite requests, station-wide social capital and bounded production uses.
-- [Original production](docs/original-production.md): bounded discussion shows, talent commitments, budgets and pooled Sway requests.
-- [Contributor guidance](AGENTS.md): implementation principles for people and coding agents.
+Use the [design library](docs/README.md) to find current rules, mockups and
+historical experiments. The [game design](docs/design.md) describes the
+station and world. The [design guidelines](docs/design-guidelines.md)
+record reusable decisions for future work. Start with the
+[playable season](docs/first-playable.md) to review the current browser game.
 
-## Status
-
-Design baseline and initial Cargo workspace, November 2026. The independent [`bts-fuzzy`](crates/bts-fuzzy/README.md) crate implements zero-order Sugeno inference, validated membership curves, nested conditions, traces, and an authoring macro. A bounded headless broadcasting economy is implemented in `bts-sim`, with audience choice, hype-driven advertiser demand, delivery contracts and integer station finances. `bts-cli` provides controlled comparisons and developer JSON reports. A thin `bts-web` adapter and TypeScript/Vite browser harness now provide a playable six-week programme-planning workspace with 15-minute ticks, real runtimes, editable broadcasts, Rust-calculated ad contracts and restricted player reports. A bounded original-production workflow now books a host and two guests, reserves cash and recording time, completes a standalone discussion show and adds it to the schedulable library. Accepted timed quests earn pooled Sway, spendable on another person’s negotiable participation or on bounded cooperation smoothing. The office notebook tracks the bounded season goals, and a local station save can replay the session. Documents distinguish agreed direction from proposals and open questions; numerical examples are not balance commitments. The browser harness uses plain TypeScript, HTML and CSS; no game engine or AI model is selected.
+The browser runs a bounded six-week Station Office scenario. The Rust
+simulation owns scheduling, audience allocation, research, rights purchases,
+production, ad-minute sales and accounting. The CLI supplies controlled
+comparisons and developer traces. The independent [bts-fuzzy](crates/bts-fuzzy/README.md)
+crate implements generic zero-order Sugeno inference.
 
 ## Run the broadcasting experiment
 
@@ -110,21 +78,16 @@ npm run wasm
 npm run dev
 ```
 
-`npm run build` produces the static `web/dist/` bundle. `npm run test:e2e`
-runs real Chromium tests after `npx playwright install --with-deps chromium`.
-Player protocol v8 excludes internal preferences, hype, execution and fuzzy
-traces. Audience delivery uses explicitly provisional start-of-airing expected counts;
-measured ratings and research remain future work. See the [browser guide](docs/browser-foundation.md)
-for contractual edit constraints, JSON money strings and verification results.
+`npm run build` produces the static `web/dist/` bundle. To serve that build
+over the network, run `npm run preview -- --host 0.0.0.0` from `web/` and
+open port 4173. Rebuild to update the preview. Use `npm run dev` for a
+development server that reloads frontend changes. Run `npm run test:e2e`
+after installing Chromium with `npx playwright install --with-deps chromium`.
 
-The planner supports placing, moving and removing future broadcasts across seven
-full days. Durations occupy real airtime; gaps are off air. Offers and results
-name an airing ID, and accepted bookings lock its programme/time/advertiser.
-Selected-airing actions are separate from next-to-air controls. Use
-`cargo run -p bts-web --example planning_evening` for the reproducible native evening.
-
-Use the **Production** casting desk to select portrait cards, draft and review a booking, run through recording,
-then select **Show in programme library** to schedule it and sell advertising.
-Nora Vale’s co-guest request and Rafi Linden’s calm discussion request earn
-station-wide Sway, spendable across people and productions. See the [production rules and comparison](docs/original-production.md);
-`cargo run -p bts-web --example production_experiment` reproduces the public reports.
+In the office, open the **calendar** for Programming, the **shelf** for
+owned tapes, and the **script file** for Ideas, Scripts and Production.
+Audience surveys and title assessments spend or use their own dated evidence.
+Airing actions use the exact airing's file. The player protocol exposes
+provisional expected counts with restricted observations. See the
+[browser foundation](docs/browser-foundation.md) for the adapter and money
+serialization and [minute airtime](docs/minute-airtime.md) for current scheduling.

@@ -1,24 +1,19 @@
 # Programme-planning milestone
 
-Status: implemented, bounded and provisional. This replaces the browser's
-fourteen fixed slots with a seven-day schedule. The primary reference is
-[screens](screens.md) and the [planning mockup](mockups/programme-planning.png).
-This planning milestone added a playable scheduling workflow. The subsequent
-[original-production milestone](original-production.md) adds one studio format;
-a complete season game remains deferred.
+This record describes the first seven-day planner and its baseline experiments.
+For current behaviour, start with [Station Office](station-office.md), [minute
+airtime](minute-airtime.md), [weekly scheduling](weekly-scheduling.md) and the
+[ad-minute market](ad-minute-market.md). The playable season spans six weeks.
+The earlier [focused Control Desk](../contrib/focused-desks/README.md) records
+an intermediate UI. Example payloads and captures below belong to this
+milestone.
 
-The [Control Desk weekly planner](weekly-scheduling.md) now extends the browser calendar to six weeks, adds recurring slots and enables weekday viewing preferences. The [focused Control Desk](../contrib/focused-desks/README.md) separates Schedule, Weekly Run, Ad Sales and Broadcast Review. The original seven-day implementation below is the baseline.
-
-The current planner reserves the programme plus listed ad time to the minute.
-See [minute airtime](minute-airtime.md) and [ad-minute market](ad-minute-market.md)
-for placement, segment processing, inventory and settlement. The original
-quarter-hour planning implementation below provides historical context.
-
-See [programme rights](rights-market.md) for ownership transfers, rival gaps and schedule protections.
+See [programme rights](rights-market.md) for ownership transfers, rival gaps
+and schedule protections.
 
 ## Workspace and actions
 
-The [Planning Room design](station-office.md) describes the office CRT entry, calendar summaries and Today behaviour.
+The [Planning Room design](station-office.md) describes the desk calendar entry, calendar summaries and Today behaviour.
 
 The browser has a full-day horizontal timeline with 96 quarter-hour cells,
 a read-only competitor lane, a filterable programme catalogue and contextual

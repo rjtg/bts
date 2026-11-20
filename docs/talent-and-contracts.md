@@ -1,19 +1,12 @@
 # Talent market, contracts and recurring roles
-The [guaranteed host dates pilot](guaranteed-host-dates.md) implements one narrow prepaid agreement type.
+The [hiring desk](guaranteed-host-dates.md) implements bounded prepaid host
+agreements. The [film](original-film.md) and [scripted-series](scripted-series-pilot.md)
+pilots distinguish named roles from performers and enforce recording
+reservations. One-off discussion bookings still use station-assigned hosts,
+freelance guests and optional [pooled Sway](pooled-sway.md).
 
-Status: design direction, November 2026. A dedicated place to find and sign people,
-with meaningful obligations, is intended. Contract structures, negotiation rules,
-prices and consequences below are proposals requiring bounded experiments.
-This document does not claim implementation or expand the current milestone.
-
-The existing discussion experiment books one host and two guests for a single
-recording, reserves a fixed budget and supports exceptional participation through
-[pooled Sway](pooled-sway.md). The browser fixture now has explicit station-assigned hosts and separate freelance
-guests, with person and studio reservations. It does not implement negotiated employment, multi-edition
-contracts, character casting, script rewrites or a dynamic talent market.
-
-The [original film experiment](original-film.md) books freelance writers,
-actors and directors for one project and distinguishes named roles from actors.
+This document describes the wider talent market and obligation design.
+Broader terms, negotiation and rewriting remain proposals.
 
 ## Three distinct layers
 
@@ -115,23 +108,17 @@ other than the original request proposer. It does not pay fees, override existin
 commitments or create a general quality guarantee. Broader contract concessions
 remain proposals; current Sway effects stay as documented in the implemented model.
 
-## Suggested bounded experiment and open questions
+## Open questions
 
-A possible first slice is one host contract covering a short run of discussion
-editions, with explicit minimum work, fees, preparation/recording reservations and
-clear fulfilment. This is a suggested sequence, not a commitment to implement
-recurring editions now. Compare a flexible one-off booking with a longer guarantee
-and verify cash, time, conflicts, fulfilment and atomic rejection in the browser.
-Leave the existing one-off path available where appropriate.
+Compare the flexible one-off booking with a guaranteed short run using the
+existing pilot. Broader terms still need design: minimum work, preparation
+reservations, staged payments, cancellation, release, options, exclusivity,
+renewal and reassignment.
 
-Test scripted recurring roles and rewriting in a later slice once scripts and
-episodes have meaningful production requirements. Do not build a universal labour
-market, legal system or career simulation merely to support the first contract.
+Test whether rewriting specific episode roles makes recasting a useful
+creative decision while keeping existing guarantees visible. Auditions and
+repeated collaboration can inform estimated fit and chemistry. Define what
+the player would know before designing associated negotiation controls.
 
-Open: minimum-work interpretation; reservation versus confirmed dates; payment
-and cancellation timing; breach/release remedies; option pricing; exclusivity;
-renewal; reassignment; recasting consequences; player evidence about fit; and the
-scope of an initial negotiation UI. Define these visibly before implementing them.
-
-[Production logistics](production-logistics.md) records current staff/library/studio
-ownership and the following slice’s setup/cleanup and reusable-prop direction.
+See [production logistics](production-logistics.md) for studio capacity
+and the setup, cleanup and prop-stock proposals.

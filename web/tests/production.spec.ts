@@ -23,7 +23,9 @@ test('cast, review, earn Sway, negotiate and support a show then advertise and b
   await page.goto('/#planning'); await expect(page.locator('#status')).toContainText('WASM READY');
   await page.locator('#jump-now').click();await page.screenshot({path:'/tmp/bts-live-hud.png'});
   await page.getByRole('link', { name: '▣ Production', exact: true }).click();
+  await page.locator('#studio-index').getByRole('button', { name: 'Sway requests', exact: true }).click();
   await page.locator('#accept-request-1').click();
+  await page.locator('#studio-index').getByRole('button', { name: 'Discussion brief', exact: true }).click();
   await page.locator('#create-production').click();
   const first = page.locator('#production-1');
   await expect(first).toContainText('620 in fees'); await expect(page.locator('#cash')).toHaveText('20,000');
@@ -36,7 +38,7 @@ test('cast, review, earn Sway, negotiate and support a show then advertise and b
   await page.locator('#open-ad-sales').click();
   await page.locator('#advertiser').selectOption('2'); await page.locator('#set-advertiser').click(); await page.locator('#quote').click(); await page.locator('#accept').click(); await page.locator('#advance-next').click();
   await expect(page.locator('#selected-contract')).toContainText('Settled: paid');
-  await page.getByRole('link', { name: '▣ Production', exact: true }).click(); await page.locator('#production-new').click();
+  await page.getByRole('link', { name: '▣ Production', exact: true }).click(); await page.locator('#studio-index').getByRole('button', { name: 'Discussion brief', exact: true }).click(); await page.locator('#production-new').click();
   await page.locator('#production-day').selectOption('2'); await page.locator('#production-time').selectOption('40');
   await choose(page, 0, 'Mina Sol'); await choose(page, 1, 'Jules Hart'); await choose(page, 2, 'Rafi Linden');
   await page.locator('#production-name').fill('Neighbourhood Conversations'); await page.getByRole('button', { name: 'Everyday life', exact: true }).click();
@@ -62,6 +64,7 @@ test('conflicting bookings are rejected and cast cards explain duplicates and co
   await page.goto('/#planning'); await expect(page.locator('#status')).toContainText('WASM READY');
   await page.getByRole('link', { name: '▣ Production', exact: true }).click();
   await page.locator('#create-production').click(); await book(page, 1);
+  await page.locator('#studio-index').getByRole('button', { name: 'Discussion brief', exact: true }).click();
   await page.locator('#production-name').fill('Conflicting recording'); await page.locator('#create-production').click();
   await page.locator('#review-2').click(); await expect(page.getByRole('alert')).toContainText('talent_conflict'); await expect(page.locator('#cash')).toHaveText('19,000');
   await page.locator('#production-2').getByRole('button', { name: 'Edit concept' }).click(); await page.locator('#seat-1').click();
@@ -120,12 +123,14 @@ test('second quest, exact whole support, keyboard and narrow-screen casting cont
   await page.locator('#seat-2').focus(); await page.keyboard.press('Enter');
   await page.getByRole('dialog').getByRole('button', { name: 'Choose Rafi Linden', exact: true }).click();
   await page.getByRole('button', { name: 'Everyday life', exact: true }).click();
+  await page.locator('#studio-index').getByRole('button', { name: 'Sway requests', exact: true }).click();
   await page.locator('#accept-request-2').click();
+  await page.locator('#studio-index').getByRole('button', { name: 'Discussion brief', exact: true }).click();
   await page.getByRole('radio', { name: /Shoestring/ }).check(); await page.locator('#create-production').click();
   const first = page.locator('#production-1');
   await expect(first.locator('.quest-hint')).toContainText('matches production requirements');
   await book(page, 1); await finish(page, 1); await expect(page.locator('#sway-panel')).toContainText('Sway · 3');
-  await page.locator('#production-new').click(); await page.locator('#production-name').fill('A different production'); await page.locator('#production-time').selectOption('60');
+  await page.locator('#studio-index').getByRole('button', { name: 'Discussion brief', exact: true }).click(); await page.locator('#production-new').click(); await page.locator('#production-name').fill('A different production'); await page.locator('#production-time').selectOption('60');
   await choose(page, 1, 'Jules Hart'); await page.locator('#create-production').click();
   await page.locator('#support-exact-2').fill('1.5'); await expect(page.locator('#review-2')).toBeDisabled();
   await page.locator('#support-exact-2').fill('4'); await expect(page.locator('#review-2')).toBeDisabled();
@@ -139,6 +144,7 @@ test('second quest, exact whole support, keyboard and narrow-screen casting cont
 test('quests are accepted separately, show deadlines and expire without rewards', async ({ page }) => {
   await page.goto('/#planning'); await expect(page.locator('#status')).toContainText('WASM READY');
   await page.getByRole('link', { name: '▣ Production', exact: true }).click();
+  await page.locator('#studio-index').getByRole('button', { name: 'Sway requests', exact: true }).click();
   await page.locator('#accept-request-2').click(); await expect(page.locator('#request-2')).toContainText('Open · due Day 3 · 00:00');
   await expect(page.locator('#accept-request-2')).toHaveCount(0); await expect(page.locator('#cash')).toHaveText('20,000');
   await page.locator('#advance-day').click(); await page.locator('#advance-day').click();
@@ -148,11 +154,13 @@ test('quests are accepted separately, show deadlines and expire without rewards'
 
 test('distinct rival library and staff, with studio capacity independent of cast conflicts', async ({ page }) => {
   await page.goto('/#planning');await expect(page.locator('#status')).toContainText('WASM READY');
-  await page.getByRole('link', { name: '▣ Production', exact: true }).click(); await expect(page.locator('#station-teams')).toContainText('Elian North, Mina Sol');await expect(page.locator('#station-teams')).toContainText('Vera Quinn');
+  await page.getByRole('link', { name: '▣ Production', exact: true }).click(); await page.locator('#studio-index').getByRole('button', { name: 'Facilities', exact: true }).click(); await expect(page.locator('#station-teams')).toContainText('Elian North, Mina Sol');await expect(page.locator('#station-teams')).toContainText('Vera Quinn');
   await page.getByRole('link', { name: '▦ Schedule', exact: true }).click(); await expect(page.locator('#catalogue')).not.toContainText('After Hours');await page.locator('[data-station="2"] [data-airing]').first().click();
   await expect(page.locator('#selected-name')).toHaveText('After Hours');await expect(page.locator('#known-details')).toContainText('outside your library');
   await page.getByRole('link', { name: '▣ Production', exact: true }).click();
+  await page.locator('#studio-index').getByRole('button', { name: 'Discussion brief', exact: true }).click();
   await page.locator('#create-production').click();await book(page,1);
+  await page.locator('#studio-index').getByRole('button', { name: 'Discussion brief', exact: true }).click();
   await choose(page,0,'Mina Sol');await choose(page,1,'Jules Hart');await choose(page,2,'Rafi Linden');
   await page.locator('#production-name').fill('A second studio session');await page.locator('#create-production').click();await page.locator('#review-2').click();
   await expect(page.getByRole('alert')).toContainText('studio_unavailable');await expect(page.locator('#cash')).toHaveText('19,000');

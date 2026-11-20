@@ -2,8 +2,8 @@
 
 This guide records the visual direction for current and future player actions.
 The [Station Office](station-office.md#blotter-layout-and-prop-transitions)
-describes the implemented room. The widget treatments below are design targets.
-Future entries follow their own gameplay milestones.
+describes the implemented room. This file is the component and interaction
+reference. See [design guidelines](design-guidelines.md) for the broader rationale.
 
 ## The office is the home screen
 
@@ -54,7 +54,8 @@ like a literal wheel.
 
 Use a radial for a short set of context-specific choices, usually no more
 than four to six. It should stay near its prop, remain within the viewport,
-show a clear Back/Cancel path, and support pointer, keyboard and touch. A
+show a clear Back path in its hub, close on Escape or an outside click or tap,
+and support pointer, keyboard and touch. The lid holds the useful choices. A
 radial should not contain tiny title labels or replace a timeline, roster,
 slider, dossier tabs or other controls better suited to detailed choices.
 
@@ -116,7 +117,7 @@ Preparation prop → project collection → project dossier
     → Brief / Commission script / Review delivery / Revise or accept
     → Production dossier when ready
 
-Production prop → active-project board → project dossier
+Preparation prop → Production → active-project board → project dossier
     → choose role or seat → eligible-person roster
     → choose studio and support → review obligations → Book
 
@@ -137,11 +138,11 @@ eligible-person roster. Keep controls matched to the decision: a roster for
 casting, a calendar for dates, and an exact-value slider for Sway. Radials may
 choose a short task branch, but should not compress those detailed decisions.
 
-The browser implements contextual wheels for the Tape Shelf, Tape scheduling
-and the New project action in Preparation. The wheel opens beside its trigger
-and uses labelled tile controls for small viewports. Arrow keys move between
-choices, Enter activates them, and Escape closes the wheel. Browse all tapes
-and the planner's direct shelf controls are available as shorter routes.
+The browser shares one film-can component across the Tape Shelf, Tape
+scheduling, gap selection and the Ideas, Scripts and Production branches.
+It opens beside the trigger and clamps to the viewport. Arrow keys move
+between choices and Enter activates them. Browse all tapes and the planner’s
+direct shelf controls provide shorter routes.
 
 The placement slip supports editing the start minute and ad minutes. A
 recommended weekly run prefills the weekday and time from the survey-based
@@ -162,7 +163,7 @@ describe the current treatment.
 | Furniture and props | Warm late-1980s pixel art. Register separate sprite layers to the room and use perspective on furniture and covers. |
 | Working surfaces | Near face-on paper, tape labels, CRTs and device controls. Keep text, charts and interactions live in HTML or SVG. |
 | Typography | Typewriter-style briefs and typed labels. Reserve handwriting for short recommendations, crossed-off requests and marginal notes. Use a clear numeral treatment for times, dates and Funds. |
-| Dossiers | Two separate, fixed-size leaves with labelled edge tabs. Overflow goes to another sheet or scrolls within a leaf. Tape taupe, Airing teal, Preparation pink, Production blue, Character yellow. Name each type on the folder. |
+| Dossiers | Two separate leaves with a consistent footprint, labelled edge tabs and folded page corners. Prefer turning the page. Keep a leaf’s scroll local when there is no suitable break. Tape taupe, Airing teal, Preparation pink, Production blue, Character yellow. Name each type on the folder. |
 | Controls | Use portrait seats for casting, tabs and tiles for choices, a dial for bounded spending, and buttons labelled with the action. Show exact amounts beside dials and give them a keyboard-operable exact entry. |
 | Evidence | Pencil-style radar charts suit a profile. Use timelines for obligations, bars for airtime and ad minutes, and aligned figures in the ledger. Keep observed results, dated estimates and unknowns visibly distinct. |
 | Motion and feedback | Stagger tiny ambient gestures independently of game time. Use a stamp, signed line, moved tape or dated notice to confirm consequential changes. Give blocked actions a concrete reason beside the control. Under reduced motion, keep the labels and final poses and skip travel and idle animation. |
@@ -172,17 +173,41 @@ describe the current treatment.
 | Player task | Entry and widget | What the player can decide or see |
 | --- | --- | --- |
 | Find and place a programme | **Shelf → tape tray and taupe file.** Box episodes together and give cassettes readable spine labels. | Filter by runtime or production type. Pull one tape and browse Brief, Reception, Members and Bottom Line. Use Next Gap or the planning controls. Show title and runtime on the tape itself. |
-| Arrange a day or weekly run | **Desk calendar → Programming overlay.** Give the timeline the full width, with Day, Week, Month and Today. | Move or place at exact minutes, compare an available rival schedule, and preview recurring dates and clashes before confirming. Keep the selected airing and Up Next separate. |
+| Arrange a day or weekly run | **Desk calendar → Programming calendar.** Use a CRT for Day and calendar paper for Week and Month. Give regular bookings their own file. | Move or place at exact minutes, compare an available rival schedule, and preview recurring dates and clashes before confirming. Keep the selected airing and Up Next separate. |
 | Sell ads or inspect a broadcast | **Airing block or notebook reminder → teal Airing file.** Use an inventory strip and offer slips. | Set ad load and see occupied airtime, sign an offer, or leave space unsold. After air, show dated outlook, provisional turnout, settlement and airing cost in the same file. |
-| Pitch, commission or revise | **Script file under the lamp → pink Preparation spread.** Put the brief and script notes side by side. | Compare writer cards, fees and delivery dates. On return, read what the script achieved, what it demands, and what a paid revision would address. |
-| Cast and book | **Clapper clipboard → blue Production board.** Pin role cards and place portraits in their seats. | Compare known strengths and availability, select a studio, set cooperation support, and review exact obligations before booking. |
+| Develop an idea | **Script file under the lamp → Ideas → Idea dossier.** Keep the ambition stars on one leaf and the title, description and pace on the other. | Set the project's creative targets and choose how long to develop it. When ready, pass the brief to the writing desk. |
+| Commission or revise | **Script file under the lamp → pink Preparation spread.** Put the brief and script notes side by side. | Compare writer cards, fees and delivery dates. On return, read what the script achieved, what it demands, and what a paid revision would address. |
+| Cast and book | **Preparation → Production → blue Production file.** Place portraits in the role seats and use the studio and time fields on the booking paper. | Compare known strengths and availability, select a studio, set cooperation support where applicable, and review obligations before confirming on the booking paper. |
 | Inspect a person | **Known credit or portrait → yellow Character file.** Keep the portrait, public work and known commitments together. | Return to the same project or tape on close. Future auditions and contracts can open from this file with explicit costs and obligations. |
 | Buy or sell rights | **Incoming portfolio → illustrated title cards and assessment sheet.** | Compare asking prices, deadlines and public evidence. Request an assessment, buy a work or review a resale offer. Link acquisitions to the tape shelf. |
 | Research an audience | **Research binder → illustrated group dossiers.** Use half-star preference marks, a dated survey and an Investigate dial. | Adjust the shared polling schedule or spend Insight on one group. Keep the published snapshot in place until the next poll. |
-| Check priorities and requests | **Notebook on the blotter → open handwritten spread.** | See the next gap, unsold ad reminders, and Sway requests with deadlines and crossed-off completions. Open the relevant airing or job directly. Add station goals here when available. |
+| Check priorities and requests | **Notebook on the blotter → open handwritten spread.** | See the next gap, unsold ad reminders, and Sway requests with deadlines and crossed-off completions. Open the relevant airing or job directly. Keep station goals here. |
 | Understand the money | **Ledger and review sheets → station books and broadcast recap.** | Scan cash and commitments or open a specific airing. Distinguish each airing's costs and receipts from programme investment and lifetime totals. |
 
-## Widget homes for the roadmap
+### Assigning people
+
+Writers, actors, directors, discussion hosts and guests, and newsroom staff use
+the same photo spot. Selecting a spot opens a scrollable stack of clipped
+index cards alongside the file, or along the bottom edge on touch layouts.
+Picking a card fills the spot and returns focus to it. New film roles start
+empty. Established series casts and the discussion and newsroom templates
+display their existing assignments. The film booking and writing commands
+remain separate from the draft selection.
+
+Pencilled stars represent authored public clippings for particular qualities.
+Unrated qualities stay unknown, and people without portrait artwork show a
+photo placeholder. The Rust workflow still validates timing and commitments.
+
+Studio choices use the same card stack with distinct photos, prices and
+known reservations. Film booking updates the cost on the call sheet and uses
+one confirmation on the booking leaf. Date and time fields open a small calendar and a split-flap
+clock. Repeating slots show weekdays, and time-only fields show the clock.
+Airing choices step by the minute. Film and discussion recording choices
+step by the quarter hour. Applying a choice fills the field for review.
+See the [booking desk mockups](mockups/booking-desk/README.md) for the proposed
+physical calendar, clock, canister and photo treatment.
+
+## Homes for the season mechanics
 
 - **Recurring discussion editions and scripted series.** Use a show binder
   with one card per edition. Keep the standing brief and host on the cover.
@@ -200,9 +225,24 @@ describe the current treatment.
   Production. Use a shared edition board for reporting, studio and airtime,
   with standing assignments and future exceptions. Use signed contract
   sheets for fees, dates and role obligations, linked to the Character file.
-- **Save/load.** Place it in the station menu when persistence arrives.
+- **Save/load.** The station directory’s Station files holds local download
+  and restore.
 
 A widget is ready for review when the player can identify the current job,
 the evidence available, the next action, and what committing it will change.
 Check the resting room, focused workspace and a consequential result at
 desktop and narrow widths, including keyboard, touch and reduced motion.
+
+## Radial mockup review
+
+The radial design package compares sectors and a rotary dial over the same
+room. It includes a clickable scheduling walkthrough, icon states and a
+narrow touch layout. [Open the radial review](mockups/office-radials/README.md).
+
+The playable radial menus share the small enamel film can. Its lid shows
+the contextual icon and the current choices. A paper sticker on the front
+wall names the branch. Tape browsing, choosing a programme for a calendar
+gap, scheduling a tape, and choosing a production stage all use the can.
+Named production projects move to a wooden file box with one folder per
+show. See the [Production dossier](production-dossier.md) for the project
+journey and the remaining design decisions.

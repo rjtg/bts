@@ -3,20 +3,23 @@ import { element, select, node, option, action } from './ui/dom';
 import { personPortrait } from './ui/portraits';
 import { renderChoices } from './ui/choices';
 import { amountControl } from './ui/amount';
-import { modalPicker } from './ui/modal-picker';
+import type { StudioSheet } from './ui/studio-book';
+import { photoSpot, stationStudioCards, studioSpot } from './ui/casting-gallery';
+import { bindDateClock } from './ui/date-clock';
 import type { Command, DiscussionEdition, ProductionConcept, ProductionInfo, ProductionTone, Report, Subject } from './protocol';
-interface Callbacks { report: () => Report; send: (command: Command) => void; showProgramme: (id: number) => void; showAiring: (id: number) => void; stamp: (tick: number) => string; money: (text: string) => string }
+interface Callbacks { showSheet: (key: StudioSheet, focus?: boolean) => void; report: () => Report; send: (command: Command) => void; showProgramme: (id: number) => void; showAiring: (id: number) => void; stamp: (tick: number) => string; money: (text: string) => string }
 const tones: ProductionTone[] = ['calm', 'conversational', 'lively'];
 const subjects: Record<Subject, string> = { science: 'Science & invention', everyday_life: 'Everyday life', entertainment: 'Entertainment & culture' };
-type Seat = 0 | 1 | 2;
 interface Choices { exceptional: number | null; support: number }
 export function initialiseProduction(ui: Callbacks) {
   let editing: number | null = null;
   let cast: [number, number, number] = [1, 3, 4];
   let subject: Subject = 'science';
-  let activeSeat: Seat = 0;
   let initialized = false;
   const choices = new Map<number, Choices>();
+  const editionStudios = new Map<number, number>();
+  bindDateClock({ label: 'Discussion recording', day: select('production-day'), time: select('production-time'), firstWeekday: () => ui.report().first_weekday });
+  bindDateClock({ label: 'Discussion airtime', time: element<HTMLInputElement>('discussion-air-time') });
   const person = (id: number) => ui.report().production.people.find(p => p.id === id)!;
   const personName = (id: number) => person(id)?.name ?? String(id);
   const portrait = (id:number) => personPortrait(id,personName(id));
@@ -40,28 +43,24 @@ export function initialiseProduction(ui: Callbacks) {
   function renderSeats(): void {
     const seats = element('casting-seats'); seats.replaceChildren();
     for (const [index, label] of ['Host', 'First guest', 'Second guest'].entries()) {
-      const id = cast[index]; const p = person(id); if (!p) continue;
-      const seat = action(``, () => openPicker(index as Seat), 'cast-seat'); seat.id = `seat-${index}`; seat.setAttribute('aria-label', `Choose ${label.toLowerCase()}: ${p.name}`);
-      const img = portrait(id); if (img) seat.append(img);
-      seat.append(node('span', label, 'overline'), node('strong', p.name), node('span', `${ui.money(p.fee)} Funds`), node('small', availability(id).label)); seats.append(seat);
+      const candidates = ui.report().production.people.filter(person => person.role === (index === 0 ? 'host' : 'guest'))
+        .map(person => {
+          const occupied = cast.some((id, seat) => seat !== index && id === person.id);
+          const available = availability(person.id);
+          return {
+            id: person.id, name: person.name, portrait: () => portrait(person.id),
+            description: person.description, fee: `${ui.money(person.fee)} Funds`,
+            unavailable: occupied || available.blocked,
+            notes: [occupied ? 'Already in another seat' : available.label,
+              ...person.commitments.filter(commitment => commitment.end_tick > ui.report().now_tick)
+                .map(commitment => `${commitment.title} · ${ui.stamp(commitment.start_tick)}–${ui.stamp(commitment.end_tick)}`)],
+          };
+        });
+      seats.append(photoSpot(`seat-${index}`, label, candidates, cast[index], id => { cast[index] = id; renderSeats(); }));
     }
     concerns(cast, element('cast-concerns'));
     renderChoices<Subject>(element('production-subjects'),Object.entries(subjects).map(([value,label])=>({value:value as Subject,label})),subject,value=>{subject=value;renderSeats();});
     element('tone-label').textContent = tones[Number(element<HTMLInputElement>('production-tone').value)].replace(/^./, c => c.toUpperCase());
-  }
-  const picker = modalPicker<Report['production']['people'][number]>({ dialog:element<HTMLDialogElement>('talent-picker'), title:element('talent-picker-title'), list:element('talent-cards'), closeButton:element('close-talent-picker'), restoreFocus:()=>element(`seat-${activeSeat}`).focus(), renderItem:p=>{
-      const card = node('article', '', 'talent-card'); const img = portrait(p.id); if (img) card.append(img);
-      card.append(node('h4', p.name), node('p', p.station_id===null?'Freelance guest':'Your station’s staff', 'overline'), node('p', p.description), node('strong', `${ui.money(p.fee)} Funds`));
-      const commitments=node('ul','','personal-schedule');
-      for(const booking of p.commitments.filter(c=>c.end_tick>ui.report().now_tick))commitments.append(node('li',`${booking.title}: ${ui.stamp(booking.start_tick)}–${ui.stamp(booking.end_tick)}`));
-      if(commitments.childElementCount)card.append(node('small','Upcoming recording commitments'),commitments);
-      const occupied = cast.some((id, index) => index !== activeSeat && id === p.id); const available = availability(p.id);
-      card.append(node('p', occupied ? 'Already in another seat' : available.label, 'small'));
-      card.append(node('p', `Normal bookings through ${ui.stamp(p.normal_until_tick)}${p.negotiable_from_tick === null ? '' : `; negotiable from ${ui.stamp(p.negotiable_from_tick)}`}.`, 'small muted'));
-      const choose = action(`Choose ${p.name}`, () => { cast[activeSeat] = p.id; picker.close(); renderSeats(); element(`seat-${activeSeat}`).focus(); }, ''); choose.disabled = occupied || available.blocked; card.append(choose); return card;
-  } });
-  function openPicker(seat:Seat):void {
-    activeSeat=seat;picker.open(seat===0?'Choose your host':'Choose your guest',ui.report().production.people.filter(p=>p.role===(seat===0?'host':'guest')));
   }
   function newDraft(): void {
     editing = null; element('discussion-run-options').hidden = false; element('production-editor-title').textContent = 'New concept'; element('create-production').textContent = 'Review concept';
@@ -69,6 +68,7 @@ export function initialiseProduction(ui: Callbacks) {
     if (Number(select('production-day').value) * 96 + Number(select('production-time').value) < now) { select('production-day').value = String(Math.min(Math.ceil(ui.report().end_tick / 96) - 1, Math.floor(now / 96))); select('production-time').value = String(now % 96); }
   }
   function edit(p: ProductionInfo): void {
+    ui.showSheet('concept');
     editing = p.id; element('discussion-run-options').hidden = true; cast = [p.host, ...p.guests]; subject = p.subject;
     element<HTMLInputElement>('production-name').value = p.title;
     element<HTMLInputElement>('production-tone').value = String(tones.indexOf(p.tone));
@@ -171,8 +171,7 @@ export function initialiseProduction(ui: Callbacks) {
       if (p.host_prepaid !== '0') {
         const line = node('p', `Host agreement · ${ui.money(p.host_prepaid)} Funds prepaid · `);
         line.append(action('Open hiring desk', () => {
-          const desk = element<HTMLDetailsElement>('hiring-desk');
-          desk.open = true; desk.querySelector('summary')?.focus();
+          ui.showSheet('hiring', true);
         }));
         card.append(line);
       }
@@ -190,15 +189,13 @@ export function initialiseProduction(ui: Callbacks) {
         else if (run.edition.missed) card.append(node('p', 'Recording time passed without a booking. No cost or airing.', 'small'));
         else if (p.phase === 'draft') {
           const studios = report.stations.find(station => station.is_player)?.owned_studios ?? 0;
-          const label = node('label', 'Recording studio ');
-          const studio = node('select');
-          for (let number = 1; number <= studios; number++) studio.append(option(number, `Studio ${number}`));
-          label.append(studio);
+          const studio = editionStudios.get(p.id) ?? 1;
+          const rooms = stationStudioCards(studios, 'Station studio', 'Included in the production budget');
+          card.append(studioSpot(`discussion-studio-${p.id}`, rooms, studio, id => { editionStudios.set(p.id, id); render(report); }));
           const book = action(`Book edition · ${ui.money(p.balance_due)} Funds`, () => ui.send({
-            type: 'book_discussion_edition', production_id: p.id, studio: Number(studio.value),
+            type: 'book_discussion_edition', production_id: p.id, studio,
           }));
           book.disabled = studios === 0;
-          card.append(label);
           buttons.append(action('Edit edition', () => edit(p)), book);
         }
       }
@@ -213,11 +210,16 @@ export function initialiseProduction(ui: Callbacks) {
   }
   return { render, commandSucceeded(command: Command) {
     if (command.type === 'reset') {
-      choices.clear();cast=[1,3,4];subject='science';editing=null;
+      ui.showSheet('concept');
+      choices.clear();editionStudios.clear();cast=[1,3,4];subject='science';editing=null;
       element<HTMLInputElement>('production-tone').value='0';select('production-day').value='0';select('production-time').value='40';element<HTMLInputElement>('production-name').value='Workshop Conversations';
       const budget=document.querySelector<HTMLInputElement>('input[name="production-budget"][value="1000"]');if(budget)budget.checked=true;
       element('production-editor-title').textContent='New concept';element('create-production').textContent='Review concept';return;
     }
-    if (command.type === 'create_discussion_run' || command.type === 'create_production' || command.type === 'revise_production' || command.type === 'discard_production') newDraft();
-  }, showProject(id: number) { element(`production-${id}`).scrollIntoView({ behavior: 'smooth', block: 'center' }); } };
+    if (command.type === 'create_discussion_run' || command.type === 'create_production' || command.type === 'revise_production') {
+      newDraft();
+      ui.showSheet('jobs', true);
+    }
+    if (command.type === 'discard_production') newDraft();
+  }, showProject(id: number) { ui.showSheet('jobs'); element(`production-${id}`).scrollIntoView({ behavior: 'smooth', block: 'center' }); } };
 }

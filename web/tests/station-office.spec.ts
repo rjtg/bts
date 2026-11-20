@@ -25,7 +25,7 @@ async function evening(page: Page) {
   await expect(page.getByRole('img', { name: /Programme quality radar/ })).toBeVisible();
 }
 
-test('office, exact planning, calendars and test-card pause', async ({ page }) => {
+test('office, exact planning, calendars and test-card pause', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await evening(page);
   await page.evaluate(() => scrollTo(0, 0));
@@ -55,6 +55,8 @@ test('office, exact planning, calendars and test-card pause', async ({ page }) =
   await expect(page.getByRole('img', { name: /Programme quality radar/ })).toBeVisible();
   await page.keyboard.press('Escape');
   await page.locator('#office-calendar').click();
+  await expect(page.locator('#office')).toBeVisible();
+  await expect(page.locator('[data-desk="planning"] .office-job-cover')).toContainText('Programming calendar');
   await page.getByRole('button', { name: 'Week', exact: true }).click();
   await expect(page.locator('#calendar-summary')).toContainText('ad min unsold');
   await page.getByRole('button', { name: 'Next period' }).click();
@@ -72,6 +74,7 @@ test('office, exact planning, calendars and test-card pause', async ({ page }) =
   await page.getByRole('button', { name: 'Today', exact: true }).click();
   await expect(page.locator('#calendar-position')).toHaveText('Following the clock');
   await page.getByRole('button', { name: 'Day', exact: true }).click();
+  await page.screenshot({ path: testInfo.outputPath('programming-calendar.png'), animations: 'disabled' });
   await capture(page, 'planning');
   await page.locator('#back-office').click();
   await expect(page.locator('#office-calendar')).toBeVisible();

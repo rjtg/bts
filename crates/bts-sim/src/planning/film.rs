@@ -138,6 +138,7 @@ pub const RENTALS: [Rental; 2] = [
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum FilmPhase {
+    DevelopingIdea,
     Pitch,
     Writing,
     ScriptReview,
@@ -147,6 +148,29 @@ pub enum FilmPhase {
     Recording,
     Post,
     Complete,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PitchPace {
+    Rush,
+    Steady,
+    TakeTime,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct FilmIdea {
+    pub description: String,
+    pace: PitchPace,
+}
+
+fn film_idea_pressure(ambition: [f64; 7]) -> Option<f64> {
+    FeatureProfile::fiction(ambition).is_valid().then(|| {
+        let mut demands = ambition;
+        demands[1] = 2.0 * (demands[1] - 0.5).abs();
+        let peak = demands.into_iter().fold(0.0, f64::max);
+        (peak + demands.iter().sum::<f64>() / 7.0) / 2.0
+    })
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -180,6 +204,7 @@ pub struct Film {
     pub title: String,
     pub subject: Subject,
     pub ambition: FeatureProfile,
+    pub idea: Option<FilmIdea>,
     pub phase: FilmPhase,
     pub committed: Money,
     pub writer: Option<PersonId>,
@@ -252,6 +277,7 @@ impl Planner {
                 title,
                 subject,
                 ambition,
+                idea: None,
                 phase: FilmPhase::Pitch,
                 committed: Money(0),
                 writer: None,
@@ -266,6 +292,47 @@ impl Planner {
                 episode: None,
             },
         );
+        Ok(id)
+    }
+
+    pub fn develop_film_idea(
+        &mut self,
+        title: String,
+        description: String,
+        ambition: [f64; 7],
+        pace: PitchPace,
+    ) -> Result<ProductionId, PlanError> {
+        let description = description.trim().to_owned();
+        if description.is_empty() || description.chars().count() > 800 {
+            return Err(error(
+                "film_description",
+                "Write a description of up to 800 characters.",
+            ));
+        }
+        let pressure = film_idea_pressure(ambition)
+            .ok_or_else(|| error("film_pitch", "Choose valid creative targets."))?;
+        let standard_ticks = 4 + (12.0 * pressure).round() as u32;
+        let ticks = match pace {
+            PitchPace::Rush => standard_ticks.div_ceil(2),
+            PitchPace::Steady => standard_ticks,
+            PitchPace::TakeTime => (3 * standard_ticks).div_ceil(2),
+        };
+        let due = self
+            .now()
+            .0
+            .checked_add(ticks)
+            .filter(|due| *due <= self.end.0)
+            .ok_or_else(|| {
+                error(
+                    "film_idea_deadline",
+                    "This idea would be ready after the station season ends.",
+                )
+            })?;
+        let id = self.pitch_film(title, Subject::EverydayLife, ambition)?;
+        let film = self.films.get_mut(&id).unwrap();
+        film.idea = Some(FilmIdea { description, pace });
+        film.phase = FilmPhase::DevelopingIdea;
+        film.due = Some(SimTick(due));
         Ok(id)
     }
 
@@ -497,6 +564,10 @@ impl Planner {
     pub(super) fn advance_films(&mut self, at: SimTick) -> Result<(), PlanError> {
         for film in self.films.values_mut() {
             match film.phase {
+                FilmPhase::DevelopingIdea if film.due == Some(at) => {
+                    film.phase = FilmPhase::Pitch;
+                    film.due = None;
+                }
                 FilmPhase::Writing | FilmPhase::Revising if film.due == Some(at) => {
                     let writer = talent(film.writer.unwrap(), FilmJob::Writer)?;
                     film.script = Some(write_script(film, writer));
@@ -546,6 +617,11 @@ impl Planner {
 fn write_script(film: &Film, writer: &Freelancer) -> Script {
     let targets: [f64; 7] = std::array::from_fn(|i| film.ambition.values[i].unwrap());
     let previous = film.script.as_ref();
+    let rush = film.idea.as_ref().map_or(0.0, |idea| match idea.pace {
+        PitchPace::Rush => 0.12,
+        PitchPace::Steady => 0.0,
+        PitchPace::TakeTime => -0.12,
+    });
     let delivered = std::array::from_fn(|i| {
         let target = targets[i];
         let baseline = if i == 1 { 0.5 } else { 0.0 };
@@ -574,7 +650,9 @@ fn write_script(film: &Film, writer: &Freelancer) -> Script {
             0.0
         };
         baseline
-            + (target - baseline) * (1.0 - 0.8 * (complexity - capacity).max(0.0)) * (1.0 - strain)
+            + (target - baseline)
+                * (1.0 - 0.8 * (complexity + rush - capacity).max(0.0))
+                * (1.0 - strain)
     });
     let weaknesses = (0..7)
         .filter(|i| (targets[*i] - delivered[*i]).abs() >= 0.075)

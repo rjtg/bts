@@ -1,5 +1,8 @@
 import type { Command, NewsroomStaff, Report } from './protocol';
 import { action, element, node, option, select } from './ui/dom';
+import { photoSpot, stationStudioCards, studioSpot } from './ui/casting-gallery';
+import { personPortrait } from './ui/portraits';
+import { bindDateClock } from './ui/date-clock';
 
 export function initialiseNewsroom(ui: {
   report: () => Report;
@@ -9,14 +12,31 @@ export function initialiseNewsroom(ui: {
   showAiring: (id: number) => void;
 }) {
   const form = element<HTMLFormElement>('newsroom-form');
-  const reporter = select('newsroom-reporter');
-  const anchor = select('newsroom-anchor');
-  const studio = select('newsroom-studio');
   const firstDay = select('newsroom-day');
   const field = (name: string) => element<HTMLInputElement>(`newsroom-${name}`);
   let days = 0;
   let previousNow = 0;
-  const staff = (): NewsroomStaff => ({ reporter: Number(reporter.value), anchor: Number(anchor.value), studio: Number(studio.value) });
+  let studio = 1;
+  const cast = { reporter: 0, anchor: 0 };
+  const staff = (): NewsroomStaff => ({ ...cast, studio });
+  bindDateClock({ label: 'First bulletin', day: firstDay, time: field('airtime'), firstWeekday: () => ui.report().first_weekday });
+
+  function renderStaff(report: Report) {
+    const roles = ['reporter', 'anchor'] as const;
+    element('newsroom-photo-spots').replaceChildren(...roles.map(role => {
+      const candidates = report.production.people.filter(person => person.role === role).map(person => ({
+        id: person.id, name: person.name, description: person.description,
+        portrait: () => personPortrait(person.id, person.name), fee: `${ui.money(person.fee)} Funds`,
+        notes: [`Available through ${ui.stamp(person.normal_until_tick * 15)}`,
+          ...person.commitments.map(item => `${item.title} · ${ui.stamp(item.start_tick * 15)}–${ui.stamp(item.end_tick * 15)}`)],
+      }));
+      const label = role === 'reporter' ? 'Reporter' : 'Anchor';
+      return photoSpot(`newsroom-${role}-photo`, label, candidates, cast[role], id => { cast[role] = id; renderStaff(report); });
+    }));
+    const studios = report.stations.find(station => station.is_player)?.owned_studios ?? 0;
+    element('newsroom-studios').replaceChildren(studioSpot('newsroom-studio', stationStudioCards(studios, 'Station studio', '100 Funds per bulletin'),
+      studio, id => { studio = id; renderStaff(report); }));
+  }
 
   form.addEventListener('submit', event => {
     event.preventDefault();
@@ -41,16 +61,15 @@ export function initialiseNewsroom(ui: {
     const count = Math.floor(report.end_tick / 96);
     if (count !== days || report.now_minute < previousNow) {
       days = count;
-      for (const [control, role] of [[reporter, 'reporter'], [anchor, 'anchor']] as const) {
-        control.replaceChildren(...report.production.people.filter(p => p.role === role)
-          .map(p => option(p.id, `${p.name} · ${ui.money(p.fee)} Funds`)));
+      for (const role of ['reporter', 'anchor'] as const) {
+        cast[role] = report.production.people.find(person => person.role === role)?.id ?? 0;
       }
-      const studios = report.stations.find(s => s.is_player)?.owned_studios ?? 0;
-      studio.replaceChildren(...Array.from({ length: studios }, (_, index) => option(index + 1, `Studio ${index + 1}`)));
+      studio = 1;
       firstDay.replaceChildren(...Array.from({ length: Math.max(0, days - 4) }, (_, day) => option(day, `Day ${day + 1}`)));
       firstDay.value = '2';
     }
     previousNow = report.now_minute;
+    renderStaff(report);
     element<HTMLFieldSetElement>('newsroom-first-plan').disabled = room !== null;
     element('newsroom-first-plan').hidden = room !== null;
     const submit = element<HTMLButtonElement>('newsroom-start');

@@ -20,16 +20,15 @@ Only published competitor information belongs in [rival comparisons](programme-p
 A selected tape opens its dossier alongside it. Put **Next Gap**, **Best Slot**
 and **Regular Slot** on the dossier. Show the proposed time before committing.
 Best Slot compares upcoming openings using player-visible survey evidence.
-Regular Slot uses a date preview. Monthly rules need a calendar beyond the
-initial three-week scenario.
+Regular Slot uses a date preview. Monthly recurrence remains a proposal even though Month can summarize the
+current calendar.
 
 The ad-load control sets a default ratio for new airings. Show the resulting
 whole minutes and total airtime before booking. Existing ad inventory and
 signed contracts keep their own terms. The scheduled-airing dossier includes
 ad offers and accepted terms. Signing commits the exact contract. Striking
-through an offer dismisses it without selling minutes. Open the ledger for
-a past airing. Put actionable sticky notes for the next gap and unsold ad
-inventory on the desk and route them directly to the relevant dossier.
+through an offer dismisses it without selling minutes. Open the same Airing file for past results. Put actionable reminders for gaps
+and unsold inventory in the station notebook and link to the relevant paper.
 
 ## First implementation
 
@@ -54,8 +53,8 @@ and do not add viewers across sequential segments.
 The default ad-load dial accepts 0–50% of content minutes. Round to the nearest
 whole minute, with halves rounded up, and cap at 30 minutes. The default is
 initially zero and changes only future placements. Weekly plans copy it into
-the editable preview. The three-week scenario supports weekly recurrence.
-Monthly recurrence remains a calendar extension.
+the editable preview. The six-week season supports weekly recurrence. Month is a browsing view,
+and monthly recurrence remains proposed.
 
 The desk shows one selected title or airing dossier. An unsold inventory
 note opens the scheduled airing and a completed airing opens its ledger.

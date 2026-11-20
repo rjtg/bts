@@ -1,33 +1,91 @@
+import { choosePhoto } from './casting-helpers';
 import { pickTime } from './planner-helpers';
 import { expect, test } from '@playwright/test';
 
-test('pitch, revise, cast, book, advertise and air a film', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('/#planning');
+test('pitch, revise, cast, book, advertise and air a film', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
   await expect(page.locator('#status')).toContainText('WASM READY');
-  await page.locator('.rail a[href="#film-desk"]').click();
-  await page.getByRole('button', { name: 'Big-city thriller' }).click();
-  await page.getByRole('button', { name: 'Save free pitch' }).click();
+  await page.screenshot({ path: testInfo.outputPath('resting-office.png'), animations: 'disabled' });
+  await page.locator('[data-prop="script"]').click();
+  const can = page.getByRole('dialog');
+  await can.getByRole('button', { name: 'Ideas', exact: true }).hover();
+  await expect(can.locator('.radial-choice.can-choice-lit')).toHaveText('Ideas');
+  await page.screenshot({ path: testInfo.outputPath('preparation-can.png'), animations: 'disabled' });
+  for (const choice of ['Ideas', 'Draft new', 'Fiction', 'Film']) {
+    await can.getByRole('button', { name: choice, exact: true }).click();
+  }
+  const idea = page.getByRole('region', { name: 'Idea dossier' });
+  await expect(idea.locator('.office-leaf')).toHaveCount(2);
+  await expect(page.locator('#studio-index')).toBeHidden();
+  await page.getByLabel('Film title').fill('A Light in the Window');
+  await page.getByLabel('Description').fill('A courier uncovers a conspiracy while crossing the city at night.');
+  for (const quality of ['Tension', 'Spectacle', 'Pace']) {
+    await page.getByRole('radio', { name: `${quality}, 5 stars`, exact: true }).check();
+  }
+  await page.screenshot({ path: testInfo.outputPath('idea-dossier.png'), animations: 'disabled' });
+  await page.getByRole('button', { name: 'Develop this idea' }).click();
   const film = page.locator('.film-project');
   await expect(film).toContainText('0 Funds committed');
+  await expect(film).toContainText('A courier uncovers');
+  await expect(film.getByRole('button', { name: 'Commission script' })).toHaveCount(0);
+  await film.getByRole('button', { name: 'Advance to pitch completion' }).click();
+  await expect(film).toContainText('Idea ready');
+  await film.getByRole('button', { name: 'Open writing file' }).click();
+  const writer = film.getByRole('button', { name: 'Cast Writer', exact: true });
+  await expect(film.getByRole('button', { name: 'Commission script' })).toBeDisabled();
+  await writer.focus();
+  await writer.press('Enter');
+  const gallery = page.getByRole('dialog', { name: 'Choose writer' });
+  await expect(gallery).toContainText('From public clippings');
+  await expect(gallery).toContainText('Warmth');
+  await page.screenshot({ path: testInfo.outputPath('writer-gallery.png'), animations: 'disabled' });
+  await gallery.getByRole('button', { name: 'Choose Ada Mercer' }).click();
+  await expect(film.getByRole('button', { name: 'Writer: Ada Mercer' })).toBeFocused();
   await film.getByRole('button', { name: 'Commission script' }).click();
   await film.getByRole('button', { name: 'Advance to script delivery' }).click();
-  await expect(page.locator('#film-notices')).toContainText('Script ready');
+  await expect(film).toContainText('Script ready');
   await expect(film).toContainText('Needs work');
+  await page.screenshot({ path: testInfo.outputPath('script-review.png'), animations: 'disabled' });
+  await film.getByRole('button', { name: 'Revision', exact: true }).click();
   await film.getByLabel('What should the rewrite improve?').selectOption('5');
   await film.getByRole('button', { name: 'Pay for revision' }).click();
   await film.getByRole('button', { name: 'Advance to script delivery' }).click();
   await film.getByRole('button', { name: 'Accept script' }).click();
-  await film.getByRole('button', { name: /Dev Rowan/ }).click();
-  await film.getByRole('combobox', { name: 'Studio', exact: true }).selectOption('2');
-  await film.getByRole('button', { name: 'Review film booking' }).click();
+  await expect(page.getByRole('region', { name: 'Production dossier' }).locator('.office-leaf')).toHaveCount(2);
+  await expect(page.locator('#studio-index')).toBeHidden();
+  await choosePhoto(page, film.locator('#film-actor-photo-0'), 'Nina Bell');
+  const secondRole = film.locator('#film-actor-photo-1');
+  await secondRole.click();
+  await expect(page.getByRole('dialog').getByRole('button', { name: 'Choose Nina Bell' })).toBeDisabled();
+  await page.getByRole('dialog').getByRole('button', { name: 'Choose Sam Ives' }).click();
+  await choosePhoto(page, film.locator('#film-director-photo'), 'Dev Rowan');
+  await film.getByRole('button', { name: 'Next page', exact: false }).click();
+  await film.locator('#film-studio').click();
+  const studioCards = page.getByRole('dialog', { name: 'Choose studio' });
+  await expect(studioCards.locator('.studio-photo')).toHaveCount(2);
+  await page.screenshot({ path: testInfo.outputPath('studio-gallery.png'), animations: 'disabled' });
+  await studioCards.getByRole('button', { name: 'Choose Soundstage B' }).click();
+  await expect(film.locator('#film-studio')).toContainText('Soundstage B');
+  await expect(film.locator('#film-studio .studio-photo')).toBeVisible();
+  await film.getByLabel('Recording time').click();
+  const recording = page.getByRole('dialog', { name: 'Film recording' });
+  const minuteCards = recording.getByRole('spinbutton', { name: 'Minutes', exact: true });
+  await expect(minuteCards).toHaveAttribute('step', '15');
+  const before = Number(await minuteCards.inputValue());
+  await recording.getByRole('button', { name: 'Later minutes' }).click();
+  expect(Number(await minuteCards.inputValue())).toBe((before + 15) % 60);
+  await page.screenshot({ path: testInfo.outputPath('recording-clock.png'), animations: 'disabled' });
+  await recording.getByRole('button', { name: 'Use slot' }).click();
   await expect(film).toContainText('1,450 Funds talent + 930 Funds studio = 2,380 Funds');
+  await expect(page.locator('#cash')).toHaveText('19,460');
+  await page.screenshot({ path: testInfo.outputPath('studio-booking.png'), animations: 'disabled' });
   if (process.env.BTS_FILM_SCREENSHOTS) {
     await film.screenshot({ path: '../contrib/original-film/booking.png' });
   }
-  await film.getByRole('button', { name: 'Confirm film booking' }).click();
+  await film.locator('.office-leaf').nth(1).getByRole('button', { name: 'Confirm film booking' }).click();
   await film.getByRole('button', { name: 'Advance to film delivery' }).click();
-  await expect(page.locator('#film-notices')).toContainText('Film ready');
+  await expect(film).toContainText('Film ready');
   await film.getByRole('button', { name: 'Open in programme library' }).click();
   await pickTime(page, 72, 1);
   await page.locator('#place').click();

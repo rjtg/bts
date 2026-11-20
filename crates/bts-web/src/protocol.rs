@@ -85,6 +85,12 @@ pub enum Command {
         subject: Subject,
         ambition: [f64; 7],
     },
+    DevelopFilmIdea {
+        title: String,
+        description: String,
+        ambition: [f64; 7],
+        pace: bts_sim::planning::film::PitchPace,
+    },
     WriteFilm {
         film_id: u32,
         writer: u16,
@@ -582,6 +588,7 @@ pub struct FilmDesk {
 pub struct FilmCard {
     pub id: u32,
     pub title: String,
+    pub description: Option<String>,
     pub subject: Subject,
     pub phase: bts_sim::planning::film::FilmPhase,
     pub committed: String,

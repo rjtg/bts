@@ -1,3 +1,4 @@
+import { choosePhoto } from './casting-helpers';
 import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { pickTime } from './planner-helpers';
@@ -86,25 +87,41 @@ test.describe('touch office', () => {
   test('narrow office through minute sale and settlement', async ({ page }) => airingJourney(page, true));
 });
 
-test('Preparation folder through script then studio booking and back to office', async ({ page }) => {
+test('Preparation prop through idea and script then studio booking and back to office', async ({ page }) => {
   await page.setViewportSize(desktop);
   await loadOffice(page);
   const writing = page.locator('[data-prop="script"]');
   await writing.focus();
   await expect(writing).toBeFocused();
   await writing.press('Enter');
-  await page.getByRole('button', { name: 'Save free pitch' }).click();
+  const can = page.getByRole('dialog');
+  for (const choice of ['Ideas', 'Draft new', 'Fiction', 'Film']) {
+    await can.getByRole('button', { name: choice, exact: true }).press('Enter');
+  }
+  await page.getByLabel('Film title').fill('A Light in the Window');
+  await page.getByLabel('Description').fill('An unexpected visitor arrives in a small town.');
+  await page.getByRole('button', { name: 'Develop this idea' }).click();
+  await page.getByRole('button', { name: 'Advance to pitch completion' }).click();
+  await page.getByRole('button', { name: 'Open writing file' }).click();
+  await choosePhoto(page, page.locator('#film-writer-photo'), 'Ada Mercer');
   await page.getByRole('button', { name: 'Commission script' }).click();
   await page.getByRole('button', { name: 'Advance to script delivery' }).click();
-  await expect(page.locator('[data-file="preparation"] .film-project')).toContainText('Script notes');
+  await expect(page.locator('.film-project [data-file="preparation"]')).toContainText('Script notes');
   await shot(page, 'desktop-preparation');
   await page.getByRole('button', { name: 'Accept script' }).click();
-  await expect(page.locator('#film-production')).toBeVisible();
-  await page.locator('#film-production').getByRole('link', { name: 'Back to Office' }).click();
-  await page.locator('[data-prop="production"]').click();
-  await page.getByRole('button', { name: 'Review film booking' }).click();
+  await expect(page.locator('#office-paper-mount > #film-dossier')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await writing.click();
+  const studioMenu = page.getByRole('dialog');
+  await studioMenu.getByRole('button', { name: 'Production', exact: true }).click();
+  await studioMenu.getByRole('button', { name: 'Ready to book', exact: true }).click();
+  await page.getByRole('button', { name: /A Light in the Window/ }).click();
+  await choosePhoto(page, page.locator('#film-actor-photo-0'), 'Nina Bell');
+  await choosePhoto(page, page.locator('#film-actor-photo-1'), 'Sam Ives');
+  await choosePhoto(page, page.locator('#film-director-photo'), 'Inez Park');
+  await page.locator('.film-project').getByRole('button', { name: 'Booking', exact: true }).click();
   await page.getByRole('button', { name: 'Confirm film booking' }).click();
-  await expect(page.locator('#film-production .film-project')).toContainText('Filming booked');
+  await expect(page.locator('#film-dossier .film-project')).toContainText('Filming booked');
   await shot(page, 'desktop-production');
   await page.getByRole('button', { name: 'Advance to film delivery' }).click();
   await page.getByRole('button', { name: 'Open in programme library' }).click();
@@ -148,7 +165,7 @@ test('office props react to hover and respect reduced motion', async ({ page }) 
   await calendar.hover();
   await expect(calendar).toHaveAccessibleName('Open Programming calendar');
   await expect(page.locator('.monitor-reel')).toHaveAttribute('aria-hidden', 'true');
-  for (const name of ['script', 'production', 'rights', 'ledger', 'reviews']) {
+  for (const name of ['script', 'rights', 'ledger', 'reviews']) {
     const prop = page.locator(`#desk-file-piles [data-prop="${name}"]`);
     await prop.hover();
     expect(await prop.evaluate(el => getComputedStyle(el, '::before').backgroundImage)).toContain(`${name}-active.webp`);

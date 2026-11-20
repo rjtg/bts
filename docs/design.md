@@ -1,6 +1,6 @@
 # Game design
 
-Status: agreed direction unless explicitly marked proposal or open. This is a design baseline, not an implementation specification. See [simulation](simulation.md), [first playable](first-playable.md), and [open questions](open-questions.md).
+Status: agreed direction unless explicitly marked proposal or open. This is a design baseline, not an implementation specification. See the [design library](README.md), [playable season](first-playable.md), and [open questions](open-questions.md).
 
 ## Premise and focus
 
@@ -12,7 +12,7 @@ Core loop: observe → acquire or produce → schedule and sell advertising → 
 
 The world supplies viewers, talent, guests, subjects, competitors, and advertisers. Simulate external society only far enough to create or resolve meaningful television decisions. The world continues without the player; the player's station can influence it without being its only cause.
 
-Rust is the development direction, with the browser as the intended primary player interface through WebAssembly. The CLI remains a developer tool. A minimal TypeScript/HTML/CSS harness is implemented; a polished 80s retro / 8-bit presentation remains later work. No game engine is selected. See [browser foundation](browser-foundation.md).
+Rust is the development direction, with the browser as the intended primary player interface through WebAssembly. The CLI remains a developer tool. The TypeScript/HTML/CSS browser opens in a late-1980s Station Office. Layered art frames live, accessible controls. See [browser foundation](browser-foundation.md).
 
 ## Goals and scenarios
 
@@ -106,8 +106,9 @@ proposed terms, workflows and unresolved mechanics.
 Scripted roles have identities separate from their performers. Scripts require
 roles in particular episodes; recurring casting should preserve continuity.
 Rewriting may change those requirements through paid work, but does not silently
-cancel talent contracts. Multi-episode contracts, role continuity, rewriting and
-the talent-market UI remain unimplemented.
+cancel talent contracts. The [hiring desk](guaranteed-host-dates.md) supports bounded host agreements,
+and the [scripted-series pilot](scripted-series-pilot.md) preserves recurring
+roles. Wider hiring, rewriting and contract terms remain proposed.
 
 ## Programme formats and subject matter
 
@@ -152,8 +153,7 @@ production attempts a profile; preparation, people, resources and execution
 determine what the finished work actually delivers. Editorial rigour and
 truthfulness concern factual work and its evidence, not merely a selected style
 or an audience's taste. Audience trust and knowledge of accuracy are separate
-from actual accuracy. The first feature model is implemented for catalogue works and the discussion
-prototype. See [programme feature profiles](feature-profiles.md) for mechanics
+from actual accuracy. The feature model feeds the catalogue, original-production pilots and audience fit. See [programme feature profiles](feature-profiles.md) for mechanics
 and scope.
 
 | Format | Distinctive production choices |
@@ -175,7 +175,8 @@ workflow in which each stage attempts explicit creative ambitions using skilled
 people and paid time. Results can fall short gradually; reviews allow revision
 or extension. Finished material carries strengths, flaws and downstream demands.
 Creative ambition and difficulty of later production are separate concerns.
-This is a draft direction, not implemented behaviour.
+The [film](original-film.md) and [series](scripted-series-pilot.md) pilots use
+staged delivery. The general show and sequel architecture remains a proposal.
 
 ### News and topical entertainment
 
@@ -183,7 +184,9 @@ Produce a news format like any other show: choose host/team, budget, duration,
 frequency and editorial settings. A few factors set topic mix, political/issue
 leaning, restrained versus sensational presentation, and depth. Editions draw
 on current events automatically; story-by-story assembly is not the intended
-routine. An optional spotlight on a particular event remains a proposal.
+routine. The [newsroom pilot](recurring-newsroom.md) automates reporting, studio and
+airing appointments for same-day editions. A wider event model and an optional
+story spotlight remain proposals.
 
 Dry current-affairs magazines, serious panels, showbiz-like political discussion
 and satirical late-night programmes can all treat news subjects. Talent fit
@@ -192,10 +195,12 @@ station trust/reputation and audience attention or beliefs.
 
 ## Station resources and editorial capital
 
-Agreed direction, not implemented: resources have distinct sources, uses and
-timescales. See [resource economies](resource-economies-idea.md) for details
+Resources have distinct sources, uses and timescales. Funds, pooled Sway and
+Insight have playable uses. Glamour, Credibility and Backing are design directions. See [resource economies](resource-economies-idea.md) for details
 and open mechanics.
 
+- **Funds** are exact integer station money. Use the fictional barred F in
+  player-facing displays, with an accessible Funds label.
 - **Sway** is an abstract pooled resource earned by granting people's requests:
   guest pairings, casting, realising a screenplay or changing editorial tone.
   Spend it across negotiations and productions to smooth cooperation and help
@@ -206,8 +211,8 @@ and open mechanics.
   polls, researchers or analysis, then spent to improve estimates about audiences,
   acquisitions, role fit or cast chemistry. It reduces uncertainty with diminishing
   returns, never reveals exact hidden truth, and retains dated evidence when public
-  news later changes what the player knows. The browser experiment supports seeded
-  Insight spending on audience groups. See [audience research](audience-research.md).
+  news later changes what the player knows. The browser supports seeded Insight spending on audience groups and title
+  assessments. Earning Insight through research and preparation is proposed. See [audience research](audience-research.md).
 - **Glamour** comes from winning awards and naturally decays. Holding it improves
   conditions with talent who value glamour; spending it grants significant
   performance boosts to specific airings. The affected performance dimensions,
@@ -241,29 +246,25 @@ rather than requiring omniscience.
 
 These systems do not expand the current implementation milestone. The [bounded pooled-Sway experiment](pooled-sway.md) now implements two production
 requests and station-wide spending, replacing the personal-favour prototype.
-Awards and the other resource stocks/editorial loop remain unimplemented.
+Awards and the broader editorial resource loop remain proposed.
 
 ## Screens and scheduling direction
 
-See [screens and interaction design](screens.md) for the proposed navigation.
-There is no separate Newsroom screen: editorial controls belong to programme
-details inside the shared production workflow. The world/industry feed is
-shared information, distinct from the programmes made from it.
+See [screens](screens.md) for current journeys and the [widget guide](office-widget-style.md)
+for their shared office treatment. The daily newsroom uses the production
+workflow. The industry wire reports public developments.
 
-Agreed direction: a 15-minute simulation tick, four updates per hour, rather
-than the current isolated broadcast snapshots. Full schedules occupy real
-airtime and advance through intervening ticks. Specific processing rules are
-still to design; this is not implemented by the browser harness.
+The schedule uses exact whole-minute intervals while audience inputs use a
+15-minute cadence. Exposure is weighted by actual intersecting airtime.
+Supported recurring runs can use scoped autosell. The audience model includes
+weekday preferences, slot habits and bounded same-station lead-in carryover.
+See [minute airtime](minute-airtime.md) and [weekly scheduling](weekly-scheduling.md).
 
-Internal plans, published listings and promotion are distinct. Publishing in
-advance and promotion can build awareness/anticipation for an airing; regular
-slots can build habit. Schedule changes can lose anticipation or trust.
-Recurring bookings and weekday preferences now have a bounded implementation. Publication, promotion and habits remain proposals. Do not force all long-term processes to update every tick. See [weekly scheduling and audience flow](weekly-scheduling.md) for recurring appointments, optional ad autosell, weekday viewing preferences, habit and lead-in carryover.
-
-Advertising load is a station choice. In the proposed market the player sells
-minutes attached to a particular airing. Those minutes extend its runtime on
-the schedule. Total ad load can influence viewer annoyance. See [ad minutes and
-advertising load](simulation.md#ad-minutes-and-advertising-load).
+An internal plan, a public listing and a promotion each convey different
+information. The current rival comparison uses bounded scenario data.
+Publication, strategic disclosure and promotion remain future work. In the
+[ad-minute market](ad-minute-market.md), listed commercial minutes extend
+airtime, and payments attach to signed inventory on the exact airing.
 
 ## Relationships and news
 

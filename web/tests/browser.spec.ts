@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import { readFileSync, readdirSync } from 'node:fs';
 const root = resolve(import.meta.dirname, '../..');
 
-test('plan a varied evening, move/remove broadcasts, book a selected future airing, run and review', async ({ page }) => {
+test('plan a varied evening, move/remove broadcasts, book a selected future airing, run and review', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   const failures: string[] = []; page.on('pageerror', error => failures.push(error.message));
   await page.goto('/#planning'); await expect(page.locator('#status')).toContainText('WASM READY');
@@ -68,11 +68,13 @@ test('plan a varied evening, move/remove broadcasts, book a selected future airi
   await expect(page.locator('#selected-contract')).toContainText('Settled: paid');
   await page.getByRole('link', { name: '▦ Schedule', exact: true }).click();
   await page.locator('#open-review').click();
+  await expect(page.locator('#office-paper-mount > #results').getByRole('region', { name: 'Airing dossier' })).toBeVisible();
   await expect(page.locator('#selected-result')).toContainText(`Broadcast result · airing #${movieId}`);
   await expect(page.locator('#selected-result')).toContainText('Provisional expected counts sampled at Day 1 · 20:00');
   await expect(page.locator('#finance-summary')).toContainText('300');
   await expect(page.locator('#results-list tbody tr')).toHaveCount(3);
   await page.locator('#results-index summary').click();
+  await page.screenshot({ path: testInfo.outputPath('transmission-review.png'), animations: 'disabled' });
   await page.locator('#results-list').getByRole('button', { name: `#${firstId} · Neighbourhood Laughs`, exact: true }).click();
   await expect(page.locator('#selected-result')).toContainText(`Broadcast result · airing #${firstId}`);
   await expect(page.locator('#selected-result')).toContainText('Cost 150');

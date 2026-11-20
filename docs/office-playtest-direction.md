@@ -7,7 +7,9 @@ cooler lighting and hides coffee steam. The clock and station controls keep
 their existing rules. The desk calendar opens Programming. Wall monitors
 are scenery.
 
-Proposed art and animation for a later pass:
+The current room draws one main ambient cue at a time, with mug steam and
+monitor cycles independent. The following design supersedes that constraint
+for a later art pass:
 
 - Author at least two large poses per character, two medium poses within
   each large pose, and two small poses within each medium pose. A large
@@ -29,36 +31,24 @@ Proposed art and animation for a later pass:
   Rotate programmes between screens from a shared pool of more than twelve
   short loops. Provide still frames for reduced motion.
 
-## Playtest findings to resolve in mockups
+## Open interface experiments
 
-- The Tape tray should land on the blotter in front of the furniture.
-  Give it a footprint comparable to the other desk widgets and keep the
-  ledger and plant outside its hit area. Explore a sorted physical rack
-  with upright spines, bundled episodes and visible selection.
-- Replace **Try another time** in the Tape file with an audience-appeal
-  radar and two short findings, **Best aired** and **Also works**. Possible
-  examples are Sunday at 13:00 and weekday evenings. Give the estimates
-  their ordinary evidence and uncertainty labels.
-- A **Schedule** action should carry the selected tape to Programming.
-  Show feasible slots shaded orange, yellow or green for low, moderate or
-  good estimated fit. Use text or a pattern as a second cue. Make conflicts
-  and insufficient runtime distinct from lower appeal. Exact placement
-  stays in Programming.
-
-## Workspace audit
-
-| Action | Design | Current presentation |
-| --- | --- | --- |
-| Browse tapes and place a show | Physical shelf, Tape file, and contextual placement are specified. | The dossier and tape art are established. The pulled tray still feels like a form and crowds other props. |
-| Compare reception and find an airtime | The new broad recommendation and planner overlay need mockups. | The Tape file shows radar charts. Trying another time uses date and time controls. |
-| Arrange airings and recurring slots | Calendar, timeline, exact minutes and airing identities are established. | Programming has a focused timeline. Weekly exception controls still read as experiment forms. |
-| Sell and review ad minutes | A teal Airing file with an inventory strip, offer slips and receipts is specified. | Booking, autosell and settlement work. Rules and form controls take up much of the file. |
-| Prepare films and scripted series | Pink spreads, episode binders and recurring role seats are specified. | Film projects have spreads. Pitch, revisions and series setup still use experiment scaffolding. |
-| Book discussions, news and talent | The blue board, newsroom edition board and yellow Character files have a design direction. | Casting has portraits. Discussion runs, newsroom and hiring still sit in the shared experiment frame. |
-| Buy rights and research groups | Portfolio and research binder have clear purposes. | Both are playable, with cards, a wire, surveys and Insight. Their workspaces still read as full-page tools. |
-| Review finances, goals and saves | Ledger and notebook are specified. | Notebook has an office treatment. Finances, result lists and station files still rely on conventional panels. |
-
-Start mockups with Production and the Tape tray to test a reusable focused
-workspace and a compact physical desk widget. Follow with Tape Reception
-and the coloured Programming placement flow, then use the shared patterns
-for Rights, Research and Finances.
+- Explore a compact physical tape rack on the blotter. Upright spines and
+  cases group instalments. The surrounding objects should stay visible and
+  out of the active widget’s hit area. The existing canister, collection
+  and Tape file remain usable while this treatment is explored.
+- Replace point-by-point auditioning of times in Tape Reception with a
+  group-appeal radar and brief **Best aired** and **Also works** findings.
+  Keep the estimate dated and qualified. The current exact-time preview
+  remains available until this alternative works in the normal journey.
+- Carry the tape to Programming and shade feasible openings by estimated
+  fit, using orange, yellow and green plus text or pattern. A clash or a
+  gap that cannot hold the runtime is a separate state.
+- Continue moving inherited experiment-shaped controls into focused
+  desk spreads. Prioritize a readable decision and consequence over restyling
+  a whole form. Film already establishes paging, photo spots and booking
+  papers. Inspect discussion, newsroom, hiring, rights, research and ledger
+  journeys against the [shared guide](office-widget-style.md).
+- Time-of-day art, readiness and industry-wire notices, and eventual
+  resource-sensitive dressing can make changes noticeable. Keep a quiet
+  work surface and make notices lead to the relevant file.

@@ -1,10 +1,10 @@
 # Station libraries, staff and production logistics
 
-See the [recurring newsroom design](station-office.md#gameplay-changes-to-explore-separately) for regular reporting, studio and transmission commitments.
+See the [recurring newsroom pilot](recurring-newsroom.md) for regular reporting, studio and transmission commitments.
 
-Status: distinct browser station libraries/host rosters and owned-studio capacity
-implemented. Rental, setup/cleanup economies, reusable props and multi-edition
-batching are next-slice design directions, not implemented mechanics.
+Distinct station libraries, host rosters, owned-studio capacity and fixed-price
+film rentals are playable. Elastic rental pricing, setup and cleanup economies,
+reusable props and multi-edition batching remain proposals.
 
 The [original film experiment](original-film.md) adds two fixed-price rental
 rooms with exclusive bookings and an equipment shortfall model.

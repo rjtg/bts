@@ -55,7 +55,8 @@ test('prop transition can be cancelled and repeated selection opens one workspac
     await flight.evaluate(el => el.getAnimations()[0].finish());
   }
   await expect(page.locator('#audience')).toBeVisible();
-  await expect(page.locator('#office')).toHaveAttribute('inert', '');
+  await expect(page.locator('#office .office-room')).toHaveAttribute('inert', '');
+  await page.locator('#audience').getByRole('button', { name: 'Young viewers' }).click();
   await capture(page, 'desktop-research');
   const draft = page.getByRole('slider', { name: 'Insight to spend' }).first();
   await draft.press('Home');
@@ -71,7 +72,7 @@ test('prop transition can be cancelled and repeated selection opens one workspac
   await expect(page.locator('#clock')).toContainText('00:00');
 });
 
-test('notebook returns to its prop and clipboard opens Production', async ({ page }) => {
+test('decorative props stay still and Preparation opens Production', async ({ page }) => {
   await openOffice(page);
   const notebook = page.locator('#open-notebook');
   await notebook.click();
@@ -80,17 +81,24 @@ test('notebook returns to its prop and clipboard opens Production', async ({ pag
   await pages.getByRole('button', { name: 'Close notebook' }).click();
   await expect(notebook).toBeFocused();
   const phone = page.locator('.office-phone');
-  const restingPhone = await phone.boundingBox();
-  await phone.hover();
-  await expect(phone).toHaveCSS('content', /telephone-lift-registered/);
+  const restingPhone = (await phone.boundingBox())!;
+  await page.mouse.move(restingPhone.x + restingPhone.width / 2, restingPhone.y + restingPhone.height / 2);
+  await expect(phone).toHaveCSS('pointer-events', 'none');
+  await expect(phone).toHaveCSS('content', 'normal');
   expect(await phone.boundingBox()).toEqual(restingPhone);
-  await capture(page, 'desktop-phone-lifted');
-  const clipboard = page.locator('[data-prop="production"]');
+  const calendar = page.locator('#office-calendar');
+  const hitbox = (await calendar.boundingBox())!;
+  await page.mouse.move(1222, hitbox.y + hitbox.height * .65);
+  expect(await calendar.evaluate(item => item.matches(':hover'))).toBe(false);
+  const preparation = page.locator('[data-prop="script"]');
+  await expect(page.locator('[data-prop="production"]')).toHaveCount(0);
   await expect(page.locator('#clock')).toContainText('00:00');
-  await clipboard.click();
-  await expect(page.locator('#film-production')).toBeVisible();
-  await page.locator('#film-production').getByRole('link', { name: 'Back to Office' }).click();
-  await expect(clipboard).toBeFocused();
+  await preparation.click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Production', exact: true }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Work orders', exact: true }).click();
+  await expect(page.locator('#production')).toBeVisible();
+  await page.locator('#production').getByRole('link', { name: 'Back to Office' }).click();
+  await expect(preparation).toBeFocused();
 });
 
 test.describe('narrow office', () => {

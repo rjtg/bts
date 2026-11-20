@@ -39,15 +39,15 @@ export interface RadialPage {
   choices: RadialChoice[];
 }
 
-export function openRadial(trigger: HTMLElement, root: RadialPage, alternative?: { label: string; run: () => void }) {
-  const dialog = node('dialog', '', 'desk-radial');
+export function openRadial(trigger: HTMLElement, root: RadialPage, alternative?: { label: string; caption?: string; icon: DeskIcon; run: () => void }) {
+  const dialog = node('dialog', '', 'desk-radial film-can');
   const heading = node('h2', '', 'radial-heading');
   heading.id = 'radial-branch';
   dialog.setAttribute('aria-labelledby', heading.id);
   const ring = node('div', '', 'radial-wheel');
-  const controls = node('footer');
+  const sticker = node('span', '', 'can-side-sticker');
+  sticker.setAttribute('aria-hidden', 'true');
   const branch = [root];
-  const anchor = trigger.getBoundingClientRect();
   let restore = true;
 
   function choose(run: () => void) {
@@ -57,6 +57,7 @@ export function openRadial(trigger: HTMLElement, root: RadialPage, alternative?:
   }
 
   function position() {
+    const anchor = trigger.getBoundingClientRect();
     const bounds = dialog.getBoundingClientRect();
     const clamp = (point: number, size: number, viewport: number) =>
       Math.max(8, Math.min(viewport - size - 8, point - size / 2));
@@ -64,30 +65,57 @@ export function openRadial(trigger: HTMLElement, root: RadialPage, alternative?:
     dialog.style.top = `${clamp(anchor.top + anchor.height / 2, bounds.height, innerHeight)}px`;
   }
 
-  function render() {
+  function render(focusBranch?: RadialPage) {
     const page = branch[branch.length - 1];
     heading.textContent = branch.map(item => item.label).join(' › ');
-    const center = node('div', '', 'radial-center');
-    center.append(icon(page.icon), node('strong', page.label));
+    sticker.textContent = page.label;
+    const up = () => {
+      const previous = branch.pop();
+      render(previous);
+    };
+    const center = branch.length > 1
+      ? action('', up, 'radial-center can-back')
+      : node('div', '', 'radial-center');
+    center.append(icon(page.icon));
+    if (center instanceof HTMLButtonElement) {
+      center.setAttribute('aria-label', 'Back');
+      const arrow = node('span', '↶', 'can-back-mark');
+      arrow.setAttribute('aria-hidden', 'true');
+      center.append(arrow);
+    }
+    const extra = page === root ? alternative : undefined;
+    const choices = extra ? [...page.choices, { label: extra.label, icon: extra.icon, next: extra.run }] : page.choices;
+    const stepAngle = 360 / choices.length;
+    ring.style.setProperty('--can-step', `${stepAngle}deg`);
     ring.replaceChildren(center);
-    const buttons = page.choices.map((choice, index) => {
-      const pick = action(choice.label, () => {
+    const buttons = choices.map((choice, index) => {
+      const caption = extra && index === choices.length - 1 ? extra.caption : undefined;
+      const pick = action(caption ?? choice.label, () => {
         if (typeof choice.next === 'function') choose(choice.next);
         else { branch.push(choice.next); render(); }
       }, 'radial-choice');
+      if (caption) pick.setAttribute('aria-label', choice.label);
       pick.prepend(icon(choice.icon));
       pick.disabled = !!choice.disabled;
-      const angle = index * 2 * Math.PI / page.choices.length;
+      const angle = (index + .5) * 2 * Math.PI / choices.length;
       pick.style.setProperty('--radial-x', String(Math.sin(angle)));
       pick.style.setProperty('--radial-y', String(-Math.cos(angle)));
       return pick;
     });
+    function paintSector(index: number) {
+      ring.style.setProperty('--can-sector', `${index * stepAngle}deg`);
+      ring.classList.toggle('can-sector-lit', index >= 0);
+      buttons.forEach((button, position) => button.classList.toggle('can-choice-lit', position === index));
+    }
+    paintSector(-1);
+    for (const [index, pick] of buttons.entries()) {
+      if (pick.disabled) continue;
+      pick.addEventListener('focus', () => paintSector(index));
+      pick.addEventListener('blur', () => paintSector(-1));
+      pick.addEventListener('pointerenter', () => paintSector(index));
+      pick.addEventListener('pointerleave', () => paintSector(buttons.indexOf(document.activeElement as HTMLButtonElement)));
+    }
     ring.append(...buttons);
-    const back = action('Back', () => { branch.pop(); render(); });
-    back.hidden = branch.length === 1;
-    const cancel = action('Cancel', () => dialog.close());
-    controls.replaceChildren(back, cancel);
-    if (alternative) controls.prepend(action(alternative.label, () => choose(alternative.run)));
     const available = buttons.filter(button => !button.disabled);
     ring.onkeydown = event => {
       if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key) || !available.length) return;
@@ -99,10 +127,17 @@ export function openRadial(trigger: HTMLElement, root: RadialPage, alternative?:
       available[index].focus();
     };
     position();
-    (available[0] ?? cancel).focus({ preventScroll: true });
+    const restored = page.choices.findIndex(choice => choice.next === focusBranch);
+    (buttons[restored] ?? available[0] ?? (center instanceof HTMLButtonElement ? center : dialog)).focus({ preventScroll: true });
   }
 
-  dialog.append(heading, ring, controls);
+  dialog.append(heading, ring, sticker);
+  let pressedBackdrop = false;
+  dialog.addEventListener('pointerdown', event => { pressedBackdrop = event.target === dialog; });
+  dialog.addEventListener('click', event => {
+    if (pressedBackdrop && event.target === dialog) dialog.close();
+    pressedBackdrop = false;
+  });
   document.body.append(dialog);
   dialog.showModal();
   render();

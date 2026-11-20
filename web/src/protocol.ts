@@ -17,6 +17,7 @@ export type Command =
   | { type: 'accept_minute_offer'; airing_id: number; advertiser: number; token: string }
   | { type: 'pitch_scripted_run'; title: string; subject: Subject; standing: number[]; tension: number[] }
   | { type: 'pitch_film'; title: string; subject: Subject; ambition: number[] }
+  | { type: 'develop_film_idea'; title: string; description: string; ambition: number[]; pace: PitchPace }
   | { type: 'write_film'; film_id: number; writer: number; focus: number | null }
   | { type: 'accept_script'; film_id: number }
   | { type: 'review_film' | 'book_film'; film_id: number; booking: FilmBooking }
@@ -131,16 +132,18 @@ export interface ProductionView {
 }
 
 export type FilmBooking = { cast: [number, number]; director: number; studio: number; start: number };
+export type PitchPace = 'rush' | 'steady' | 'take_time';
 export type FilmReview = FilmBooking & {
   id: number; recording_end: number; ready: number; fees: string; rent: string; total: string; studio_shortfall: boolean;
 };
+export type FilmBookingPreview = { Ok: FilmReview } | { Err: { code: string; message: string } };
 export type FilmPerson = {
   id: number; name: string; job: 'writer' | 'actor' | 'director'; fee: string; revision_fee: string;
   specialty: string; available_until: number; commitments: [string, number, number][];
 };
 export type FilmCard = {
   episode: { series: number; sequence: number; tension: number; demanding_shift: boolean } | null;
-  id: number; title: string; subject: Subject; phase: 'pitch' | 'writing' | 'script_review' |
+  id: number; title: string; description: string | null; subject: Subject; phase: 'developing_idea' | 'pitch' | 'writing' | 'script_review' |
     'revising' | 'casting' | 'booked' | 'recording' | 'post' | 'complete';
   committed: string; writer: number | null; due: number | null; revised: boolean;
   script: { qualities: Quality[]; weaknesses: [number, string][]; studio_demand: string } | null;

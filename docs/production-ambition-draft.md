@@ -7,7 +7,8 @@ See [game design](design.md), [simulation](simulation.md) and the
 [current production experiment](original-production.md).
 
 The [original film experiment](original-film.md) implements a bounded pitch,
-writing, revision and recording workflow. This draft covers the broader direction.
+writing, revision and recording workflow. The [series pilot](scripted-series-pilot.md) tests an ambition baseline and
+strain across three instalments. This draft covers the broader direction.
 
 ## Core idea
 
@@ -218,23 +219,15 @@ Player reviews provide legitimate, potentially imperfect assessments of progress
 and shortcomings. Developer traces can expose exact causes; player screens must
 not reveal hidden skill coefficients or guarantee future reception.
 
-The current standalone discussion experiment uses fixed durations and a bounded
-arithmetic execution model. This draft proposes a richer direction; it does
-not claim existing mechanics already implement writing, staged reviews or
-ambition shortfalls.
+The current film and series pilots already exercise staged reviews and
+ambition shortfalls. For a broader lifecycle, test different run shapes,
+teams, shelf lives and revision paths using those baselines. Keep prices,
+durations and cancellation terms legible before booking.
 
-Open: ambition dimensions, time/pay contracts, team coordination, assessment
-accuracy, revision costs, cancellation, diminishing returns, downstream adaptation
-and uncertainty. If randomness is used, runs must remain reproducible.
+## Comparisons for a broader production model
 
-## Suggested first experiment
-
-Prototype one writing stage with a small fictional writer roster, a few ambition
-dimensions, paid time and an inspectable script result. Add at least one progress
-review and a meaningful extension or revision decision.
-
-Compare the same writer tackling a feasible and an excessive brief, plus a
-stronger writer tackling the demanding brief. Demonstrate a modest success
-outperforming an overambitious failure and a demanding success having worthwhile
-upside. Expose downstream demands on the resulting script without implementing
-the full director/cast pipeline yet. Label all balance parameters provisional.
+Use matched briefs with feasible and excessive demands, then vary capability,
+preparation time or filming constraints independently. For episodes, compare a
+single departure, repeated departures, a return to baseline and a gradual arc.
+Report specific effects on achieved qualities and reception. The existing
+pilots establish bounded comparisons rather than universal balance.

@@ -1,11 +1,13 @@
 import { DAY_MINUTES, displayTime, parseTime } from './airtime';
 import type { Programme } from '../protocol';
 import { action, node, option } from './dom';
+import { bindDateClock } from './date-clock';
 
 export function placementSlip(work: Programme, start: number, ads: number, ui: {
   stamp: (minute: number) => string;
   dateLabel: (day: number) => string;
   firstDay: number;
+  firstWeekday: number;
   lastDay: number;
   inspect: (start: number, minutes: number) => string | null;
   confirm: (start: number, ads: number) => string | null;
@@ -24,6 +26,7 @@ export function placementSlip(work: Programme, start: number, ads: number, ui: {
   const day = node('select');
   for (let value = Math.min(ui.firstDay, Math.floor(start / DAY_MINUTES)); value <= ui.lastDay; value++) day.append(option(value, ui.dateLabel(value)));
   day.value = String(Math.floor(start / DAY_MINUTES));
+  bindDateClock({ label: 'Airing date and time', day, time, firstWeekday: () => ui.firstWeekday });
   const date = node('label', 'Day '); date.append(day);
   const clock = node('label', 'Start time '); clock.append(time);
   const minute = () => Number(day.value) * DAY_MINUTES + parseTime(time.value);

@@ -1,6 +1,7 @@
 import type { Command, Polling, Report } from './protocol';
-import { element, node } from './ui/dom';
+import { action, element, node } from './ui/dom';
 import { rotaryDial } from './ui/dial';
+import { dossier as officeFile, leaf, spread } from './ui/dossier';
 import { starRating } from './ui/stars';
 
 const portraits: Partial<Record<number, string>> = {
@@ -25,7 +26,37 @@ export function renderAudience(report: Report, stamp: (tick: number) => string, 
   const root = element('audience-research');
   const research = report.research;
   if (!research) return;
-  const desk = node('section', '', 'production-card research-desk');
+  const selected = root.querySelector<HTMLButtonElement>('[data-survey-file][aria-pressed="true"]')?.dataset.surveyFile
+    ?? 'survey';
+  const index = node('nav', '', 'binder-index');
+  index.setAttribute('aria-label', 'Research binder contents');
+  const leaves = node('div', '', 'binder-leaves');
+  function show(key: string, focus = true) {
+    for (const tab of index.querySelectorAll<HTMLButtonElement>('[data-survey-file]')) {
+      tab.setAttribute('aria-pressed', String(tab.dataset.surveyFile === key));
+    }
+    for (const file of leaves.children) {
+      if (file instanceof HTMLElement) file.hidden = file.dataset.surveyPage !== key;
+    }
+    if (focus) leaves.querySelector<HTMLElement>(':scope > :not([hidden])')?.focus({ preventScroll: true });
+  }
+  function add(key: string, label: string, page: HTMLElement, art?: string) {
+    const tab = action(label, () => show(key), 'binder-tab');
+    tab.dataset.surveyFile = key;
+    page.dataset.surveyPage = key;
+    page.id = `survey-page-${key}`;
+    page.tabIndex = -1;
+    tab.setAttribute('aria-controls', page.id);
+    if (art) {
+      const image = node('img');
+      image.src = `${import.meta.env.BASE_URL}audiences/${art}.webp`;
+      image.alt = '';
+      tab.prepend(image);
+    }
+    index.append(tab);
+    leaves.append(page);
+  }
+  const desk = leaf();
   const heading = node('h3', 'Audience surveys');
   heading.prepend(symbol('▤'));
   const stock = node('p', `Insight available: ${research.insight}`, 'insight-stock');
@@ -44,7 +75,7 @@ export function renderAudience(report: Report, stamp: (tick: number) => string, 
     });
     choices.append(button);
   }
-  desk.append(heading, stock, choices);
+  desk.append(heading, stock);
   if (research.missed_poll) desk.append(node('p', 'The last survey was skipped because cash was too low.'));
   if (research.next_tick !== null && research.next_tick <= report.end_tick) {
     desk.append(node('p', `Next survey for all groups · ${stamp(research.next_tick)}`));
@@ -53,9 +84,16 @@ export function renderAudience(report: Report, stamp: (tick: number) => string, 
     root.querySelectorAll<HTMLInputElement>('.rotary-dial input'),
     input => [input.id, input.valueAsNumber],
   ));
-  root.replaceChildren(desk);
+  const settings = leaf('Polling orders');
+  settings.append(choices, ...Array.from(desk.querySelectorAll(':scope > p:not(.insight-stock)')));
+  const survey = node('section');
+  survey.append(officeFile('Research', [{ label: 'Survey orders', content: spread(desk, settings) }]));
+  add('survey', 'Survey orders', survey);
+  root.replaceChildren(index, leaves);
   for (const group of research.groups) {
-    const card = node('article', '', 'production-card audience-card');
+    const card = node('article', '', 'audience-file');
+    const profile = leaf();
+    const investigation = leaf('Research notes');
     const header = node('header', '', 'audience-card-header');
     const dossier = node('div', '', 'audience-dossier');
     const portrait = portraits[group.id];
@@ -76,7 +114,7 @@ export function renderAudience(report: Report, stamp: (tick: number) => string, 
     );
     if (snapshot.watch_time_note) dossier.append(node('p', snapshot.watch_time_note, 'watch-time-note'));
     header.append(dossier);
-    card.append(header);
+    profile.append(header);
     const tastes = node('ul', '', 'audience-tastes');
     for (const [quality, halfStars] of Object.entries(snapshot.tastes)) {
       const row = node('li');
@@ -85,7 +123,7 @@ export function renderAudience(report: Report, stamp: (tick: number) => string, 
       row.append(label, starRating(halfStars));
       tastes.append(row);
     }
-    card.append(node('h4', 'What they like'), tastes);
+    profile.append(node('h4', 'What they like'), tastes);
     const form = node('form', '', 'investigate-panel');
     const input = node('input');
     const id = `insight-${group.id}`;
@@ -119,10 +157,13 @@ export function renderAudience(report: Report, stamp: (tick: number) => string, 
       input.value = '0';
       send({ type: 'spend_insight', audience: group.id, amount });
       const next = root.querySelector<HTMLInputElement>(`#${id}`);
-      if (next?.disabled) root.querySelector<HTMLButtonElement>('[data-polling][aria-pressed="true"]')?.focus();
+      if (next?.disabled) root.querySelector<HTMLButtonElement>('[data-survey-file][aria-pressed="true"]')?.focus();
       else next?.focus();
     });
-    card.append(form);
-    root.append(card);
+    investigation.append(node('p', `Insight available: ${research.insight}`, 'insight-stock'), form);
+    card.append(officeFile('Research', [{ label: group.name, content: spread(profile, investigation) }]));
+    add(String(group.id), group.name, card, portrait);
   }
+  show(Array.from(index.children).some(tab => tab instanceof HTMLElement && tab.dataset.surveyFile === selected)
+    ? selected : 'survey', false);
 }

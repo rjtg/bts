@@ -1,6 +1,6 @@
 # Ad-minute market
 
-The browser's **Sell ad time** panel lists space on one planned airing. A listing
+The teal **Airing** file lists ad space on one planned airing. A listing
 can hold 0–30 whole minutes. A brand can buy part of the listing, and multiple
 brands can pay for distinct portions. The current browser fixture has two brands.
 The legacy delivery contract remains available on airings without a minute listing.
@@ -22,7 +22,8 @@ tokens are local to their session and airing, and any later state change
 invalidates the old quote. Rust verifies the quote and budget again before
 accepting. Money, inventory and schedule changes are atomic.
 
-Optional [autosell for recurring slots](weekly-scheduling.md#optional-autosell) is proposed. It would use these same per-airing commitments and settlement rules.
+Eligible [recurring slots can opt into autosell](weekly-scheduling.md#optional-autosell)
+using the same per-airing commitments and settlement rules.
 
 ## Provisional pricing
 
