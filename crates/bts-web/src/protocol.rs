@@ -37,6 +37,15 @@ pub enum Command {
     PublishAiring {
         airing_id: u32,
     },
+    StudyScript {
+        film_id: u32,
+    },
+    Audition {
+        film_id: u32,
+        person: u16,
+        role: u8,
+        insight: u32,
+    },
     PreviewWeekly {
         plan: WeeklyInput,
     },

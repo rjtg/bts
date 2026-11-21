@@ -14,6 +14,7 @@ pub mod research;
 pub mod rights;
 pub mod scripted_run;
 mod slot_habits;
+pub mod talent_research;
 pub mod weekly;
 
 use crate::economy::{ContractId, Offer};
@@ -129,6 +130,7 @@ pub struct Planner {
     scripted_runs: BTreeMap<SeriesId, scripted_run::ScriptedRun>,
     films: BTreeMap<production::ProductionId, film::Film>,
     research: Option<research::Research>,
+    talent_research: talent_research::TalentResearch,
     rights: Option<rights::Market>,
     libraries: BTreeMap<StationId, BTreeSet<ProgrammeId>>,
     staff: BTreeMap<StationId, BTreeSet<production::PersonId>>,
@@ -184,6 +186,7 @@ impl Planner {
             scripted_runs: BTreeMap::new(),
             films: BTreeMap::new(),
             research: None,
+            talent_research: talent_research::TalentResearch::default(),
             rights: None,
             libraries,
             staff: BTreeMap::new(),
@@ -930,6 +933,7 @@ impl Planner {
         self.finish_productions(boundary)?;
         self.advance_newsroom(boundary)?;
         self.advance_films(boundary)?;
+        self.finish_script_studies(boundary)?;
         self.poll_boundary(boundary)?;
         let ledger_before_rights = self.state().economy().ledger().len();
         self.advance_rights(boundary)?;

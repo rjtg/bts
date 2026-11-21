@@ -79,6 +79,8 @@ pub struct ResearchView {
     pub insight: u32,
     pub opening_insight: u32,
     pub spending: Vec<InsightEntry>,
+    pub script_studies: Vec<super::talent_research::PreparationStudy>,
+    pub auditions: Vec<super::talent_research::AuditionEvidence>,
     pub groups: Vec<GroupView>,
 }
 
@@ -249,6 +251,8 @@ impl Planner {
             insight: r.balance,
             opening_insight: r.initial,
             spending: r.ledger.clone(),
+            script_studies: self.script_studies().cloned().collect(),
+            auditions: self.audition_evidence().cloned().collect(),
             groups: r
                 .groups
                 .iter()

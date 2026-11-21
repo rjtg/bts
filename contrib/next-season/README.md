@@ -11,8 +11,9 @@ Verified slice: tape rack, dated Reception advice and the calendar handoff
 verified pass. Production filing (#7) is verified through the pilot formats.
 The station strip, Directory, outside dismissal and desk props (#1–#4)
 are verified. Action timing (#12) is documented with a tested experiment.
-Active next: public listing and teaser evidence (#13), then #14–#17 and
-atmosphere (#9–#11). Code health (#19) continues at each boundary.
+The public listing pilot (#13) and private preparation and auditions (#14)
+are in place. Next are show lifecycle (#15), studio logistics (#16), advertiser
+evolution (#17) and atmosphere (#9–#11). Code health (#19) continues at each boundary.
 
 ## Launch
 
@@ -130,3 +131,16 @@ With otherwise identical schedules, the matched [fixture](publicity.txt)
 drew approximately 12,991 opening viewers for an internal plan and 13,238
 with a full-notice listing. Withdrawing the listing returned the outcome
 to baseline. See the provisional [rules](../../docs/weekly-scheduling.md#public-listing-pilot).
+
+## Private preparation and auditions
+
+Open a delivered script and commission **Private preparation**. The study
+adds one Insight after an hour of simulated time, with no transmission
+required. In the casting file, select a cast and director. You can spend one
+to three Insight on dated role-fit or cast-chemistry evidence, then book with
+the same choices or revisit the roster. Casting without an audition remains
+available. The evidence is qualitative and rehearsal does not alter the
+team's capabilities. See the [research rules](../../docs/audience-research.md).
+The [casting file capture](audition-evidence.webp) shows the evidence. The
+native regression covers delivery timing, costs, duplicate requests,
+observation privacy, and save replay.

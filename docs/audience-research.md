@@ -60,3 +60,25 @@ The headless experiments and planners without research configured retain their
 existing forecasts. See the [paired forecast experiment](../contrib/audience-research/README.md).
 
 The [weekly planner](weekly-scheduling.md) adds a watch-time note to each published survey. Exact estimated band values drive ad forecasts internally. Actual preferences and values remain hidden.
+
+## Private preparation and casting pilot
+
+A delivered script can commission one private study before booking the
+shoot. It takes four production ticks and grants one Insight when it
+finishes, even if the film never airs. Starting the study commits no cash.
+The credited study is visible in the project file.
+
+On Cast, choose an actor and optionally audition them for that role. The
+audition spends one to three Insight and creates one dated qualitative
+reading for the project, actor and role. The Lead samples humour, tension
+and pace capability. The Confidant samples playfulness, warmth and
+intimacy. The internal estimate compares those capabilities with the
+delivered script and includes craft. It adds deterministic bias scaled by
+`0.08 + 0.32 × 0.65^Insight`, then publishes a fit band. Additional spend
+has diminishing returns and leaves uncertainty. The player report excludes
+the exact score, capability values and bias. Auditions can be skipped.
+Neither study nor audition reserves talent or changes the casting result.
+
+These are opt-in journal actions, so replaying a prior station file does not
+grant retroactive Insight. Cash, audience snapshots and ad terms follow
+their existing rules.

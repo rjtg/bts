@@ -37,6 +37,8 @@ export type Command =
   | { type: 'place'; start_tick: number; programme: number; advertiser: number | null }
   | { type: 'move'; airing_id: number; start_tick: number }
   | { type: 'publish_airing'; airing_id: number }
+  | { type: 'study_script'; film_id: number }
+  | { type: 'audition'; film_id: number; person: number; role: number; insight: number }
   | { type: 'remove'; airing_id: number }
   | { type: 'set_advertiser'; airing_id: number; advertiser: number | null }
   | { type: 'request_offer'; airing_id: number }
@@ -79,6 +81,8 @@ export interface Research {
   insight: number;
   opening_insight: number;
   spending: { tick: number; audience: number; spent: number; remaining: number }[];
+  script_studies: { film: number; ready: number; collected: boolean }[];
+  auditions: { film: number; person: number; role: number; spent: number; observed: number; fit: string; uncertainty: string }[];
   groups: {
     id: number;
     name: string;

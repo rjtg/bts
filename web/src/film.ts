@@ -205,6 +205,16 @@ export function initialiseFilmDesk(ui: {
           if (film.due !== null) ui.send({ type: 'advance', to_tick: film.due });
         }));
       }
+      if (next.research && (film.phase === 'script_review' || film.phase === 'casting')) {
+        const study = next.research.script_studies.find(record => record.film === film.id);
+        const research = node('section', '', 'research-receipt');
+        if (!study) research.append(node('p', 'Private script study · 1 hour · earns 1 Insight'),
+          action('Start script study', () => ui.send({ type: 'study_script', film_id: film.id })));
+        else if (study.collected) research.append(node('p', `Script study filed · 1 Insight earned · ${ui.stamp(study.ready)}`));
+        else research.append(node('p', `Script study due · ${ui.stamp(study.ready)}`),
+          action('Advance to study', () => ui.send({ type: 'advance', to_tick: study.ready })));
+        work.append(research);
+      }
       if (film.phase === 'casting') {
         call.append(node('p', film.title), node('p', 'Choose the studio and recording time. Review costs before reserving the shoot.', 'handwritten'));
         const actors = desk.people.filter(p => p.job === 'actor');
@@ -230,6 +240,30 @@ export function initialiseFilmDesk(ui: {
         seats.append(photoSpot('film-director-photo', 'Director', directors.map(person => candidate(person)), draft.director,
           id => { draft.director = id; render(next); }));
         work.append(seats);
+        if (next.research) {
+          const auditions = node('details', '', 'audition-paper');
+          auditions.append(node('summary', 'Optional auditions'));
+          for (const [role, actorId] of draft.cast.entries()) {
+            if (actorId === null) continue;
+            const person = actors.find(a => a.id === actorId);
+            const prior = next.research.auditions.find(record => record.film === film.id && record.person === actorId && record.role === role);
+            const entry = node('section', '', 'research-receipt');
+            entry.append(node('h4', `${desk.roles[role]} · ${person?.name ?? 'Selected actor'}`));
+            if (prior) entry.append(node('p', `${prior.fit} · ${prior.uncertainty} uncertainty · ${ui.stamp(prior.observed)}`));
+            else {
+              const spend = node('select');
+              for (let amount = 1; amount <= Math.min(next.research.insight, 3); amount++) spend.append(option(amount, `${amount} Insight`));
+              const audition = action(`Audition ${person?.name ?? 'actor'}`, () =>
+                ui.send({ type: 'audition', film_id: film.id, person: actorId, role, insight: Number(spend.value) }));
+              audition.disabled = spend.disabled = spend.options.length === 0;
+              entry.append(label('Insight to spend', spend), audition);
+            }
+            auditions.append(entry);
+          }
+          if (auditions.children.length === 1) auditions.append(node('p', 'Choose an actor to open an audition slip.'));
+          auditions.open = element('film-projects').querySelector<HTMLDetailsElement>('.audition-paper')?.open ?? false;
+          work.append(auditions);
+        }
         const room = desk.studios.find(room => room.id === draft.studio)!;
         const studios = desk.studios.map(room => ({ id: room.id, name: room.name, description: room.summary, fee: funds(room.fee),
           photo: room.id === 1 ? 0 : room.id === 2 ? 1 : undefined,

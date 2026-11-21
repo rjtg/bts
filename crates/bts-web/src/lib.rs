@@ -122,6 +122,24 @@ impl Session {
                     .publish_airing(AiringId(airing_id))
                     .map_err(player_error)?;
             }
+            Command::StudyScript { film_id } => self
+                .planner
+                .study_script(ProductionId(film_id))
+                .map_err(player_error)?,
+            Command::Audition {
+                film_id,
+                person,
+                role,
+                insight,
+            } => self
+                .planner
+                .audition(
+                    ProductionId(film_id),
+                    PersonId(person),
+                    usize::from(role),
+                    insight,
+                )
+                .map_err(player_error)?,
             Command::PlaceFiller {
                 start_minute,
                 teaser_for,

@@ -229,6 +229,21 @@ pub struct FilmEvidence {
     pub execution: f64,
 }
 
+pub(super) fn audition_fit(
+    script: &Script,
+    person: PersonId,
+    role: usize,
+) -> Result<f64, PlanError> {
+    let actor = talent(person, FilmJob::Actor)?;
+    let indexes = if role == 0 { [0, 2, 6] } else { [1, 3, 4] };
+    let capability = indexes
+        .into_iter()
+        .map(|i| 1.0 - (actor.capability[i] - script.profile.values[i].unwrap_or(0.0)).abs())
+        .sum::<f64>()
+        / 3.0;
+    Ok(capability * 0.7 + actor.craft * 0.3)
+}
+
 fn talent(id: PersonId, job: FilmJob) -> Result<&'static Freelancer, PlanError> {
     PEOPLE
         .iter()
