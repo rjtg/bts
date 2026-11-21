@@ -1,6 +1,9 @@
 //! Periodic advertiser reviews based on completed, paid ad-minute delivery.
 use super::*;
 
+#[cfg(test)]
+mod season_comparison;
+
 const WEEK_MINUTES: u32 = 7 * 1440;
 const LOW_DELIVERY: f64 = 250.0;
 const HIGH_DELIVERY: f64 = 1200.0;

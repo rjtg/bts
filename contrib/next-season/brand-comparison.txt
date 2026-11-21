@@ -1,0 +1,20 @@
+running 1 test
+Normal week 1: hype 26.18, bid 110%, receipts 1235, budget 18765.
+Normal week 2: hype 28.65, bid 120%, receipts 2122, budget 17878.
+Normal week 3: hype 28.69, bid 125%, receipts 3030, budget 16970.
+Normal same next slot: 248 Funds for 2 minutes.
+WeakCreative week 1: hype 0.44, bid 110%, receipts 1988, budget 18012.
+WeakCreative week 2: hype 0.04, bid 120%, receipts 4265, budget 15735.
+WeakCreative week 3: hype 0.00, bid 125%, receipts 6747, budget 13253.
+WeakCreative same next slot: 1292 Funds for 3 minutes.
+WeakTurnout week 1: hype 0.91, bid 90%, receipts 1989, budget 18011.
+WeakTurnout week 2: hype 0.55, bid 80%, receipts 3891, budget 16109.
+WeakTurnout week 3: hype 0.52, bid 75%, receipts 5591, budget 14409.
+WeakTurnout same next slot: 795 Funds for 3 minutes.
+Unsold week 1: hype 0.44, bid 100%, receipts 0, budget 20000.
+Unsold week 2: hype 0.04, bid 100%, receipts 0, budget 20000.
+Unsold week 3: hype 0.00, bid 100%, receipts 0, budget 20000.
+Unsold same next slot: 1034 Funds for 3 minutes.
+test planning::brand_review::season_comparison::three_reviews_separate_hype_deficit_from_budget_and_bid_posture ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1.20s

@@ -12,9 +12,10 @@ verified pass. Production filing (#7) is verified through the pilot formats.
 The station strip, Directory, outside dismissal and desk props (#1–#4)
 are verified. Action timing (#12) is documented with a tested experiment.
 The public listing pilot (#13), private preparation and auditions (#14), and
-editable scripted runs and sequels (#15), and the film rental pilot (#16) are
-verified. Next are advertiser evolution (#17) and atmosphere (#9–#11). Code
-health (#19) continues at each boundary.
+editable scripted runs and sequels (#15), the film rental pilot (#16), and
+the advertiser comparison (#17) are verified. Next are independent character
+poses (#9), monitor rotation (#10), and the working day (#11). Code health
+(#19) continues at each boundary.
 
 ## Launch
 
@@ -173,3 +174,14 @@ targeted Chromium tests passed, including production native/Wasm parity.
 
 [Separate setup and stock results](studio-logistics.txt) ·
 [Booking rules and reproduction commands](../../docs/production-logistics.md#film-rental-pilot)
+
+## Advertiser review over three weeks
+
+The [matched comparison](brand-comparison.txt) follows the same show and
+airtimes under regular, weak-creative, weak-turnout, and unsold conditions.
+One brand's low-hype histories pay higher later quotes and, for both types
+of weak delivery, more cumulative receipts in this diary. Forgoing sales
+improves the next quote but earns no receipts until then. The existing
+weekly caution reduces the quote after weak turnout, while deficit pricing
+still dominates. Financing and signed payments are unchanged. The policy
+decision and exact branch conditions are in [weekly reviews](../../docs/brand-reviews.md#three-review-comparison).
