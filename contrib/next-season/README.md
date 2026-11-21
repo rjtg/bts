@@ -14,9 +14,9 @@ are verified. Action timing (#12) is documented with a tested experiment.
 The public listing pilot (#13), private preparation and auditions (#14), and
 editable scripted runs and sequels (#15), the film rental pilot (#16), and
 the advertiser comparison (#17) are verified. Independent character poses
-(#9) and monitor rotation (#10) are verified. Next are the working day (#11)
-and the complete season playthrough. Code health (#19) continues at each
-boundary.
+(#9), monitor rotation (#10), and the working day (#11) are verified. The
+remaining step is the complete integration and six-week browser playthrough.
+Code health (#19) continues at each boundary.
 
 ## Launch
 
@@ -207,3 +207,14 @@ sheet and use small stepped motions inside the glass. The animation test
 visits every reel on each screen, checks two or more animated screens in
 each batch, and verifies matched stills and an unchanged clock under reduced
 motion. The production build and all five office-focused tests passed.
+
+## Working day
+
+Use the time controls to see the [empty early office](office-before-open.webp),
+[arrivals around 08:45](office-arrivals.webp), and the [afternoon desk](office-afternoon.webp)
+with an empty mug. **Exterior at close** in Directory enables a
+[short exterior shot](exterior-at-close.webp) at 18:00. The atmosphere uses two
+image-generated plates registered to the existing art for the vacant room
+and the station exterior. Arrivals and departures use group changes. The
+exterior and changes in light are decorative. Exact airings still settle
+through the regular clock controls, as checked in Chromium.

@@ -1,12 +1,12 @@
 import { element, node } from './dom';
 
 const people = [
-  ['.office-idle-staff', 'right'], ['.office-idle-reader', 'left'],
-  ['.office-idle-standing', 'right'], ['.office-idle-colleague', 'left'],
-  ['[data-quiet-pose="left-seat"]', 'right'], ['[data-quiet-pose="leaning"]', 'left'],
-  ['[data-quiet-pose="through-glass"]', 'right'], ['[data-quiet-pose="floor-assistant"]', 'left'],
-  ['.studio-idle-camera', 'right'], ['.studio-idle-second-camera', 'left'],
-  ['.studio-idle-host', 'right'], ['.studio-idle-guest', 'left'],
+  ['.office-idle-staff', 'right', 'early'], ['.office-idle-reader', 'left', 'late'],
+  ['.office-idle-standing', 'right', 'early'], ['.office-idle-colleague', 'left', 'early'],
+  ['[data-quiet-pose="left-seat"]', 'right', 'early'], ['[data-quiet-pose="leaning"]', 'left', 'late'],
+  ['[data-quiet-pose="through-glass"]', 'right', 'early'], ['[data-quiet-pose="floor-assistant"]', 'left', 'studio'],
+  ['.studio-idle-camera', 'right', 'studio'], ['.studio-idle-second-camera', 'left', 'studio'],
+  ['.studio-idle-host', 'right', 'studio'], ['.studio-idle-guest', 'left', 'studio'],
 ] as const;
 
 const deskWork = '[inert],.prop-travelling,.file-open,.tray-open';
@@ -23,10 +23,11 @@ export function initialiseOfficeIdle() {
   const room = office.querySelector<HTMLElement>('.office-room')!;
   const plant = office.querySelector<HTMLElement>('.office-plant')!;
   const glow = office.querySelector<HTMLElement>('.office-lamp-glow')!;
-  const actors = people.map(([selector, direction]) => {
+  const actors = people.map(([selector, direction, team]) => {
     const sprite = room.querySelector<HTMLElement>(selector)!;
     sprite.style.setProperty('--alternate-image', getComputedStyle(sprite).backgroundImage);
     sprite.dataset.idleActor = direction;
+    sprite.dataset.idleTeam = team;
     sprite.dataset.poseLarge = '0';
     sprite.dataset.poseMedium = '0';
     sprite.dataset.poseSmall = '0';
@@ -53,7 +54,8 @@ export function initialiseOfficeIdle() {
 
     const now = performance.now();
     for (const actor of actors) {
-      if (actor.due > now || !actor.sprite.getClientRects().length) continue;
+      if (actor.due > now || !actor.sprite.getClientRects().length
+        || getComputedStyle(actor.sprite).visibility !== 'visible') continue;
       actor.due = now + 1250 + Math.random() * 6300;
       const draw = Math.random();
       const tier = draw < .07 ? 'poseLarge' : draw < .28 ? 'poseMedium' : 'poseSmall';

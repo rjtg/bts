@@ -27,6 +27,7 @@ import { dossier, leaf, spread } from './ui/dossier';
 import { officePapers } from './ui/office-dossier';
 import { initialiseOfficeIdle } from './ui/office-idle';
 import { initialiseOfficeMonitors } from './ui/office-monitors';
+import { renderOfficeDay } from './ui/office-day';
 import { initialiseOfficeMotion } from './ui/office-motion';
 import { bindOutsideDismissal } from './ui/outside-dismissal';
 import { renderToday } from './ui/today-strip';
@@ -1063,9 +1064,7 @@ function jump(tickInDay: number): void {
   element('timeline-scroller').scrollLeft = tickInDay * tickWidth;
 }
 function renderOffice() {
-  const minuteOfDay = report.now_minute % DAY_MINUTES;
-  const workingHours = minuteOfDay >= 8 * 60 && minuteOfDay < 18 * 60;
-  element('office').dataset.shift = workingHours ? 'open' : 'closed';
+  renderOfficeDay(report.now_minute);
   renderToday(report, playerStation(), id => {
     if (!isDesk()) desks.navigate('office');
     chooseAiring(id);

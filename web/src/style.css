@@ -2491,7 +2491,46 @@ body[data-station-view="office"] .rail #reset { margin-left:0; }
   background-color:#adb8cc;
   background-blend-mode:multiply;
 }
-#office[data-shift="closed"] .office-steam { visibility:hidden; }
+#office[data-coffee="empty"] .office-steam i { visibility:hidden; }
+.office-steam::after {
+  content:''; position:absolute; left:-15%; top:107%; width:140%; height:16%;
+  border-radius:50%; opacity:0;
+  background:radial-gradient(ellipse at 47% 77%,#8d5836 0%,#663b24 56%,#342117 90%);
+}
+#office[data-coffee="empty"] .office-steam::after { opacity:1; }
+@media (max-width:860px) {
+  .office-steam::after { left:.50rem; top:auto; bottom:.09rem; width:1.23rem; height:.29rem; }
+}
+.vacant-desks {
+  position:absolute; inset:0; pointer-events:none;
+  background:url('/office-art/room-empty.webp') center bottom / 100% 100%;
+  opacity:0; transition:opacity var(--idle-fade,0s) ease;
+}
+.vacant-desks.early { clip-path:polygon(22.8% 24%, 40% 24%, 40% 50.75%, 22.8% 50.75%); }
+.vacant-desks.late { clip-path:polygon(39.99% 24%, 50.68% 24%, 50.68% 50.75%, 39.99% 50.75%); }
+.vacant-desks.studio { clip-path:polygon(57% 18%, 83.57% 22%, 83.57% 42.2%, 57% 40%); }
+#office[data-shift="closed"] .vacant-desks { filter:brightness(.83) sepia(.06) saturate(.8); }
+#office[data-staff-early="false"] .vacant-desks.early,
+#office[data-staff-late="false"] .vacant-desks.late,
+#office[data-staff-studio="false"] .vacant-desks.studio { opacity:1; }
+#office[data-staff-early="false"] [data-idle-team="early"],
+#office[data-staff-late="false"] [data-idle-team="late"],
+#office[data-staff-studio="false"] [data-idle-team="studio"] { visibility:hidden; }
+@media (max-width:860px) { .vacant-desks { display:none; } }
+.room-transition-control { display:flex; align-items:center; gap:.24rem; font-size:.73rem; }
+.station-exterior {
+  position:absolute; inset:0; z-index:4; pointer-events:none;
+  background:#1b202c url('/office-art/station-exterior.webp') center / cover;
+  animation:station-night 2.2s ease both;
+}
+@keyframes station-night {
+  0% { opacity:0; filter:sepia(.12); }
+  20% { opacity:1; filter:sepia(.12); }
+  48% { filter:brightness(.40) saturate(.69); }
+  75% { opacity:1; filter:brightness(1.22) saturate(.78); }
+  100% { opacity:0; }
+}
+@media (prefers-reduced-motion:reduce) { .station-exterior { display:none; } }
 
 /* Shallow enamel film tin, with a separate paper label on the front wall. */
 .desk-radial {

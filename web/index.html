@@ -11,12 +11,13 @@
       <div class="today-readout"><strong>Today</strong><span id="office-on-air"></span><span id="office-up-next"></span><button id="open-station-notes" type="button" aria-label="Station notes">Notes</button><small id="station-notes-summary" class="sr-only"></small></div>
       <div id="today-track" aria-label="Your channel, midnight to midnight"></div>
       <p id="today-preview" role="status" hidden></p>
-    </section><div id="station-resources" class="resources" role="group" aria-label="Station resources"></div><button id="open-directory" type="button" popovertarget="station-directory">Directory</button><nav class="rail" id="station-directory" aria-label="Station directory" popover><a href="#office" class="active">▰ Office</a><a href="#planning">▦ Schedule</a><a href="#production">▣ Production</a><a href="#rights-market">▱ Rights market</a><a href="#audience">◉ Audience</a><a href="#results">▤ Broadcast Review</a><a href="#finances">≡ Finances</a><label class="room-motion-control">Room motion <select id="room-motion"><option value="auto">Auto</option><option value="on">On</option><option value="off">Off</option></select></label><details id="station-files"><summary>Station files</summary>
+    </section><div id="station-resources" class="resources" role="group" aria-label="Station resources"></div><button id="open-directory" type="button" popovertarget="station-directory">Directory</button><nav class="rail" id="station-directory" aria-label="Station directory" popover><a href="#office" class="active">▰ Office</a><a href="#planning">▦ Schedule</a><a href="#production">▣ Production</a><a href="#rights-market">▱ Rights market</a><a href="#audience">◉ Audience</a><a href="#results">▤ Broadcast Review</a><a href="#finances">≡ Finances</a><label class="room-motion-control">Room motion <select id="room-motion"><option value="auto">Auto</option><option value="on">On</option><option value="off">Off</option></select></label><label class="room-transition-control"><input id="overnight-transition" type="checkbox"> Exterior at close</label><details id="station-files"><summary>Station files</summary>
     <button type="button" id="save-station">Download save</button>
     <label>Restore station save<input type="file" id="load-station" accept=".json,application/json"></label>
   </details><button id="reset" class="quiet">Start over</button></nav></section>
     <section data-desk="office" id="office" aria-label="Station office">
       <div class="office-room">
+        <div class="vacant-desks early" aria-hidden="true"></div><div class="vacant-desks late" aria-hidden="true"></div><div class="vacant-desks studio" aria-hidden="true"></div>
         <div id="office-blotter" aria-hidden="true"></div>
         <div class="desk-dressing" aria-hidden="true"></div>
         <div class="office-plant" aria-hidden="true"></div>
@@ -46,6 +47,7 @@
           <div id="desk-file-piles" class="desk-files" aria-label="Desk folders"><a href="#production" data-prop="script" data-tip="Open Preparation"><span>Preparation</span></a><a href="#audience" data-prop="research" data-tip="Open audience research"><span>Research</span></a><a href="#rights-market" data-prop="rights" data-tip="Open Rights Market"><span>Rights</span></a><a href="#finances" data-prop="ledger" data-tip="Open station ledger"><span>Ledger</span></a><a href="#results" data-prop="reviews" data-tip="Open broadcast reviews"><span>Reviews</span></a></div>
         </div>
         <div id="office-workspace"></div>
+        <div class="station-exterior" aria-hidden="true" hidden></div>
       </div>
       <div id="office-paper-mount" hidden></div>
     </section>

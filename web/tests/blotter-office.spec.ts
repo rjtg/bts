@@ -1,4 +1,5 @@
 import { openStationDirectory } from './station-directory';
+import { pickTime } from './planner-helpers';
 import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 
@@ -6,6 +7,19 @@ async function openOffice(page: Page) {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/');
   await expect(page.locator('#status')).toContainText('WASM READY');
+}
+
+async function planOfficeTapes(page: Page, ticks: number[]) {
+  await page.locator('#office-calendar').click();
+  for (const tick of ticks) {
+    await pickTime(page, tick, 0);
+    const minutes = page.locator('#placement-ad-minutes');
+    await minutes.fill('0');
+    await minutes.press('Tab');
+    await page.locator('#place').click();
+    await page.getByRole('region', { name: 'Airing dossier' }).getByRole('button', { name: 'Close file' }).click();
+  }
+  await page.locator('#back-office').click();
 }
 
 async function capture(page: Page, name: string) {
@@ -128,6 +142,8 @@ test('idle actors choose independent layered poses while the station clock holds
   await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await openOffice(page);
+  await planOfficeTapes(page, [34]);
+  await page.locator('#advance-next').click();
   const actors = page.locator('#office [data-idle-actor]');
   const steam = page.locator('.office-steam i').first();
   await expect(actors).toHaveCount(12);
@@ -157,7 +173,7 @@ test('idle actors choose independent layered poses while the station clock holds
   expect(changes[2]).toBeGreaterThan(changes[1]);
   expect(changes[1]).toBeGreaterThan(changes[0]);
   expect(changes[0]).toBeGreaterThan(0);
-  await expect(page.locator('#clock')).toContainText('00:00');
+  await expect(page.locator('#clock')).toContainText('09:00');
   await page.screenshot({ path: testInfo.outputPath('independent-poses.png'), animations: 'disabled' });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(steam).toHaveCSS('animation-name', 'none');
@@ -203,4 +219,43 @@ test('all three CRTs share a fitted reel pool and retain their programme in redu
   await page.clock.runFor(12000);
   expect(await reels()).toEqual(still.map(id => ({ id, animation: 'none' })));
   await expect(page.locator('#clock')).toContainText('00:00');
+});
+
+test('office shifts and the optional exterior follow exact airings without advancing them', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await openOffice(page);
+  const office = page.locator('#office');
+  const steam = office.locator('.office-steam i').first();
+  const exterior = office.locator('.station-exterior');
+  await expect(office).toHaveAttribute('data-shift', 'closed');
+  await expect(steam).toBeHidden();
+  await page.screenshot({ path: testInfo.outputPath('office-before-open.png'), animations: 'disabled' });
+  await planOfficeTapes(page, [33, 46, 70]);
+  const directory = await openStationDirectory(page);
+  await directory.getByLabel('Exterior at close').check();
+  await page.keyboard.press('Escape');
+  await page.locator('#advance-next').click();
+  await expect(page.locator('#clock')).toContainText('08:45');
+  await expect(office).toHaveAttribute('data-staff-late', 'true');
+  await expect(office).toHaveAttribute('data-staff-studio', 'false');
+  await expect(steam).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('office-arrivals.png'), animations: 'disabled' });
+  await page.locator('#advance-next').click();
+  await expect(page.locator('#clock')).toContainText('12:00');
+  await expect(office).toHaveAttribute('data-staff-studio', 'true');
+  await expect(office).toHaveAttribute('data-coffee', 'empty');
+  await expect(steam).toBeHidden();
+  await page.screenshot({ path: testInfo.outputPath('office-afternoon.png'), animations: 'disabled' });
+  await page.locator('#advance-next').click();
+  await expect(page.locator('#clock')).toContainText('18:00');
+  await expect(office).toHaveAttribute('data-staff-late', 'false');
+  await expect(exterior).toBeVisible();
+  await exterior.screenshot({ path: testInfo.outputPath('exterior-at-close.png') });
+  await expect(exterior).toBeHidden();
+  await expect(page.locator('#clock')).toContainText('18:00');
+  await expect(page.locator('#advance-next')).toBeDisabled();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.locator('#advance-day').click();
+  await expect(office).toHaveAttribute('data-shift', 'closed');
+  await expect(exterior).toBeHidden();
 });

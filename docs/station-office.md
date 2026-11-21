@@ -78,9 +78,13 @@ motion off. The original three reels use hand-separated frames and the new
 vignettes use restrained stepped motion on their programme plates. Room
 motion can follow the system, be enabled or be switched off. These timers
 affect presentation only.
-The visual working day is 08:00–18:00 with cooler light and no steam outside it.
-See [playtest direction](office-playtest-direction.md) for the separate proposal
-for independent character motion and richer day transitions.
+The visual working day is 08:00–18:00. Office staff arrive in groups at 08:00
+and 08:30, with the studio staffed from 09:00. The groups leave from 17:30,
+through 17:45 and 18:00. The mug steams from opening to noon. An empty mug and
+cooler room mark the end of a shift. **Exterior at close** in Directory enables
+a short sunset-to-dawn shot when the resting Office crosses 18:00. The shot
+is decorative and reduced motion suppresses it. See the
+[remaining art directions](office-playtest-direction.md).
 
 ## Dossier stationery
 
