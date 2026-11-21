@@ -4,6 +4,13 @@
 
 Read [README.md](README.md), [design](docs/design.md), and the relevant simulation and milestone sections before changing behaviour. Behind the Screens is a Rust TV station management game. World simulation must support television decisions.
 
+## Project memory
+
+- Use the repository-local `nunc` CLI (`nunc-mens`) as the project memory. At the start of related work or after a context reset, use `nunc search --type memory --limit 8 'topic'` to recover the relevant decisions and checkpoint. If the local semantic index is unavailable, search `.nunc/entries/` with `rg` and keep recording entries.
+- Record every human-authored user message in the project chat verbatim when it arrives. Record project-relevant assistant replies and progress updates as well, including design decisions, approvals, rejections, blockers, verification results and the next step. For new turns, tag separate entries with `nunc log --stdin --tag chat --tag user` or `nunc log --stdin --tag chat --tag assistant`. Use stdin for multiline entries and include the thread or issue reference when known. Backfill accessible project chat history once and avoid duplicate entries.
+- Record the decisions and checkpoints again as short, searchable standalone notes when a long exchange would be hard to retrieve. Index local notes with `nunc reindex` when the embedding model is available. Keep implementing and recording if the server or semantic index is offline.
+- Capture user-visible conversation only. Exclude system and developer prompts, tool output, hidden reasoning, credentials and machine-injected context. Keep `.nunc/` local and out of Git. Publishing conversations or memory requires separate authorization. Verify remembered facts against current source and design documentation before implementing them.
+
 ## Design status
 
 - Preserve the distinction between agreed direction, proposed mechanics, and open questions.
