@@ -1,60 +1,68 @@
-import { element } from './dom';
+import { element, node } from './dom';
 
-const poseSelectors = [
-  '.office-idle-staff', '.studio-tally', '.office-idle-standing', '.office-idle-reader',
-  '.office-idle-colleague', '.studio-idle-camera', '.studio-idle-host', '.studio-idle-guest',
-  '.studio-idle-second-camera', '.office-lamp-glow',
-  '[data-quiet-pose]',
-];
+const people = [
+  ['.office-idle-staff', 'right'], ['.office-idle-reader', 'left'],
+  ['.office-idle-standing', 'right'], ['.office-idle-colleague', 'left'],
+  ['[data-quiet-pose="left-seat"]', 'right'], ['[data-quiet-pose="leaning"]', 'left'],
+  ['[data-quiet-pose="through-glass"]', 'right'], ['[data-quiet-pose="floor-assistant"]', 'left'],
+  ['.studio-idle-camera', 'right'], ['.studio-idle-second-camera', 'left'],
+  ['.studio-idle-host', 'right'], ['.studio-idle-guest', 'left'],
+] as const;
 
-const activeProp = ':is(#pull-tapes,[data-prop]):is(:hover,:focus-visible),.office-phone:hover';
+const deskWork = '[inert],.prop-travelling,.file-open,.tray-open';
 
 export function initialiseOfficeIdle() {
   const office = element('office');
+  const room = office.querySelector<HTMLElement>('.office-room')!;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const plant = office.querySelector<HTMLElement>('.office-plant')!;
-  const poses = Array.from(office.querySelectorAll<HTMLElement>(poseSelectors.join(',')));
-  const subjects = [...poses, plant];
-  let remaining: HTMLElement[] = [];
-  let previous: HTMLElement | undefined;
+  const glow = office.querySelector<HTMLElement>('.office-lamp-glow')!;
+  const actors = people.map(([selector, direction]) => {
+    const sprite = room.querySelector<HTMLElement>(selector)!;
+    sprite.style.setProperty('--alternate-image', getComputedStyle(sprite).backgroundImage);
+    sprite.dataset.idleActor = direction;
+    sprite.dataset.poseLarge = '0';
+    sprite.dataset.poseMedium = '0';
+    sprite.dataset.poseSmall = '0';
+    const base = node('i', '', 'idle-base'), alternate = node('i', '', 'idle-alternate');
+    sprite.append(base, alternate);
+    return { sprite, base, due: performance.now() + 500 + Math.random() * 4400 };
+  });
 
-  function enabled() {
-    const setting = office.dataset.ambientMotion;
-    return setting === 'on' || (setting !== 'off' && !reduced.matches);
-  }
-
-  async function tick() {
-    if (enabled() && !document.hidden && office.getClientRects().length
-      && !office.matches('[inert],.prop-travelling,.file-open,.tray-open')
-      && !document.querySelector('dialog[open]') && !office.querySelector(activeProp)) {
-      const visible = subjects.filter(subject => getComputedStyle(subject).display !== 'none');
-      remaining = remaining.filter(subject => visible.includes(subject));
-      if (!remaining.length) remaining = visible;
-      const available = remaining.length > 1 ? remaining.filter(subject => subject !== previous) : remaining;
-      const subject = available[Math.floor(Math.random() * available.length)];
-      if (subject) {
-        remaining.splice(remaining.indexOf(subject), 1);
-        previous = subject;
-        office.dataset.idleSubject = subject.dataset.quietPose ?? subject.className;
-        if (subject === plant) {
-          plant.classList.remove('rustling');
-          void plant.offsetWidth;
-          plant.classList.add('rustling');
-        } else {
-          const count = Number(subject.dataset.poseCount ?? 2);
-          const current = Number(subject.dataset.pose ?? 0);
-          const step = count > 2 ? 1 + Math.floor(Math.random() * (count - 1)) : 1;
-          const next = (current + step) % count;
-          subject.dataset.pose = String(next);
-        }
-        const movements = subject.getAnimations({ subtree: true });
-        await Promise.allSettled(movements.map(movement => movement.finished));
-        window.setTimeout(tick, 40 + Math.floor(Math.random() * 81));
-        return;
-      }
+  // The resting pose is registered to the original scene at every room size.
+  const align = () => {
+    const scene = room.getBoundingClientRect();
+    for (const { sprite, base } of actors) {
+      const bounds = sprite.getBoundingClientRect();
+      base.style.backgroundSize = `${scene.width}px ${scene.height}px`;
+      base.style.backgroundPosition = `${scene.left - bounds.left}px ${scene.top - bounds.top}px`;
     }
-    window.setTimeout(tick, 200);
-  }
+  };
+  new ResizeObserver(align).observe(room);
+  align();
 
-  window.setTimeout(tick, 600);
+  let nextDetail = 1400;
+  window.setInterval(() => {
+    const setting = office.dataset.ambientMotion;
+    const enabled = setting === 'on' || (setting !== 'off' && !reduced.matches);
+    if (!enabled || document.hidden || !room.getClientRects().length || office.matches(deskWork)
+      || document.querySelector('dialog[open]')) return;
+
+    const now = performance.now();
+    for (const actor of actors) {
+      if (actor.due > now || !actor.sprite.getClientRects().length) continue;
+      actor.due = now + 1250 + Math.random() * 6300;
+      const draw = Math.random();
+      const tier = draw < .07 ? 'poseLarge' : draw < .28 ? 'poseMedium' : 'poseSmall';
+      const data = actor.sprite.dataset;
+      data[tier] = data[tier] === '1' ? '0' : '1';
+    }
+    if (now >= nextDetail) {
+      nextDetail = now + 3200 + Math.random() * 8000;
+      plant.classList.remove('rustling');
+      void plant.offsetWidth;
+      plant.classList.add('rustling');
+      glow.dataset.pose = glow.dataset.pose === '1' ? '0' : '1';
+    }
+  }, 160);
 }

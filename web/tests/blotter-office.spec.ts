@@ -119,78 +119,60 @@ test.describe('narrow office', () => {
   });
 });
 
-test('idle poses persist until their subject is drawn again and only one pose changes', async ({ page }) => {
+test('idle actors choose independent layered poses while the station clock holds', async ({ page }, testInfo) => {
   await page.addInitScript(() => {
-    const draws = [0, .40, 0, .17, .62, .91, .34, .72, .08, .84, .56, .48, .97];
-    let index = 0;
-    Math.random = () => {
-      const draw = index++;
-      return draw % 2 ? .5 : draws[Math.floor(draw / 2) % draws.length];
-    };
+    let seed = 94389;
+    Math.random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
   });
   await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await openOffice(page);
-  const office = page.locator('#office');
+  const actors = page.locator('#office [data-idle-actor]');
   const steam = page.locator('.office-steam i').first();
-  const staff = page.locator('.office-idle-staff');
-  const camera = page.locator('.studio-idle-camera');
-  const poses = () => office.locator('[data-pose="1"]').evaluateAll(items => items.map(item => (item as HTMLElement).dataset.quietPose ?? item.className));
-  const settle = () => office.evaluate(el => {
-    for (const animation of el.getAnimations({ subtree: true })) {
-      if (animation instanceof CSSTransition
-        || (animation instanceof CSSAnimation && animation.animationName === 'room-leaves')) animation.finish();
+  await expect(actors).toHaveCount(12);
+  const poses = () => actors.evaluateAll(items => items.map(item => {
+    const { poseLarge, poseMedium, poseSmall } = (item as HTMLElement).dataset;
+    return [poseLarge, poseMedium, poseSmall];
+  }));
+  const changes = [0, 0, 0];
+  const seen = new Set<number>();
+  let simultaneous = false;
+  let before = await poses();
+  for (let sample = 0; sample < 50; sample++) {
+    await page.clock.runFor(1100);
+    const after = await poses();
+    let movers = 0;
+    for (const [actor, pose] of after.entries()) {
+      if (pose.join() === before[actor].join()) continue;
+      movers++;
+      seen.add(actor);
+      pose.forEach((value, tier) => { if (value !== before[actor][tier]) changes[tier]++; });
     }
-  });
-
-  await page.clock.runFor(700);
-  await expect(office).toHaveAttribute('data-idle-subject', 'office-idle-staff');
-  await expect(staff).toHaveAttribute('data-pose', '1');
-  await staff.evaluate(el => el.getAnimations().forEach(animation => animation.pause()));
-  await page.clock.runFor(1800);
-  await expect(office).toHaveAttribute('data-idle-subject', 'office-idle-staff');
-  await settle();
-  await page.clock.runFor(40);
-  await expect(office).toHaveAttribute('data-idle-subject', 'office-idle-staff');
-  await expect(staff).toHaveCSS('opacity', '1');
-  const first = await office.getAttribute('data-idle-subject');
-  const seen = new Set([first]);
-  const expected = [
-    'office-idle-staff', 'office-idle-reader', 'office-idle-standing', 'office-idle-colleague',
-    'left-seat', 'leaning', 'through-glass', 'studio-idle-camera', 'studio-idle-second-camera',
-    'studio-idle-host', 'studio-idle-guest', 'floor-assistant', 'studio-tally', 'office-lamp-glow', 'office-plant',
-  ];
-  for (let turn = 1; turn < expected.length; turn++) {
-    const before = new Set(await poses());
-    await page.clock.runFor(120);
-    const subject = await office.getAttribute('data-idle-subject');
-    expect(seen.has(subject)).toBe(false);
-    seen.add(subject);
-    expect((await poses()).filter(pose => !before.has(pose)).length).toBeLessThanOrEqual(1);
-    await settle();
-    if (process.env.BTS_BLOTTER_CAPTURES) {
-      await capture(page, `idle-sample-${String(turn).padStart(2, '0')}`);
-    }
+    simultaneous ||= movers > 1;
+    before = after;
   }
-  expect(seen).toEqual(new Set(expected));
-  await expect(staff).toHaveCSS('opacity', '1');
-  await expect(camera).toHaveCSS('opacity', '1');
+  expect(seen.size).toBe(12);
+  expect(simultaneous).toBe(true);
+  expect(changes[2]).toBeGreaterThan(changes[1]);
+  expect(changes[1]).toBeGreaterThan(changes[0]);
+  expect(changes[0]).toBeGreaterThan(0);
   await expect(page.locator('#clock')).toContainText('00:00');
+  await page.screenshot({ path: testInfo.outputPath('independent-poses.png'), animations: 'disabled' });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(steam).toHaveCSS('animation-name', 'none');
-  const frozen = await office.getAttribute('data-idle-subject');
-  await page.clock.runFor(1800);
-  await expect(office).toHaveAttribute('data-idle-subject', frozen!);
+  const frozen = await poses();
+  await page.clock.runFor(4000);
+  expect(await poses()).toEqual(frozen);
   const choice = (await openStationDirectory(page)).getByLabel('Room motion');
   await choice.selectOption('on');
   await expect(steam).toHaveCSS('animation-name', 'coffee-steam');
-  await page.clock.runFor(1800);
-  await expect(office).not.toHaveAttribute('data-idle-subject', frozen!);
+  await page.clock.runFor(4000);
+  expect(await poses()).not.toEqual(frozen);
   await choice.selectOption('off');
   await expect(steam).toHaveCSS('animation-name', 'none');
   await expect(page.locator('.monitor-reel')).toHaveCSS('animation-name', 'none');
   const off = await poses();
-  await page.clock.runFor(2900);
+  await page.clock.runFor(4000);
   expect(await poses()).toEqual(off);
 });

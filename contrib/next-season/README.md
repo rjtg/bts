@@ -13,9 +13,9 @@ The station strip, Directory, outside dismissal and desk props (#1–#4)
 are verified. Action timing (#12) is documented with a tested experiment.
 The public listing pilot (#13), private preparation and auditions (#14), and
 editable scripted runs and sequels (#15), the film rental pilot (#16), and
-the advertiser comparison (#17) are verified. Next are independent character
-poses (#9), monitor rotation (#10), and the working day (#11). Code health
-(#19) continues at each boundary.
+the advertiser comparison (#17) are verified. Independent character poses
+(#9) are verified. Next are monitor rotation (#10) and the working day (#11).
+Code health (#19) continues at each boundary.
 
 ## Launch
 
@@ -185,3 +185,14 @@ improves the next quote but earns no receipts until then. The existing
 weekly caution reduces the quote after weak turnout, while deficit pricing
 still dominates. Financing and signed payments are unchanged. The policy
 decision and exact branch conditions are in [weekly reviews](../../docs/brand-reviews.md#three-review-comparison).
+
+## Independent office poses
+
+Open the [room](independent-poses.webp) at desktop width with Room motion set
+to Auto or On. Twelve masked office and studio characters now run independent
+timers. Minor postures change more often than gesture positions or the painted
+alternate pose. The set uses the original pose illustrations and small
+registered sprite movements. Its animation clocks use ordinary browser time.
+The build and four focused Chromium tests passed. The seeded test visits all
+twelve subjects, detects simultaneous changes, checks the relative frequencies
+and verifies the station time and reduced-motion controls.

@@ -62,10 +62,15 @@ clock and an off-air gap in the schedule are separate states. The station strip 
 keyboard- and touch-operable Directory. The HUD uses icons with text tooltips and the fictional barred F for Funds. Keep
 that mark recognisable as an F and provide a readable Funds label.
 
-The current broad desktop illustration has local pose layers for office staff,
+The broad desktop illustration has twelve local pose layers for office staff,
 two operators and their studio cameras, a floor assistant and interview
-participants. The idle scheduler draws visible subjects without immediate
-repeats and lets one ambient cue finish before the next cue. Poses can persist.
+participants. Each subject keeps its own deadline and can move while another
+subject is moving. At a change it chooses a slight motion 72% of the time,
+a gesture 21%, or the painted alternate posture 7%. Each tier has two
+positions. Gestures and slight movements compose with either large pose.
+The broad pose can stay in place until its next major change. Plant and light
+have a separate slower cue. Narrow layouts keep the desk legible and omit
+these distant character details.
 The steam and wall displays have separate loops. Room motion can follow the
 system, be enabled or be switched off. These timers affect presentation only.
 The visual working day is 08:00–18:00 with cooler light and no steam outside it.
