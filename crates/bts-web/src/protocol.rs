@@ -92,6 +92,14 @@ pub enum Command {
         standing: [f64; 7],
         tension: [f64; 3],
     },
+    AmendEpisodeTension {
+        film_id: u32,
+        tension: f64,
+    },
+    PitchSequel {
+        parent_series: u16,
+        title: String,
+    },
     PitchFilm {
         title: String,
         subject: Subject,
@@ -825,6 +833,7 @@ pub struct HostDateView {
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct ScriptedRunView {
+    pub sequel_of: Option<u16>,
     pub series: u16,
     pub title: String,
     pub brief: Vec<Quality>,

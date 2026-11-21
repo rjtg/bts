@@ -39,7 +39,9 @@ export function shelfFor(phase: FilmCard['phase']): ProjectShelf[] {
 }
 
 export function projectBox(desk: Report['film_desk'], filter: ProjectShelf | null, series: number | null,
-  selected: number | null, ui: { open: (id: number) => void; browseSeries: (id: number | null) => void; newPitch: (series: boolean) => void; close: () => void; stamp: (tick: number) => string }) {
+  selected: number | null, ui: { open: (id: number) => void; browseSeries: (id: number | null) => void;
+    newPitch: (series: boolean) => void; close: () => void; stamp: (tick: number) => string;
+    pitchSequel: (parent: number, title: string) => void; openSequel: (series: number) => void }) {
   const box = node('section', '', 'script-file-box');
   const run = desk.scripted_runs.find(item => item.series === series);
   const entries = desk.projects.filter(film => !filter || shelfFor(film.phase).includes(filter));
@@ -65,6 +67,22 @@ export function projectBox(desk: Report['film_desk'], filter: ProjectShelf | nul
   }
   if (run) {
     box.prepend(action('← Show folders', () => ui.browseSeries(null)));
+    const original = desk.scripted_runs.find(item => item.series === run.sequel_of);
+    if (original) box.append(node('p', `Continues ${original.title}`));
+    const sequel = desk.scripted_runs.find(item => item.sequel_of === run.series);
+    if (sequel) box.append(action(`Open sequel · ${sequel.title}`, () => ui.openSequel(sequel.series)));
+    else if (run.episodes.every(id => desk.projects.find(film => film.id === id)?.phase === 'complete')) {
+      const form = node('form', '', 'sequel-brief');
+      const title = node('input');
+      title.required = true; title.maxLength = 45; title.value = run.title.slice(0, 32) + ' · Season 2';
+      const label = node('label', 'Sequel title'); label.append(title);
+      form.append(label, node('button', 'Open sequel brief'));
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        ui.pitchSequel(run.series, title.value);
+      });
+      box.append(form);
+    }
     if (run.brief.length) {
       const brief = node('details', '', 'show-folder-brief');
       brief.append(node('summary', 'Read the standing brief'), node('p', run.brief.map(q => `${q.name} · ${q.level}`).join(' / ')));

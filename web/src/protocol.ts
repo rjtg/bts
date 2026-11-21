@@ -39,6 +39,8 @@ export type Command =
   | { type: 'publish_airing'; airing_id: number }
   | { type: 'study_script'; film_id: number }
   | { type: 'audition'; film_id: number; person: number; role: number; insight: number }
+  | { type: 'amend_episode_tension'; film_id: number; tension: number }
+  | { type: 'pitch_sequel'; parent_series: number; title: string }
   | { type: 'remove'; airing_id: number }
   | { type: 'set_advertiser'; airing_id: number; advertiser: number | null }
   | { type: 'request_offer'; airing_id: number }
@@ -157,7 +159,7 @@ export type FilmCard = {
 };
 export type FilmDesk = {
   projects: FilmCard[]; people: FilmPerson[];
-  scripted_runs: { series: number; title: string; brief: Quality[]; episodes: [number, number, number]; cast: [number, number] | null }[];
+  scripted_runs: { series: number; sequel_of: number | null; title: string; brief: Quality[]; episodes: [number, number, number]; cast: [number, number] | null }[];
   studios: { id: number; name: string; fee: string; summary: string; commitments: [string, number, number][] }[];
   roles: [string, string]; writing_ticks: number; revision_ticks: number;
 };

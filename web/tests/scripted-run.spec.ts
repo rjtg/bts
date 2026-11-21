@@ -35,6 +35,9 @@ test('file a scripted run by show and reuse the first episode cast', async ({ pa
   const film = page.locator('.film-project');
   await expect(film).toContainText('Tension target 90%');
   await expect(film).toContainText('Large shifts');
+  await film.getByLabel('Change tension target before writing (%)').fill('65');
+  await film.getByRole('button', { name: 'File new tension target' }).click();
+  await expect(film).toContainText('Tension target 65%');
   await film.getByRole('button', { name: 'Close file' }).click();
   await expect(episode(2)).toBeFocused();
 

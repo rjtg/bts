@@ -139,6 +139,8 @@ export function initialiseFilmDesk(ui: {
     if (view === 'box' || !film) {
       root.replaceChildren(projectBox(desk, filter, series, selectedProject, {
         open, newPitch, close: ui.close, stamp: ui.stamp, browseSeries: id => { series = id; chooseView('box'); },
+        pitchSequel: (parent, title) => ui.send({ type: 'pitch_sequel', parent_series: parent, title }),
+        openSequel: id => { filter = null; series = id; chooseView('box'); },
       }));
       return;
     }
@@ -149,6 +151,15 @@ export function initialiseFilmDesk(ui: {
       const readyIdea = film.phase === 'pitch' && film.description !== null && filter === 'ideas';
       const summary = leaf(film.title);
       summary.append(node('p', `${readyIdea ? 'Idea ready' : filmPhaseLabels[film.phase]} · ${funds(film.committed)} committed${film.due !== null ? ` · ${ui.stamp(film.due)}` : ''}`));
+      if (film.episode && film.phase === 'pitch') {
+        const target = node('input');
+        target.type = 'number'; target.min = '0'; target.max = '100'; target.step = '1';
+        target.value = String(Math.round(film.episode.tension * 100));
+        const amend = action('File new tension target', () =>
+          ui.send({ type: 'amend_episode_tension', film_id: film.id, tension: target.valueAsNumber / 100 }));
+        target.addEventListener('input', () => { amend.disabled = !target.validity.valid || target.value === ''; });
+        summary.append(label('Change tension target before writing (%)', target), amend);
+      }
       if (film.description) summary.append(node('p', film.description, 'film-logline'));
       if (film.episode) {
         const episode = film.episode;

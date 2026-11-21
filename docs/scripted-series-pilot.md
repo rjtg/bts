@@ -32,6 +32,20 @@ plan produces a final script tension of 0.594. The abrupt plan produces
 path-dependent mechanism. It does not establish the ideal tension
 curve or prove a difference in actual reception.
 
-This pilot varies tension only. Long seasons, mid-run recasting,
-renegotiation and changes to a brief after the binder is created are
-outside its scope.
+Change an individual tension target in its Idea file before commissioning
+writing. The new target recalculates strain for that episode and subsequent
+unwritten episodes in order. A commissioned script keeps its target and strain,
+even if an earlier episode changes later. The standing brief stays fixed.
+
+After delivering all three episodes, open a sequel brief from the show's
+binder. It starts a new three-episode run linked to the original, with the
+same standing brief, planned tension targets and recurring cast. The sequel
+has its own library entries and audience history. A show can start one
+direct sequel. Neither a completed production nor a signed booking changes
+when that new brief is entered.
+
+The finite run complements standalone films and the recurring discussion and
+newsroom pilots. News uses same-day preparation and transmission; fiction
+scripts and completed tapes have no freshness expiry in the current calendar.
+Long seasons, mid-run recasting, and topic-dependent discussion freshness
+remain open.

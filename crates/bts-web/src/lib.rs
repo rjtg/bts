@@ -9,7 +9,7 @@ use bts_sim::planning::production::{
     Concept, PersonId, ProductionId, RequestId, StudioId, SwayReason, PARTICIPATION_COST,
 };
 use bts_sim::planning::{AiringId, PlanError, Planner, PlanningOffer};
-use bts_sim::{AirMinute, BrandId, ProgrammeId, SimTick};
+use bts_sim::{AirMinute, BrandId, ProgrammeId, SeriesId, SimTick};
 use protocol::*;
 use scenario::PLAYER;
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -380,6 +380,18 @@ impl Session {
             } => {
                 self.planner
                     .pitch_film(title, subject, ambition)
+                    .map_err(player_error)?;
+            }
+            Command::AmendEpisodeTension { film_id, tension } => self
+                .planner
+                .amend_episode_tension(ProductionId(film_id), tension)
+                .map_err(player_error)?,
+            Command::PitchSequel {
+                parent_series,
+                title,
+            } => {
+                self.planner
+                    .pitch_sequel(SeriesId(parent_series), title)
                     .map_err(player_error)?;
             }
             Command::DevelopFilmIdea {
@@ -1682,6 +1694,7 @@ fn film_desk(planner: &Planner) -> FilmDesk {
         scripted_runs: planner
             .scripted_runs()
             .map(|run| ScriptedRunView {
+                sequel_of: run.sequel_of.map(|parent| parent.0),
                 series: run.series.0,
                 title: run.title.clone(),
                 brief: qualities(run.brief),

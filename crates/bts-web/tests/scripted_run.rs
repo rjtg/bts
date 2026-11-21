@@ -24,6 +24,12 @@ fn identical_finale_is_harder_after_large_shifts_and_credits_stay_in_their_roles
         )
         .unwrap();
     let ids = base.scripted_runs().next().unwrap().episodes;
+    assert_eq!(
+        base.pitch_sequel(series, "Too soon".into())
+            .unwrap_err()
+            .code,
+        "series_unfinished"
+    );
     for candidate in [&mut base, &mut abrupt] {
         for id in ids {
             candidate.write_film(id, PersonId(101), None).unwrap();
@@ -92,4 +98,51 @@ fn identical_finale_is_harder_after_large_shifts_and_credits_stay_in_their_roles
         );
         assert_eq!(work.duration_minutes, 45);
     }
+    let sequel = base.pitch_sequel(series, "The Next Tide".into()).unwrap();
+    let next_run = base
+        .scripted_runs()
+        .find(|run| run.series == sequel)
+        .unwrap();
+    assert_eq!(next_run.sequel_of, Some(series));
+    assert_eq!(next_run.cast, Some(booking.cast));
+    assert!(next_run.episodes.iter().all(|id| !ids.contains(id)));
+    assert_eq!(
+        base.pitch_sequel(series, "Another sequel".into())
+            .unwrap_err()
+            .code,
+        "series_sequel_exists"
+    );
+}
+
+#[test]
+fn later_episode_tension_is_editable_without_changing_the_committed_script() {
+    let mut planner = bts_web::scenario::planner().unwrap();
+    let series = planner
+        .pitch_scripted_run(
+            "The Crossing".into(),
+            Subject::EverydayLife,
+            [0.5; 7],
+            [0.5; 3],
+        )
+        .unwrap();
+    let [first, second, third] = planner
+        .scripted_runs()
+        .find(|run| run.series == series)
+        .unwrap()
+        .episodes;
+    planner.write_film(first, PersonId(101), None).unwrap();
+    planner
+        .advance_to(planner.film(first).unwrap().due.unwrap())
+        .unwrap();
+    let script = planner.film(first).unwrap().clone();
+    assert_eq!(
+        planner.amend_episode_tension(first, 0.9).unwrap_err().code,
+        "brief_locked"
+    );
+    assert!(planner.amend_episode_tension(second, f64::NAN).is_err());
+    assert_eq!(planner.film(second).unwrap().ambition.values[2], Some(0.5));
+    planner.amend_episode_tension(second, 0.95).unwrap();
+    assert_eq!(planner.film(first).unwrap(), &script);
+    assert_eq!(planner.film(second).unwrap().ambition.values[2], Some(0.95));
+    assert!(planner.film(third).unwrap().episode.unwrap().strain > 0.0);
 }

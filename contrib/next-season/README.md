@@ -11,9 +11,10 @@ Verified slice: tape rack, dated Reception advice and the calendar handoff
 verified pass. Production filing (#7) is verified through the pilot formats.
 The station strip, Directory, outside dismissal and desk props (#1–#4)
 are verified. Action timing (#12) is documented with a tested experiment.
-The public listing pilot (#13) and private preparation and auditions (#14)
-are in place. Next are show lifecycle (#15), studio logistics (#16), advertiser
-evolution (#17) and atmosphere (#9–#11). Code health (#19) continues at each boundary.
+The public listing pilot (#13), private preparation and auditions (#14), and
+editable scripted runs and sequels (#15) are verified. Next are studio logistics
+(#16), advertiser evolution (#17) and atmosphere (#9–#11). Code health (#19)
+continues at each boundary.
 
 ## Launch
 
@@ -144,3 +145,17 @@ team's capabilities. See the [research rules](../../docs/audience-research.md).
 The [casting file capture](audition-evidence.webp) shows the evidence. The
 native regression covers delivery timing, costs, duplicate requests,
 observation privacy, and save replay.
+
+## Editable series and sequels
+
+Open the [series binder](series-binder.webp), select an unwritten episode and
+file a new tension target. Written episodes stay locked. After completing all
+three episodes, the binder offers **Open sequel brief**. The new run carries
+the recurring cast and links back to its predecessor. The original tapes and
+their identities remain available. See [lifecycle rules](../../docs/scripted-series-pilot.md).
+
+The matched finale reached 0.594 script tension with gradual changes, compared
+with 0.490 after abrupt shifts. The same native tests verify the cast lock,
+published episode identities, invalid amendments and sequel restrictions.
+The production build, all 58 Chromium tests including native/Wasm parity,
+and both focused scripted-run browser tests passed.
