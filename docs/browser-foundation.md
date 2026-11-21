@@ -67,7 +67,8 @@ The build compiles release Wasm, generates bindings, checks TypeScript and write
 the static **`web/dist/`** bundle. Serve that directory as a unit over HTTP with
 `.wasm` as `application/wasm`; relative URLs support hosting under a subdirectory.
 Preview normally uses port 4173. Playwright starts/stops its own preview on
-**4186**, so a manual preview can stay open. `PLAYWRIGHT_BROWSERS_PATH` may select
+**4186**, so a manual preview can stay open. If that port is busy, set
+`BTS_E2E_PORT` to an available local port. `PLAYWRIGHT_BROWSERS_PATH` may select
 a browser cache directory. Generated bindings, node_modules, dist and test
 artifacts are ignored; Cargo.lock and package-lock.json are committed.
 

@@ -126,3 +126,38 @@ fn restore_preserves_commitments_projects_research_and_future_outcomes() {
         3
     );
 }
+
+#[test]
+fn the_published_pre_office_checkpoint_keeps_its_season_accounts() {
+    let mut station = Session::new().unwrap();
+    let past = include_str!("../../../contrib/season-roadmap/season-checkpoint.json");
+    let expected: Value = serde_json::from_str(include_str!(
+        "../../../contrib/season-roadmap/season-result.json"
+    ))
+    .unwrap();
+    let checkpoint = station.restore_game(past).unwrap();
+    let closed = send(
+        &mut station,
+        json!({"type":"advance","to_tick":checkpoint.end_tick}),
+    );
+    assert_eq!(closed["cash"], expected["station_cash"]);
+    assert_eq!(closed["now_tick"], expected["closed_tick"]);
+    assert_eq!(closed["station_goals"], expected["goals"]);
+    let receipts = |sales: &Value| {
+        sales
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|sale| {
+                (
+                    sale["airing_id"].clone(),
+                    sale["settlement"]["payment"].clone(),
+                )
+            })
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(
+        receipts(&closed["minute_sales"]),
+        receipts(&expected["paid_ad_sales"])
+    );
+}
