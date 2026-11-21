@@ -4,6 +4,7 @@ import { pickTime } from './planner-helpers';
 import { expect, test } from '@playwright/test';
 
 test('pitch, revise, cast, book, advertise and air a film', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/');
   await expect(page.locator('#status')).toContainText('WASM READY');

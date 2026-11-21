@@ -1,0 +1,26 @@
+{
+  "outlook": "About 9900 potential viewers · survey Saturday · Day 1 · 00:00",
+  "turnout": [
+    {
+      "group": "Young viewers",
+      "viewers": 2524.4
+    },
+    {
+      "group": "Households",
+      "viewers": 4463.29
+    },
+    {
+      "group": "Specialists",
+      "viewers": 450.16
+    }
+  ],
+  "firstReceipt": {
+    "paid": 528,
+    "minutes": 3,
+    "margin": 428
+  },
+  "recurringFloor": 35,
+  "closedAt": "Calendar complete",
+  "funds": "20,565",
+  "goals": "3 of 3"
+}

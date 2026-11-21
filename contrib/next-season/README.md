@@ -5,28 +5,59 @@ Integration branch: `season/office-integration`. Starting point:
 
 ## Checkpoint
 
-Verified slice: tape rack, dated Reception advice and the calendar handoff
-(#6 and #18). The season branch includes the implementation commit and
-[Chromium capture](tape-fit.webp). Rights, Research, Ledger and Airing workspaces (#5 and #8) have a first
-verified pass. Production filing (#7) is verified through the pilot formats.
-The station strip, Directory, outside dismissal and desk props (#1–#4)
-are verified. Action timing (#12) is documented with a tested experiment.
-The public listing pilot (#13), private preparation and auditions (#14), and
-editable scripted runs and sequels (#15), the film rental pilot (#16), and
-the advertiser comparison (#17) are verified. Independent character poses
-(#9), monitor rotation (#10), and the working day (#11) are verified. The
-remaining step is the complete integration and six-week browser playthrough.
-Code health (#19) continues at each boundary.
+The connected office journeys, simulation pilots, working-day art, and
+six-week browser playthrough are ready for review on the integration branch.
+The issue index records the implementation and comparison commits. Each
+issue remains open for follow-up.
 
 ## Launch
 
-From the root, run `npm --prefix web ci` on a fresh checkout, then
-`npm --prefix web run build` and
-`npm --prefix web run preview -- --host 0.0.0.0`.
-Preview defaults to port 4173. See the [browser setup](../../docs/browser-foundation.md)
+From the repository root:
+
+```sh
+git fetch origin
+git switch season/office-integration
+npm --prefix web ci
+npm --prefix web run build
+npm --prefix web run preview -- --host 0.0.0.0
+```
+
+Preview defaults to port 4173. On the development network, the review build
+is served at `http://100.71.132.116:4173/` while the preview process runs.
+To review a particular commit, use `git switch --detach <commit>` in a clean
+checkout and rebuild. See the [browser setup](../../docs/browser-foundation.md)
 for the Rust Wasm target, wasm-bindgen and Chromium prerequisites.
-The local toolchain can use `WASM_BINDGEN=/tmp/bts-web-tools/bin/wasm-bindgen`
-and `PLAYWRIGHT_BROWSERS_PATH=/tmp/bts-playwright` when those caches exist.
+
+The review machine used these cached tools from `web/`:
+
+```sh
+RUSTUP_HOME=/tmp/bts-rust-1100 RUSTUP_TOOLCHAIN=1.100.0 WASM_BINDGEN=/tmp/bts-web-tools/bin/wasm-bindgen npm run build
+RUSTUP_HOME=/tmp/bts-rust-1100 RUSTUP_TOOLCHAIN=1.100.0 PLAYWRIGHT_BROWSERS_PATH=/tmp/bts-playwright BTS_E2E_PORT=4231 npm run test:e2e -- --workers=2
+```
+
+## Issue index
+
+| Issue | Outcome | Commit |
+| --- | --- | --- |
+| [#18](https://github.com/rjtg/bts/issues/18) | Approved larger spreads, linked journeys and browser review | [7c37392](https://github.com/rjtg/bts/commit/7c37392), [8339c7e](https://github.com/rjtg/bts/commit/8339c7e) |
+| [#5](https://github.com/rjtg/bts/issues/5) | Rights to Pull tape, dated research, and related Ledger entries | [4800d5c](https://github.com/rjtg/bts/commit/4800d5c) |
+| [#6](https://github.com/rjtg/bts/issues/6) | Grouped rack, Reception advice and editable exact-time comparison | [7eb7850](https://github.com/rjtg/bts/commit/7eb7850) |
+| [#7](https://github.com/rjtg/bts/issues/7) | Stage collections and show folders with edition decisions and dates | [8339c7e](https://github.com/rjtg/bts/commit/8339c7e) |
+| [#8](https://github.com/rjtg/bts/issues/8) | Dated outlook beside turnout, receipts and costs | [4800d5c](https://github.com/rjtg/bts/commit/4800d5c) |
+| [#1](https://github.com/rjtg/bts/issues/1) | One transport, Today and resource strip with Directory access | [560365a](https://github.com/rjtg/bts/commit/560365a) |
+| [#2](https://github.com/rjtg/bts/issues/2) | Outside dismissal and focus return protect clicks underneath | [2d2566c](https://github.com/rjtg/bts/commit/2d2566c) |
+| [#3](https://github.com/rjtg/bts/issues/3) | Registered phone sprite, printed Reviews label and calendar cleanup | [e599993](https://github.com/rjtg/bts/commit/e599993) |
+| [#4](https://github.com/rjtg/bts/issues/4) | Station notes and request routes replace the notebook prop | [81307d3](https://github.com/rjtg/bts/commit/81307d3) |
+| [#12](https://github.com/rjtg/bts/issues/12) | Timing comparison with an immediate-execution decision | [40d79c2](https://github.com/rjtg/bts/commit/40d79c2) |
+| [#13](https://github.com/rjtg/bts/issues/13) | Exact public listings and automatic withdrawal on move | [452b83d](https://github.com/rjtg/bts/commit/452b83d) |
+| [#14](https://github.com/rjtg/bts/issues/14) | Private script study and optional dated auditions | [81a3bbc](https://github.com/rjtg/bts/commit/81a3bbc) |
+| [#15](https://github.com/rjtg/bts/issues/15) | Unwritten episode amendments and linked sequels | [0119c1d](https://github.com/rjtg/bts/commit/0119c1d) |
+| [#16](https://github.com/rjtg/bts/issues/16) | Elastic film hire with separate setup and prop counterfactuals | [15e9433](https://github.com/rjtg/bts/commit/15e9433), [3292a10](https://github.com/rjtg/bts/commit/3292a10) |
+| [#17](https://github.com/rjtg/bts/issues/17) | Three-review incentive comparison and policy decision | [6b4b827](https://github.com/rjtg/bts/commit/6b4b827) |
+| [#9](https://github.com/rjtg/bts/issues/9) | Independent layered poses for all twelve visible characters | [3a27bdd](https://github.com/rjtg/bts/commit/3a27bdd) |
+| [#10](https://github.com/rjtg/bts/issues/10) | Fitted CRTs with a rotating reel pool and matched stills | [c3997e3](https://github.com/rjtg/bts/commit/c3997e3) |
+| [#11](https://github.com/rjtg/bts/issues/11) | Staggered shifts, the coffee cue and optional exterior | [c852a14](https://github.com/rjtg/bts/commit/c852a14) |
+| [#19](https://github.com/rjtg/bts/issues/19) | Shared paper selection, dismissal and ambient controls, plus compatibility checks | [cbf8fab](https://github.com/rjtg/bts/commit/cbf8fab), [2d2566c](https://github.com/rjtg/bts/commit/2d2566c), [c3997e3](https://github.com/rjtg/bts/commit/c3997e3), [1327eb9](https://github.com/rjtg/bts/commit/1327eb9) |
 
 ## Baseline
 
@@ -218,3 +249,50 @@ image-generated plates registered to the existing art for the vacant room
 and the station exterior. Arrivals and departures use group changes. The
 exterior and changes in light are decorative. Exact airings still settle
 through the regular clock controls, as checked in Chromium.
+
+## Six-week Chromium replay
+
+1. Open the Rights portfolio and inspect **The Corner Shop**. Spend three
+   Insight on the assessment, advance to delivery, buy the rights, then
+   choose **Pull tape**. [Acquisition](season-rights.webp)
+2. In Tape Reception choose **Find airtime** and book Saturday, Day 1,
+   at 18:00 with ten listed ad minutes. In that exact Airing file accept the
+   Everyday Snacks offer. The move control is locked after acceptance.
+3. Run the showing. The dated outlook was about 9,900 viewers. The simulated
+   airing count was about 7,438 across the three groups. The signed deal still
+   paid 528 Funds for three minutes. The airing margin was 428 Funds before
+   the cost of rights. [Airing review](season-first-receipt.webp)
+4. Use the Research binder to request a daily survey and spend eight Insight
+   on Young viewers. Finish the day to file the dated Day 2 survey at high
+   familiarity. Return to Survey Orders and turn polling off to stop the
+   recurring cost. [Survey](season-survey.webp)
+5. Return to Office, close the restored Airing file, and pull **Neighbourhood
+   Laughs, Episode 1** from the grouped tape rack. Use **Schedule this tape →
+   Regular → Choose days and time**. Confirm the next three Saturdays at
+   18:00 with ten ad minutes each. Set autosell to at most eight minutes and
+   a 35 Funds floor. The test sets the floor to one quarter of the first
+   paid per-minute rate, capped at 35, so the received price informs this
+   later decision. [Autosell terms](season-policy.webp)
+6. Run the first occurrence and inspect its automatic receipt. Finish each
+   remaining day. Station notes show all three goals met and 20,565 Funds in
+   the register. [Season close](season-close.webp) · [Recorded figures](season-browser.json)
+
+The [replay test](../../web/tests/next-season.spec.ts) uses visible controls
+and the normal Rust/Wasm browser entry. To run the replay alone, append
+`-- next-season.spec.ts` to `npm run test:e2e` from `web/`.
+
+## Verification and decisions
+
+- Workspace formatting, tests and doctests, Clippy with warnings denied, and
+  workspace documentation passed. The three Rust libraries built for
+  `wasm32-unknown-unknown` and browser-crate Wasm Clippy passed.
+- A separate copy of `bts-fuzzy` built for Wasm. Its ten tests, three
+  doctests, Clippy, strict docs and ventilation example passed there.
+- The production TypeScript/Vite build and all 61 Chromium tests passed,
+  including native/Wasm parity, narrow touch navigation, reduced motion and
+  the full season. The prior published station save replays to the same
+  balance, goals and signed receipts.
+- Timed work stays an experiment. Teaser anticipation, live sets and prop
+  inventory, topic-dependent shelf life, measured ratings, and a change to
+  the advertiser bid policy remain open. The timing, production and ad
+  fixtures are bounded comparisons with provisional settings.
