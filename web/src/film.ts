@@ -276,9 +276,10 @@ export function initialiseFilmDesk(ui: {
           work.append(auditions);
         }
         const room = desk.studios.find(room => room.id === draft.studio)!;
-        const studios = desk.studios.map(room => ({ id: room.id, name: room.name, description: room.summary, fee: funds(room.fee),
-          photo: room.id === 1 ? 0 : room.id === 2 ? 1 : undefined,
-          notes: room.commitments.map(([name, start, end]) => `Reserved: ${name} · ${ui.stamp(start)}–${ui.stamp(end)}`) }));
+        const studios = desk.studios.map(room => ({ id: room.id, name: room.name, description: room.summary,
+          fee: `${room.elastic ? 'From ' : ''}${funds(room.fee)}`, photo: (room.id - 1) % 2,
+          notes: room.elastic ? ['Hire rate varies by recording time.'] : room.commitments.map(([name, start, end]) =>
+            `Reserved: ${name} · ${ui.stamp(start)}–${ui.stamp(end)}`) }));
         const day = node('select'), time = node('select');
         day.id = 'film-recording-day'; time.id = 'film-recording-time';
         for (let i = 0; i < Math.ceil(next.end_tick / 96); i++) day.append(option(i, `Day ${i + 1}`));
@@ -289,7 +290,7 @@ export function initialiseFilmDesk(ui: {
         day.addEventListener('change', date); time.addEventListener('change', date);
         bindDateClock({ label: 'Film recording', day, time, firstWeekday: () => next.first_weekday });
         booking.append(studioSpot('film-studio', studios, draft.studio, id => { draft.studio = id; render(next); }), node('p', room.summary));
-        for (const [name, start, end] of room.commitments) booking.append(node('p', `Reserved: ${name} · ${ui.stamp(start)}–${ui.stamp(end)}`));
+        if (!room.elastic) for (const [name, start, end] of room.commitments) booking.append(node('p', `Reserved: ${name} · ${ui.stamp(start)}–${ui.stamp(end)}`));
         const [lead, confidant] = draft.cast;
         const planned: FilmBooking | null = lead !== null && confidant !== null && draft.director !== null
           ? { ...draft, cast: [lead, confidant], director: draft.director } : null;
@@ -315,6 +316,7 @@ export function initialiseFilmDesk(ui: {
             node('p', `${funds(review.fees)} talent + ${funds(review.rent)} studio = ${funds(review.total)}`),
             node('p', `Record ${ui.stamp(review.start)}–${ui.stamp(review.recording_end)} · Ready ${ui.stamp(review.ready)}`));
           if (review.studio_shortfall) reviewPanel.append(node('p', 'This room falls short of the script’s staging needs. You can still book it.'));
+          if (review.rental_conditions) reviewPanel.append(node('p', `Hire desk · ${review.rental_conditions}`));
           call.append(reviewPanel);
         }
       }

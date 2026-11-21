@@ -143,6 +143,7 @@ export type FilmBooking = { cast: [number, number]; director: number; studio: nu
 export type PitchPace = 'rush' | 'steady' | 'take_time';
 export type FilmReview = FilmBooking & {
   id: number; recording_end: number; ready: number; fees: string; rent: string; total: string; studio_shortfall: boolean;
+  rental_conditions: string | null;
 };
 export type FilmBookingPreview = { Ok: FilmReview } | { Err: { code: string; message: string } };
 export type FilmPerson = {
@@ -160,7 +161,7 @@ export type FilmCard = {
 export type FilmDesk = {
   projects: FilmCard[]; people: FilmPerson[];
   scripted_runs: { series: number; sequel_of: number | null; title: string; brief: Quality[]; episodes: [number, number, number]; cast: [number, number] | null }[];
-  studios: { id: number; name: string; fee: string; summary: string; commitments: [string, number, number][] }[];
+  studios: { id: number; name: string; fee: string; summary: string; elastic: boolean; commitments: [string, number, number][] }[];
   roles: [string, string]; writing_ticks: number; revision_ticks: number;
 };
 

@@ -14,6 +14,7 @@ pub mod research;
 pub mod rights;
 pub mod scripted_run;
 mod slot_habits;
+mod studio_rental;
 pub mod talent_research;
 pub mod weekly;
 
@@ -129,6 +130,7 @@ pub struct Planner {
     discussion_runs: BTreeMap<SeriesId, discussion_run::DiscussionRun>,
     scripted_runs: BTreeMap<SeriesId, scripted_run::ScriptedRun>,
     films: BTreeMap<production::ProductionId, film::Film>,
+    rental_demand: Vec<(SimTick, SimTick)>,
     research: Option<research::Research>,
     talent_research: talent_research::TalentResearch,
     rights: Option<rights::Market>,
@@ -185,6 +187,7 @@ impl Planner {
             discussion_runs: BTreeMap::new(),
             scripted_runs: BTreeMap::new(),
             films: BTreeMap::new(),
+            rental_demand: Vec::new(),
             research: None,
             talent_research: talent_research::TalentResearch::default(),
             rights: None,

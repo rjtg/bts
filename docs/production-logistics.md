@@ -73,7 +73,44 @@ The full production budget is reserved once and spent once; there are no extra
 per-tick or hidden room fees. This capacity milestone does not claim to model
 setup-cost savings, studio acquisition or physical materials.
 
-## Next slice proposal: elastic studio rental and quality
+## Film rental pilot
+
+The Film booking dossier offers the original two fixed-price rooms and two
+additional hire packages. **Edit Bay** starts at 240 Funds and provides basic
+equipment and a small floor. **Grand Floor** starts at 710 Funds and provides
+more room and better equipment. The hire packages have elastic capacity. The
+casting and director calendars still apply, and the station needs enough
+Funds to pay the quote. Room cards show the lowest rate and the proposed
+recording time produces an exact quote. Confirming the booking charges it once.
+
+Pressure is the sum of fractional overlaps with scripted public rental bookings
+in the scenario and the station's confirmed film bookings. A boundary touch
+adds zero. An overlap that covers four of the eight recording ticks adds
+0.5. The complementary quiet and busy fuzzy rules interpolate rent from the
+package base price at pressure zero to 2.5 times base at pressure three, where
+the multiplier is capped. Round once to the nearest Fund, with ties rounded
+up. Cast fees are added at face value. The signed quote stays fixed.
+
+Staging uses the lesser of the equipment and floor-size ratios to scripted
+demand, capped at one. Floor demand is `0.25 + 0.65 × script spectacle`.
+Equipment demand is unchanged. The new hires use equipment/size levels
+0.35/0.42 and 0.90/0.95. Legacy rooms keep sufficient floor size so their
+outcomes and journal replay stay compatible. A shortfall is disclosed before
+booking and affects the existing staging and execution model. The posted
+demand is a scenario fixture. Rival production decisions and room atmosphere
+effects remain proposed.
+
+The separate setup experiment compares charging 120 for setup and 80 for
+strike on every recording with retaining a set for adjacent compatible work.
+Two compatible sessions cost 400 Funds separately or 200 back-to-back. A gap
+or incompatible set removes the saving. The separate stock experiment holds
+setup fixed and charges 160 per fabricated copy plus 20 per use. The two
+sessions cost 360 with fresh props and 200 with stock reuse. Simultaneous
+recordings release neither copy in time and cost 360. These comparisons run
+independently in `cargo run --locked -p bts-sim --example studio_logistics`.
+Live bookings do not yet accumulate sets or stock.
+
+## Further design for the rental market
 
 The player can always rent studio time: rental capacity itself never hard-blocks a
 production. Price rises with demand for the same overlapping time. Count all
@@ -152,7 +189,8 @@ An interruption, incompatible set change or reservation conflict needs explicit
 rules for which costs/time recur. Savings must not remove talent booking conflicts
 or imply that editing/post-production becomes free.
 
-Recurring editions and batches are not implemented now. Open: what makes setups
+Recurring editions exist in the discussion and newsroom pilots. Batch bookings
+are still proposed. Open: what makes setups
 compatible, preparation/cleanup duration, cost allocation across episodes, booking
 and cancellation terms, when rental is charged (booking, recording or settlement),
 how all-station interval demand is observed, quality-to-price calibration, and how a

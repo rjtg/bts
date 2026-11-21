@@ -1685,6 +1685,15 @@ fn film_review(
         rent: q.rent.0.to_string(),
         total: q.total.0.to_string(),
         studio_shortfall: q.studio_shortfall,
+        rental_conditions: q.rental_pressure.map(|load| {
+            if load == 0.0 {
+                "Quiet"
+            } else if load < 1.0 {
+                "Some bookings"
+            } else {
+                "Busy"
+            }
+        }),
     }
 }
 fn film_desk(planner: &Planner) -> FilmDesk {
@@ -1776,6 +1785,7 @@ fn film_desk(planner: &Planner) -> FilmDesk {
                 name: studio.name,
                 fee: studio.fee.0.to_string(),
                 summary: studio.summary,
+                elastic: studio.elastic,
                 commitments: planner
                     .films()
                     .filter_map(|f| {

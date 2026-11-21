@@ -117,14 +117,18 @@ pub struct Rental {
     pub fee: Money,
     pub summary: &'static str,
     equipment: f64,
+    size: f64,
+    pub elastic: bool,
 }
-pub const RENTALS: [Rental; 2] = [
+pub const RENTALS: [Rental; 4] = [
     Rental {
         id: 1,
         name: "Backlot Room",
         fee: Money(280),
         summary: "A compact room for dialogue and small scenes.",
         equipment: 0.32,
+        size: 1.0,
+        elastic: false,
     },
     Rental {
         id: 2,
@@ -132,8 +136,41 @@ pub const RENTALS: [Rental; 2] = [
         fee: Money(930),
         summary: "Space, rigs and lighting for ambitious action.",
         equipment: 0.94,
+        size: 1.0,
+        elastic: false,
+    },
+    Rental {
+        id: 3,
+        name: "Hire · Edit Bay",
+        fee: Money(240),
+        summary: "A small room for close scenes. Basic lighting and sound.",
+        equipment: 0.35,
+        size: 0.42,
+        elastic: true,
+    },
+    Rental {
+        id: 4,
+        name: "Hire · Grand Floor",
+        fee: Money(710),
+        summary: "A wide floor with enough lighting and rigging for large scenes.",
+        equipment: 0.90,
+        size: 0.95,
+        elastic: true,
     },
 ];
+
+impl Rental {
+    pub fn staging_shortfall(&self, script: &Script) -> bool {
+        self.staging_support(script) < 1.0
+    }
+
+    fn staging_support(&self, script: &Script) -> f64 {
+        let implied_size_demand = 0.25 + 0.65 * script.profile.values[5].unwrap();
+        (self.equipment / script.equipment_demand)
+            .min(self.size / implied_size_demand)
+            .min(1.0)
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -196,6 +233,7 @@ pub struct FilmQuote {
     pub recording_end: SimTick,
     pub ready: SimTick,
     pub studio_shortfall: bool,
+    pub rental_pressure: Option<f64>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -518,21 +556,27 @@ impl Planner {
                 ));
             }
         }
-        if self.films().any(|other| {
-            other
-                .booking
-                .zip(other.quote.as_ref())
-                .is_some_and(|(b, q)| {
-                    b.studio == booking.studio && overlap(start, end, b.start, q.recording_end)
-                })
-        }) {
+        if !rental.elastic
+            && self.films().any(|other| {
+                other
+                    .booking
+                    .zip(other.quote.as_ref())
+                    .is_some_and(|(b, q)| {
+                        b.studio == booking.studio && overlap(start, end, b.start, q.recording_end)
+                    })
+            })
+        {
             return Err(error(
                 "film_studio_conflict",
                 "This studio is reserved during part of the selected time.",
             ));
         }
         let fees = Money(crew.iter().map(|p| p.fee.0).sum());
-        let total = fees.add(rental.fee).map_err(engine_error)?;
+        let rental_pressure = rental.elastic.then(|| self.rental_pressure(start, end));
+        let rent = rental_pressure.map_or(rental.fee, |pressure| {
+            super::studio_rental::rental_price(rental.fee, pressure)
+        });
+        let total = fees.add(rent).map_err(engine_error)?;
         if self.state().economy().cash(self.player).unwrap() < total {
             return Err(error(
                 "insufficient_production_funds",
@@ -541,11 +585,12 @@ impl Planner {
         }
         Ok(FilmQuote {
             fees,
-            rent: rental.fee,
+            rent,
             total,
             recording_end: end,
             ready,
-            studio_shortfall: rental.equipment < film.script.as_ref().unwrap().equipment_demand,
+            studio_shortfall: rental.staging_shortfall(film.script.as_ref().unwrap()),
+            rental_pressure,
         })
     }
 
@@ -692,7 +737,7 @@ fn film_work(film: &Film, id: ProgrammeId) -> Result<(Programme, FilmEvidence), 
     } else {
         1.0
     };
-    let equipment = (studio.equipment / script.equipment_demand).min(1.0);
+    let equipment = studio.staging_support(script);
     let high = |key| Condition::is(key, "high", Membership::rising(0.0, 1.0).unwrap());
     let joint = high(0).and(high(1));
     let weight = Degree::new(1.0).unwrap();

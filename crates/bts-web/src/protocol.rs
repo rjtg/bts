@@ -592,6 +592,7 @@ pub struct FilmReview {
     pub rent: String,
     pub total: String,
     pub studio_shortfall: bool,
+    pub rental_conditions: Option<&'static str>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
@@ -647,6 +648,7 @@ pub struct FilmStudio {
     pub name: &'static str,
     pub fee: String,
     pub summary: &'static str,
+    pub elastic: bool,
     pub commitments: Vec<(String, u32, u32)>,
 }
 

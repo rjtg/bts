@@ -12,9 +12,9 @@ verified pass. Production filing (#7) is verified through the pilot formats.
 The station strip, Directory, outside dismissal and desk props (#1–#4)
 are verified. Action timing (#12) is documented with a tested experiment.
 The public listing pilot (#13), private preparation and auditions (#14), and
-editable scripted runs and sequels (#15) are verified. Next are studio logistics
-(#16), advertiser evolution (#17) and atmosphere (#9–#11). Code health (#19)
-continues at each boundary.
+editable scripted runs and sequels (#15), and the film rental pilot (#16) are
+verified. Next are advertiser evolution (#17) and atmosphere (#9–#11). Code
+health (#19) continues at each boundary.
 
 ## Launch
 
@@ -159,3 +159,17 @@ with 0.490 after abrupt shifts. The same native tests verify the cast lock,
 published episode identities, invalid amendments and sequel restrictions.
 The production build, all 58 Chromium tests including native/Wasm parity,
 and both focused scripted-run browser tests passed.
+
+## Film rental desk
+
+On the Studio page choose **Hire · Edit Bay** or **Hire · Grand Floor**.
+Set the recording time to see an exact hire rate, the casting fees and the
+signed total. The [browser capture](rental-quote.webp) shows an inexpensive
+room with a staging warning. In the native fixture the same room costs
+240 Funds with an empty calendar and 300 with one half-overlapping recording.
+The higher-spec package costs 710 in the same quiet slot. The fixture verifies
+payment, staffing conflicts and conservation. The production build and nine
+targeted Chromium tests passed, including production native/Wasm parity.
+
+[Separate setup and stock results](studio-logistics.txt) ·
+[Booking rules and reproduction commands](../../docs/production-logistics.md#film-rental-pilot)

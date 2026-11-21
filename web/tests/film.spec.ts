@@ -74,8 +74,13 @@ test('pitch, revise, cast, book, advertise and air a film', async ({ page }, tes
   await film.getByRole('button', { name: 'Next page', exact: false }).click();
   await film.locator('#film-studio').click();
   const studioCards = page.getByRole('dialog', { name: 'Choose studio' });
-  await expect(studioCards.locator('.studio-photo')).toHaveCount(2);
+  await expect(studioCards.locator('.studio-photo')).toHaveCount(4);
   await page.screenshot({ path: testInfo.outputPath('studio-gallery.png'), animations: 'disabled' });
+  await studioCards.getByRole('button', { name: 'Choose Hire · Edit Bay' }).click();
+  await expect(film).toContainText('Hire desk');
+  await expect(film).toContainText('You can still book it.');
+  await page.screenshot({ path: testInfo.outputPath('rental-quote.png'), animations: 'disabled' });
+  await film.locator('#film-studio').click();
   await studioCards.getByRole('button', { name: 'Choose Soundstage B' }).click();
   await expect(film.locator('#film-studio')).toContainText('Soundstage B');
   await expect(film.locator('#film-studio .studio-photo')).toBeVisible();

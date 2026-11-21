@@ -116,6 +116,11 @@ pub(crate) fn planner_from_world(world: World) -> Result<Planner, PlanError> {
         SimTick(END_TICK),
         &competitors,
     )?;
+    planner.configure_rental_demand(vec![
+        (SimTick(64), SimTick(76)),
+        (SimTick(70), SimTick(78)),
+        (SimTick(164), SimTick(176)),
+    ])?;
     let (roster, request) = production_roster();
     planner.configure_production(roster, request)?;
     planner.configure_cooperation(bts_sim::planning::production::demo_cooperation())?;
