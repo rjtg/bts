@@ -10,11 +10,17 @@ const people = [
 ] as const;
 
 const deskWork = '[inert],.prop-travelling,.file-open,.tray-open';
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+export function roomMotionEnabled(office: HTMLElement) {
+  const setting = office.dataset.ambientMotion;
+  return !document.hidden && (setting === 'on' || (setting !== 'off' && !reduced.matches))
+    && !document.querySelector('dialog[open]');
+}
 
 export function initialiseOfficeIdle() {
   const office = element('office');
   const room = office.querySelector<HTMLElement>('.office-room')!;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const plant = office.querySelector<HTMLElement>('.office-plant')!;
   const glow = office.querySelector<HTMLElement>('.office-lamp-glow')!;
   const actors = people.map(([selector, direction]) => {
@@ -43,10 +49,7 @@ export function initialiseOfficeIdle() {
 
   let nextDetail = 1400;
   window.setInterval(() => {
-    const setting = office.dataset.ambientMotion;
-    const enabled = setting === 'on' || (setting !== 'off' && !reduced.matches);
-    if (!enabled || document.hidden || !room.getClientRects().length || office.matches(deskWork)
-      || document.querySelector('dialog[open]')) return;
+    if (!roomMotionEnabled(office) || !room.getClientRects().length || office.matches(deskWork)) return;
 
     const now = performance.now();
     for (const actor of actors) {

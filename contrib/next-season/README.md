@@ -14,8 +14,9 @@ are verified. Action timing (#12) is documented with a tested experiment.
 The public listing pilot (#13), private preparation and auditions (#14), and
 editable scripted runs and sequels (#15), the film rental pilot (#16), and
 the advertiser comparison (#17) are verified. Independent character poses
-(#9) are verified. Next are monitor rotation (#10) and the working day (#11).
-Code health (#19) continues at each boundary.
+(#9) and monitor rotation (#10) are verified. Next are the working day (#11)
+and the complete season playthrough. Code health (#19) continues at each
+boundary.
 
 ## Launch
 
@@ -196,3 +197,13 @@ registered sprite movements. Its animation clocks use ordinary browser time.
 The build and four focused Chromium tests passed. The seeded test visits all
 twelve subjects, detects simultaneous changes, checks the relative frequencies
 and verifies the station time and reduced-motion controls.
+
+## Wall monitors
+
+The [three fitted CRTs](rotating-crts.webp) rotate through a shared pool of
+nineteen programmes and one test card. Three of the reels use the previous
+painted frames. Sixteen new programme plates were generated as a contact
+sheet and use small stepped motions inside the glass. The animation test
+visits every reel on each screen, checks two or more animated screens in
+each batch, and verifies matched stills and an unchanged clock under reduced
+motion. The production build and all five office-focused tests passed.

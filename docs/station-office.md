@@ -71,8 +71,13 @@ positions. Gestures and slight movements compose with either large pose.
 The broad pose can stay in place until its next major change. Plant and light
 have a separate slower cue. Narrow layouts keep the desk legible and omit
 these distant character details.
-The steam and wall displays have separate loops. Room motion can follow the
-system, be enabled or be switched off. These timers affect presentation only.
+The steam and wall displays have separate loops. Three fitted CRTs share
+nineteen programme vignettes and one test card. The reels rotate through every
+screen. Each set keeps its current programme in reduced motion or with room
+motion off. The original three reels use hand-separated frames and the new
+vignettes use restrained stepped motion on their programme plates. Room
+motion can follow the system, be enabled or be switched off. These timers
+affect presentation only.
 The visual working day is 08:00–18:00 with cooler light and no steam outside it.
 See [playtest direction](office-playtest-direction.md) for the separate proposal
 for independent character motion and richer day transitions.

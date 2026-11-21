@@ -176,3 +176,31 @@ test('idle actors choose independent layered poses while the station clock holds
   await page.clock.runFor(4000);
   expect(await poses()).toEqual(off);
 });
+
+test('all three CRTs share a fitted reel pool and retain their programme in reduced motion', async ({ page }, testInfo) => {
+  await page.clock.install();
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await openOffice(page);
+  const screens = page.locator('.monitor-reel i');
+  const reels = () => screens.evaluateAll(items => items.map(item => ({
+    id: (item as HTMLElement).dataset.reel!,
+    animation: getComputedStyle(item, '::before').animationName,
+  })));
+  const perSet = [new Set<string>(), new Set<string>(), new Set<string>()];
+  for (let batch = 0; batch < 20; batch++) {
+    const active = await reels();
+    expect(new Set(active.map(screen => screen.id)).size).toBe(3);
+    expect(active.filter(screen => screen.animation !== 'none').length).toBeGreaterThanOrEqual(2);
+    active.forEach((screen, index) => perSet[index].add(screen.id));
+    if (batch === 3) await page.screenshot({ path: testInfo.outputPath('rotating-crts.png'), animations: 'disabled' });
+    await page.clock.runFor(9500);
+  }
+  perSet.forEach(set => expect(set.size).toBe(20));
+  const still = (await reels()).map(screen => screen.id);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.clock.runFor(12000);
+  expect(await reels()).toEqual(still.map(id => ({ id, animation: 'none' })));
+  await expect(page.locator('#clock')).toContainText('00:00');
+});

@@ -1958,18 +1958,41 @@ body[data-station-view="planning"] main > [data-desk="planning"] { top:min(var(-
 #office .desk-files a:hover { outline:0; }
 #office :is(#office-calendar,#pull-tapes,.desk-files a):focus-visible { outline:2px solid #ffda88; }
 .monitor-reel {
-  position:absolute; left:29.15%; top:14.25%; width:13.3%; height:6.3%;
-  display:grid; grid-template-columns:repeat(3,1fr); gap:7%; pointer-events:none;
-  z-index:1; opacity:0;
+  position:absolute; inset:0; pointer-events:none; z-index:1;
 }
 .monitor-reel i {
-  overflow:hidden; border-radius:13%; border:1px solid #352a20;
-  background:var(--monitor-frames) 50% 0% / 100% 400%;
-  box-shadow: inset 0 0 .25rem #c2b6a6; filter:saturate(.7) sepia(.12);
+  position:absolute; top:14.72%; width:3.91%; height:5.21%;
+  overflow:hidden; border-radius:18% / 16%; isolation:isolate;
+  background:#141715;
+  box-shadow:inset 0 0 .25rem #14110e;
 }
-.monitor-reel i:nth-child(1) { --monitor-frames:url('/office-art/monitor-drama.webp'); }
-.monitor-reel i:nth-child(2) { --monitor-frames:url('/office-art/monitor-weather.webp'); }
-.monitor-reel i:nth-child(3) { --monitor-frames:url('/office-art/monitor-variety.webp'); }
+.monitor-reel i:nth-child(1) { left:28.92%; width:3.76%; }
+.monitor-reel i:nth-child(2) { left:33.56%; }
+.monitor-reel i:nth-child(3) { left:38.36%; }
+.monitor-reel i::before,.monitor-reel i::after { content:''; position:absolute; inset:0; }
+.monitor-reel i::before { filter:saturate(.72) sepia(.10) brightness(.83); }
+.monitor-reel i::after {
+  background:repeating-linear-gradient(#100f1320 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center,transparent 42%,#1b1417c9);
+  box-shadow:inset 0 0 .18rem #1b1811;
+}
+.monitor-reel [data-format="frames"]::before {
+  background:var(--monitor-frames) 50% 0% / 100% 400%;
+  animation:var(--screen-frames,none) 2.3s step-end infinite;
+}
+.monitor-reel [data-format="atlas"]::before {
+  background:url('/office-art/monitor-programmes.webp') var(--reel-x) var(--reel-y) / 400% 400%;
+  transform:scale(1.10);
+  animation:var(--screen-atlas,none) 2.9s steps(4,end) alternate infinite;
+}
+.monitor-reel [data-format="card"]::before {
+  background:linear-gradient(to bottom,transparent 80%,#10222a 80%),
+    linear-gradient(90deg,#ddd 14%,#dbc041 14% 28%,#37c0bc 28% 42%,#299851 42% 56%,#a64593 56% 70%,#b83a37 70% 84%,#383b8d 84%);
+}
+.monitor-reel i:nth-child(2)::before { animation-delay:-.7s; }
+.monitor-reel i:nth-child(3)::before { animation-delay:-1.6s; }
+@keyframes monitor-glass { to { transform:scale(1.16) translate(.55px,-.45px); filter:saturate(.77) sepia(.10) brightness(.94); } }
+body:has(dialog[open]) .monitor-reel i::before { animation-play-state:paused; }
 #office .desk-files a:is(:hover,:focus-visible)::before { filter:var(--paper-tint,none) brightness(1.11) drop-shadow(4px 6px 3px #321509a8); }
 #office:has(#pull-tapes:is(:hover,:focus-visible)) .shelf-stock { filter:brightness(1.25); }
 @media (prefers-reduced-motion: no-preference) {
@@ -2166,8 +2189,8 @@ body.prop-workspace #office { pointer-events:none; }
 @media (prefers-reduced-motion:no-preference) {
   #office:not([data-ambient-motion="off"]) {
     --steam-idle:var(--steam-loop);
-    --screens-idle:screen-signal 14s ease-in-out infinite;
-    --screen-frames:monitor-preview 2.3s step-end infinite;
+    --screen-frames:monitor-preview;
+    --screen-atlas:monitor-glass;
     --idle-fade:1.15s;
     --idle-leaves:room-leaves;
   }
@@ -2269,8 +2292,8 @@ body.prop-workspace #office { pointer-events:none; }
 }
 #office[data-ambient-motion="on"] {
   --steam-idle:var(--steam-loop);
-  --screens-idle:screen-signal 14s ease-in-out infinite;
-  --screen-frames:monitor-preview 2.3s step-end infinite;
+  --screen-frames:monitor-preview;
+  --screen-atlas:monitor-glass;
   --idle-fade:1.15s;
   --idle-leaves:room-leaves;
 }
@@ -2309,8 +2332,6 @@ body[data-station-view="office"] .rail #reset { margin-left:0; }
   background:radial-gradient(ellipse at 37% 70%,#ffbc5e9e,transparent 68%);
   mix-blend-mode:screen;
 }
-.monitor-reel { animation:var(--screens-idle,none); }
-.monitor-reel i { animation:var(--screen-frames,none); }
 .studio-idle-camera {
   left:62.2%; top:21.79%; width:8.97%; height:16.58%;
   background:url('/office-art/camera-operator-left.webp') center / 100% 100% no-repeat;
@@ -2327,11 +2348,6 @@ body[data-station-view="office"] .rail #reset { margin-left:0; }
   left:66.58%; top:23.7%; width:.35%; aspect-ratio:1; border-radius:50%;
   background:#f24433; box-shadow:0 0 .42rem .15rem #ff62458a; opacity:0;
 
-}
-
-@keyframes screen-signal {
-  0%, 8%, 67%,100% { opacity:0; }
-  13%, 60% { opacity:.93; }
 }
 
 

@@ -26,6 +26,7 @@ import { matchesProductionType, programmeChart, programmeCredits } from './ui/pr
 import { dossier, leaf, spread } from './ui/dossier';
 import { officePapers } from './ui/office-dossier';
 import { initialiseOfficeIdle } from './ui/office-idle';
+import { initialiseOfficeMonitors } from './ui/office-monitors';
 import { initialiseOfficeMotion } from './ui/office-motion';
 import { bindOutsideDismissal } from './ui/outside-dismissal';
 import { renderToday } from './ui/today-strip';
@@ -1162,6 +1163,7 @@ async function start(): Promise<void> {
     transactions.append(element('ledger-actions'), element('ledger'));
     element('ledger-papers').append(dossier('Ledger', [{ label: 'Accounts', content: spread(balances, transactions) }]));
     initialiseOfficeIdle();
+    initialiseOfficeMonitors();
     select('room-motion').addEventListener('change', event => {
       element('office').dataset.ambientMotion = (event.currentTarget as HTMLSelectElement).value;
     });
