@@ -42,7 +42,7 @@ fn run(label: &str, ambition: [f64; 7], writer: u16, revise: bool, studio: u8) -
         "weaknesses": film.script.as_ref().unwrap().weaknesses,
         "equipment_demand": film.script.as_ref().unwrap().equipment_demand,
         "finished": evidence.profile, "execution": evidence.execution,
-        "equipment_fit": evidence.equipment, "spectacle_support": evidence.spectacle_support,
+        "equipment_fit": evidence.equipment, "floor_fit": evidence.floor, "spectacle_support": evidence.spectacle_support,
         "committed_credits": film.committed.0, "money_conserved": p.state().economy().total_money(),
     })
 }

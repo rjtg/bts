@@ -64,6 +64,16 @@ fn paid_elastic_booking_uses_overlap_preserves_the_quote_and_checks_staff() {
         Some(Money(cash.0 - busy_quote.total.0))
     );
     assert_eq!(busy.state().economy().total_money(), conserved);
+    quiet
+        .book_film(film, FilmBooking { studio: 4, ..room })
+        .unwrap();
+    busy.advance_to(busy_quote.ready).unwrap();
+    quiet.advance_to(better_room.ready).unwrap();
+    let edit_bay = busy.film(film).unwrap().evidence.as_ref().unwrap();
+    let grand_floor = quiet.film(film).unwrap().evidence.as_ref().unwrap();
+    assert!(edit_bay.floor < edit_bay.equipment);
+    assert!(edit_bay.profile.values[5] < grand_floor.profile.values[5]);
+    assert_eq!(edit_bay.craft, grand_floor.craft);
     println!(
         "Same Edit Bay: quiet {} Funds; half-overlap {} Funds. Quiet Grand Floor: {} Funds.",
         quiet_quote.rent.0, busy_quote.rent.0, better_room.rent.0

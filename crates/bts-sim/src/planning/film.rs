@@ -145,7 +145,7 @@ pub const RENTALS: [Rental; 4] = [
         fee: Money(240),
         summary: "A small room for close scenes. Basic lighting and sound.",
         equipment: 0.35,
-        size: 0.42,
+        size: 0.28,
         elastic: true,
     },
     Rental {
@@ -161,14 +161,16 @@ pub const RENTALS: [Rental; 4] = [
 
 impl Rental {
     pub fn staging_shortfall(&self, script: &Script) -> bool {
-        self.staging_support(script) < 1.0
+        let (equipment, floor) = self.staging_fit(script);
+        equipment.min(floor) < 1.0
     }
 
-    fn staging_support(&self, script: &Script) -> f64 {
+    fn staging_fit(&self, script: &Script) -> (f64, f64) {
         let implied_size_demand = 0.25 + 0.65 * script.profile.values[5].unwrap();
-        (self.equipment / script.equipment_demand)
-            .min(self.size / implied_size_demand)
-            .min(1.0)
+        (
+            (self.equipment / script.equipment_demand).min(1.0),
+            (self.size / implied_size_demand).min(1.0),
+        )
     }
 }
 
@@ -263,6 +265,7 @@ pub struct FilmEvidence {
     pub craft: f64,
     pub cooperation: f64,
     pub equipment: f64,
+    pub floor: f64,
     pub spectacle_support: f64,
     pub execution: f64,
 }
@@ -737,7 +740,8 @@ fn film_work(film: &Film, id: ProgrammeId) -> Result<(Programme, FilmEvidence), 
     } else {
         1.0
     };
-    let equipment = studio.staging_support(script);
+    let (equipment, floor) = studio.staging_fit(script);
+    let room_fit = equipment.min(floor);
     let high = |key| Condition::is(key, "high", Membership::rising(0.0, 1.0).unwrap());
     let joint = high(0).and(high(1));
     let weight = Degree::new(1.0).unwrap();
@@ -750,7 +754,7 @@ fn film_work(film: &Film, id: ProgrammeId) -> Result<(Programme, FilmEvidence), 
     )
     .unwrap();
     let support = rules
-        .evaluate(&[(0, director.capability[5]), (1, equipment)])
+        .evaluate(&[(0, director.capability[5]), (1, room_fit)])
         .map_err(|_| {
             error(
                 "film_model",
@@ -778,7 +782,7 @@ fn film_work(film: &Film, id: ProgrammeId) -> Result<(Programme, FilmEvidence), 
         .sum::<f64>()
         / 7.0;
     let strain = film.episode.map_or(0.0, |episode| episode.strain);
-    let execution = (0.20 + 0.65 * craft + 0.15 * equipment)
+    let execution = (0.20 + 0.65 * craft + 0.15 * room_fit)
         * cooperation
         * (1.0 - shortfall)
         * (1.0 - 0.5 * strain);
@@ -787,6 +791,7 @@ fn film_work(film: &Film, id: ProgrammeId) -> Result<(Programme, FilmEvidence), 
         craft,
         cooperation,
         equipment,
+        floor,
         spectacle_support: support,
         execution,
     };

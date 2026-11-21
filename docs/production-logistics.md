@@ -94,7 +94,7 @@ up. Cast fees are added at face value. The signed quote stays fixed.
 Staging uses the lesser of the equipment and floor-size ratios to scripted
 demand, capped at one. Floor demand is `0.25 + 0.65 × script spectacle`.
 Equipment demand is unchanged. The new hires use equipment/size levels
-0.35/0.42 and 0.90/0.95. Legacy rooms keep sufficient floor size so their
+0.35/0.28 and 0.90/0.95. Developer evidence preserves both ratios. Legacy rooms keep sufficient floor size so their
 outcomes and journal replay stay compatible. A shortfall is disclosed before
 booking and affects the existing staging and execution model. The posted
 demand is a scenario fixture. Rival production decisions and room atmosphere
